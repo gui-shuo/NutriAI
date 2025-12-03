@@ -76,12 +76,15 @@ body {
 }
 
 // 全局消息提示样式修复
-.el-message {
+.el-message,
+.el-message.is-center {
   position: fixed !important;
   top: 80px !important;
   left: 50% !important;
+  right: auto !important;
   transform: translateX(-50%) !important;
   z-index: 9999 !important;
+  margin: 0 !important;
   pointer-events: auto !important;
   min-width: 380px !important;
   max-width: 500px !important;

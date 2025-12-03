@@ -2,6 +2,7 @@ package com.nutriai.config;
 
 import com.nutriai.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,6 +17,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 /**
  * Spring Security配置
  */
+@Slf4j
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -30,6 +32,8 @@ public class SecurityConfig {
     
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        log.info("配置Security过滤器链...");
+        
         http
                 // 禁用CSRF（前后端分离项目）
                 .csrf(AbstractHttpConfigurer::disable)
@@ -47,9 +51,10 @@ public class SecurityConfig {
                         // 公开接口（不需要认证）
                         .requestMatchers(
                                 "/auth/**",
-                                "/health",
+                                "/api/health",
                                 "/error",
-                                "/uploads/**"
+                                "/uploads/**",
+                                "/ws/**"  // WebSocket端点（WebSocket自己会验证token）
                         ).permitAll()
                         
                         // 其他所有请求都需要认证
@@ -59,6 +64,7 @@ public class SecurityConfig {
                 // 添加JWT认证过滤器
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         
+        log.info("✅ Security配置完成");
         return http.build();
     }
 }

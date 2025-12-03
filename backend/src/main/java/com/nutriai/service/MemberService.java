@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.Optional;
 
 /**
  * 会员服务
@@ -41,8 +42,42 @@ public class MemberService {
      * 获取会员信息
      */
     public MemberInfoResponse getMemberInfo(Long userId) {
-        Member member = memberRepository.findByUserId(userId)
-                .orElseThrow(() -> BusinessException.User.USER_NOT_FOUND);
+        log.info("==========================================");
+        log.info("开始查询会员信息");
+        log.info("输入参数 userId: {}", userId);
+        log.info("userId 类型: {}", userId.getClass().getName());
+        
+        // 查询所有会员记录用于调试
+        long count = memberRepository.count();
+        log.info("数据库中会员记录总数: {}", count);
+        
+        if (count > 0) {
+            log.info("列出所有会员记录:");
+            memberRepository.findAll().forEach(m -> 
+                log.info("  - Member[id={}, userId={}, userId类型={}, invitationCode={}]", 
+                    m.getId(), m.getUserId(), m.getUserId().getClass().getName(), m.getInvitationCode())
+            );
+        }
+        
+        log.info("执行查询: memberRepository.findByUserId({})", userId);
+        Optional<Member> memberOpt = memberRepository.findByUserId(userId);
+        log.info("查询结果: {}", memberOpt.isPresent() ? "找到会员" : "未找到会员");
+        
+        if (memberOpt.isPresent()) {
+            Member found = memberOpt.get();
+            log.info("找到的会员: id={}, userId={}", found.getId(), found.getUserId());
+        }
+        
+        Member member = memberOpt
+                .orElseThrow(() -> {
+                    log.error("未找到userId={}的会员记录", userId);
+                    return BusinessException.User.USER_NOT_FOUND;
+                });
+        
+        // 检查并自动升级
+        checkAndUpgradeLevel(member);
+        // 重新加载member以获取最新状态
+        member = memberRepository.findById(member.getId()).orElse(member);
         
         MemberLevel currentLevel = memberLevelRepository.findById(member.getLevelId())
                 .orElseThrow(() -> new RuntimeException("会员等级不存在"));

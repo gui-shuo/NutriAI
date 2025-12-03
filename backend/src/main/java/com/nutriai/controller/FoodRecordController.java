@@ -7,7 +7,6 @@ import com.nutriai.dto.food.NutritionStatsResponse;
 import com.nutriai.entity.FoodRecord;
 import com.nutriai.service.FoodRecordService;
 import com.nutriai.service.OssService;
-import com.nutriai.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +29,6 @@ public class FoodRecordController {
     
     private final FoodRecordService foodRecordService;
     private final OssService ossService;
-    private final JwtUtil jwtUtil;
     
     /**
      * 创建饮食记录
@@ -57,10 +55,26 @@ public class FoodRecordController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(required = false) FoodRecord.MealType mealType,
             HttpServletRequest httpRequest) {
-        Long userId = getUserIdFromToken(httpRequest);
-        Page<FoodRecordResponse> records = foodRecordService.getFoodRecords(
-                userId, page, size, startDate, endDate, mealType);
-        return ApiResponse.success(records);
+        try {
+            log.info("获取饮食记录: page={}, size={}, startDate={}, endDate={}, mealType={}", 
+                     page, size, startDate, endDate, mealType);
+            
+            Long userId = getUserIdFromToken(httpRequest);
+            log.info("用户ID: {}", userId);
+            
+            if (userId == null) {
+                log.error("用户ID为null，request attribute未设置");
+                return ApiResponse.error("用户未登录");
+            }
+            
+            Page<FoodRecordResponse> records = foodRecordService.getFoodRecords(
+                    userId, page, size, startDate, endDate, mealType);
+            log.info("成功获取 {} 条记录", records.getTotalElements());
+            return ApiResponse.success(records);
+        } catch (Exception e) {
+            log.error("获取饮食记录失败", e);
+            return ApiResponse.error("获取饮食记录失败: " + e.getMessage());
+        }
     }
     
     /**
@@ -99,13 +113,29 @@ public class FoodRecordController {
     public ApiResponse<NutritionStatsResponse> getNutritionStats(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             HttpServletRequest httpRequest) {
-        Long userId = getUserIdFromToken(httpRequest);
-        // 如果未指定日期，默认查询今天
-        if (date == null) {
-            date = LocalDate.now();
+        try {
+            log.info("获取营养统计: date={}", date);
+            
+            Long userId = getUserIdFromToken(httpRequest);
+            log.info("用户ID: {}", userId);
+            
+            if (userId == null) {
+                log.error("用户ID为null，request attribute未设置");
+                return ApiResponse.error("用户未登录");
+            }
+            
+            // 如果未指定日期，默认查询今天
+            if (date == null) {
+                date = LocalDate.now();
+            }
+            
+            NutritionStatsResponse stats = foodRecordService.getNutritionStats(userId, date);
+            log.info("成功获取营养统计数据");
+            return ApiResponse.success(stats);
+        } catch (Exception e) {
+            log.error("获取营养统计失败", e);
+            return ApiResponse.error("获取营养统计失败: " + e.getMessage());
         }
-        NutritionStatsResponse stats = foodRecordService.getNutritionStats(userId, date);
-        return ApiResponse.success(stats);
     }
     
     /**
@@ -129,18 +159,6 @@ public class FoodRecordController {
      * 从Token中获取用户ID
      */
     private Long getUserIdFromToken(HttpServletRequest request) {
-        String token = getTokenFromRequest(request);
-        return jwtUtil.getUserIdFromToken(token);
-    }
-    
-    /**
-     * 从请求头中获取Token
-     */
-    private String getTokenFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return null;
+        return (Long) request.getAttribute("userId");
     }
 }

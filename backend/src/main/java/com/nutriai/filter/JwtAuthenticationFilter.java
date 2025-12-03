@@ -54,6 +54,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // 设置到Security上下文
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 
+                // 将userId设置到request attribute中，供Controller使用
+                request.setAttribute("userId", userId);
+                
                 log.debug("JWT认证成功: userId={}, role={}", userId, role);
             }
         } catch (Exception e) {

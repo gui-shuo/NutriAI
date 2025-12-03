@@ -59,7 +59,7 @@ import {
   TrendCharts,
   Service,
   Medal,
-  Gift
+  Present
 } from '@element-plus/icons-vue'
 
 const props = defineProps({
@@ -76,7 +76,7 @@ const props = defineProps({
 // 解析权益列表
 const benefitItems = computed(() => {
   const features = props.benefits.features || []
-  const icons = [ChatDotRound, DataAnalysis, Document, Star, Trophy, TrendCharts, Service, Medal, Gift]
+  const icons = [ChatDotRound, DataAnalysis, Document, Star, Trophy, TrendCharts, Service, Medal, Present]
   const colors = [
     'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
     'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',

@@ -23,7 +23,12 @@
           <BenefitsList :benefits="currentBenefits" :level-name="memberInfo?.currentLevel?.levelName" />
           
           <!-- 等级对比表 -->
-          <LevelComparisonTable :current-level="memberInfo?.currentLevel" />
+          <LevelComparisonTable 
+            :current-level="memberInfo?.currentLevel" 
+            :total-growth="memberInfo?.totalGrowth || 0"
+            :next-level="memberInfo?.nextLevel"
+            :growth-to-next-level="memberInfo?.growthToNextLevel || 0"
+          />
         </div>
       </div>
     </div>

@@ -157,11 +157,31 @@ const uploadFile = async (file) => {
     }
   } catch (error) {
     console.error('上传失败:', error)
-    if (error.response?.data) {
-      message.error(error.response.data.message || '上传失败')
+    
+    let errorMessage = '上传失败'
+    
+    if (error.response) {
+      const { status, data } = error.response
+      if (data?.message) {
+        errorMessage = data.message
+      } else if (status === 400) {
+        errorMessage = '文件格式不正确或文件过大'
+      } else if (status === 401) {
+        errorMessage = '登录已过期，请重新登录'
+      } else if (status === 413) {
+        errorMessage = '文件过大，请选择小于2MB的图片'
+      } else if (status === 500) {
+        errorMessage = '服务器错误，请稍后重试'
+      } else {
+        errorMessage = `上传失败 (${status})`
+      }
+    } else if (error.request) {
+      errorMessage = '网络连接失败，请检查网络后重试'
     } else {
-      message.error('网络错误，请稍后重试')
+      errorMessage = error.message || '请求配置错误'
     }
+    
+    message.error(errorMessage)
   } finally {
     uploading.value = false
     uploadProgress.value = 0

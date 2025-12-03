@@ -18,6 +18,7 @@
               <template #dropdown>
                 <el-dropdown-menu>
                   <el-dropdown-item command="profile">个人中心</el-dropdown-item>
+                  <el-dropdown-item command="ai-chat">AI营养师</el-dropdown-item>
                   <el-dropdown-item command="food-records">饮食记录</el-dropdown-item>
                   <el-dropdown-item command="membership">会员中心</el-dropdown-item>
                   <el-dropdown-item divided command="logout">退出登录</el-dropdown-item>
@@ -119,6 +120,8 @@ const handleCommand = (command) => {
     router.push('/')
   } else if (command === 'profile') {
     router.push('/profile')
+  } else if (command === 'ai-chat') {
+    router.push('/ai-chat')
   } else if (command === 'food-records') {
     router.push('/food-records')
   } else if (command === 'membership') {

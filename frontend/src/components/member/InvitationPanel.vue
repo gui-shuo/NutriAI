@@ -85,12 +85,59 @@
         </el-skeleton>
       </div>
     </div>
+
+    <!-- 查看全部对话框 -->
+    <el-dialog
+      v-model="showAllDialog"
+      title="邀请记录"
+      width="600px"
+      :close-on-click-modal="false"
+    >
+      <el-skeleton :loading="allLoading" animated :rows="5">
+        <div v-if="allRecords.length > 0" class="all-records-list">
+          <div v-for="record in allRecords" :key="record.id" class="all-record-item">
+            <div class="record-avatar">
+              <el-avatar :size="48">{{ record.inviteeName?.charAt(0) || '?' }}</el-avatar>
+            </div>
+            <div class="record-details">
+              <div class="record-header">
+                <span class="record-name">{{ record.inviteeName || '新用户' }}</span>
+                <el-tag v-if="record.isRewarded" type="success" size="small">
+                  已奖励 +{{ record.rewardGrowth }}
+                </el-tag>
+                <el-tag v-else type="info" size="small">待激活</el-tag>
+              </div>
+              <div class="record-meta">
+                <span class="meta-item">
+                  <el-icon><Calendar /></el-icon>
+                  邀请时间: {{ formatFullTime(record.invitedAt) }}
+                </span>
+                <span v-if="record.acceptedAt" class="meta-item">
+                  <el-icon><CircleCheck /></el-icon>
+                  接受时间: {{ formatFullTime(record.acceptedAt) }}
+                </span>
+              </div>
+              <div v-if="record.status" class="record-status">
+                <span :class="['status-badge', record.status.toLowerCase()]">
+                  {{ getStatusText(record.status) }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <el-empty v-else description="暂无邀请记录" :image-size="100" />
+      </el-skeleton>
+
+      <template #footer>
+        <el-button @click="showAllDialog = false">关闭</el-button>
+      </template>
+    </el-dialog>
   </el-card>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { DocumentCopy, Link, User, Present } from '@element-plus/icons-vue'
+import { DocumentCopy, Link, User, Present, Calendar, CircleCheck } from '@element-plus/icons-vue'
 import { useClipboard } from '@vueuse/core'
 import { generateInvitationLink, getInvitationRecords } from '@/services/member'
 import message from '@/utils/message'
@@ -107,6 +154,9 @@ const loading = ref(false)
 const invitationCode = computed(() => props.memberInfo?.invitationCode || '')
 const invitationLink = computed(() => props.memberInfo?.invitationLink || '')
 const records = ref([])
+const showAllDialog = ref(false)
+const allLoading = ref(false)
+const allRecords = ref([])
 
 // 总奖励成长值
 const totalReward = computed(() => {
@@ -149,12 +199,25 @@ const fetchInvitationRecords = async () => {
 }
 
 // 查看全部记录
-const viewAllRecords = () => {
-  // TODO: 打开邀请记录对话框或跳转到详情页
-  message.info('查看全部记录功能开发中')
+const viewAllRecords = async () => {
+  showAllDialog.value = true
+  allLoading.value = true
+  try {
+    const response = await getInvitationRecords(0, 100) // 获取最多100条记录
+    if (response.data.code === 200) {
+      allRecords.value = response.data.data.content || []
+    } else {
+      message.error('获取邀请记录失败')
+    }
+  } catch (error) {
+    console.error('获取邀请记录失败:', error)
+    message.error('获取邀请记录失败')
+  } finally {
+    allLoading.value = false
+  }
 }
 
-// 格式化时间
+// 格式化时间（简短版）
 const formatTime = (time) => {
   if (!time) return ''
   const date = new Date(time)
@@ -166,6 +229,29 @@ const formatTime = (time) => {
   if (days === 1) return '昨天'
   if (days < 7) return `${days}天前`
   return date.toLocaleDateString('zh-CN')
+}
+
+// 格式化时间（完整版）
+const formatFullTime = (time) => {
+  if (!time) return ''
+  const date = new Date(time)
+  return date.toLocaleString('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}
+
+// 获取状态文本
+const getStatusText = (status) => {
+  const statusMap = {
+    'PENDING': '待接受',
+    'ACCEPTED': '已接受',
+    'EXPIRED': '已过期'
+  }
+  return statusMap[status] || status
 }
 
 onMounted(() => {
@@ -326,6 +412,94 @@ onMounted(() => {
 
           .record-reward {
             flex-shrink: 0;
+          }
+        }
+      }
+    }
+  }
+}
+
+// 查看全部对话框样式
+.all-records-list {
+  max-height: 500px;
+  overflow-y: auto;
+
+  .all-record-item {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    border-radius: 8px;
+    transition: all 0.3s;
+
+    &:hover {
+      background: #f9fafb;
+    }
+
+    &:not(:last-child) {
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .record-avatar {
+      flex-shrink: 0;
+    }
+
+    .record-details {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+
+      .record-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        .record-name {
+          font-size: 16px;
+          font-weight: 600;
+          color: #1f2937;
+        }
+      }
+
+      .record-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+
+        .meta-item {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 13px;
+          color: #6b7280;
+
+          .el-icon {
+            font-size: 14px;
+          }
+        }
+      }
+
+      .record-status {
+        .status-badge {
+          display: inline-block;
+          padding: 2px 8px;
+          border-radius: 4px;
+          font-size: 12px;
+          font-weight: 500;
+
+          &.pending {
+            background: #fef3c7;
+            color: #92400e;
+          }
+
+          &.accepted {
+            background: #d1fae5;
+            color: #065f46;
+          }
+
+          &.expired {
+            background: #fee2e2;
+            color: #991b1b;
           }
         }
       }

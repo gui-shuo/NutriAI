@@ -152,12 +152,73 @@ const handleSave = async () => {
       message.error(response.data.message || '保存失败')
     }
   } catch (error) {
-    console.error('保存失败:', error)
-    if (error.response?.data) {
-      message.error(error.response.data.message || '保存失败')
+    console.error('保存失败 - 完整错误对象:', error)
+    console.error('错误响应:', error.response)
+    console.error('错误请求:', error.request)
+    console.error('错误消息:', error.message)
+    
+    // 提取详细的错误信息
+    let errorMessage = '资料修改失败'
+    
+    if (error.response) {
+      // 服务器返回了错误响应
+      const { status, data } = error.response
+      console.log('HTTP状态码:', status)
+      console.log('响应数据:', data)
+      
+      if (data?.message) {
+        // 优先使用后端返回的具体错误信息
+        errorMessage = data.message
+      } else if (data?.msg) {
+        // 有些后端可能使用msg字段
+        errorMessage = data.msg
+      } else if (status === 400) {
+        // 字段验证错误
+        if (data?.errors && typeof data.errors === 'object') {
+          const fieldErrors = []
+          for (const [field, msgs] of Object.entries(data.errors)) {
+            const msgArray = Array.isArray(msgs) ? msgs : [msgs]
+            if (field === 'email') {
+              fieldErrors.push('邮箱格式不正确')
+            } else if (field === 'phone') {
+              fieldErrors.push('手机号格式不正确（应为11位数字）')
+            } else if (field === 'nickname') {
+              fieldErrors.push('昵称' + msgArray.join('，'))
+            } else {
+              fieldErrors.push(msgArray.join('，'))
+            }
+          }
+          errorMessage = fieldErrors.length > 0 ? fieldErrors.join('；') : '输入信息格式不正确'
+        } else {
+          errorMessage = '输入的信息格式不正确，请检查邮箱和手机号格式'
+        }
+      } else if (status === 401) {
+        errorMessage = '登录已过期，请重新登录'
+      } else if (status === 403) {
+        errorMessage = '没有权限修改此信息'
+      } else if (status === 409) {
+        errorMessage = data?.message || '邮箱或手机号已被其他用户使用'
+      } else if (status === 500) {
+        errorMessage = '服务器错误：' + (data?.message || '请稍后重试')
+      } else {
+        errorMessage = `请求失败 (错误代码: ${status})`
+      }
+    } else if (error.request) {
+      // 请求已发送但没有收到响应（网络问题）
+      console.error('网络请求失败，没有收到响应')
+      errorMessage = '网络连接失败，请检查网络后重试'
     } else {
-      message.error('网络错误，请稍后重试')
+      // 请求配置出错或其他错误
+      console.error('请求配置错误或其他异常')
+      if (error.message) {
+        errorMessage = '操作失败：' + error.message
+      } else {
+        errorMessage = '操作失败，请重试'
+      }
     }
+    
+    console.log('最终错误提示:', errorMessage)
+    message.error(errorMessage)
   } finally {
     loading.value = false
   }

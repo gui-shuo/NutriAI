@@ -26,4 +26,9 @@ public interface MemberLevelRepository extends JpaRepository<MemberLevel, Long> 
      * 查找所需成长值小于等于指定值的最高等级
      */
     Optional<MemberLevel> findFirstByGrowthRequiredLessThanEqualOrderByGrowthRequiredDesc(Integer growth);
+    
+    /**
+     * 按等级顺序升序查询所有等级
+     */
+    java.util.List<MemberLevel> findAllByOrderByLevelOrderAsc();
 }

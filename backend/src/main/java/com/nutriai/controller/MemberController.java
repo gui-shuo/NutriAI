@@ -3,8 +3,6 @@ package com.nutriai.controller;
 import com.nutriai.common.ApiResponse;
 import com.nutriai.dto.member.*;
 import com.nutriai.service.MemberService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,9 +14,8 @@ import org.springframework.web.bind.annotation.*;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/member")
+@RequestMapping("/member")
 @RequiredArgsConstructor
-@Tag(name = "会员管理", description = "会员相关API")
 public class MemberController {
     
     private final MemberService memberService;
@@ -27,18 +24,22 @@ public class MemberController {
      * 获取会员信息
      */
     @GetMapping("/info")
-    @Operation(summary = "获取会员信息")
     public ApiResponse<MemberInfoResponse> getMemberInfo(HttpServletRequest httpRequest) {
-        Long userId = getUserIdFromToken(httpRequest);
-        MemberInfoResponse memberInfo = memberService.getMemberInfo(userId);
-        return ApiResponse.success(memberInfo);
+        try {
+            Long userId = getUserIdFromToken(httpRequest);
+            log.info("获取用户{}的会员信息", userId);
+            MemberInfoResponse memberInfo = memberService.getMemberInfo(userId);
+            return ApiResponse.success(memberInfo);
+        } catch (Exception e) {
+            log.error("获取会员信息失败", e);
+            return ApiResponse.error("获取会员信息失败: " + e.getMessage());
+        }
     }
     
     /**
      * 获取成长值记录
      */
     @GetMapping("/growth-records")
-    @Operation(summary = "获取成长值记录")
     public ApiResponse<Page<GrowthRecordResponse>> getGrowthRecords(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -52,7 +53,6 @@ public class MemberController {
      * 生成邀请链接
      */
     @GetMapping("/invitation/generate")
-    @Operation(summary = "生成邀请链接")
     public ApiResponse<GenerateInvitationResponse> generateInvitationLink(HttpServletRequest httpRequest) {
         Long userId = getUserIdFromToken(httpRequest);
         GenerateInvitationResponse response = memberService.generateInvitationLink(userId);
@@ -63,7 +63,6 @@ public class MemberController {
      * 查询邀请记录
      */
     @GetMapping("/invitation/records")
-    @Operation(summary = "查询邀请记录")
     public ApiResponse<Page<InvitationResponse>> getInvitationRecords(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -77,7 +76,6 @@ public class MemberController {
      * 手动升级等级（管理员）
      */
     @PostMapping("/upgrade/{userId}")
-    @Operation(summary = "手动升级等级")
     public ApiResponse<Void> upgradeLevel(@PathVariable Long userId) {
         // 这里应该添加管理员权限检查
         var member = memberService.getMemberInfo(userId);

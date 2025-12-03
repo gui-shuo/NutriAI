@@ -153,17 +153,75 @@ const handleSubmit = async () => {
       message.error(response.data.message || '修改失败')
     }
   } catch (error) {
-    console.error('修改失败:', error)
-    if (error.response?.data) {
-      const errorData = error.response.data
-      if (errorData.code === 40010) {
-        message.error('原密码错误')
+    console.error('密码修改失败 - 完整错误对象:', error)
+    console.error('错误响应:', error.response)
+    console.error('错误请求:', error.request)
+    console.error('错误消息:', error.message)
+    
+    // 提取详细的错误信息
+    let errorMessage = '密码修改失败'
+    
+    if (error.response) {
+      // 服务器返回了错误响应
+      const { status, data } = error.response
+      console.log('HTTP状态码:', status)
+      console.log('响应数据:', data)
+      
+      if (data?.message) {
+        // 优先使用后端返回的具体错误信息
+        errorMessage = data.message
+      } else if (data?.msg) {
+        // 有些后端可能使用msg字段
+        errorMessage = data.msg
+      } else if (data?.code === 40010 || data?.code === '40010') {
+        // 特定业务错误码：原密码错误
+        errorMessage = '原密码不正确，请重新输入'
+      } else if (status === 400) {
+        // 请求参数错误
+        if (data?.errors && typeof data.errors === 'object') {
+          // 如果有字段验证错误
+          const fieldErrors = []
+          for (const [field, msgs] of Object.entries(data.errors)) {
+            const msgArray = Array.isArray(msgs) ? msgs : [msgs]
+            if (field === 'oldPassword') {
+              fieldErrors.push('原密码' + msgArray.join('，'))
+            } else if (field === 'newPassword') {
+              fieldErrors.push('新密码' + msgArray.join('，'))
+            } else if (field === 'confirmPassword') {
+              fieldErrors.push('确认密码' + msgArray.join('，'))
+            } else {
+              fieldErrors.push(msgArray.join('，'))
+            }
+          }
+          errorMessage = fieldErrors.length > 0 ? fieldErrors.join('；') : '密码格式不正确'
+        } else {
+          errorMessage = '密码格式不正确，请检查：密码长度6-20位，必须包含大小写字母和数字'
+        }
+      } else if (status === 401) {
+        errorMessage = '登录已过期，请重新登录'
+      } else if (status === 403) {
+        errorMessage = '没有权限修改密码'
+      } else if (status === 500) {
+        errorMessage = '服务器错误：' + (data?.message || '请稍后重试')
       } else {
-        message.error(errorData.message || '修改失败')
+        errorMessage = `密码修改失败 (错误代码: ${status})`
       }
+    } else if (error.request) {
+      // 请求已发送但没有收到响应（网络问题）
+      console.error('网络请求失败，没有收到响应')
+      errorMessage = '网络连接失败，请检查网络后重试'
     } else {
-      message.error('网络错误，请稍后重试')
+      // 请求配置出错或其他错误
+      console.error('请求配置错误或其他异常')
+      if (error.message) {
+        errorMessage = '操作失败：' + error.message
+      } else {
+        errorMessage = '操作失败，请重试'
+      }
     }
+    
+    console.log('最终错误提示:', errorMessage)
+    message.error(errorMessage)
   } finally {
     loading.value = false
   }

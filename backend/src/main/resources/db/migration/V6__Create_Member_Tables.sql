@@ -2,7 +2,7 @@
 -- 创建时间: 2025-12-03
 
 -- 1. 会员等级配置表
-CREATE TABLE member_levels (
+CREATE TABLE IF NOT EXISTS member_levels (
     id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '等级ID',
     level_code VARCHAR(20) NOT NULL UNIQUE COMMENT '等级代码',
     level_name VARCHAR(50) NOT NULL COMMENT '等级名称',
@@ -16,7 +16,7 @@ CREATE TABLE member_levels (
 ) COMMENT '会员等级配置表';
 
 -- 2. 会员信息表
-CREATE TABLE members (
+CREATE TABLE IF NOT EXISTS members (
     id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '会员ID',
     user_id BIGINT NOT NULL UNIQUE COMMENT '用户ID',
     level_id BIGINT NOT NULL COMMENT '当前等级ID',
@@ -39,7 +39,7 @@ CREATE TABLE members (
 ) COMMENT '会员信息表';
 
 -- 3. 成长值记录表
-CREATE TABLE growth_records (
+CREATE TABLE IF NOT EXISTS growth_records (
     id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '记录ID',
     member_id BIGINT NOT NULL COMMENT '会员ID',
     user_id BIGINT NOT NULL COMMENT '用户ID',
@@ -57,7 +57,7 @@ CREATE TABLE growth_records (
 ) COMMENT '成长值记录表';
 
 -- 4. 邀请记录表
-CREATE TABLE invitations (
+CREATE TABLE IF NOT EXISTS invitations (
     id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '邀请ID',
     inviter_id BIGINT NOT NULL COMMENT '邀请人ID',
     invitee_id BIGINT COMMENT '被邀请人ID',

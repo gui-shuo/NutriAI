@@ -36,19 +36,19 @@ public class FoodRecord {
      * 餐次类型：BREAKFAST(早餐), LUNCH(午餐), DINNER(晚餐), SNACK(加餐)
      */
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(name = "meal_type", nullable = false, length = 20)
     private MealType mealType;
     
     /**
      * 食物名称
      */
-    @Column(nullable = false, length = 100)
+    @Column(name = "food_name", nullable = false, length = 100)
     private String foodName;
     
     /**
      * 食物照片URL
      */
-    @Column(length = 500)
+    @Column(name = "photo_url", length = 500)
     private String photoUrl;
     
     /**
@@ -90,7 +90,7 @@ public class FoodRecord {
     /**
      * 记录日期时间
      */
-    @Column(nullable = false)
+    @Column(name = "record_time", nullable = false)
     private LocalDateTime recordTime;
     
     /**
@@ -103,13 +103,14 @@ public class FoodRecord {
      * 创建时间
      */
     @CreationTimestamp
-    @Column(updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
     
     /**
      * 更新时间
      */
     @UpdateTimestamp
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     
     /**

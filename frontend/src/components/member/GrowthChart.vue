@@ -75,19 +75,43 @@ const growthData = ref([])
 const chartData = computed(() => {
   if (!growthData.value.length) return { dates: [], values: [] }
   
+  // 计算时间范围的起始日期
+  const now = new Date()
+  const daysAgo = parseInt(timeRange.value)
+  const startDate = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000)
+  
+  // 过滤时间范围内的数据
+  const filteredData = growthData.value.filter(record => {
+    const recordDate = new Date(record.createdAt)
+    return recordDate >= startDate
+  })
+  
+  // 按日期分组
+  const dailyGrowthMap = {}
+  filteredData.forEach(record => {
+    const date = new Date(record.createdAt).toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' })
+    dailyGrowthMap[date] = (dailyGrowthMap[date] || 0) + record.growthValue
+  })
+  
+  // 生成日期序列和累计值
   const dates = []
   const values = []
   let cumulativeGrowth = 0
   
-  // 按日期分组并累加
-  growthData.value.forEach(record => {
-    const date = new Date(record.createdAt).toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' })
-    cumulativeGrowth += record.growthValue
+  // 按时间顺序排序
+  const sortedEntries = Object.entries(dailyGrowthMap).sort((a, b) => {
+    const dateA = new Date(a[0])
+    const dateB = new Date(b[0])
+    return dateA - dateB
+  })
+  
+  sortedEntries.forEach(([date, dailyGrowth]) => {
+    cumulativeGrowth += dailyGrowth
     dates.push(date)
     values.push(cumulativeGrowth)
   })
   
-  return { dates: dates.reverse(), values: values.reverse() }
+  return { dates, values }
 })
 
 // 图表配置
@@ -192,21 +216,35 @@ const chartOption = computed(() => ({
   ]
 }))
 
+// 获取过滤后的数据（用于统计）
+const filteredGrowthData = computed(() => {
+  if (!growthData.value.length) return []
+  
+  const now = new Date()
+  const daysAgo = parseInt(timeRange.value)
+  const startDate = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000)
+  
+  return growthData.value.filter(record => {
+    const recordDate = new Date(record.createdAt)
+    return recordDate >= startDate
+  })
+})
+
 // 统计数据
 const totalGained = computed(() => {
-  return growthData.value.reduce((sum, record) => sum + record.growthValue, 0)
+  return filteredGrowthData.value.reduce((sum, record) => sum + record.growthValue, 0)
 })
 
 const avgPerDay = computed(() => {
-  if (!growthData.value.length) return 0
+  if (!filteredGrowthData.value.length) return 0
   return Math.round(totalGained.value / parseInt(timeRange.value))
 })
 
 const maxPerDay = computed(() => {
-  if (!growthData.value.length) return 0
+  if (!filteredGrowthData.value.length) return 0
   // 按日期分组，找出最大值
   const dailyGrowth = {}
-  growthData.value.forEach(record => {
+  filteredGrowthData.value.forEach(record => {
     const date = new Date(record.createdAt).toLocaleDateString()
     dailyGrowth[date] = (dailyGrowth[date] || 0) + record.growthValue
   })
