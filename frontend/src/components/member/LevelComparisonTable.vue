@@ -205,7 +205,8 @@ const showGuide = () => {
     {
       dangerouslyUseHTMLString: true,
       confirmButtonText: '知道了',
-      center: true
+      center: true,
+      customClass: 'custom-message-box'
     }
   )
 }

@@ -187,6 +187,36 @@ public class DietPlanController {
     }
     
     /**
+     * 删除历史记录
+     */
+    @DeleteMapping("/{planId}")
+    public ResponseEntity<ApiResponse<Void>> deleteHistory(
+            @PathVariable String planId,
+            @RequestHeader("Authorization") String authHeader) {
+        
+        try {
+            String token = authHeader.replace("Bearer ", "");
+            Long userId = jwtUtil.getUserIdFromToken(token);
+            
+            boolean deleted = historyService.deleteHistory(planId, userId);
+            
+            if (deleted) {
+                // 同时从缓存中删除
+                planCache.remove(planId);
+                return ResponseEntity.ok(ApiResponse.success("删除成功", null));
+            } else {
+                return ResponseEntity.status(404)
+                        .body(ApiResponse.error(404, "计划不存在"));
+            }
+            
+        } catch (Exception e) {
+            log.error("删除历史记录失败", e);
+            return ResponseEntity.status(500)
+                    .body(ApiResponse.error(500, "删除失败: " + e.getMessage()));
+        }
+    }
+    
+    /**
      * 导出饮食计划为PDF（会员功能）
      */
     @GetMapping("/export-pdf/{planId}")

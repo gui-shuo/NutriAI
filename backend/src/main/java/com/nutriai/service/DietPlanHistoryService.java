@@ -45,4 +45,18 @@ public class DietPlanHistoryService {
                         .build())
                 .orElse(null);
     }
+    
+    /**
+     * 删除历史记录
+     */
+    public boolean deleteHistory(String planId, Long userId) {
+        return historyRepository.findByPlanId(planId)
+                .filter(history -> history.getUserId().equals(userId))
+                .map(history -> {
+                    historyRepository.delete(history);
+                    log.info("用户 {} 删除了饮食计划 {}", userId, planId);
+                    return true;
+                })
+                .orElse(false);
+    }
 }

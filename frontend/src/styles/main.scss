@@ -199,3 +199,68 @@ body {
     opacity: 1;
   }
 }
+
+// MessageBox 位置修复 - 仅针对使用 custom-message-box 类的对话框
+.custom-message-box {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  margin: 0 !important;
+  max-width: 420px !important;
+  z-index: 3000 !important;
+}
+
+// MessageBox 标题栏布局修复
+.custom-message-box .el-message-box__header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 15px 15px 10px !important;
+}
+
+.custom-message-box .el-message-box__title {
+  flex: 1 !important;
+  line-height: 24px !important;
+}
+
+.custom-message-box .el-message-box__headerbtn {
+  position: relative !important;
+  top: auto !important;
+  right: auto !important;
+  margin-left: 10px !important;
+}
+
+// MessageBox 内容区域
+.custom-message-box .el-message-box__content {
+  padding: 20px 15px !important;
+}
+
+// MessageBox 按钮区域
+.custom-message-box .el-message-box__btns {
+  padding: 10px 15px 15px !important;
+}
+
+// 会员对话框样式修复
+.el-dialog.member-dialog {
+  background-color: #ffffff !important;
+  
+  .el-dialog__header {
+    background-color: #ffffff !important;
+    border-bottom: 1px solid #ebeef5 !important;
+  }
+  
+  .el-dialog__body {
+    background-color: #ffffff !important;
+  }
+  
+  .el-dialog__footer {
+    background-color: #ffffff !important;
+    border-top: 1px solid #ebeef5 !important;
+  }
+}
+
+// 确保遮罩层也不透明
+.el-overlay:has(.member-dialog) {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+}

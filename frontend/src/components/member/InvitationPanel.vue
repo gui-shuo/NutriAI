@@ -92,6 +92,7 @@
       title="邀请记录"
       width="600px"
       :close-on-click-modal="false"
+      custom-class="member-dialog"
     >
       <el-skeleton :loading="allLoading" animated :rows="5">
         <div v-if="allRecords.length > 0" class="all-records-list">

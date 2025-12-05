@@ -210,9 +210,9 @@ const regenerate = (message) => {
 // 收藏/取消收藏
 const toggleFavorite = (message) => {
   if (message.favorite) {
-    emit('unfavorite', message)
+    emit('unfavorite', message.id)
   } else {
-    emit('favorite', message)
+    emit('favorite', message.id)
   }
 }
 

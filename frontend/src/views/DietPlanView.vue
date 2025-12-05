@@ -239,13 +239,24 @@
             <el-card 
               class="history-item" 
               shadow="hover"
-              @click="loadHistoryDetail(item.planId)"
             >
-              <h4>{{ item.title }}</h4>
-              <p>
-                <el-tag size="small" type="primary">{{ item.days }}天</el-tag>
-                <el-tag size="small" style="margin-left: 8px">{{ getGoalText(item.goal) }}</el-tag>
-              </p>
+              <div class="history-item-content" @click="loadHistoryDetail(item.planId)">
+                <h4>{{ item.title }}</h4>
+                <p>
+                  <el-tag size="small" type="primary">{{ item.days }}天</el-tag>
+                  <el-tag size="small" style="margin-left: 8px">{{ getGoalText(item.goal) }}</el-tag>
+                </p>
+              </div>
+              <div class="history-item-actions">
+                <el-button
+                  type="danger"
+                  :icon="Delete"
+                  size="small"
+                  circle
+                  @click.stop="confirmDeleteHistory(item.planId)"
+                  title="删除记录"
+                />
+              </div>
             </el-card>
           </el-timeline-item>
         </el-timeline>
@@ -268,7 +279,8 @@ import {
   Loading,
   Clock,
   ArrowLeft,
-  Close
+  Close,
+  Delete
 } from '@element-plus/icons-vue'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
@@ -631,8 +643,53 @@ const handleExportPdf = async () => {
 
 // 重置
 const handleReset = () => {
-  generatedPlan.value = null
-  progress.value = 0
+  ElMessageBox.confirm(
+    '确定要重新设置吗？当前的计划内容将被清空。',
+    '重新设置',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+      center: true,
+      customClass: 'custom-message-box'
+    }
+  ).then(() => {
+    // 清空生成的计划
+    generatedPlan.value = null
+    progress.value = 0
+    isGenerating.value = false
+    currentTaskId.value = null
+    
+    // 手动重置表单数据到初始值
+    Object.assign(formData, {
+      days: 7,
+      goal: 'maintain',
+      exerciseLevel: 'medium',
+      gender: null,
+      age: null,
+      height: null,
+      weight: null,
+      dailyCalories: null,
+      preferences: '',
+      allergies: ''
+    })
+    
+    // 清除表单验证状态
+    if (formRef.value) {
+      formRef.value.clearValidate()
+    }
+    
+    // 清空localStorage
+    localStorage.removeItem('currentTaskId')
+    localStorage.removeItem('generatingPlan')
+    
+    ElMessage.success('已重置')
+    
+    // 滚动到顶部
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }).catch(() => {
+    // 取消重置
+  })
 }
 
 // 关闭详细计划
@@ -706,6 +763,55 @@ const loadHistoryDetail = async (planId) => {
   } catch (error) {
     console.error('加载历史详情失败:', error)
     ElMessage.error('加载失败')
+  }
+}
+
+// 确认删除历史记录
+const confirmDeleteHistory = (planId) => {
+  ElMessageBox.confirm(
+    '确定要删除这条饮食计划记录吗？',
+    '删除确认',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+      center: true,
+      customClass: 'custom-message-box'
+    }
+  ).then(() => {
+    deleteHistory(planId)
+  }).catch(() => {
+    // 取消删除
+  })
+}
+
+// 删除历史记录
+const deleteHistory = async (planId) => {
+  try {
+    const token = localStorage.getItem('token')
+    const response = await fetch(
+      `http://localhost:8080/api/diet-plan/${planId}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    )
+    
+    const data = await response.json()
+    
+    if (data.code === 200) {
+      ElMessage.success('删除成功')
+      // 重新加载历史记录
+      showHistory()
+    } else {
+      throw new Error(data.message)
+    }
+  } catch (error) {
+    console.error('删除失败:', error)
+    ElMessage.error('删除失败: ' + error.message)
   }
 }
 
@@ -979,8 +1085,24 @@ onBeforeUnmount(() => {
 
 /* 历史记录样式 */
 .history-item {
-  cursor: pointer;
   transition: all 0.3s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.history-item-content {
+  flex: 1;
+  cursor: pointer;
+}
+
+.history-item-content:hover {
+  color: #409eff;
+}
+
+.history-item-actions {
+  flex-shrink: 0;
 }
 
 .history-item:hover {

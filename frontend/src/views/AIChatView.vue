@@ -188,11 +188,13 @@ const chatInputRef = ref(null)
 
 // 状态
 const messages = ref([])
+const historyList = ref([])
+const favoritesList = ref([]) // 收藏列表
+const currentHistoryId = ref(null) // 当前会话ID
 const isLoading = ref(false)
-const showSettings = ref(false)
 const showHistory = ref(false)
 const showFavorites = ref(false)
-const historyList = ref([])
+const showSettings = ref(false)
 
 // 设置
 const settings = reactive({
@@ -203,9 +205,9 @@ const settings = reactive({
   autoSave: true
 })
 
-// 收藏消息计算属性
+// 收藏消息计算属性（从收藏列表中获取）
 const favoriteMessages = computed(() => {
-  return messages.value.filter(m => m.favorite && m.role === 'assistant')
+  return favoritesList.value
 })
 
 // 生成消息ID
@@ -507,7 +509,7 @@ const handleFileSelect = (file) => {
   ElMessage.success(`文件 ${file.name} 已选择`)
 }
 
-// 清空历史
+// 清空历史（开启新对话）
 const handleClearHistory = async () => {
   if (messages.value.length === 0) {
     ElMessage.info('当前没有对话记录')
@@ -516,10 +518,10 @@ const handleClearHistory = async () => {
 
   try {
     await ElMessageBox.confirm(
-      '确定要清空所有对话记录吗？删除后将无法恢复。',
-      '确认删除',
+      '确定要清空当前对话吗？这将开启一个新的对话。',
+      '开启新对话',
       {
-        confirmButtonText: '确认删除',
+        confirmButtonText: '确认',
         cancelButtonText: '取消',
         type: 'warning',
         customClass: 'ai-chat-delete-confirm',
@@ -531,13 +533,15 @@ const handleClearHistory = async () => {
       }
     )
 
-    // 先保存到历史记录
+    // 先保存当前对话到历史记录
     if (settings.autoSave && messages.value.length > 0) {
-      saveCurrentConversation()
+      await saveHistoryToDatabase()
     }
 
+    // 清空消息和会话ID，开启新对话
     messages.value = []
-    ElMessage.success('对话记录已清空')
+    currentHistoryId.value = null
+    ElMessage.success('已开启新对话')
   } catch {
     // 用户取消操作
   }
@@ -601,8 +605,9 @@ const handleShowHistory = () => {
 }
 
 // 显示收藏
-const handleShowFavorites = () => {
+const handleShowFavorites = async () => {
   console.log('⭐ 打开收藏列表')
+  await loadFavoritesList()
   showFavorites.value = true
 }
 
@@ -644,22 +649,65 @@ const loadSettings = () => {
 }
 
 // 收藏消息
-const handleFavorite = (message) => {
-  const index = messages.value.findIndex(m => m.id === message.id)
+const handleFavorite = async (messageId) => {
+  const index = messages.value.findIndex(m => m.id === messageId)
   if (index > -1) {
-    messages.value[index].favorite = true
-    ElMessage.success('已收藏')
-    saveToLocalStorage()
+    const message = messages.value[index]
+    
+    try {
+      const token = localStorage.getItem('token')
+      const response = await fetch('http://localhost:8080/api/ai-chat/favorite', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          messageContent: message.content,
+          messageRole: message.role
+        })
+      })
+      
+      const data = await response.json()
+      if (data.code === 200) {
+        messages.value[index].favorite = true
+        messages.value[index].favoriteId = data.data.id
+        ElMessage.success('已收藏')
+      }
+    } catch (error) {
+      console.error('收藏失败:', error)
+      ElMessage.error('收藏失败')
+    }
   }
 }
 
 // 取消收藏
-const handleUnfavorite = (message) => {
-  const index = messages.value.findIndex(m => m.id === message.id)
-  if (index > -1) {
-    messages.value[index].favorite = false
-    ElMessage.success('已取消收藏')
-    saveToLocalStorage()
+const handleUnfavorite = async (msg) => {
+  try {
+    const token = localStorage.getItem('token')
+    const favoriteId = msg.id
+    
+    const response = await fetch(
+      `http://localhost:8080/api/ai-chat/favorite/${favoriteId}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    )
+    
+    const data = await response.json()
+    if (data.code === 200) {
+      ElMessage.success('已取消收藏')
+      // 重新加载收藏列表
+      await loadFavoritesList()
+    } else {
+      ElMessage.error('取消收藏失败')
+    }
+  } catch (error) {
+    console.error('取消收藏失败:', error)
+    ElMessage.error('取消收藏失败')
   }
 }
 
@@ -708,67 +756,119 @@ const generateConversationTitle = (firstMessage) => {
   return firstMessage.substring(0, 30) + (firstMessage.length > 30 ? '...' : '')
 }
 
-// 保存到本地存储
-const saveToLocalStorage = () => {
-  if (settings.autoSave && messages.value.length > 0) {
-    try {
-      localStorage.setItem('currentChat', JSON.stringify(messages.value))
-    } catch (error) {
-      console.error('保存失败:', error)
-    }
-  }
-}
-
-// 从本地存储加载
-const loadFromLocalStorage = () => {
+// 保存历史记录到数据库（一个会话只保存/更新一次）
+const saveHistoryToDatabase = async () => {
+  if (messages.value.length === 0) return
+  
   try {
-    const saved = localStorage.getItem('currentChat')
-    if (saved) {
-      messages.value = JSON.parse(saved)
+    const token = localStorage.getItem('token')
+    if (!token) return
+    
+    // 生成标题（取第一条用户消息的前20个字符）
+    const firstUserMessage = messages.value.find(m => m.role === 'user')
+    const title = firstUserMessage ? 
+      (firstUserMessage.content.substring(0, 20) + (firstUserMessage.content.length > 20 ? '...' : '')) :
+      '新对话'
+    
+    // 如果当前会话已有ID，则更新；否则创建新记录
+    const response = await fetch('http://localhost:8080/api/ai-chat/history', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id: currentHistoryId.value, // 如果有ID则更新
+        title: title,
+        messages: JSON.stringify(messages.value)
+      })
+    })
+    
+    const data = await response.json()
+    if (data.code === 200) {
+      // 保存会话ID，后续更新使用
+      if (!currentHistoryId.value) {
+        currentHistoryId.value = data.data.id
+      }
+      console.log('✅ 历史记录已保存到数据库', currentHistoryId.value)
     }
   } catch (error) {
-    console.error('加载失败:', error)
+    console.error('保存历史记录失败:', error)
   }
 }
 
-// 保存当前对话
-const saveCurrentConversation = () => {
-  if (messages.value.length === 0) return
-
-  const firstUserMessage = messages.value.find(m => m.role === 'user')
-  const conversation = {
-    id: `conv_${Date.now()}`,
-    title: generateConversationTitle(firstUserMessage?.content),
-    preview: firstUserMessage?.content?.substring(0, 50) || '',
-    messages: JSON.parse(JSON.stringify(messages.value)),
-    timestamp: Date.now()
-  }
-
-  const history = JSON.parse(localStorage.getItem('chatHistory') || '[]')
-  history.unshift(conversation)
-  
-  // 最多保存50条历史记录
-  if (history.length > 50) {
-    history.length = 50
-  }
-  
-  localStorage.setItem('chatHistory', JSON.stringify(history))
+// 保存当前对话到历史（已改为自动保存到数据库）
+const saveToHistory = async () => {
+  await saveHistoryToDatabase()
+  // 重新加载历史记录列表
+  await loadHistoryList()
 }
 
 // 加载历史记录列表
-const loadHistoryList = () => {
+const loadHistoryList = async () => {
   try {
-    const history = JSON.parse(localStorage.getItem('chatHistory') || '[]')
-    historyList.value = history
+    const token = localStorage.getItem('token')
+    if (!token) return
+    
+    const response = await fetch(
+      'http://localhost:8080/api/ai-chat/history/all',
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    )
+    
+    const data = await response.json()
+    if (data.code === 200) {
+      // 转换数据格式
+      historyList.value = data.data.map(item => ({
+        id: item.id.toString(),
+        title: item.title,
+        messages: JSON.parse(item.messages),
+        timestamp: new Date(item.createdAt).getTime()
+      }))
+    }
   } catch (error) {
     console.error('加载历史记录失败:', error)
-    historyList.value = []
+  }
+}
+
+// 加载收藏列表
+const loadFavoritesList = async () => {
+  try {
+    const token = localStorage.getItem('token')
+    if (!token) return
+    
+    const response = await fetch(
+      'http://localhost:8080/api/ai-chat/favorite/all',
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    )
+    
+    const data = await response.json()
+    if (data.code === 200) {
+      // 转换数据格式
+      favoritesList.value = data.data.map(item => ({
+        id: item.id.toString(),
+        content: item.messageContent,
+        role: item.messageRole,
+        timestamp: new Date(item.createdAt).getTime(),
+        favorite: true
+      }))
+    }
+  } catch (error) {
+    console.error('加载收藏列表失败:', error)
   }
 }
 
 // 加载历史对话
 const loadHistoryConversation = (item) => {
   messages.value = JSON.parse(JSON.stringify(item.messages))
+  currentHistoryId.value = item.id // 设置当前会话ID
   showHistory.value = false
   ElMessage.success('历史记录已加载')
 }
@@ -779,16 +879,27 @@ const deleteHistory = async (id) => {
     await ElMessageBox.confirm('确定要删除这条历史记录吗？', '确认删除', {
       confirmButtonText: '确认',
       cancelButtonText: '取消',
-      type: 'warning'
+      type: 'warning',
+      customClass: 'ai-chat-delete-confirm'
     })
 
-    const history = JSON.parse(localStorage.getItem('chatHistory') || '[]')
-    const index = history.findIndex(h => h.id === id)
-    if (index > -1) {
-      history.splice(index, 1)
-      localStorage.setItem('chatHistory', JSON.stringify(history))
-      loadHistoryList()
+    const token = localStorage.getItem('token')
+    const response = await fetch(
+      `http://localhost:8080/api/ai-chat/history/${id}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    )
+    
+    const data = await response.json()
+    if (data.code === 200) {
       ElMessage.success('已删除')
+      await loadHistoryList()
+    } else {
+      ElMessage.error('删除失败')
     }
   } catch {
     // 用户取消
@@ -798,7 +909,7 @@ const deleteHistory = async (id) => {
 // 初始化
 onMounted(() => {
   loadSettings()
-  loadFromLocalStorage()
+  // loadFromLocalStorage() // 注释掉：每次打开都是全新对话，不加载历史
   loadHistoryList()
 })
 
@@ -825,14 +936,23 @@ const handleKeydown = (e) => {
   }
 }
 
-// 监听消息变化，自动保存
+// 监听消息变化，自动保存到数据库（防抖）
 watch(
   () => messages.value,
   () => {
-    saveToLocalStorage()
+    // 延迟保存，避免频繁调用API
+    if (messages.value.length > 0) {
+      clearTimeout(saveTimer.value)
+      saveTimer.value = setTimeout(() => {
+        saveHistoryToDatabase()
+      }, 5000) // 5秒后保存（延长时间，减少保存频率）
+    }
   },
   { deep: true }
 )
+
+// 保存定时器
+const saveTimer = ref(null)
 
 onMounted(() => {
   document.addEventListener('keydown', handleKeydown)
@@ -841,9 +961,14 @@ onMounted(() => {
 onUnmounted(() => {
   document.removeEventListener('keydown', handleKeydown)
   
-  // 保存当前对话
+  // 清除保存定时器
+  if (saveTimer.value) {
+    clearTimeout(saveTimer.value)
+  }
+  
+  // 保存当前对话到数据库
   if (settings.autoSave && messages.value.length > 0) {
-    saveCurrentConversation()
+    saveHistoryToDatabase()
   }
   
   // 不再在组件卸载时清理遮罩层，让 Element Plus 自己管理
@@ -1038,11 +1163,12 @@ onUnmounted(() => {
   
   .el-message-box__header {
     position: relative !important;
-    padding: 20px 50px 16px 20px !important;
+    padding: 20px 20px 16px 20px !important;
     background: #ffffff !important;
     border-bottom: none !important;
     display: flex !important;
     align-items: center !important;
+    justify-content: space-between !important;
   }
   
   .el-message-box__title {
@@ -1050,17 +1176,18 @@ onUnmounted(() => {
     font-weight: 600 !important;
     color: #1f2937 !important;
     flex: 1 !important;
-    line-height: 1.4 !important;
+    line-height: 24px !important;
   }
   
   .el-message-box__headerbtn {
-    position: absolute !important;
-    top: 20px !important;
-    right: 20px !important;
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
     width: 20px !important;
     height: 20px !important;
     padding: 0 !important;
-    margin: 0 !important;
+    margin: 0 0 0 10px !important;
+    flex-shrink: 0 !important;
     
     .el-message-box__close {
       color: rgba(0, 0, 0, 0.45) !important;
