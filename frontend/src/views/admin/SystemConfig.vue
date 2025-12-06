@@ -6,9 +6,11 @@
     <el-card class="category-card">
       <el-tabs v-model="activeCategory" @tab-change="handleCategoryChange">
         <el-tab-pane label="全部配置" name="all" />
-        <el-tab-pane label="AI配置" name="ai" />
-        <el-tab-pane label="系统配置" name="system" />
-        <el-tab-pane label="会员配置" name="member" />
+        <el-tab-pane label="AI配置" name="AI" />
+        <el-tab-pane label="系统配置" name="系统" />
+        <el-tab-pane label="用户配置" name="用户" />
+        <el-tab-pane label="安全配置" name="安全" />
+        <el-tab-pane label="通知配置" name="通知" />
       </el-tabs>
     </el-card>
 

@@ -55,6 +55,31 @@ public class AdminController {
     }
     
     /**
+     * 获取数据看板总览（别名，兼容前端）
+     */
+    @GetMapping("/dashboard/overview")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<ApiResponse<DashboardStatsDTO>> getDashboardOverview() {
+        return getDashboardStats();
+    }
+    
+    /**
+     * 获取会员分布
+     */
+    @GetMapping("/dashboard/member-distribution")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    public ResponseEntity<ApiResponse<DashboardStatsDTO.MemberStats>> getMemberDistribution() {
+        try {
+            DashboardStatsDTO stats = dashboardService.getDashboardStats();
+            return ResponseEntity.ok(ApiResponse.success("获取成功", stats.getMemberStats()));
+        } catch (Exception e) {
+            log.error("获取会员分布失败", e);
+            return ResponseEntity.status(500)
+                    .body(ApiResponse.error(500, "获取失败: " + e.getMessage()));
+        }
+    }
+    
+    /**
      * 获取用户增长趋势
      */
     @GetMapping("/dashboard/user-growth")

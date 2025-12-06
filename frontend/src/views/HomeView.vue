@@ -90,7 +90,24 @@
     <!-- 页脚 -->
     <footer class="footer">
       <div class="container">
-        <p>&copy; 2025 {{ siteName }}. All rights reserved.</p>
+        <div class="footer-content">
+          <div class="footer-info">
+            <p>{{ getConfig('system.copyright_text', `© 2025 ${siteName}. All rights reserved.`) }}</p>
+            <p v-if="getConfig('system.icp_number')" class="icp-number">
+              {{ getConfig('system.icp_number') }}
+            </p>
+          </div>
+          <div class="footer-contact">
+            <p v-if="getConfig('system.contact_email')">
+              <el-icon><Message /></el-icon>
+              {{ getConfig('system.contact_email') }}
+            </p>
+            <p v-if="getConfig('system.support_phone')">
+              <el-icon><Phone /></el-icon>
+              {{ getConfig('system.support_phone') }}
+            </p>
+          </div>
+        </div>
       </div>
     </footer>
   </div>
@@ -101,7 +118,7 @@ import { computed, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { ElMessage as message } from 'element-plus'
-import { Bell, ArrowDown, User, ChatDotRound, Document, Trophy, Calendar, Camera } from '@element-plus/icons-vue'
+import { Bell, ArrowDown, User, ChatDotRound, Document, Trophy, Calendar, Camera, Message, Phone } from '@element-plus/icons-vue'
 import { usePublicConfig } from '@/composables/usePublicConfig'
 
 const router = useRouter()
@@ -329,9 +346,41 @@ const goToFeature = (feature) => {
 .footer {
   background: #f8fafc;
   padding: 32px 20px;
-  text-align: center;
   color: #64748b;
   border-top: 1px solid #e2e8f0;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-info {
+  text-align: left;
+}
+
+.footer-info p {
+  margin: 4px 0;
+}
+
+.icp-number {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.footer-contact {
+  text-align: right;
+}
+
+.footer-contact p {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0;
+  justify-content: flex-end;
 }
 
 /* 响应式 */
@@ -342,6 +391,21 @@ const goToFeature = (feature) => {
 
   .hero-subtitle {
     font-size: 16px;
+  }
+  
+  .footer-content {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+  
+  .footer-info,
+  .footer-contact {
+    text-align: center;
+  }
+  
+  .footer-contact p {
+    justify-content: center;
   }
 
   .features-grid {

@@ -67,6 +67,56 @@ public class ConfigOptionsService {
                 .build());
         
         options.add(ConfigOptionDTO.builder()
+                .key("system.site_description")
+                .name("网站描述")
+                .description("网站的简短描述")
+                .category("系统")
+                .valueType("string")
+                .defaultValue("智能营养分析 · 个性化饮食方案 · 健康管理")
+                .required(false)
+                .build());
+        
+        options.add(ConfigOptionDTO.builder()
+                .key("system.contact_email")
+                .name("联系邮箱")
+                .description("客服联系邮箱")
+                .category("系统")
+                .valueType("string")
+                .defaultValue("support@nutriai.com")
+                .required(false)
+                .build());
+        
+        options.add(ConfigOptionDTO.builder()
+                .key("system.support_phone")
+                .name("客服电话")
+                .description("客服联系电话")
+                .category("系统")
+                .valueType("string")
+                .defaultValue("400-123-4567")
+                .required(false)
+                .build());
+        
+        options.add(ConfigOptionDTO.builder()
+                .key("system.copyright_text")
+                .name("版权信息")
+                .description("页脚显示的版权信息")
+                .category("系统")
+                .valueType("string")
+                .defaultValue("© 2025 AI健康饮食规划助手. All rights reserved.")
+                .required(false)
+                .build());
+        
+        options.add(ConfigOptionDTO.builder()
+                .key("system.icp_number")
+                .name("ICP备案号")
+                .description("网站ICP备案号")
+                .category("系统")
+                .valueType("string")
+                .defaultValue("")
+                .required(false)
+                .build());
+        
+        options.add(ConfigOptionDTO.builder()
                 .key("system.maintenance_mode")
                 .name("维护模式")
                 .description("是否开启系统维护模式")
@@ -87,6 +137,20 @@ public class ConfigOptionsService {
                 .category("系统")
                 .valueType("number")
                 .defaultValue("10")
+                .required(true)
+                .build());
+        
+        options.add(ConfigOptionDTO.builder()
+                .key("system.enable_registration")
+                .name("开放注册")
+                .description("是否允许新用户注册")
+                .category("系统")
+                .valueType("select")
+                .options(Arrays.asList(
+                        ConfigOptionDTO.OptionValue.builder().label("开启").value("true").build(),
+                        ConfigOptionDTO.OptionValue.builder().label("关闭").value("false").build()
+                ))
+                .defaultValue("true")
                 .required(true)
                 .build());
         
@@ -124,6 +188,30 @@ public class ConfigOptionsService {
                 .category("用户")
                 .valueType("number")
                 .defaultValue("30")
+                .required(true)
+                .build());
+        
+        options.add(ConfigOptionDTO.builder()
+                .key("user.daily_ai_calls_limit")
+                .name("每日AI调用限制")
+                .description("免费用户每日AI调用次数限制")
+                .category("用户")
+                .valueType("number")
+                .defaultValue("20")
+                .required(true)
+                .build());
+        
+        options.add(ConfigOptionDTO.builder()
+                .key("user.enable_email_verification")
+                .name("邮箱验证")
+                .description("是否要求用户验证邮箱")
+                .category("用户")
+                .valueType("select")
+                .options(Arrays.asList(
+                        ConfigOptionDTO.OptionValue.builder().label("开启").value("true").build(),
+                        ConfigOptionDTO.OptionValue.builder().label("关闭").value("false").build()
+                ))
+                .defaultValue("false")
                 .required(true)
                 .build());
         

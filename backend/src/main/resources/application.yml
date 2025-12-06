@@ -145,3 +145,12 @@ baidu:
     app-id: ${BAIDU_APP_ID}
     api-key: ${BAIDU_API_KEY}
     secret-key: ${BAIDU_SECRET_KEY}
+
+# API限流配置
+rate-limit:
+  enabled: true
+  default-rate: 100    # 默认限流：每秒100个请求
+  api-rate: 50         # API限流：每秒50个请求
+  ai-rate: 10          # AI接口限流：每秒10个请求
+  login-rate: 5        # 登录接口限流：每分钟5个请求
+  window-seconds: 60   # 限流时间窗口（秒）

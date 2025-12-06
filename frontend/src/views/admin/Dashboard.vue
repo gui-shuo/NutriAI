@@ -138,7 +138,27 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { User, ChatDotRound, Cpu, TrendCharts } from '@element-plus/icons-vue'
-import * as echarts from 'echarts'
+// 按需导入ECharts组件
+import * as echarts from 'echarts/core'
+import { LineChart, PieChart } from 'echarts/charts'
+import {
+  TitleComponent,
+  TooltipComponent,
+  GridComponent,
+  LegendComponent
+} from 'echarts/components'
+import { CanvasRenderer } from 'echarts/renderers'
+
+// 注册必需的组件
+echarts.use([
+  TitleComponent,
+  TooltipComponent,
+  GridComponent,
+  LegendComponent,
+  LineChart,
+  PieChart,
+  CanvasRenderer
+])
 
 const stats = ref({
   userStats: {

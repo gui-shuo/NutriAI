@@ -38,6 +38,22 @@ public class AnnouncementController {
     }
     
     /**
+     * 获取活动公告列表（不分页）
+     */
+    @GetMapping("/active")
+    public ResponseEntity<ApiResponse<Page<SystemAnnouncementDTO>>> getActiveAnnouncements() {
+        try {
+            // 默认获取前10条活动公告
+            Page<SystemAnnouncementDTO> announcements = announcementService.getPublicAnnouncements(1, 10);
+            return ResponseEntity.ok(ApiResponse.success("获取成功", announcements));
+        } catch (Exception e) {
+            log.error("获取活动公告失败", e);
+            return ResponseEntity.status(500)
+                    .body(ApiResponse.error(500, "获取失败: " + e.getMessage()));
+        }
+    }
+    
+    /**
      * 获取公告详情
      */
     @GetMapping("/{id}")
