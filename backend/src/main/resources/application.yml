@@ -142,9 +142,9 @@ nutriai:
 # 百度AI配置
 baidu:
   ai:
-    app-id: ${BAIDU_APP_ID}
-    api-key: ${BAIDU_API_KEY}
-    secret-key: ${BAIDU_SECRET_KEY}
+    app-id: ${BAIDU_APP_ID:}
+    api-key: ${BAIDU_API_KEY:}
+    secret-key: ${BAIDU_SECRET_KEY:}
 
 # API限流配置
 rate-limit:
