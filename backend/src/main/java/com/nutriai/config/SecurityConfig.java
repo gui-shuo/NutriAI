@@ -51,7 +51,10 @@ public class SecurityConfig {
                         // 公开接口（不需要认证）
                         .requestMatchers(
                                 "/auth/**",
+                                "/health",
                                 "/api/health",
+                                "/doc",
+                                "/doc/**",
                                 "/error",
                                 "/uploads/**",
                                 "/ws/**",  // WebSocket端点（WebSocket自己会验证token）
