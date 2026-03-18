@@ -9,7 +9,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/nutriai?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
     username: root
-    password: ${DB_PASSWORD:root}
+    password: ${DB_PASSWORD:123456}
     hikari:
       maximum-pool-size: 20
       minimum-idle: 5
@@ -73,8 +73,8 @@ jwt:
 
 # 通义千问API配置
 tongyi:
-  api-key: ${TONGYI_API_KEY:}
-  model: qwen-max
+  api-key: ${TONGYI_API_KEY:sk-3b56c30253714a34988ca12176481809}
+  model: qwen3.5-flash
   max-tokens: 2000
   temperature: 0.7
   top-p: 0.9
