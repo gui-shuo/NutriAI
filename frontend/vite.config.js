@@ -98,6 +98,7 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
+        silenceDeprecations: ['legacy-js-api'],
         // 使用@use替代@import，不再需要additionalData
         // additionalData: `@import "@/styles/variables.scss";`
       }

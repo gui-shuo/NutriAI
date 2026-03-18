@@ -78,9 +78,9 @@
         </el-form-item>
         <el-form-item label="类型" prop="type">
           <el-radio-group v-model="editForm.type">
-            <el-radio label="info">通知</el-radio>
-            <el-radio label="warning">警告</el-radio>
-            <el-radio label="error">错误</el-radio>
+            <el-radio value="info">通知</el-radio>
+            <el-radio value="warning">警告</el-radio>
+            <el-radio value="error">错误</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="优先级" prop="priority">

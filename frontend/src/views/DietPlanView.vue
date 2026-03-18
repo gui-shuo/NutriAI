@@ -50,8 +50,8 @@
             
             <el-form-item label="计划天数" prop="days" required>
               <el-radio-group v-model="formData.days">
-                <el-radio-button :label="7">7天计划</el-radio-button>
-                <el-radio-button :label="14">14天计划</el-radio-button>
+                <el-radio-button :value="7">7天计划</el-radio-button>
+                <el-radio-button :value="14">14天计划</el-radio-button>
               </el-radio-group>
             </el-form-item>
 
@@ -80,8 +80,8 @@
               <el-col :span="12">
                 <el-form-item label="性别">
                   <el-radio-group v-model="formData.gender">
-                    <el-radio label="male">男</el-radio>
-                    <el-radio label="female">女</el-radio>
+                    <el-radio value="male">男</el-radio>
+                    <el-radio value="female">女</el-radio>
                   </el-radio-group>
                 </el-form-item>
               </el-col>

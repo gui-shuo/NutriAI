@@ -73,8 +73,8 @@
             <div class="card-header">
               <span>用户增长趋势</span>
               <el-radio-group v-model="userGrowthDays" size="small" @change="loadUserGrowth">
-                <el-radio-button :label="7">7天</el-radio-button>
-                <el-radio-button :label="30">30天</el-radio-button>
+                <el-radio-button :value="7">7天</el-radio-button>
+                <el-radio-button :value="30">30天</el-radio-button>
               </el-radio-group>
             </div>
           </template>
@@ -88,8 +88,8 @@
             <div class="card-header">
               <span>AI使用趋势</span>
               <el-radio-group v-model="aiUsageDays" size="small" @change="loadAIUsage">
-                <el-radio-button :label="7">7天</el-radio-button>
-                <el-radio-button :label="30">30天</el-radio-button>
+                <el-radio-button :value="7">7天</el-radio-button>
+                <el-radio-button :value="30">30天</el-radio-button>
               </el-radio-group>
             </div>
           </template>

@@ -18,7 +18,7 @@
           <el-radio-button
             v-for="type in mealTypeList"
             :key="type.value"
-            :label="type.value"
+            :value="type.value"
           >
             {{ type.label }}
           </el-radio-button>

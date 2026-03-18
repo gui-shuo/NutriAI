@@ -22,9 +22,9 @@
         <div class="control-item">
           <span>尺寸：</span>
           <el-radio-group v-model="cropSize" @change="updateCanvas">
-            <el-radio-button :label="200">200x200</el-radio-button>
-            <el-radio-button :label="300">300x300</el-radio-button>
-            <el-radio-button :label="400">400x400</el-radio-button>
+            <el-radio-button :value="200">200x200</el-radio-button>
+            <el-radio-button :value="300">300x300</el-radio-button>
+            <el-radio-button :value="400">400x400</el-radio-button>
           </el-radio-group>
         </div>
 
