@@ -12,7 +12,7 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p${MYSQL_ROOT_PASSWORD}"]
+      test: ["CMD-SHELL", "MYSQL_PWD=$$MYSQL_ROOT_PASSWORD mysqladmin ping -h 127.0.0.1 -uroot --silent"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -26,7 +26,7 @@ services:
     volumes:
       - redis-data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      test: ["CMD-SHELL", "REDISCLI_AUTH=$$REDIS_PASSWORD redis-cli ping | grep -q PONG"]
       interval: 10s
       timeout: 3s
       retries: 10
@@ -55,7 +55,8 @@ services:
       BAIDU_AI_APP_ID: ${BAIDU_AI_APP_ID}
       BAIDU_AI_API_KEY: ${BAIDU_AI_API_KEY}
       BAIDU_AI_SECRET_KEY: ${BAIDU_AI_SECRET_KEY}
-      JAVA_OPTS: -Xms256m -Xmx512m -XX:+UseG1GC -XX:MaxGCPauseMillis=200
+      # 针对 2GiB 服务器，限制后端堆内存，给 MySQL/Redis 与系统预留空间
+      JAVA_OPTS: -Xms256m -Xmx384m -XX:+UseG1GC -XX:MaxGCPauseMillis=200
     ports:
       - "8080:8080"
     networks:
