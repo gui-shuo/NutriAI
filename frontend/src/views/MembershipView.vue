@@ -1,6 +1,11 @@
 <template>
   <div class="membership-container">
-    <el-button :icon="ArrowLeft" @click="goToHome" text style="margin-bottom: 16px">
+    <el-button
+      :icon="ArrowLeft"
+      text
+      style="margin-bottom: 16px"
+      @click="goToHome"
+    >
       返回首页
     </el-button>
     <h1>会员中心</h1>

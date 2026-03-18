@@ -3,22 +3,58 @@
     <!-- 顶部标题栏 -->
     <div class="chat-header">
       <div class="header-left">
-        <el-button :icon="ArrowLeft" @click="goToHome" text>
+        <el-button
+          :icon="ArrowLeft"
+          text
+          @click="goToHome"
+        >
           返回首页
         </el-button>
         <el-divider direction="vertical" />
         <h1 class="header-title">
-          <el-icon class="title-icon"><ChatDotRound /></el-icon>
+          <el-icon class="title-icon">
+            <ChatDotRound />
+          </el-icon>
           AI营养师
         </h1>
-        <el-tag size="small" effect="plain">智能对话</el-tag>
+        <el-tag
+          size="small"
+          effect="plain"
+        >
+          智能对话
+        </el-tag>
       </div>
       <div class="header-right">
-        <el-button :icon="FolderOpened" circle @click.stop="handleShowHistory" title="历史记录" />
-        <el-button :icon="Star" circle @click.stop="handleShowFavorites" title="收藏" />
-        <el-button :icon="Delete" circle @click.stop="handleClearHistory" title="清空对话" />
-        <el-button :icon="Download" circle @click.stop="handleExport" title="导出对话" />
-        <el-button :icon="Setting" circle @click.stop="handleShowSettings" title="设置" />
+        <el-button
+          :icon="FolderOpened"
+          circle
+          title="历史记录"
+          @click.stop="handleShowHistory"
+        />
+        <el-button
+          :icon="Star"
+          circle
+          title="收藏"
+          @click.stop="handleShowFavorites"
+        />
+        <el-button
+          :icon="Delete"
+          circle
+          title="清空对话"
+          @click.stop="handleClearHistory"
+        />
+        <el-button
+          :icon="Download"
+          circle
+          title="导出对话"
+          @click.stop="handleExport"
+        />
+        <el-button
+          :icon="Setting"
+          circle
+          title="设置"
+          @click.stop="handleShowSettings"
+        />
       </div>
     </div>
 
@@ -62,18 +98,41 @@
     >
       <el-form label-width="120px">
         <el-form-item label="AI模型">
-          <el-select v-model="settings.model" style="width: 100%">
-            <el-option label="通义千问" value="qwen-max" />
-            <el-option label="通义千问Plus" value="qwen-plus" />
-            <el-option label="通义千问Turbo" value="qwen-turbo" />
+          <el-select
+            v-model="settings.model"
+            style="width: 100%"
+          >
+            <el-option
+              label="通义千问"
+              value="qwen-max"
+            />
+            <el-option
+              label="通义千问Plus"
+              value="qwen-plus"
+            />
+            <el-option
+              label="通义千问Turbo"
+              value="qwen-turbo"
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="温度参数">
-          <el-slider v-model="settings.temperature" :min="0" :max="1" :step="0.1" show-input />
+          <el-slider
+            v-model="settings.temperature"
+            :min="0"
+            :max="1"
+            :step="0.1"
+            show-input
+          />
           <span class="setting-tip">控制回答的随机性，值越大回答越发散</span>
         </el-form-item>
         <el-form-item label="最大字数">
-          <el-input-number v-model="settings.maxTokens" :min="500" :max="4000" :step="100" />
+          <el-input-number
+            v-model="settings.maxTokens"
+            :min="500"
+            :max="4000"
+            :step="100"
+          />
           <span class="setting-tip">单次回复的最大字数</span>
         </el-form-item>
         <el-form-item label="上下文记忆">
@@ -82,8 +141,15 @@
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="showSettings = false">取消</el-button>
-        <el-button type="primary" @click="handleSaveSettings">保存</el-button>
+        <el-button @click="showSettings = false">
+          取消
+        </el-button>
+        <el-button
+          type="primary"
+          @click="handleSaveSettings"
+        >
+          保存
+        </el-button>
       </template>
     </el-dialog>
 
@@ -97,10 +163,13 @@
       :destroy-on-close="false"
     >
       <div class="history-list">
-        <el-empty v-if="historyList.length === 0" description="暂无历史记录" />
+        <el-empty
+          v-if="historyList.length === 0"
+          description="暂无历史记录"
+        />
         <div
-          v-else
           v-for="item in historyList"
+          v-else
           :key="item.id"
           class="history-item"
           @click="loadHistoryConversation(item)"
@@ -109,7 +178,9 @@
             <span class="history-title">{{ item.title || '未命名对话' }}</span>
             <span class="history-time">{{ formatTime(item.timestamp) }}</span>
           </div>
-          <div class="history-preview">{{ item.preview }}</div>
+          <div class="history-preview">
+            {{ item.preview }}
+          </div>
           <div class="history-actions">
             <el-button
               link
@@ -134,21 +205,36 @@
       :destroy-on-close="false"
     >
       <div class="favorites-list">
-        <el-empty v-if="favoriteMessages.length === 0" description="暂无收藏" />
+        <el-empty
+          v-if="favoriteMessages.length === 0"
+          description="暂无收藏"
+        />
         <div
-          v-else
           v-for="msg in favoriteMessages"
+          v-else
           :key="msg.id"
           class="favorite-item"
         >
-          <div class="favorite-content" v-html="renderMarkdown(msg.content)"></div>
+          <div
+            class="favorite-content"
+            v-html="renderMarkdown(msg.content)"
+          />
           <div class="favorite-footer">
             <span class="favorite-time">{{ formatTime(msg.timestamp) }}</span>
             <div class="favorite-actions">
-              <el-button link size="small" @click="copyMessage(msg.content)">
+              <el-button
+                link
+                size="small"
+                @click="copyMessage(msg.content)"
+              >
                 <el-icon><DocumentCopy /></el-icon> 复制
               </el-button>
-              <el-button link size="small" type="danger" @click="handleUnfavorite(msg)">
+              <el-button
+                link
+                size="small"
+                type="danger"
+                @click="handleUnfavorite(msg)"
+              >
                 <el-icon><Delete /></el-icon> 取消收藏
               </el-button>
             </div>

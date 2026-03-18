@@ -1,12 +1,16 @@
 <template>
   <div class="alert-notification">
     <!-- 告警图标 -->
-    <el-badge :value="unreadCount" :hidden="unreadCount === 0" class="alert-badge">
+    <el-badge
+      :value="unreadCount"
+      :hidden="unreadCount === 0"
+      class="alert-badge"
+    >
       <el-button
         :icon="Bell"
         circle
-        @click="drawerVisible = true"
         :type="unreadCount > 0 ? 'danger' : 'default'"
+        @click="drawerVisible = true"
       />
     </el-badge>
 
@@ -18,7 +22,10 @@
       size="400px"
     >
       <div class="alert-list">
-        <el-empty v-if="alerts.length === 0" description="暂无告警" />
+        <el-empty
+          v-if="alerts.length === 0"
+          description="暂无告警"
+        />
         
         <div
           v-for="alert in alerts"
@@ -35,8 +42,12 @@
             </el-tag>
             <span class="alert-time">{{ formatTime(alert.time) }}</span>
           </div>
-          <div class="alert-title">{{ alert.title }}</div>
-          <div class="alert-content">{{ alert.content }}</div>
+          <div class="alert-title">
+            {{ alert.title }}
+          </div>
+          <div class="alert-content">
+            {{ alert.content }}
+          </div>
           <div class="alert-actions">
             <el-button
               v-if="!alert.read"
@@ -60,10 +71,17 @@
       </div>
 
       <template #footer>
-        <el-button @click="clearAll" :disabled="alerts.length === 0">
+        <el-button
+          :disabled="alerts.length === 0"
+          @click="clearAll"
+        >
           清空所有
         </el-button>
-        <el-button type="primary" @click="markAllAsRead" :disabled="unreadCount === 0">
+        <el-button
+          type="primary"
+          :disabled="unreadCount === 0"
+          @click="markAllAsRead"
+        >
           全部已读
         </el-button>
       </template>

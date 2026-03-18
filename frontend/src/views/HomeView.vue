@@ -5,29 +5,69 @@
       <div class="container">
         <div class="nav-content">
           <div class="logo">
-            <img src="/logo.svg" alt="NutriAI" class="logo-img" />
+            <img
+              src="/logo.svg"
+              alt="NutriAI"
+              class="logo-img"
+            >
             <span class="logo-text">{{ siteName }}</span>
           </div>
           <div class="nav-buttons">
-            <el-button link @click="goToAnnouncements">
+            <el-button
+              link
+              @click="goToAnnouncements"
+            >
               <el-icon><Bell /></el-icon>
               公告
             </el-button>
-            <el-button v-if="!isLoggedIn" @click="goToLogin" type="primary">登录</el-button>
-            <el-button v-if="!isLoggedIn" @click="goToRegister">注册</el-button>
-            <el-dropdown v-if="isLoggedIn" @command="handleCommand">
+            <el-button
+              v-if="!isLoggedIn"
+              type="primary"
+              @click="goToLogin"
+            >
+              登录
+            </el-button>
+            <el-button
+              v-if="!isLoggedIn"
+              @click="goToRegister"
+            >
+              注册
+            </el-button>
+            <el-dropdown
+              v-if="isLoggedIn"
+              @command="handleCommand"
+            >
               <el-button type="primary">
-                {{ userName }} <el-icon class="el-icon--right"><arrow-down /></el-icon>
+                {{ userName }} <el-icon class="el-icon--right">
+                  <arrow-down />
+                </el-icon>
               </el-button>
               <template #dropdown>
                 <el-dropdown-menu>
-                  <el-dropdown-item command="profile">个人中心</el-dropdown-item>
-                  <el-dropdown-item command="ai-chat">AI营养师</el-dropdown-item>
-                  <el-dropdown-item command="diet-plan">AI饮食计划</el-dropdown-item>
-                  <el-dropdown-item command="food-recognition">AI食物识别</el-dropdown-item>
-                  <el-dropdown-item command="food-records">饮食记录</el-dropdown-item>
-                  <el-dropdown-item command="membership">会员中心</el-dropdown-item>
-                  <el-dropdown-item divided command="logout">退出登录</el-dropdown-item>
+                  <el-dropdown-item command="profile">
+                    个人中心
+                  </el-dropdown-item>
+                  <el-dropdown-item command="ai-chat">
+                    AI营养师
+                  </el-dropdown-item>
+                  <el-dropdown-item command="diet-plan">
+                    AI饮食计划
+                  </el-dropdown-item>
+                  <el-dropdown-item command="food-recognition">
+                    AI食物识别
+                  </el-dropdown-item>
+                  <el-dropdown-item command="food-records">
+                    饮食记录
+                  </el-dropdown-item>
+                  <el-dropdown-item command="membership">
+                    会员中心
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                    divided
+                    command="logout"
+                  >
+                    退出登录
+                  </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
@@ -39,46 +79,111 @@
     <!-- 主要内容区 -->
     <main class="main-content">
       <div class="hero-section">
-        <h1 class="hero-title">{{ siteName }}</h1>
-        <p class="hero-subtitle">{{ getConfig('system.site_description', '智能营养分析 · 个性化饮食方案 · 健康管理') }}</p>
+        <h1 class="hero-title">
+          {{ siteName }}
+        </h1>
+        <p class="hero-subtitle">
+          {{ getConfig('system.site_description', '智能营养分析 · 个性化饮食方案 · 健康管理') }}
+        </p>
         <div class="hero-buttons">
-          <el-button type="primary" size="large" @click="getStarted">立即开始</el-button>
-          <el-button size="large" @click="learnMore">了解更多</el-button>
+          <el-button
+            type="primary"
+            size="large"
+            @click="getStarted"
+          >
+            立即开始
+          </el-button>
+          <el-button
+            size="large"
+            @click="learnMore"
+          >
+            了解更多
+          </el-button>
         </div>
       </div>
 
       <!-- 功能特色 -->
       <div class="features-section">
         <div class="container">
-          <h2 class="section-title">核心功能</h2>
+          <h2 class="section-title">
+            核心功能
+          </h2>
           <div class="features-grid">
-            <div class="feature-card" @click="goToFeature('profile')">
-              <el-icon :size="48" color="#22c55e"><user /></el-icon>
+            <div
+              class="feature-card"
+              @click="goToFeature('profile')"
+            >
+              <el-icon
+                :size="48"
+                color="#22c55e"
+              >
+                <user />
+              </el-icon>
               <h3>个人中心</h3>
               <p>管理个人资料，记录健康数据</p>
             </div>
-            <div class="feature-card" @click="goToFeature('ai-chat')">
-              <el-icon :size="48" color="#22c55e"><chatDotRound /></el-icon>
+            <div
+              class="feature-card"
+              @click="goToFeature('ai-chat')"
+            >
+              <el-icon
+                :size="48"
+                color="#22c55e"
+              >
+                <chatDotRound />
+              </el-icon>
               <h3>AI营养师</h3>
               <p>智能对话，获取专业营养建议</p>
             </div>
-            <div class="feature-card" @click="goToFeature('diet-plan')">
-              <el-icon :size="48" color="#22c55e"><calendar /></el-icon>
+            <div
+              class="feature-card"
+              @click="goToFeature('diet-plan')"
+            >
+              <el-icon
+                :size="48"
+                color="#22c55e"
+              >
+                <calendar />
+              </el-icon>
               <h3>AI饮食计划</h3>
               <p>智能生成个性化饮食计划</p>
             </div>
-            <div class="feature-card" @click="goToFeature('food-recognition')">
-              <el-icon :size="48" color="#22c55e"><camera /></el-icon>
+            <div
+              class="feature-card"
+              @click="goToFeature('food-recognition')"
+            >
+              <el-icon
+                :size="48"
+                color="#22c55e"
+              >
+                <camera />
+              </el-icon>
               <h3>AI食物识别</h3>
               <p>拍照识别食物，智能分析营养</p>
             </div>
-            <div class="feature-card" @click="goToFeature('food-records')">
-              <el-icon :size="48" color="#22c55e"><document /></el-icon>
+            <div
+              class="feature-card"
+              @click="goToFeature('food-records')"
+            >
+              <el-icon
+                :size="48"
+                color="#22c55e"
+              >
+                <document />
+              </el-icon>
               <h3>饮食记录</h3>
               <p>记录每日饮食，分析营养摄入</p>
             </div>
-            <div class="feature-card" @click="goToFeature('membership')">
-              <el-icon :size="48" color="#22c55e"><trophy /></el-icon>
+            <div
+              class="feature-card"
+              @click="goToFeature('membership')"
+            >
+              <el-icon
+                :size="48"
+                color="#22c55e"
+              >
+                <trophy />
+              </el-icon>
               <h3>会员服务</h3>
               <p>专属功能，更多权益</p>
             </div>
@@ -93,7 +198,10 @@
         <div class="footer-content">
           <div class="footer-info">
             <p>{{ getConfig('system.copyright_text', `© 2025 ${siteName}. All rights reserved.`) }}</p>
-            <p v-if="getConfig('system.icp_number')" class="icp-number">
+            <p
+              v-if="getConfig('system.icp_number')"
+              class="icp-number"
+            >
               {{ getConfig('system.icp_number') }}
             </p>
           </div>

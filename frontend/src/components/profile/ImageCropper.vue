@@ -14,17 +14,26 @@
           @mousemove="onDrag"
           @mouseup="endDrag"
           @mouseleave="endDrag"
-        ></canvas>
+        />
       </div>
 
       <!-- 裁剪控制 -->
       <div class="cropper-controls">
         <div class="control-item">
           <span>尺寸：</span>
-          <el-radio-group v-model="cropSize" @change="updateCanvas">
-            <el-radio-button :value="200">200x200</el-radio-button>
-            <el-radio-button :value="300">300x300</el-radio-button>
-            <el-radio-button :value="400">400x400</el-radio-button>
+          <el-radio-group
+            v-model="cropSize"
+            @change="updateCanvas"
+          >
+            <el-radio-button :value="200">
+              200x200
+            </el-radio-button>
+            <el-radio-button :value="300">
+              300x300
+            </el-radio-button>
+            <el-radio-button :value="400">
+              400x400
+            </el-radio-button>
           </el-radio-group>
         </div>
 
@@ -43,14 +52,25 @@
 
       <!-- 预览 -->
       <div class="preview-result">
-        <div class="preview-title">预览效果</div>
-        <canvas ref="previewCanvasRef" class="preview-canvas"></canvas>
+        <div class="preview-title">
+          预览效果
+        </div>
+        <canvas
+          ref="previewCanvasRef"
+          class="preview-canvas"
+        />
       </div>
     </div>
 
     <template #footer>
-      <el-button @click="handleClose">取消</el-button>
-      <el-button type="primary" @click="handleConfirm" :loading="uploading">
+      <el-button @click="handleClose">
+        取消
+      </el-button>
+      <el-button
+        type="primary"
+        :loading="uploading"
+        @click="handleConfirm"
+      >
         确认上传
       </el-button>
     </template>

@@ -4,7 +4,9 @@
     <div class="chat-header">
       <div class="header-left">
         <h1 class="header-title">
-          <el-icon class="title-icon"><ChatDotRound /></el-icon>
+          <el-icon class="title-icon">
+            <ChatDotRound />
+          </el-icon>
           AI营养师
         </h1>
         <el-tag 
@@ -16,9 +18,24 @@
         </el-tag>
       </div>
       <div class="header-right">
-        <el-button :icon="Delete" circle @click="handleClearHistory" title="清空对话" />
-        <el-button :icon="Download" circle @click="handleExport" title="导出对话" />
-        <el-button :icon="Setting" circle @click="showSettings = true" title="设置" />
+        <el-button
+          :icon="Delete"
+          circle
+          title="清空对话"
+          @click="handleClearHistory"
+        />
+        <el-button
+          :icon="Download"
+          circle
+          title="导出对话"
+          @click="handleExport"
+        />
+        <el-button
+          :icon="Setting"
+          circle
+          title="设置"
+          @click="showSettings = true"
+        />
       </div>
     </div>
 
@@ -59,13 +76,15 @@
     >
       <el-form label-width="120px">
         <el-form-item label="连接状态">
-          <el-tag :type="statusTagType">{{ statusText }}</el-tag>
+          <el-tag :type="statusTagType">
+            {{ statusText }}
+          </el-tag>
           <el-button 
             v-if="!isConnected" 
             type="primary" 
             size="small" 
-            @click="reconnect"
             style="margin-left: 10px"
+            @click="reconnect"
           >
             重新连接
           </el-button>
@@ -77,8 +96,15 @@
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="showSettings = false">取消</el-button>
-        <el-button type="primary" @click="handleSaveSettings">保存</el-button>
+        <el-button @click="showSettings = false">
+          取消
+        </el-button>
+        <el-button
+          type="primary"
+          @click="handleSaveSettings"
+        >
+          保存
+        </el-button>
       </template>
     </el-dialog>
   </div>

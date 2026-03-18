@@ -4,7 +4,9 @@
     <div class="chat-header">
       <div class="header-left">
         <h1 class="header-title">
-          <el-icon class="title-icon"><ChatDotRound /></el-icon>
+          <el-icon class="title-icon">
+            <ChatDotRound />
+          </el-icon>
           AI营养师
         </h1>
         <el-tag 
@@ -16,11 +18,36 @@
         </el-tag>
       </div>
       <div class="header-right">
-        <el-button :icon="FolderOpened" circle @click="showHistory = true" title="历史记录" />
-        <el-button :icon="Star" circle @click="showFavorites = true" title="收藏" />
-        <el-button :icon="Delete" circle @click="handleClearHistory" title="清空对话" />
-        <el-button :icon="Download" circle @click="handleExport" title="导出对话" />
-        <el-button :icon="Setting" circle @click="showSettings = true" title="设置" />
+        <el-button
+          :icon="FolderOpened"
+          circle
+          title="历史记录"
+          @click="showHistory = true"
+        />
+        <el-button
+          :icon="Star"
+          circle
+          title="收藏"
+          @click="showFavorites = true"
+        />
+        <el-button
+          :icon="Delete"
+          circle
+          title="清空对话"
+          @click="handleClearHistory"
+        />
+        <el-button
+          :icon="Download"
+          circle
+          title="导出对话"
+          @click="handleExport"
+        />
+        <el-button
+          :icon="Setting"
+          circle
+          title="设置"
+          @click="showSettings = true"
+        />
       </div>
     </div>
 
@@ -63,10 +90,13 @@
       :append-to-body="true"
     >
       <div class="history-list">
-        <el-empty v-if="historyList.length === 0" description="暂无历史记录" />
+        <el-empty
+          v-if="historyList.length === 0"
+          description="暂无历史记录"
+        />
         <div
-          v-else
           v-for="item in historyList"
+          v-else
           :key="item.id"
           class="history-item"
           @click="loadHistoryConversation(item)"
@@ -75,7 +105,9 @@
             <span class="history-title">{{ item.title || '未命名对话' }}</span>
             <span class="history-time">{{ formatTime(item.timestamp) }}</span>
           </div>
-          <div class="history-preview">{{ item.preview }}</div>
+          <div class="history-preview">
+            {{ item.preview }}
+          </div>
           <div class="history-actions">
             <el-button
               link
@@ -98,21 +130,36 @@
       :append-to-body="true"
     >
       <div class="favorites-list">
-        <el-empty v-if="favoriteMessages.length === 0" description="暂无收藏" />
+        <el-empty
+          v-if="favoriteMessages.length === 0"
+          description="暂无收藏"
+        />
         <div
-          v-else
           v-for="msg in favoriteMessages"
+          v-else
           :key="msg.id"
           class="favorite-item"
         >
-          <div class="favorite-content" v-html="renderMarkdown(msg.content)"></div>
+          <div
+            class="favorite-content"
+            v-html="renderMarkdown(msg.content)"
+          />
           <div class="favorite-footer">
             <span class="favorite-time">{{ formatTime(msg.timestamp) }}</span>
             <div class="favorite-actions">
-              <el-button link size="small" @click="copyMessage(msg.content)">
+              <el-button
+                link
+                size="small"
+                @click="copyMessage(msg.content)"
+              >
                 <el-icon><DocumentCopy /></el-icon> 复制
               </el-button>
-              <el-button link size="small" type="danger" @click="handleUnfavorite(msg)">
+              <el-button
+                link
+                size="small"
+                type="danger"
+                @click="handleUnfavorite(msg)"
+              >
                 <el-icon><Delete /></el-icon> 取消收藏
               </el-button>
             </div>
@@ -129,13 +176,15 @@
     >
       <el-form label-width="120px">
         <el-form-item label="连接状态">
-          <el-tag :type="statusTagType">{{ statusText }}</el-tag>
+          <el-tag :type="statusTagType">
+            {{ statusText }}
+          </el-tag>
           <el-button 
             v-if="!isConnected" 
             type="primary" 
             size="small" 
-            @click="reconnect"
             style="margin-left: 10px"
+            @click="reconnect"
           >
             重新连接
           </el-button>
@@ -151,8 +200,15 @@
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="showSettings = false">取消</el-button>
-        <el-button type="primary" @click="handleSaveSettings">保存</el-button>
+        <el-button @click="showSettings = false">
+          取消
+        </el-button>
+        <el-button
+          type="primary"
+          @click="handleSaveSettings"
+        >
+          保存
+        </el-button>
       </template>
     </el-dialog>
   </div>

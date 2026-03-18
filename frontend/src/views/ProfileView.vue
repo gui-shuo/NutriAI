@@ -2,15 +2,25 @@
   <div class="profile-container">
     <div class="profile-layout">
       <!-- 侧边导航 -->
-      <ProfileSidebar :active-menu="activeMenu" @change="handleMenuChange" />
+      <ProfileSidebar
+        :active-menu="activeMenu"
+        @change="handleMenuChange"
+      />
       
       <!-- 主内容区 -->
       <div class="profile-content">
         <!-- 用户资料展示 -->
-        <ProfileInfo v-if="activeMenu === 'info'" @edit="handleMenuChange('edit')" />
+        <ProfileInfo
+          v-if="activeMenu === 'info'"
+          @edit="handleMenuChange('edit')"
+        />
         
         <!-- 资料编辑表单 -->
-        <ProfileEdit v-if="activeMenu === 'edit'" @saved="handleMenuChange('info')" @cancel="handleMenuChange('info')" />
+        <ProfileEdit
+          v-if="activeMenu === 'edit'"
+          @saved="handleMenuChange('info')"
+          @cancel="handleMenuChange('info')"
+        />
         
         <!-- 修改密码 -->
         <PasswordChange v-if="activeMenu === 'password'" />

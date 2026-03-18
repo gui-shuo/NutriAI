@@ -2,7 +2,10 @@
   <div class="admin-layout">
     <el-container>
       <!-- 侧边栏 -->
-      <el-aside width="200px" class="admin-aside">
+      <el-aside
+        width="200px"
+        class="admin-aside"
+      >
         <div class="logo">
           <h2>管理后台</h2>
         </div>
@@ -39,14 +42,20 @@
         <!-- 顶部栏 -->
         <el-header class="admin-header">
           <el-breadcrumb separator="/">
-            <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/' }">
+              首页
+            </el-breadcrumb-item>
             <el-breadcrumb-item>{{ breadcrumbTitle }}</el-breadcrumb-item>
           </el-breadcrumb>
           
           <div class="header-right">
             <AlertNotification />
             <span class="username">{{ userInfo.username }}</span>
-            <el-button type="primary" link @click="handleLogout">
+            <el-button
+              type="primary"
+              link
+              @click="handleLogout"
+            >
               <el-icon><SwitchButton /></el-icon>
               退出登录
             </el-button>

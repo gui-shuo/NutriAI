@@ -3,17 +3,25 @@
     <template #header>
       <div class="card-header">
         <span class="title">邀请好友</span>
-        <el-tag type="success">每人+50成长值</el-tag>
+        <el-tag type="success">
+          每人+50成长值
+        </el-tag>
       </div>
     </template>
 
     <div class="invitation-content">
       <!-- 邀请码展示 -->
       <div class="invitation-code-section">
-        <div class="code-label">我的邀请码</div>
+        <div class="code-label">
+          我的邀请码
+        </div>
         <div class="code-display">
           <span class="code">{{ invitationCode }}</span>
-          <el-button type="primary" size="small" @click="copyInvitationCode">
+          <el-button
+            type="primary"
+            size="small"
+            @click="copyInvitationCode"
+          >
             <el-icon><DocumentCopy /></el-icon>
             复制
           </el-button>
@@ -22,7 +30,9 @@
 
       <!-- 邀请链接 -->
       <div class="invitation-link-section">
-        <div class="link-label">邀请链接</div>
+        <div class="link-label">
+          邀请链接
+        </div>
         <el-input
           v-model="invitationLink"
           readonly
@@ -40,7 +50,10 @@
       <!-- 邀请统计 -->
       <div class="invitation-stats">
         <div class="stat-box">
-          <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)">
+          <div
+            class="stat-icon"
+            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+          >
             <el-icon><User /></el-icon>
           </div>
           <div class="stat-info">
@@ -49,7 +62,10 @@
           </div>
         </div>
         <div class="stat-box">
-          <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%)">
+          <div
+            class="stat-icon"
+            style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
+          >
             <el-icon><Present /></el-icon>
           </div>
           <div class="stat-info">
@@ -63,25 +79,60 @@
       <div class="invitation-records">
         <div class="records-header">
           <span>最近邀请</span>
-          <el-button text size="small" @click="viewAllRecords">查看全部</el-button>
+          <el-button
+            text
+            size="small"
+            @click="viewAllRecords"
+          >
+            查看全部
+          </el-button>
         </div>
-        <el-skeleton :loading="loading" animated :rows="3">
-          <div v-if="records.length > 0" class="records-list">
-            <div v-for="record in records.slice(0, 3)" :key="record.id" class="record-item">
+        <el-skeleton
+          :loading="loading"
+          animated
+          :rows="3"
+        >
+          <div
+            v-if="records.length > 0"
+            class="records-list"
+          >
+            <div
+              v-for="record in records.slice(0, 3)"
+              :key="record.id"
+              class="record-item"
+            >
               <div class="record-avatar">
-                <el-avatar :size="40">{{ record.inviteeName?.charAt(0) || '?' }}</el-avatar>
+                <el-avatar :size="40">
+                  {{ record.inviteeName?.charAt(0) || '?' }}
+                </el-avatar>
               </div>
               <div class="record-info">
                 <span class="record-name">{{ record.inviteeName || '新用户' }}</span>
                 <span class="record-time">{{ formatTime(record.acceptedAt) }}</span>
               </div>
               <div class="record-reward">
-                <el-tag v-if="record.isRewarded" type="success" size="small">+{{ record.rewardGrowth }}</el-tag>
-                <el-tag v-else type="info" size="small">待接受</el-tag>
+                <el-tag
+                  v-if="record.isRewarded"
+                  type="success"
+                  size="small"
+                >
+                  +{{ record.rewardGrowth }}
+                </el-tag>
+                <el-tag
+                  v-else
+                  type="info"
+                  size="small"
+                >
+                  待接受
+                </el-tag>
               </div>
             </div>
           </div>
-          <el-empty v-else description="暂无邀请记录" :image-size="80" />
+          <el-empty
+            v-else
+            description="暂无邀请记录"
+            :image-size="80"
+          />
         </el-skeleton>
       </div>
     </div>
@@ -94,31 +145,60 @@
       :close-on-click-modal="false"
       custom-class="member-dialog"
     >
-      <el-skeleton :loading="allLoading" animated :rows="5">
-        <div v-if="allRecords.length > 0" class="all-records-list">
-          <div v-for="record in allRecords" :key="record.id" class="all-record-item">
+      <el-skeleton
+        :loading="allLoading"
+        animated
+        :rows="5"
+      >
+        <div
+          v-if="allRecords.length > 0"
+          class="all-records-list"
+        >
+          <div
+            v-for="record in allRecords"
+            :key="record.id"
+            class="all-record-item"
+          >
             <div class="record-avatar">
-              <el-avatar :size="48">{{ record.inviteeName?.charAt(0) || '?' }}</el-avatar>
+              <el-avatar :size="48">
+                {{ record.inviteeName?.charAt(0) || '?' }}
+              </el-avatar>
             </div>
             <div class="record-details">
               <div class="record-header">
                 <span class="record-name">{{ record.inviteeName || '新用户' }}</span>
-                <el-tag v-if="record.isRewarded" type="success" size="small">
+                <el-tag
+                  v-if="record.isRewarded"
+                  type="success"
+                  size="small"
+                >
                   已奖励 +{{ record.rewardGrowth }}
                 </el-tag>
-                <el-tag v-else type="info" size="small">待激活</el-tag>
+                <el-tag
+                  v-else
+                  type="info"
+                  size="small"
+                >
+                  待激活
+                </el-tag>
               </div>
               <div class="record-meta">
                 <span class="meta-item">
                   <el-icon><Calendar /></el-icon>
                   邀请时间: {{ formatFullTime(record.invitedAt) }}
                 </span>
-                <span v-if="record.acceptedAt" class="meta-item">
+                <span
+                  v-if="record.acceptedAt"
+                  class="meta-item"
+                >
                   <el-icon><CircleCheck /></el-icon>
                   接受时间: {{ formatFullTime(record.acceptedAt) }}
                 </span>
               </div>
-              <div v-if="record.status" class="record-status">
+              <div
+                v-if="record.status"
+                class="record-status"
+              >
                 <span :class="['status-badge', record.status.toLowerCase()]">
                   {{ getStatusText(record.status) }}
                 </span>
@@ -126,11 +206,17 @@
             </div>
           </div>
         </div>
-        <el-empty v-else description="暂无邀请记录" :image-size="100" />
+        <el-empty
+          v-else
+          description="暂无邀请记录"
+          :image-size="100"
+        />
       </el-skeleton>
 
       <template #footer>
-        <el-button @click="showAllDialog = false">关闭</el-button>
+        <el-button @click="showAllDialog = false">
+          关闭
+        </el-button>
       </template>
     </el-dialog>
   </el-card>

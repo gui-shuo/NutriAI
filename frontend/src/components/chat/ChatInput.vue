@@ -25,9 +25,9 @@
         :autosize="{ minRows: 1, maxRows: 4 }"
         placeholder="输入消息... (Shift+Enter换行, Enter发送)"
         :disabled="disabled"
-        @keydown.enter="handleKeyDown"
         resize="none"
         class="message-input"
+        @keydown.enter="handleKeyDown"
       />
 
       <!-- 发送按钮 -->
@@ -37,16 +37,21 @@
         circle
         :disabled="!canSend"
         :loading="loading"
-        @click="handleSend"
         title="发送消息"
+        @click="handleSend"
       />
     </div>
 
     <!-- 已选择的文件 -->
     <transition name="slide-up">
-      <div v-if="selectedFile" class="selected-file">
+      <div
+        v-if="selectedFile"
+        class="selected-file"
+      >
         <div class="file-info">
-          <el-icon class="file-icon"><Document /></el-icon>
+          <el-icon class="file-icon">
+            <Document />
+          </el-icon>
           <span class="file-name">{{ selectedFile.name }}</span>
           <span class="file-size">{{ formatFileSize(selectedFile.size) }}</span>
         </div>
@@ -60,7 +65,11 @@
     </transition>
 
     <!-- 字数统计 -->
-    <div v-if="showCharCount" class="char-count" :class="{ warning: isOverLimit }">
+    <div
+      v-if="showCharCount"
+      class="char-count"
+      :class="{ warning: isOverLimit }"
+    >
       {{ inputText.length }} / {{ maxLength }}
     </div>
   </div>

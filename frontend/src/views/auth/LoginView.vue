@@ -3,8 +3,12 @@
     <div class="login-card">
       <!-- Logo和标题 -->
       <div class="login-header">
-        <h1 class="logo">🥗 NutriAI</h1>
-        <p class="subtitle">AI健康饮食规划助手</p>
+        <h1 class="logo">
+          🥗 NutriAI
+        </h1>
+        <p class="subtitle">
+          AI健康饮食规划助手
+        </p>
       </div>
 
       <!-- 登录表单 -->
@@ -40,7 +44,10 @@
         </el-form-item>
 
         <!-- 验证码（登录失败3次后显示） -->
-        <el-form-item v-if="showCaptcha" prop="captcha">
+        <el-form-item
+          v-if="showCaptcha"
+          prop="captcha"
+        >
           <div class="captcha-wrapper">
             <el-input
               v-model="loginForm.captcha"
@@ -49,16 +56,24 @@
               maxlength="4"
               class="captcha-input"
             />
-            <div class="captcha-image-wrapper" @click="refreshCaptcha">
+            <div
+              class="captcha-image-wrapper"
+              @click="refreshCaptcha"
+            >
               <img
                 v-if="captchaImage"
                 :src="captchaImage"
                 class="captcha-image"
                 alt="验证码"
                 title="点击刷新验证码"
-              />
-              <div v-else class="captcha-loading">
-                <el-icon class="is-loading"><Loading /></el-icon>
+              >
+              <div
+                v-else
+                class="captcha-loading"
+              >
+                <el-icon class="is-loading">
+                  <Loading />
+                </el-icon>
                 加载中...
               </div>
             </div>
@@ -71,7 +86,10 @@
             <el-checkbox v-model="loginForm.rememberMe">
               记住我（7天免登录）
             </el-checkbox>
-            <el-link type="primary" :underline="false">
+            <el-link
+              type="primary"
+              :underline="false"
+            >
               忘记密码？
             </el-link>
           </div>
@@ -93,7 +111,12 @@
         <!-- 注册链接 -->
         <div class="register-link">
           还没有账号？
-          <router-link to="/register" class="link">立即注册</router-link>
+          <router-link
+            to="/register"
+            class="link"
+          >
+            立即注册
+          </router-link>
         </div>
       </el-form>
 

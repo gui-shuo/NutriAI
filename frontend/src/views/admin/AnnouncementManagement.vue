@@ -1,23 +1,48 @@
 <template>
   <div class="announcement-management">
-    <h2 class="page-title">公告管理</h2>
+    <h2 class="page-title">
+      公告管理
+    </h2>
 
     <!-- 公告列表 -->
     <el-card v-loading="loading">
       <template #header>
         <div class="card-header">
           <span>公告列表</span>
-          <el-button type="primary" :icon="Plus" @click="handleCreate">
+          <el-button
+            type="primary"
+            :icon="Plus"
+            @click="handleCreate"
+          >
             创建公告
           </el-button>
         </div>
       </template>
 
-      <el-table :data="announcementList" stripe>
-        <el-table-column prop="id" label="ID" width="80" />
-        <el-table-column prop="title" label="标题" width="200" show-overflow-tooltip />
-        <el-table-column prop="content" label="内容" show-overflow-tooltip />
-        <el-table-column label="类型" width="100">
+      <el-table
+        :data="announcementList"
+        stripe
+      >
+        <el-table-column
+          prop="id"
+          label="ID"
+          width="80"
+        />
+        <el-table-column
+          prop="title"
+          label="标题"
+          width="200"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          prop="content"
+          label="内容"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          label="类型"
+          width="100"
+        >
           <template #default="{ row }">
             <el-tag
               :type="row.type === 'error' ? 'danger' : row.type === 'warning' ? 'warning' : 'info'"
@@ -26,8 +51,15 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="priority" label="优先级" width="100" />
-        <el-table-column label="状态" width="100">
+        <el-table-column
+          prop="priority"
+          label="优先级"
+          width="100"
+        />
+        <el-table-column
+          label="状态"
+          width="100"
+        >
           <template #default="{ row }">
             <el-switch
               v-model="row.isActive"
@@ -35,22 +67,44 @@
             />
           </template>
         </el-table-column>
-        <el-table-column prop="startTime" label="开始时间" width="180">
+        <el-table-column
+          prop="startTime"
+          label="开始时间"
+          width="180"
+        >
           <template #default="{ row }">
             {{ formatDate(row.startTime) }}
           </template>
         </el-table-column>
-        <el-table-column prop="endTime" label="结束时间" width="180">
+        <el-table-column
+          prop="endTime"
+          label="结束时间"
+          width="180"
+        >
           <template #default="{ row }">
             {{ formatDate(row.endTime) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="150" fixed="right">
+        <el-table-column
+          label="操作"
+          width="150"
+          fixed="right"
+        >
           <template #default="{ row }">
-            <el-button type="primary" link size="small" @click="handleEdit(row)">
+            <el-button
+              type="primary"
+              link
+              size="small"
+              @click="handleEdit(row)"
+            >
               编辑
             </el-button>
-            <el-button type="danger" link size="small" @click="handleDelete(row)">
+            <el-button
+              type="danger"
+              link
+              size="small"
+              @click="handleDelete(row)"
+            >
               删除
             </el-button>
           </template>
@@ -64,11 +118,25 @@
       :title="isCreate ? '创建公告' : '编辑公告'"
       width="700px"
     >
-      <el-form :model="editForm" label-width="100px" :rules="rules" ref="formRef">
-        <el-form-item label="标题" prop="title">
-          <el-input v-model="editForm.title" placeholder="请输入公告标题" />
+      <el-form
+        ref="formRef"
+        :model="editForm"
+        label-width="100px"
+        :rules="rules"
+      >
+        <el-form-item
+          label="标题"
+          prop="title"
+        >
+          <el-input
+            v-model="editForm.title"
+            placeholder="请输入公告标题"
+          />
         </el-form-item>
-        <el-form-item label="内容" prop="content">
+        <el-form-item
+          label="内容"
+          prop="content"
+        >
           <el-input
             v-model="editForm.content"
             type="textarea"
@@ -76,15 +144,31 @@
             placeholder="请输入公告内容"
           />
         </el-form-item>
-        <el-form-item label="类型" prop="type">
+        <el-form-item
+          label="类型"
+          prop="type"
+        >
           <el-radio-group v-model="editForm.type">
-            <el-radio value="info">通知</el-radio>
-            <el-radio value="warning">警告</el-radio>
-            <el-radio value="error">错误</el-radio>
+            <el-radio value="info">
+              通知
+            </el-radio>
+            <el-radio value="warning">
+              警告
+            </el-radio>
+            <el-radio value="error">
+              错误
+            </el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="优先级" prop="priority">
-          <el-input-number v-model="editForm.priority" :min="0" :max="10" />
+        <el-form-item
+          label="优先级"
+          prop="priority"
+        >
+          <el-input-number
+            v-model="editForm.priority"
+            :min="0"
+            :max="10"
+          />
           <span class="form-tip">数字越大优先级越高</span>
         </el-form-item>
         <el-form-item label="是否启用">
@@ -102,8 +186,15 @@
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="editDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSave">保存</el-button>
+        <el-button @click="editDialogVisible = false">
+          取消
+        </el-button>
+        <el-button
+          type="primary"
+          @click="handleSave"
+        >
+          保存
+        </el-button>
       </template>
     </el-dialog>
   </div>

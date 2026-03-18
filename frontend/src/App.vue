@@ -1,5 +1,8 @@
 <template>
-  <div id="app" :class="{ dark: isDark }">
+  <div
+    id="app"
+    :class="{ dark: isDark }"
+  >
     <router-view v-slot="{ Component }">
       <transition 
         name="fade" 
@@ -7,7 +10,10 @@
         @before-enter="onBeforeEnter"
         @after-leave="onTransitionEnd"
       >
-        <component :is="Component" :key="$route.fullPath" />
+        <component
+          :is="Component"
+          :key="$route.fullPath"
+        />
       </transition>
     </router-view>
   </div>

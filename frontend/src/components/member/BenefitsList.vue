@@ -3,7 +3,9 @@
     <template #header>
       <div class="card-header">
         <span class="title">{{ levelName }} 专属权益</span>
-        <el-tag type="primary">{{ benefitItems.length }}项权益</el-tag>
+        <el-tag type="primary">
+          {{ benefitItems.length }}项权益
+        </el-tag>
       </div>
     </template>
 
@@ -16,17 +18,26 @@
             :key="index"
             class="benefit-item"
           >
-            <div class="benefit-icon" :style="{ background: benefit.color }">
+            <div
+              class="benefit-icon"
+              :style="{ background: benefit.color }"
+            >
               <el-icon :size="20">
                 <component :is="benefit.icon" />
               </el-icon>
             </div>
             <div class="benefit-content">
-              <div class="benefit-title">{{ benefit.title }}</div>
-              <div class="benefit-desc">{{ benefit.description }}</div>
+              <div class="benefit-title">
+                {{ benefit.title }}
+              </div>
+              <div class="benefit-desc">
+                {{ benefit.description }}
+              </div>
             </div>
             <div class="benefit-badge">
-              <el-icon color="#67c23a"><CircleCheck /></el-icon>
+              <el-icon color="#67c23a">
+                <CircleCheck />
+              </el-icon>
             </div>
           </div>
         </div>

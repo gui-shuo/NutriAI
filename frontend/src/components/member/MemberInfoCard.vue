@@ -1,12 +1,30 @@
 <template>
-  <el-card class="member-info-card" :body-style="{ padding: '0' }">
-    <el-skeleton :loading="loading" animated :rows="3">
-      <div v-if="memberInfo" class="card-content">
+  <el-card
+    class="member-info-card"
+    :body-style="{ padding: '0' }"
+  >
+    <el-skeleton
+      :loading="loading"
+      animated
+      :rows="3"
+    >
+      <div
+        v-if="memberInfo"
+        class="card-content"
+      >
         <!-- 顶部背景 -->
-        <div class="card-header" :style="{ background: levelGradient }">
+        <div
+          class="card-header"
+          :style="{ background: levelGradient }"
+        >
           <div class="level-badge">
-            <div class="badge-icon" :style="{ background: levelColor }">
-              <el-icon :size="32"><Trophy /></el-icon>
+            <div
+              class="badge-icon"
+              :style="{ background: levelColor }"
+            >
+              <el-icon :size="32">
+                <Trophy />
+              </el-icon>
             </div>
             <div class="badge-text">
               <span class="level-name">{{ memberInfo.currentLevel?.levelName }}</span>
@@ -42,7 +60,10 @@
         <!-- 统计信息 -->
         <div class="stats-section">
           <div class="stat-item">
-            <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)">
+            <div
+              class="stat-icon"
+              style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+            >
               <el-icon><User /></el-icon>
             </div>
             <div class="stat-content">
@@ -51,7 +72,10 @@
             </div>
           </div>
           <div class="stat-item">
-            <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%)">
+            <div
+              class="stat-icon"
+              style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
+            >
               <el-icon><TrendCharts /></el-icon>
             </div>
             <div class="stat-content">
@@ -60,7 +84,10 @@
             </div>
           </div>
           <div class="stat-item">
-            <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)">
+            <div
+              class="stat-icon"
+              style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)"
+            >
               <el-icon><Calendar /></el-icon>
             </div>
             <div class="stat-content">
