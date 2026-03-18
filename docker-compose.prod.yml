@@ -1,0 +1,81 @@
+services:
+  mysql:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: nutriai
+      MYSQL_USER: nutriai_user
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      TZ: Asia/Shanghai
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=$$MYSQL_ROOT_PASSWORD mysqladmin ping -h 127.0.0.1 -uroot --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - nutriai-network
+
+  redis:
+    image: redis:6.0-alpine
+    restart: always
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "REDISCLI_AUTH=$$REDIS_PASSWORD redis-cli ping | grep -q PONG"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    networks:
+      - nutriai-network
+
+  backend:
+    image: nutriai-backend:${IMAGE_TAG}
+    restart: always
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/nutriai?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false
+      SPRING_DATASOURCE_USERNAME: nutriai_user
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PASSWORD: ${REDIS_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      TONGYI_API_KEY: ${TONGYI_API_KEY}
+      ALIYUN_OSS_ACCESS_KEY_ID: ${ALIYUN_OSS_ACCESS_KEY_ID}
+      ALIYUN_OSS_ACCESS_KEY_SECRET: ${ALIYUN_OSS_ACCESS_KEY_SECRET}
+      BAIDU_AI_APP_ID: ${BAIDU_AI_APP_ID}
+      BAIDU_AI_API_KEY: ${BAIDU_AI_API_KEY}
+      BAIDU_AI_SECRET_KEY: ${BAIDU_AI_SECRET_KEY}
+      # 针对 2GiB 服务器，限制后端堆内存，给 MySQL/Redis 与系统预留空间
+      JAVA_OPTS: -Xms256m -Xmx384m -XX:+UseG1GC -XX:MaxGCPauseMillis=200
+    ports:
+      - "8080:8080"
+    networks:
+      - nutriai-network
+
+  frontend:
+    image: nutriai-frontend:${IMAGE_TAG}
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+    networks:
+      - nutriai-network
+
+networks:
+  nutriai-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+  redis-data:
