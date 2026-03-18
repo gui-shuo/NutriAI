@@ -10,8 +10,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -40,6 +40,18 @@ class SecurityConfigTest {
     @Test
     void shouldNotBlockDocPathWithSecurity() throws Exception {
         mockMvc.perform(get("/doc"))
+            .andExpect(result -> assertThat(result.getResponse().getStatus()).isNotEqualTo(403));
+    }
+
+    @Test
+    void shouldNotBlockDocSubPathWithSecurity() throws Exception {
+        mockMvc.perform(get("/doc/api-docs"))
+            .andExpect(result -> assertThat(result.getResponse().getStatus()).isNotEqualTo(403));
+    }
+
+    @Test
+    void shouldNotBlockApiPrefixedHealthPath() throws Exception {
+        mockMvc.perform(get("/api/health"))
             .andExpect(result -> assertThat(result.getResponse().getStatus()).isNotEqualTo(403));
     }
 
