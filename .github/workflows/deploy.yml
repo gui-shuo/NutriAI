@@ -117,8 +117,8 @@ jobs:
             sudo sed -i "s|^DOCKER_USERNAME=.*|DOCKER_USERNAME=${DOCKER_USERNAME}|" .env
             sudo chmod 600 .env
 
-            # 登录 Docker Hub
-            echo "${DOCKER_TOKEN}" | sudo docker login -u "${DOCKER_USERNAME}" --password-stdin
+            # 仓库已设为公开，无需登录（docker login 会直连 Docker Hub 认证服务器，国内无法访问）
+            echo "💡 Docker Hub 仓库为公开，跳过登录"
 
             # 强制清理旧镜像，避免使用缓存
             echo "🧹 清理本地旧镜像..."
@@ -154,8 +154,6 @@ jobs:
             echo ""
             echo "📊 容器运行状态："
             sudo docker compose --env-file .env -f docker-compose.prod.yml ps
-
-            sudo docker logout
 
             echo ""
             echo "============================================"
