@@ -94,9 +94,7 @@
           <span
             v-if="emailAvailable === true"
             class="validation-tip success"
-          >
-            ✓ 邮箱可用
-          </span>
+          > ✓ 邮箱可用 </span>
           <span
             v-else-if="emailAvailable === false"
             class="validation-tip error"

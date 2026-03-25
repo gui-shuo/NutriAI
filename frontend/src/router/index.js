@@ -191,7 +191,10 @@ const originalReplace = router.replace
 router.push = function push(location) {
   return originalPush.call(this, location).catch(err => {
     // 忽略导航相关的错误
-    if (err.name !== 'NavigationDuplicated' && !err.message.includes('Avoided redundant navigation')) {
+    if (
+      err.name !== 'NavigationDuplicated' &&
+      !err.message.includes('Avoided redundant navigation')
+    ) {
       console.error('Navigation error:', err)
       throw err
     }
@@ -203,7 +206,10 @@ router.push = function push(location) {
 router.replace = function replace(location) {
   return originalReplace.call(this, location).catch(err => {
     // 忽略导航相关的错误
-    if (err.name !== 'NavigationDuplicated' && !err.message.includes('Avoided redundant navigation')) {
+    if (
+      err.name !== 'NavigationDuplicated' &&
+      !err.message.includes('Avoided redundant navigation')
+    ) {
       console.error('Navigation error:', err)
       throw err
     }
@@ -213,7 +219,7 @@ router.replace = function replace(location) {
 }
 
 // 全局错误处理
-router.onError((error) => {
+router.onError(error => {
   console.error('Router error:', error)
 })
 

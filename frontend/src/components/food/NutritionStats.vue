@@ -180,7 +180,7 @@ const props = defineProps({
 const emit = defineEmits(['date-change'])
 
 // 格式化日期函数
-const formatDate = (date) => {
+const formatDate = date => {
   if (!date) return ''
   const d = new Date(date)
   const year = d.getFullYear()
@@ -197,27 +197,27 @@ const currentDate = ref(formatDate(new Date()))
 const mealCalories = computed(() => {
   if (!stats.value) return []
   return [
-    { 
-      type: 'BREAKFAST', 
-      name: '早餐', 
+    {
+      type: 'BREAKFAST',
+      name: '早餐',
       value: stats.value.breakfastCalories || 0,
       color: MealTypes.BREAKFAST.color
     },
-    { 
-      type: 'LUNCH', 
-      name: '午餐', 
+    {
+      type: 'LUNCH',
+      name: '午餐',
       value: stats.value.lunchCalories || 0,
       color: MealTypes.LUNCH.color
     },
-    { 
-      type: 'DINNER', 
-      name: '晚餐', 
+    {
+      type: 'DINNER',
+      name: '晚餐',
       value: stats.value.dinnerCalories || 0,
       color: MealTypes.DINNER.color
     },
-    { 
-      type: 'SNACK', 
-      name: '加餐', 
+    {
+      type: 'SNACK',
+      name: '加餐',
       value: stats.value.snackCalories || 0,
       color: MealTypes.SNACK.color
     }
@@ -230,7 +230,11 @@ const nutritionPieOption = computed(() => {
 
   const data = [
     { value: stats.value.totalProtein || 0, name: '蛋白质', itemStyle: { color: '#FF6384' } },
-    { value: stats.value.totalCarbohydrates || 0, name: '碳水化合物', itemStyle: { color: '#36A2EB' } },
+    {
+      value: stats.value.totalCarbohydrates || 0,
+      name: '碳水化合物',
+      itemStyle: { color: '#36A2EB' }
+    },
     { value: stats.value.totalFat || 0, name: '脂肪', itemStyle: { color: '#FFCE56' } },
     { value: stats.value.totalFiber || 0, name: '膳食纤维', itemStyle: { color: '#4BC0C0' } }
   ]
@@ -304,7 +308,10 @@ const mealBarOption = computed(() => {
       {
         type: 'bar',
         data: [
-          { value: stats.value.breakfastCalories || 0, itemStyle: { color: MealTypes.BREAKFAST.color } },
+          {
+            value: stats.value.breakfastCalories || 0,
+            itemStyle: { color: MealTypes.BREAKFAST.color }
+          },
           { value: stats.value.lunchCalories || 0, itemStyle: { color: MealTypes.LUNCH.color } },
           { value: stats.value.dinnerCalories || 0, itemStyle: { color: MealTypes.DINNER.color } },
           { value: stats.value.snackCalories || 0, itemStyle: { color: MealTypes.SNACK.color } }
@@ -319,7 +326,7 @@ const mealBarOption = computed(() => {
 })
 
 // 获取营养统计
-const fetchStats = async (date) => {
+const fetchStats = async date => {
   loading.value = true
   try {
     const dateStr = typeof date === 'string' ? date : formatDate(date)
@@ -341,9 +348,8 @@ const fetchStats = async (date) => {
   }
 }
 
-
 // 日期变化
-const handleDateChange = (date) => {
+const handleDateChange = date => {
   console.log('用户选择日期:', date)
   if (date) {
     currentDate.value = date
@@ -352,14 +358,17 @@ const handleDateChange = (date) => {
   }
 }
 
-watch(() => props.date, (newDate, oldDate) => {
-  console.log('date prop变化:', oldDate, '->', newDate)
-  if (newDate) {
-    const dateStr = typeof newDate === 'string' ? newDate : formatDate(newDate)
-    currentDate.value = dateStr
-    fetchStats(newDate)
+watch(
+  () => props.date,
+  (newDate, oldDate) => {
+    console.log('date prop变化:', oldDate, '->', newDate)
+    if (newDate) {
+      const dateStr = typeof newDate === 'string' ? newDate : formatDate(newDate)
+      currentDate.value = dateStr
+      fetchStats(newDate)
+    }
   }
-})
+)
 
 onMounted(() => {
   console.log('NutritionStats组件挂载, props.date:', props.date)
@@ -497,23 +506,39 @@ onBeforeUnmount(() => {
       }
 
       &.protein {
-        .icon { color: #FF6384; }
-        .value { color: #FF6384; }
+        .icon {
+          color: #ff6384;
+        }
+        .value {
+          color: #ff6384;
+        }
       }
 
       &.carbs {
-        .icon { color: #36A2EB; }
-        .value { color: #36A2EB; }
+        .icon {
+          color: #36a2eb;
+        }
+        .value {
+          color: #36a2eb;
+        }
       }
 
       &.fat {
-        .icon { color: #FFCE56; }
-        .value { color: #FFCE56; }
+        .icon {
+          color: #ffce56;
+        }
+        .value {
+          color: #ffce56;
+        }
       }
 
       &.fiber {
-        .icon { color: #4BC0C0; }
-        .value { color: #4BC0C0; }
+        .icon {
+          color: #4bc0c0;
+        }
+        .value {
+          color: #4bc0c0;
+        }
       }
     }
   }

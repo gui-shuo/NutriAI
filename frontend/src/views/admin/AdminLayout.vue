@@ -47,7 +47,7 @@
             </el-breadcrumb-item>
             <el-breadcrumb-item>{{ breadcrumbTitle }}</el-breadcrumb-item>
           </el-breadcrumb>
-          
+
           <div class="header-right">
             <AlertNotification />
             <span class="username">{{ userInfo.username }}</span>
@@ -105,26 +105,22 @@ const breadcrumbTitle = computed(() => {
   return titles[route.path] || '管理后台'
 })
 
-const handleMenuSelect = (index) => {
+const handleMenuSelect = index => {
   router.push(index)
 }
 
 const handleLogout = async () => {
   try {
-    await ElMessageBox.confirm(
-      '确定要退出登录吗？',
-      '退出确认',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-        center: true,
-        customClass: 'custom-message-box',
-        showClose: true,
-        closeOnClickModal: false
-      }
-    )
-    
+    await ElMessageBox.confirm('确定要退出登录吗？', '退出确认', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+      center: true,
+      customClass: 'custom-message-box',
+      showClose: true,
+      closeOnClickModal: false
+    })
+
     localStorage.removeItem('token')
     localStorage.removeItem('username')
     ElMessage.success('已退出登录')

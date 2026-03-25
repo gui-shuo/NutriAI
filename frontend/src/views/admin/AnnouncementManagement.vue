@@ -240,10 +240,10 @@ const loadAnnouncements = async () => {
     const token = localStorage.getItem('token')
     const response = await fetch('http://localhost:8080/api/admin/announcements', {
       headers: {
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`
       }
     })
-    
+
     const data = await response.json()
     if (data.code === 200) {
       announcementList.value = data.data
@@ -272,7 +272,7 @@ const handleCreate = () => {
 }
 
 // 编辑公告
-const handleEdit = (row) => {
+const handleEdit = row => {
   isCreate.value = false
   Object.assign(editForm, {
     ...row,
@@ -285,7 +285,7 @@ const handleEdit = (row) => {
 const handleSave = async () => {
   try {
     await formRef.value.validate()
-    
+
     const token = localStorage.getItem('token')
     const requestData = {
       title: editForm.title,
@@ -296,33 +296,30 @@ const handleSave = async () => {
       startTime: editForm.timeRange ? editForm.timeRange[0] : null,
       endTime: editForm.timeRange ? editForm.timeRange[1] : null
     }
-    
+
     let response
     if (isCreate.value) {
       // 创建
       response = await fetch('http://localhost:8080/api/admin/announcements', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(requestData)
       })
     } else {
       // 更新
-      response = await fetch(
-        `http://localhost:8080/api/admin/announcements/${editForm.id}`,
-        {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(requestData)
-        }
-      )
+      response = await fetch(`http://localhost:8080/api/admin/announcements/${editForm.id}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestData)
+      })
     }
-    
+
     const data = await response.json()
     if (data.code === 200) {
       ElMessage.success(isCreate.value ? '创建成功' : '更新成功')
@@ -337,24 +334,21 @@ const handleSave = async () => {
 }
 
 // 切换状态
-const handleToggleStatus = async (row) => {
+const handleToggleStatus = async row => {
   try {
     const token = localStorage.getItem('token')
-    const response = await fetch(
-      `http://localhost:8080/api/admin/announcements/${row.id}`,
-      {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          ...row,
-          isActive: row.isActive
-        })
-      }
-    )
-    
+    const response = await fetch(`http://localhost:8080/api/admin/announcements/${row.id}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        ...row,
+        isActive: row.isActive
+      })
+    })
+
     const data = await response.json()
     if (data.code === 200) {
       ElMessage.success('状态更新成功')
@@ -369,33 +363,26 @@ const handleToggleStatus = async (row) => {
 }
 
 // 删除公告
-const handleDelete = async (row) => {
+const handleDelete = async row => {
   try {
-    await ElMessageBox.confirm(
-      `确定要删除公告 "${row.title}" 吗？`,
-      '确认删除',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-        center: true,
-        customClass: 'custom-message-box',
-        showClose: true,
-        closeOnClickModal: false
-      }
-    )
-    
+    await ElMessageBox.confirm(`确定要删除公告 "${row.title}" 吗？`, '确认删除', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+      center: true,
+      customClass: 'custom-message-box',
+      showClose: true,
+      closeOnClickModal: false
+    })
+
     const token = localStorage.getItem('token')
-    const response = await fetch(
-      `http://localhost:8080/api/admin/announcements/${row.id}`,
-      {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+    const response = await fetch(`http://localhost:8080/api/admin/announcements/${row.id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`
       }
-    )
-    
+    })
+
     const data = await response.json()
     if (data.code === 200) {
       ElMessage.success('删除成功')
@@ -411,7 +398,7 @@ const handleDelete = async (row) => {
 }
 
 // 格式化日期
-const formatDate = (dateString) => {
+const formatDate = dateString => {
   if (!dateString) return '-'
   return new Date(dateString).toLocaleString('zh-CN')
 }

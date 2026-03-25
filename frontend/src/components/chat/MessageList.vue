@@ -196,7 +196,7 @@ const showScrollButton = ref(false)
 const userAvatar = computed(() => authStore.user?.avatar || '')
 
 // 格式化时间
-const formatTime = (timestamp) => {
+const formatTime = timestamp => {
   if (!timestamp) return ''
   const date = new Date(timestamp)
   const now = new Date()
@@ -224,36 +224,39 @@ const formatTime = (timestamp) => {
 }
 
 // 渲染Markdown
-const renderMarkdown = (content) => {
+const renderMarkdown = content => {
   if (!content) return ''
-  
+
   // 配置marked
   marked.setOptions({
     breaks: true,
     gfm: true
   })
-  
+
   // 转换Markdown并清理HTML
   const html = marked.parse(content)
   return DOMPurify.sanitize(html)
 }
 
 // 复制消息
-const copyMessage = (content) => {
-  navigator.clipboard.writeText(content).then(() => {
-    ElMessage.success('已复制到剪贴板')
-  }).catch(() => {
-    ElMessage.error('复制失败')
-  })
+const copyMessage = content => {
+  navigator.clipboard
+    .writeText(content)
+    .then(() => {
+      ElMessage.success('已复制到剪贴板')
+    })
+    .catch(() => {
+      ElMessage.error('复制失败')
+    })
 }
 
 // 重新生成
-const regenerate = (message) => {
+const regenerate = message => {
   emit('regenerate', message)
 }
 
 // 收藏/取消收藏
-const toggleFavorite = (message) => {
+const toggleFavorite = message => {
   if (message.favorite) {
     emit('unfavorite', message.id)
   } else {
@@ -276,10 +279,10 @@ const scrollToBottom = (smooth = true) => {
 // 监听滚动
 const handleScroll = () => {
   if (!messageContainer.value) return
-  
+
   const { scrollTop, scrollHeight, clientHeight } = messageContainer.value
   const isNearBottom = scrollHeight - scrollTop - clientHeight < 200
-  
+
   showScrollButton.value = !isNearBottom
 }
 
@@ -488,7 +491,8 @@ defineExpose({
 }
 
 @keyframes blink {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -520,7 +524,9 @@ defineExpose({
 }
 
 @keyframes typing {
-  0%, 60%, 100% {
+  0%,
+  60%,
+  100% {
     transform: translateY(0);
     opacity: 0.7;
   }
@@ -602,7 +608,9 @@ defineExpose({
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s, transform 0.3s;
+  transition:
+    opacity 0.3s,
+    transform 0.3s;
 }
 
 .fade-enter-from,

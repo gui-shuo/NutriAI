@@ -305,13 +305,13 @@ const viewAllRecords = async () => {
 }
 
 // 格式化时间（简短版）
-const formatTime = (time) => {
+const formatTime = time => {
   if (!time) return ''
   const date = new Date(time)
   const now = new Date()
   const diff = now - date
   const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-  
+
   if (days === 0) return '今天'
   if (days === 1) return '昨天'
   if (days < 7) return `${days}天前`
@@ -319,7 +319,7 @@ const formatTime = (time) => {
 }
 
 // 格式化时间（完整版）
-const formatFullTime = (time) => {
+const formatFullTime = time => {
   if (!time) return ''
   const date = new Date(time)
   return date.toLocaleString('zh-CN', {
@@ -332,11 +332,11 @@ const formatFullTime = (time) => {
 }
 
 // 获取状态文本
-const getStatusText = (status) => {
+const getStatusText = status => {
   const statusMap = {
-    'PENDING': '待接受',
-    'ACCEPTED': '已接受',
-    'EXPIRED': '已过期'
+    PENDING: '待接受',
+    ACCEPTED: '已接受',
+    EXPIRED: '已过期'
   }
   return statusMap[status] || status
 }

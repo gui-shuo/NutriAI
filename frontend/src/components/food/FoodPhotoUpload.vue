@@ -96,7 +96,7 @@ const triggerFileInput = () => {
 }
 
 // 处理文件选择
-const handleFileChange = (event) => {
+const handleFileChange = event => {
   const file = event.target.files?.[0]
   if (file) {
     validateAndUpload(file)
@@ -106,7 +106,7 @@ const handleFileChange = (event) => {
 }
 
 // 处理拖拽上传
-const handleDrop = (event) => {
+const handleDrop = event => {
   isDragOver.value = false
   const file = event.dataTransfer?.files?.[0]
   if (file) {
@@ -115,7 +115,7 @@ const handleDrop = (event) => {
 }
 
 // 验证并上传文件
-const validateAndUpload = (file) => {
+const validateAndUpload = file => {
   // 验证文件类型
   const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif']
   if (!allowedTypes.includes(file.type)) {
@@ -134,7 +134,7 @@ const validateAndUpload = (file) => {
 }
 
 // 上传文件
-const uploadFile = async (file) => {
+const uploadFile = async file => {
   uploading.value = true
   uploadProgress.value = 0
 

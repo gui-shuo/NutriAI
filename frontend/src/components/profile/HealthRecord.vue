@@ -11,7 +11,7 @@
       <h3 class="section-title">
         BMI 计算器
       </h3>
-      
+
       <el-form
         :model="bmiData"
         label-width="80px"
@@ -175,7 +175,8 @@
       </div>
       <div class="weight-tip">
         <el-icon><InfoFilled /></el-icon>
-        根据您的身高 {{ bmiData.height }} cm，理想体重范围为 {{ idealWeight.min }} - {{ idealWeight.max }} kg
+        根据您的身高 {{ bmiData.height }} cm，理想体重范围为 {{ idealWeight.min }} -
+        {{ idealWeight.max }} kg
       </div>
     </div>
   </div>
@@ -195,11 +196,11 @@ const bmiResult = ref(null)
 // 计算理想体重范围
 const idealWeight = computed(() => {
   if (!bmiData.height) return { min: 0, max: 0 }
-  
+
   const heightInMeters = bmiData.height / 100
   const min = (18.5 * heightInMeters * heightInMeters).toFixed(1)
   const max = (23.9 * heightInMeters * heightInMeters).toFixed(1)
-  
+
   return { min, max }
 })
 

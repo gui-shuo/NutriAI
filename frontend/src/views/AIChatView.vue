@@ -313,11 +313,13 @@ const handleSend = async ({ text, file }) => {
     role: 'user',
     content: text,
     timestamp: Date.now(),
-    file: file ? {
-      name: file.name,
-      size: file.size,
-      type: file.type
-    } : null
+    file: file
+      ? {
+          name: file.name,
+          size: file.size,
+          type: file.type
+        }
+      : null
   }
 
   messages.value.push(userMessage)
@@ -340,7 +342,7 @@ const handleSend = async ({ text, file }) => {
   try {
     // 调用真实后端API
     const token = localStorage.getItem('token')
-    
+
     if (!token) {
       console.error('❌ 未找到token，用户未登录')
       ElMessage.error('请先登录')
@@ -365,7 +367,7 @@ const handleSend = async ({ text, file }) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`
       },
       body: JSON.stringify({
         message: text,
@@ -386,19 +388,19 @@ const handleSend = async ({ text, file }) => {
 
     const data = await response.json()
     console.log('📦 API响应数据:', data)
-    
+
     if (data.code === 200) {
       // 提取AI回复
       const aiResponse = data.data.message || data.data
-      
+
       if (!aiResponse || aiResponse.trim() === '') {
         console.warn('⚠️ AI回复为空')
         throw new Error('AI回复为空，请重试')
       }
-      
+
       console.log('✅ AI回复成功，长度:', aiResponse.length)
       console.log('📝 AI回复内容:', aiResponse.substring(0, 100))
-      
+
       // 找到messages数组中的AI消息并更新（确保Vue响应式更新）
       const index = messages.value.findIndex(m => m.id === aiMessage.id)
       if (index > -1) {
@@ -417,7 +419,7 @@ const handleSend = async ({ text, file }) => {
     }
   } catch (error) {
     console.error('❌ 发送消息失败:', error)
-    
+
     // 详细的错误信息
     let errorMessage = '发送失败'
     if (error.message.includes('Failed to fetch')) {
@@ -432,9 +434,9 @@ const handleSend = async ({ text, file }) => {
     } else {
       errorMessage = `发送失败：${error.message}`
     }
-    
+
     ElMessage.error(errorMessage)
-    
+
     // 移除失败的AI消息
     const index = messages.value.findIndex(m => m.id === aiMessage.id)
     if (index > -1) {
@@ -448,12 +450,12 @@ const handleSend = async ({ text, file }) => {
 // 模拟AI响应（实际开发中替换为真实API调用）
 // eslint-disable-next-line no-unused-vars
 const simulateAIResponse = async (aiMessage, userInput) => {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     // 模拟网络延迟
     setTimeout(() => {
       // 根据用户输入生成不同的回复
       let response = ''
-      
+
       if (userInput.includes('苹果') || userInput.includes('营养')) {
         response = `## 苹果的营养成分分析
 
@@ -568,14 +570,14 @@ ${userInput}
 }
 
 // 快捷操作
-const handleQuickAction = (content) => {
+const handleQuickAction = content => {
   handleSend({ text: content })
 }
 
 // 重新生成
-const handleRegenerate = async (message) => {
+const handleRegenerate = async message => {
   ElMessage.info('正在重新生成...')
-  
+
   // 找到这条消息的上一条用户消息
   const messageIndex = messages.value.findIndex(m => m.id === message.id)
   if (messageIndex > 0) {
@@ -583,7 +585,7 @@ const handleRegenerate = async (message) => {
     if (userMessage.role === 'user') {
       // 移除当前AI消息
       messages.value.splice(messageIndex, 1)
-      
+
       // 重新发送
       await handleSend({ text: userMessage.content })
     }
@@ -591,7 +593,7 @@ const handleRegenerate = async (message) => {
 }
 
 // 文件选择
-const handleFileSelect = (file) => {
+const handleFileSelect = file => {
   console.log('文件已选择:', file)
   ElMessage.success(`文件 ${file.name} 已选择`)
 }
@@ -604,21 +606,17 @@ const handleClearHistory = async () => {
   }
 
   try {
-    await ElMessageBox.confirm(
-      '确定要清空当前对话吗？这将开启一个新的对话。',
-      '开启新对话',
-      {
-        confirmButtonText: '确认',
-        cancelButtonText: '取消',
-        type: 'warning',
-        customClass: 'ai-chat-delete-confirm',
-        dangerouslyUseHTMLString: false,
-        showClose: true,
-        closeOnClickModal: false,
-        closeOnPressEscape: true,
-        buttonSize: 'default'
-      }
-    )
+    await ElMessageBox.confirm('确定要清空当前对话吗？这将开启一个新的对话。', '开启新对话', {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'warning',
+      customClass: 'ai-chat-delete-confirm',
+      dangerouslyUseHTMLString: false,
+      showClose: true,
+      closeOnClickModal: false,
+      closeOnPressEscape: true,
+      buttonSize: 'default'
+    })
 
     // 先保存当前对话到历史记录
     if (settings.autoSave && messages.value.length > 0) {
@@ -652,17 +650,17 @@ const handleExport = () => {
     exportContent += `导出时间：${new Date().toLocaleString('zh-CN')}\n\n`
     exportContent += '---\n\n'
 
-    messages.value.forEach((msg) => {
+    messages.value.forEach(msg => {
       const role = msg.role === 'user' ? '👤 用户' : '🤖 AI营养师'
       const time = new Date(msg.timestamp).toLocaleString('zh-CN')
-      
+
       exportContent += `### ${role} - ${time}\n\n`
       exportContent += `${msg.content}\n\n`
-      
+
       if (msg.favorite) {
         exportContent += `⭐ 已收藏\n\n`
       }
-      
+
       exportContent += '---\n\n'
     })
 
@@ -709,14 +707,14 @@ const handleSaveSettings = () => {
   // 保存设置到本地存储
   localStorage.setItem('aiChatSettings', JSON.stringify(settings))
   showSettings.value = false
-  
+
   console.log('💾 用户设置已保存:', {
     model: settings.model,
     temperature: settings.temperature,
     maxTokens: settings.maxTokens,
     keepContext: settings.keepContext
   })
-  
+
   ElMessage.success({
     message: '设置已保存！下次发送消息时生效',
     duration: 3000
@@ -736,17 +734,17 @@ const loadSettings = () => {
 }
 
 // 收藏消息
-const handleFavorite = async (messageId) => {
+const handleFavorite = async messageId => {
   const index = messages.value.findIndex(m => m.id === messageId)
   if (index > -1) {
     const message = messages.value[index]
-    
+
     try {
       const token = localStorage.getItem('token')
       const response = await fetch('http://localhost:8080/api/ai-chat/favorite', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -754,7 +752,7 @@ const handleFavorite = async (messageId) => {
           messageRole: message.role
         })
       })
-      
+
       const data = await response.json()
       if (data.code === 200) {
         messages.value[index].favorite = true
@@ -769,21 +767,18 @@ const handleFavorite = async (messageId) => {
 }
 
 // 取消收藏
-const handleUnfavorite = async (msg) => {
+const handleUnfavorite = async msg => {
   try {
     const token = localStorage.getItem('token')
     const favoriteId = msg.id
-    
-    const response = await fetch(
-      `http://localhost:8080/api/ai-chat/favorite/${favoriteId}`,
-      {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+
+    const response = await fetch(`http://localhost:8080/api/ai-chat/favorite/${favoriteId}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`
       }
-    )
-    
+    })
+
     const data = await response.json()
     if (data.code === 200) {
       ElMessage.success('已取消收藏')
@@ -799,16 +794,19 @@ const handleUnfavorite = async (msg) => {
 }
 
 // 复制消息
-const copyMessage = (content) => {
-  navigator.clipboard.writeText(content).then(() => {
-    ElMessage.success('已复制到剪贴板')
-  }).catch(() => {
-    ElMessage.error('复制失败')
-  })
+const copyMessage = content => {
+  navigator.clipboard
+    .writeText(content)
+    .then(() => {
+      ElMessage.success('已复制到剪贴板')
+    })
+    .catch(() => {
+      ElMessage.error('复制失败')
+    })
 }
 
 // 渲染Markdown
-const renderMarkdown = (content) => {
+const renderMarkdown = content => {
   if (!content) return ''
   marked.setOptions({
     breaks: true,
@@ -819,7 +817,7 @@ const renderMarkdown = (content) => {
 }
 
 // 格式化时间
-const formatTime = (timestamp) => {
+const formatTime = timestamp => {
   if (!timestamp) return ''
   const date = new Date(timestamp)
   const now = new Date()
@@ -828,7 +826,7 @@ const formatTime = (timestamp) => {
   if (diff < 60000) return '刚刚'
   if (diff < 3600000) return `${Math.floor(diff / 60000)}分钟前`
   if (diff < 86400000) return `${Math.floor(diff / 3600000)}小时前`
-  
+
   return date.toLocaleString('zh-CN', {
     month: '2-digit',
     day: '2-digit',
@@ -839,7 +837,7 @@ const formatTime = (timestamp) => {
 
 // 生成对话标题
 // eslint-disable-next-line no-unused-vars
-const generateConversationTitle = (firstMessage) => {
+const generateConversationTitle = firstMessage => {
   if (!firstMessage) return '未命名对话'
   return firstMessage.substring(0, 30) + (firstMessage.length > 30 ? '...' : '')
 }
@@ -847,22 +845,23 @@ const generateConversationTitle = (firstMessage) => {
 // 保存历史记录到数据库（一个会话只保存/更新一次）
 const saveHistoryToDatabase = async () => {
   if (messages.value.length === 0) return
-  
+
   try {
     const token = localStorage.getItem('token')
     if (!token) return
-    
+
     // 生成标题（取第一条用户消息的前20个字符）
     const firstUserMessage = messages.value.find(m => m.role === 'user')
-    const title = firstUserMessage ? 
-      (firstUserMessage.content.substring(0, 20) + (firstUserMessage.content.length > 20 ? '...' : '')) :
-      '新对话'
-    
+    const title = firstUserMessage
+      ? firstUserMessage.content.substring(0, 20) +
+        (firstUserMessage.content.length > 20 ? '...' : '')
+      : '新对话'
+
     // 如果当前会话已有ID，则更新；否则创建新记录
     const response = await fetch('http://localhost:8080/api/ai-chat/history', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
@@ -871,7 +870,7 @@ const saveHistoryToDatabase = async () => {
         messages: JSON.stringify(messages.value)
       })
     })
-    
+
     const data = await response.json()
     if (data.code === 200) {
       // 保存会话ID，后续更新使用
@@ -898,16 +897,13 @@ const loadHistoryList = async () => {
   try {
     const token = localStorage.getItem('token')
     if (!token) return
-    
-    const response = await fetch(
-      'http://localhost:8080/api/ai-chat/history/all',
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+
+    const response = await fetch('http://localhost:8080/api/ai-chat/history/all', {
+      headers: {
+        Authorization: `Bearer ${token}`
       }
-    )
-    
+    })
+
     const data = await response.json()
     if (data.code === 200) {
       // 转换数据格式
@@ -928,16 +924,13 @@ const loadFavoritesList = async () => {
   try {
     const token = localStorage.getItem('token')
     if (!token) return
-    
-    const response = await fetch(
-      'http://localhost:8080/api/ai-chat/favorite/all',
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+
+    const response = await fetch('http://localhost:8080/api/ai-chat/favorite/all', {
+      headers: {
+        Authorization: `Bearer ${token}`
       }
-    )
-    
+    })
+
     const data = await response.json()
     if (data.code === 200) {
       // 转换数据格式
@@ -955,7 +948,7 @@ const loadFavoritesList = async () => {
 }
 
 // 加载历史对话
-const loadHistoryConversation = (item) => {
+const loadHistoryConversation = item => {
   messages.value = JSON.parse(JSON.stringify(item.messages))
   currentHistoryId.value = item.id // 设置当前会话ID
   showHistory.value = false
@@ -963,7 +956,7 @@ const loadHistoryConversation = (item) => {
 }
 
 // 删除历史记录
-const deleteHistory = async (id) => {
+const deleteHistory = async id => {
   try {
     await ElMessageBox.confirm('确定要删除这条历史记录吗？', '确认删除', {
       confirmButtonText: '确认',
@@ -973,16 +966,13 @@ const deleteHistory = async (id) => {
     })
 
     const token = localStorage.getItem('token')
-    const response = await fetch(
-      `http://localhost:8080/api/ai-chat/history/${id}`,
-      {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+    const response = await fetch(`http://localhost:8080/api/ai-chat/history/${id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`
       }
-    )
-    
+    })
+
     const data = await response.json()
     if (data.code === 200) {
       ElMessage.success('已删除')
@@ -1005,19 +995,19 @@ onMounted(() => {
 // 清理（已移至下方的 onUnmounted）
 
 // 键盘快捷键
-const handleKeydown = (e) => {
+const handleKeydown = e => {
   // Ctrl/Cmd + K: 清空对话
   if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
     e.preventDefault()
     handleClearHistory()
   }
-  
+
   // Ctrl/Cmd + E: 导出对话
   if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
     e.preventDefault()
     handleExport()
   }
-  
+
   // Ctrl/Cmd + H: 打开历史记录
   if ((e.ctrlKey || e.metaKey) && e.key === 'h') {
     e.preventDefault()
@@ -1049,17 +1039,17 @@ onMounted(() => {
 
 onUnmounted(() => {
   document.removeEventListener('keydown', handleKeydown)
-  
+
   // 清除保存定时器
   if (saveTimer.value) {
     clearTimeout(saveTimer.value)
   }
-  
+
   // 保存当前对话到数据库
   if (settings.autoSave && messages.value.length > 0) {
     saveHistoryToDatabase()
   }
-  
+
   // 不再在组件卸载时清理遮罩层，让 Element Plus 自己管理
 })
 </script>
@@ -1228,11 +1218,11 @@ onUnmounted(() => {
   .chat-header {
     padding: 0 16px;
   }
-  
+
   .header-title {
     font-size: 18px;
   }
-  
+
   .header-right .el-button {
     padding: 8px;
   }
@@ -1249,7 +1239,7 @@ onUnmounted(() => {
   background: #ffffff !important;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
   overflow: hidden !important;
-  
+
   .el-message-box__header {
     position: relative !important;
     padding: 20px 20px 16px 20px !important;
@@ -1259,7 +1249,7 @@ onUnmounted(() => {
     align-items: center !important;
     justify-content: space-between !important;
   }
-  
+
   .el-message-box__title {
     font-size: 18px !important;
     font-weight: 600 !important;
@@ -1267,7 +1257,7 @@ onUnmounted(() => {
     flex: 1 !important;
     line-height: 24px !important;
   }
-  
+
   .el-message-box__headerbtn {
     position: relative !important;
     top: auto !important;
@@ -1277,52 +1267,52 @@ onUnmounted(() => {
     padding: 0 !important;
     margin: 0 0 0 10px !important;
     flex-shrink: 0 !important;
-    
+
     .el-message-box__close {
       color: rgba(0, 0, 0, 0.45) !important;
       font-size: 16px !important;
       width: 20px !important;
       height: 20px !important;
       line-height: 20px !important;
-      
+
       &:hover {
         color: rgba(0, 0, 0, 0.75) !important;
       }
     }
   }
-  
+
   .el-message-box__content {
     padding: 8px 20px 20px !important;
     background: #ffffff !important;
   }
-  
+
   .el-message-box__container {
     display: flex !important;
     align-items: flex-start !important;
-    
+
     .el-message-box__status {
       font-size: 20px !important;
       margin-top: 0 !important;
       flex-shrink: 0 !important;
-      
+
       &.el-message-box-icon--warning {
         color: #f59e0b !important;
       }
     }
   }
-  
+
   .el-message-box__message {
     color: #4b5563 !important;
     font-size: 14px !important;
     line-height: 1.6 !important;
     padding-left: 4px !important;
-    
+
     p {
       margin: 0 !important;
       line-height: 1.6 !important;
     }
   }
-  
+
   .el-message-box__btns {
     padding: 0 20px 20px !important;
     background: #ffffff !important;
@@ -1330,7 +1320,7 @@ onUnmounted(() => {
     justify-content: flex-end !important;
     gap: 12px !important;
     border-top: none !important;
-    
+
     .el-button {
       margin: 0 !important;
       padding: 10px 24px !important;
@@ -1339,30 +1329,30 @@ onUnmounted(() => {
       font-weight: 500 !important;
       transition: all 0.2s ease !important;
       min-width: 90px !important;
-      
+
       &.el-button--primary {
         background: #ef4444 !important;
         border-color: #ef4444 !important;
         color: #ffffff !important;
         box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2) !important;
-        
+
         &:hover {
           background: #dc2626 !important;
           border-color: #dc2626 !important;
           box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3) !important;
         }
-        
+
         &:active {
           background: #b91c1c !important;
           border-color: #b91c1c !important;
         }
       }
-      
+
       &.el-button--default {
         background: #ffffff !important;
         border-color: #d1d5db !important;
         color: #6b7280 !important;
-        
+
         &:hover {
           color: #374151 !important;
           border-color: #9ca3af !important;

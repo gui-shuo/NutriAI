@@ -99,7 +99,7 @@ const triggerFileInput = () => {
 }
 
 // 处理文件选择
-const handleFileChange = (event) => {
+const handleFileChange = event => {
   const file = event.target.files?.[0]
   if (file) {
     validateAndUpload(file)
@@ -109,7 +109,7 @@ const handleFileChange = (event) => {
 }
 
 // 处理拖拽上传
-const handleDrop = (event) => {
+const handleDrop = event => {
   isDragOver.value = false
   const file = event.dataTransfer?.files?.[0]
   if (file) {
@@ -118,7 +118,7 @@ const handleDrop = (event) => {
 }
 
 // 验证并打开裁剪器
-const validateAndUpload = (file) => {
+const validateAndUpload = file => {
   // 验证文件类型
   const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg']
   if (!allowedTypes.includes(file.type)) {
@@ -139,12 +139,12 @@ const validateAndUpload = (file) => {
 }
 
 // 处理裁剪后的图片
-const handleCroppedImage = (file) => {
+const handleCroppedImage = file => {
   uploadFile(file)
 }
 
 // 上传文件
-const uploadFile = async (file) => {
+const uploadFile = async file => {
   uploading.value = true
   uploadProgress.value = 0
 
@@ -156,10 +156,8 @@ const uploadFile = async (file) => {
       headers: {
         'Content-Type': 'multipart/form-data'
       },
-      onUploadProgress: (progressEvent) => {
-        uploadProgress.value = Math.round(
-          (progressEvent.loaded * 100) / progressEvent.total
-        )
+      onUploadProgress: progressEvent => {
+        uploadProgress.value = Math.round((progressEvent.loaded * 100) / progressEvent.total)
       }
     })
 
@@ -173,9 +171,9 @@ const uploadFile = async (file) => {
     }
   } catch (error) {
     console.error('上传失败:', error)
-    
+
     let errorMessage = '上传失败'
-    
+
     if (error.response) {
       const { status, data } = error.response
       if (data?.message) {
@@ -196,7 +194,7 @@ const uploadFile = async (file) => {
     } else {
       errorMessage = error.message || '请求配置错误'
     }
-    
+
     message.error(errorMessage)
   } finally {
     uploading.value = false
@@ -219,7 +217,7 @@ const uploadFile = async (file) => {
 
     &:hover {
       border-color: #667eea;
-      
+
       .avatar-mask {
         opacity: 1;
       }

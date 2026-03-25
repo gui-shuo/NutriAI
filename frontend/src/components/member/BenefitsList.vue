@@ -87,7 +87,17 @@ const props = defineProps({
 // 解析权益列表
 const benefitItems = computed(() => {
   const features = props.benefits.features || []
-  const icons = [ChatDotRound, DataAnalysis, Document, Star, Trophy, TrendCharts, Service, Medal, Present]
+  const icons = [
+    ChatDotRound,
+    DataAnalysis,
+    Document,
+    Star,
+    Trophy,
+    TrendCharts,
+    Service,
+    Medal,
+    Present
+  ]
   const colors = [
     'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
     'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
@@ -121,26 +131,26 @@ const foodRecordsLimit = computed(() => {
 })
 
 // 获取权益描述
-const getBenefitDescription = (feature) => {
+const getBenefitDescription = feature => {
   const descriptions = {
-    '基础营养记录': '记录每日饮食，追踪营养摄入',
-    '营养记录无限': '不限次数记录饮食，全面追踪',
+    基础营养记录: '记录每日饮食，追踪营养摄入',
+    营养记录无限: '不限次数记录饮食，全面追踪',
     'AI咨询(3次/天)': '每天3次智能营养咨询',
     'AI咨询(10次/天)': '每天10次智能营养咨询',
     'AI咨询(30次/天)': '每天30次智能营养咨询',
-    'AI咨询无限': '无限次数AI智能咨询服务',
-    '基础数据分析': '查看基础营养数据统计',
-    '高级数据分析': '深度数据分析和趋势预测',
-    '专属营养报告': '定期生成专业营养报告',
-    '自定义目标': '设置个性化健康目标',
-    '优先客服': '享受优先客服支持',
-    '个性化食谱': 'AI生成个性化饮食方案',
-    '健康顾问': '专属健康顾问一对一服务',
-    '数据导出': '导出所有健康数据',
-    '专属营养师': '真人营养师在线指导',
-    '线下活动': '参与线下健康活动',
-    '合作商家折扣': '享受合作商家优惠',
-    '终身成长值加成': '成长值获取额外加成'
+    AI咨询无限: '无限次数AI智能咨询服务',
+    基础数据分析: '查看基础营养数据统计',
+    高级数据分析: '深度数据分析和趋势预测',
+    专属营养报告: '定期生成专业营养报告',
+    自定义目标: '设置个性化健康目标',
+    优先客服: '享受优先客服支持',
+    个性化食谱: 'AI生成个性化饮食方案',
+    健康顾问: '专属健康顾问一对一服务',
+    数据导出: '导出所有健康数据',
+    专属营养师: '真人营养师在线指导',
+    线下活动: '参与线下健康活动',
+    合作商家折扣: '享受合作商家优惠',
+    终身成长值加成: '成长值获取额外加成'
   }
   return descriptions[feature] || '专属会员权益'
 }

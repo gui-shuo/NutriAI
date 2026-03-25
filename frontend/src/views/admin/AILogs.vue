@@ -257,23 +257,20 @@ const loadLogs = async () => {
       page: pagination.page,
       size: pagination.size
     })
-    
+
     if (searchForm.userId) params.append('userId', searchForm.userId)
     if (searchForm.status) params.append('status', searchForm.status)
     if (searchForm.dateRange && searchForm.dateRange.length === 2) {
       params.append('startDate', searchForm.dateRange[0].toISOString())
       params.append('endDate', searchForm.dateRange[1].toISOString())
     }
-    
-    const response = await fetch(
-      `http://localhost:8080/api/admin/ai-logs?${params}`,
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+
+    const response = await fetch(`http://localhost:8080/api/admin/ai-logs?${params}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
       }
-    )
-    
+    })
+
     const data = await response.json()
     if (data.code === 200) {
       logList.value = data.data.content
@@ -299,12 +296,12 @@ const handleReset = () => {
   handleSearch()
 }
 
-const handleView = (row) => {
+const handleView = row => {
   currentLog.value = row
   detailVisible.value = true
 }
 
-const formatDate = (dateString) => {
+const formatDate = dateString => {
   if (!dateString) return '-'
   return new Date(dateString).toLocaleString('zh-CN')
 }

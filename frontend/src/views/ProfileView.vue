@@ -6,7 +6,7 @@
         :active-menu="activeMenu"
         @change="handleMenuChange"
       />
-      
+
       <!-- 主内容区 -->
       <div class="profile-content">
         <!-- 用户资料展示 -->
@@ -14,17 +14,17 @@
           v-if="activeMenu === 'info'"
           @edit="handleMenuChange('edit')"
         />
-        
+
         <!-- 资料编辑表单 -->
         <ProfileEdit
           v-if="activeMenu === 'edit'"
           @saved="handleMenuChange('info')"
           @cancel="handleMenuChange('info')"
         />
-        
+
         <!-- 修改密码 -->
         <PasswordChange v-if="activeMenu === 'password'" />
-        
+
         <!-- 健康档案 -->
         <HealthRecord v-if="activeMenu === 'health'" />
       </div>
@@ -44,7 +44,7 @@ import HealthRecord from '@/components/profile/HealthRecord.vue'
 const activeMenu = ref('info')
 
 // 切换菜单
-const handleMenuChange = (menu) => {
+const handleMenuChange = menu => {
   activeMenu.value = menu
 }
 </script>
@@ -62,7 +62,7 @@ const handleMenuChange = (menu) => {
   display: grid;
   grid-template-columns: 280px 1fr;
   gap: 24px;
-  
+
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
   }
@@ -74,7 +74,7 @@ const handleMenuChange = (menu) => {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   padding: 32px;
   min-height: 600px;
-  
+
   @media (max-width: 768px) {
     padding: 20px;
   }

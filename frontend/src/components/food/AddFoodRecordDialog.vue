@@ -211,23 +211,22 @@ const formData = reactive({
 })
 
 const rules = {
-  mealType: [
-    { required: true, message: '请选择餐次类型', trigger: 'change' }
-  ],
+  mealType: [{ required: true, message: '请选择餐次类型', trigger: 'change' }],
   foodName: [
     { required: true, message: '请输入食物名称', trigger: 'blur' },
     { max: 100, message: '食物名称最多100个字符', trigger: 'blur' }
   ],
-  recordTime: [
-    { required: true, message: '请选择记录时间', trigger: 'change' }
-  ]
+  recordTime: [{ required: true, message: '请选择记录时间', trigger: 'change' }]
 }
 
-watch(() => props.modelValue, (val) => {
-  visible.value = val
-})
+watch(
+  () => props.modelValue,
+  val => {
+    visible.value = val
+  }
+)
 
-watch(visible, (val) => {
+watch(visible, val => {
   emit('update:modelValue', val)
 })
 

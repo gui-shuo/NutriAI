@@ -38,7 +38,8 @@
               @command="handleCommand"
             >
               <el-button type="primary">
-                {{ userName }} <el-icon class="el-icon--right">
+                {{ userName }}
+                <el-icon class="el-icon--right">
                   <arrow-down />
                 </el-icon>
               </el-button>
@@ -197,7 +198,9 @@
       <div class="container">
         <div class="footer-content">
           <div class="footer-info">
-            <p>{{ getConfig('system.copyright_text', `© 2025 ${siteName}. All rights reserved.`) }}</p>
+            <p>
+              {{ getConfig('system.copyright_text', `© 2025 ${siteName}. All rights reserved.`) }}
+            </p>
             <p
               v-if="getConfig('system.icp_number')"
               class="icp-number"
@@ -226,7 +229,18 @@ import { computed, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { ElMessage as message } from 'element-plus'
-import { Bell, ArrowDown, User, ChatDotRound, Document, Trophy, Calendar, Camera, Message, Phone } from '@element-plus/icons-vue'
+import {
+  Bell,
+  ArrowDown,
+  User,
+  ChatDotRound,
+  Document,
+  Trophy,
+  Calendar,
+  Camera,
+  Message,
+  Phone
+} from '@element-plus/icons-vue'
 import { usePublicConfig } from '@/composables/usePublicConfig'
 
 const router = useRouter()
@@ -247,7 +261,7 @@ let stopAutoRefresh = null
 onMounted(async () => {
   await loadConfig()
   applyConfig()
-  
+
   // 可选：每分钟自动刷新配置
   // stopAutoRefresh = startAutoRefresh(60000)
 })
@@ -288,7 +302,7 @@ const handleLogout = () => {
   router.push('/')
 }
 
-const handleCommand = (command) => {
+const handleCommand = command => {
   if (command === 'logout') {
     handleLogout()
   } else if (command === 'ai-chat') {
@@ -304,13 +318,13 @@ const handleCommand = (command) => {
   }
 }
 
-const goToFeature = (feature) => {
+const goToFeature = feature => {
   if (!isLoggedIn.value) {
     message.warning('请先登录后使用该功能')
     router.push('/login')
     return
   }
-  
+
   // 检查是否已经在目标路由，避免重复导航
   const targetPath = `/${feature}`
   if (route.path !== targetPath) {
@@ -500,18 +514,18 @@ const goToFeature = (feature) => {
   .hero-subtitle {
     font-size: 16px;
   }
-  
+
   .footer-content {
     flex-direction: column;
     gap: 16px;
     text-align: center;
   }
-  
+
   .footer-info,
   .footer-contact {
     text-align: center;
   }
-  
+
   .footer-contact p {
     justify-content: center;
   }

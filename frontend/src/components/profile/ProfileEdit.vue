@@ -119,9 +119,7 @@ const rules = {
     { required: true, message: '请输入邮箱', trigger: 'blur' },
     { type: 'email', message: '请输入正确的邮箱格式', trigger: 'blur' }
   ],
-  phone: [
-    { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }
-  ]
+  phone: [{ pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }]
 }
 
 // 获取用户资料
@@ -160,13 +158,13 @@ const handleSave = async () => {
 
     if (response.data.code === 200) {
       message.success('资料修改成功')
-      
+
       // 更新store中的用户信息
       authStore.setUser({
         ...authStore.user,
         ...response.data.data
       })
-      
+
       emit('saved')
     } else {
       message.error(response.data.message || '保存失败')
@@ -176,16 +174,16 @@ const handleSave = async () => {
     console.error('错误响应:', error.response)
     console.error('错误请求:', error.request)
     console.error('错误消息:', error.message)
-    
+
     // 提取详细的错误信息
     let errorMessage = '资料修改失败'
-    
+
     if (error.response) {
       // 服务器返回了错误响应
       const { status, data } = error.response
       console.log('HTTP状态码:', status)
       console.log('响应数据:', data)
-      
+
       if (data?.message) {
         // 优先使用后端返回的具体错误信息
         errorMessage = data.message
@@ -236,7 +234,7 @@ const handleSave = async () => {
         errorMessage = '操作失败，请重试'
       }
     }
-    
+
     console.log('最终错误提示:', errorMessage)
     message.error(errorMessage)
   } finally {
@@ -250,7 +248,7 @@ const handleCancel = () => {
 }
 
 // 头像上传成功后立即更新store
-const handleAvatarUploaded = (avatarUrl) => {
+const handleAvatarUploaded = avatarUrl => {
   // 立即更新store中的用户信息
   authStore.setUser({
     ...authStore.user,

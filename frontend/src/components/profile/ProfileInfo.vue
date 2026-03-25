@@ -125,7 +125,17 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { Edit, User, Postcard, Message, Phone, UserFilled, CircleCheck, Calendar, Clock } from '@element-plus/icons-vue'
+import {
+  Edit,
+  User,
+  Postcard,
+  Message,
+  Phone,
+  UserFilled,
+  CircleCheck,
+  Calendar,
+  Clock
+} from '@element-plus/icons-vue'
 import api from '@/services/api'
 import message from '@/utils/message'
 
@@ -153,37 +163,37 @@ const fetchProfile = async () => {
 }
 
 // 获取角色文本
-const getRoleText = (role) => {
+const getRoleText = role => {
   const roleMap = {
-    'SUPER_ADMIN': '超级管理员',
-    'ADMIN': '管理员',
-    'USER': '普通用户'
+    SUPER_ADMIN: '超级管理员',
+    ADMIN: '管理员',
+    USER: '普通用户'
   }
   return roleMap[role] || '普通用户'
 }
 
 // 获取角色标签类型
-const getRoleType = (role) => {
+const getRoleType = role => {
   const typeMap = {
-    'SUPER_ADMIN': 'danger',
-    'ADMIN': 'warning',
-    'USER': 'primary'
+    SUPER_ADMIN: 'danger',
+    ADMIN: 'warning',
+    USER: 'primary'
   }
   return typeMap[role] || 'primary'
 }
 
 // 获取状态文本
-const getStatusText = (status) => {
+const getStatusText = status => {
   const statusMap = {
-    'ACTIVE': '正常',
-    'DISABLED': '已禁用',
-    'BANNED': '已封禁'
+    ACTIVE: '正常',
+    DISABLED: '已禁用',
+    BANNED: '已封禁'
   }
   return statusMap[status] || '未知'
 }
 
 // 格式化日期
-const formatDate = (dateStr) => {
+const formatDate = dateStr => {
   if (!dateStr) return '暂无'
   const date = new Date(dateStr)
   return date.toLocaleString('zh-CN', {

@@ -31,8 +31,8 @@
             @keyup.enter="recognizeByName"
           >
             <template #append>
-              <el-button 
-                type="primary" 
+              <el-button
+                type="primary"
                 :loading="isRecognizing"
                 @click="recognizeByName"
               >
@@ -69,7 +69,7 @@
               </div>
             </template>
           </el-upload>
-          
+
           <!-- 预览图片 -->
           <div
             v-if="previewUrl"
@@ -81,9 +81,9 @@
                 alt="预览"
                 class="preview-image"
               >
-              <el-button 
+              <el-button
                 class="delete-image-btn"
-                type="danger" 
+                type="danger"
                 :icon="Delete"
                 circle
                 size="small"
@@ -91,10 +91,10 @@
                 @click="clearImage"
               />
             </div>
-            <el-button 
-              type="primary" 
+            <el-button
+              type="primary"
               :loading="isRecognizing"
-              style="width: 100%; margin-top: 10px;"
+              style="width: 100%; margin-top: 10px"
               @click="recognizeByImage"
             >
               开始识别
@@ -106,12 +106,15 @@
         <div class="quick-input">
           <h4>⚡ 快捷输入</h4>
           <el-space wrap>
-            <el-tag 
-              v-for="food in quickFoods" 
+            <el-tag
+              v-for="food in quickFoods"
               :key="food"
               style="cursor: pointer"
               effect="plain"
-              @click="foodName = food; recognizeByName()"
+              @click="
+                foodName = food
+                recognizeByName()
+              "
             >
               {{ food }}
             </el-tag>
@@ -134,14 +137,14 @@
         </template>
 
         <div class="result-list">
-          <div 
-            v-for="(food, index) in recognitionResult.foods" 
+          <div
+            v-for="(food, index) in recognitionResult.foods"
             :key="index"
             class="food-result-item"
           >
             <div class="food-header">
               <h4>{{ food.name }}</h4>
-              <el-tag 
+              <el-tag
                 :type="getConfidenceType(food.confidence)"
                 size="small"
               >
@@ -279,7 +282,7 @@
                 />
               </div>
             </div>
-            
+
             <!-- 详细信息 -->
             <el-collapse-transition>
               <div
@@ -305,15 +308,15 @@
                     <span>{{ formatFullTime(item.createdAt) }}</span>
                   </div>
                 </div>
-                
+
                 <!-- 识别结果详情 -->
                 <div
                   v-if="item.recognitionResult"
                   class="result-detail"
                 >
                   <h5>识别结果:</h5>
-                  <div 
-                    v-for="(food, index) in parseRecognitionResult(item.recognitionResult).foods" 
+                  <div
+                    v-for="(food, index) in parseRecognitionResult(item.recognitionResult).foods"
                     :key="index"
                     class="history-food-item"
                   >
@@ -347,7 +350,16 @@
 import { ref, onMounted, onBeforeUnmount, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Loading, InfoFilled, UploadFilled, Picture, Delete, ArrowDown, ArrowUp, ArrowLeft } from '@element-plus/icons-vue'
+import {
+  Loading,
+  InfoFilled,
+  UploadFilled,
+  Picture,
+  Delete,
+  ArrowDown,
+  ArrowUp,
+  ArrowLeft
+} from '@element-plus/icons-vue'
 import api from '@/services/api'
 
 // 路由
@@ -363,12 +375,20 @@ const expandedHistory = reactive({})
 const uploadRef = ref(null)
 
 const quickFoods = [
-  '苹果', '香蕉', '鸡胸肉', '鸡蛋', '牛奶',
-  '燕麦', '西兰花', '三文鱼', '糙米', '红薯'
+  '苹果',
+  '香蕉',
+  '鸡胸肉',
+  '鸡蛋',
+  '牛奶',
+  '燕麦',
+  '西兰花',
+  '三文鱼',
+  '糙米',
+  '红薯'
 ]
 
 // 处理图片选择
-const handleImageChange = (file) => {
+const handleImageChange = file => {
   selectedFile.value = file.raw
   previewUrl.value = URL.createObjectURL(file.raw)
 }
@@ -465,29 +485,29 @@ const loadHistory = async () => {
 }
 
 // 获取置信度类型
-const getConfidenceType = (confidence) => {
+const getConfidenceType = confidence => {
   if (confidence >= 0.9) return 'success'
   if (confidence >= 0.7) return 'warning'
   return 'info'
 }
 
 // 获取数据来源文本
-const getSourceText = (source) => {
+const getSourceText = source => {
   const sourceMap = {
-    'database': '数据库（准确）',
-    'estimated': 'AI估算',
-    'default': '默认值'
+    database: '数据库（准确）',
+    estimated: 'AI估算',
+    default: '默认值'
   }
   return sourceMap[source] || source
 }
 
 // 格式化时间
-const formatTime = (time) => {
+const formatTime = time => {
   return new Date(time).toLocaleString('zh-CN')
 }
 
 // 获取历史文本
-const getHistoryText = (resultJson) => {
+const getHistoryText = resultJson => {
   try {
     const result = JSON.parse(resultJson)
     const foods = result.foods.map(f => f.name).join('、')
@@ -508,12 +528,12 @@ const clearImage = () => {
 }
 
 // 切换历史详情展开/收起
-const toggleHistoryDetail = (id) => {
+const toggleHistoryDetail = id => {
   expandedHistory[id] = !expandedHistory[id]
 }
 
 // 解析识别结果
-const parseRecognitionResult = (resultJson) => {
+const parseRecognitionResult = resultJson => {
   try {
     return JSON.parse(resultJson)
   } catch {
@@ -522,7 +542,7 @@ const parseRecognitionResult = (resultJson) => {
 }
 
 // 格式化完整时间
-const formatFullTime = (time) => {
+const formatFullTime = time => {
   const date = new Date(time)
   return date.toLocaleString('zh-CN', {
     year: 'numeric',
@@ -535,30 +555,28 @@ const formatFullTime = (time) => {
 }
 
 // 确认删除历史记录
-const confirmDeleteHistory = (id) => {
-  ElMessageBox.confirm(
-    '确定要删除这条识别记录吗？',
-    '删除确认',
-    {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-      center: true,
-      customClass: 'custom-message-box'
-    }
-  ).then(() => {
-    deleteHistory(id)
-  }).catch(() => {
-    // 取消删除
+const confirmDeleteHistory = id => {
+  ElMessageBox.confirm('确定要删除这条识别记录吗？', '删除确认', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+    center: true,
+    customClass: 'custom-message-box'
   })
+    .then(() => {
+      deleteHistory(id)
+    })
+    .catch(() => {
+      // 取消删除
+    })
 }
 
 // 删除历史记录
-const deleteHistory = async (id) => {
+const deleteHistory = async id => {
   try {
     const response = await api.delete(`/food-recognition/history/${id}`)
     const data = response.data
-    
+
     if (data.code === 200) {
       ElMessage.success('删除成功')
       // 重新加载历史记录
@@ -580,32 +598,32 @@ onMounted(() => {
 // 组件卸载前清理
 onBeforeUnmount(() => {
   console.log('FoodRecognitionView 组件卸载，开始清理...')
-  
+
   // 释放 blob URL，防止内存泄漏
   if (previewUrl.value) {
     console.log('释放预览图片 blob URL')
     URL.revokeObjectURL(previewUrl.value)
     previewUrl.value = null
   }
-  
+
   // 清理 Upload 组件
   if (uploadRef.value) {
     console.log('清理 Upload 组件')
     uploadRef.value.clearFiles?.()
   }
-  
+
   // 清空所有数据
   selectedFile.value = null
   recognitionResult.value = null
   history.value = []
   foodName.value = ''
   isRecognizing.value = false
-  
+
   // 清空展开状态
   Object.keys(expandedHistory).forEach(key => {
     delete expandedHistory[key]
   })
-  
+
   console.log('FoodRecognitionView 清理完成')
 })
 </script>
@@ -852,11 +870,11 @@ onBeforeUnmount(() => {
   .recognition-header h2 {
     font-size: 24px;
   }
-  
+
   .nutrition-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .empty-card {
     grid-column: 1;
   }
@@ -1013,4 +1031,3 @@ onBeforeUnmount(() => {
   }
 }
 </style>
-

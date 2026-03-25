@@ -131,15 +131,9 @@ const validateConfirmPassword = (rule, value, callback) => {
 }
 
 const rules = {
-  oldPassword: [
-    { required: true, message: '请输入原密码', trigger: 'blur' }
-  ],
-  newPassword: [
-    { validator: validateNewPassword, trigger: 'blur' }
-  ],
-  confirmPassword: [
-    { validator: validateConfirmPassword, trigger: 'blur' }
-  ]
+  oldPassword: [{ required: true, message: '请输入原密码', trigger: 'blur' }],
+  newPassword: [{ validator: validateNewPassword, trigger: 'blur' }],
+  confirmPassword: [{ validator: validateConfirmPassword, trigger: 'blur' }]
 }
 
 // 提交修改
@@ -161,7 +155,7 @@ const handleSubmit = async () => {
     if (response.data.code === 200) {
       message.success('密码修改成功，请重新登录')
       handleReset()
-      
+
       // 3秒后跳转到登录页
       setTimeout(() => {
         window.location.href = '/login'
@@ -174,16 +168,16 @@ const handleSubmit = async () => {
     console.error('错误响应:', error.response)
     console.error('错误请求:', error.request)
     console.error('错误消息:', error.message)
-    
+
     // 提取详细的错误信息
     let errorMessage = '密码修改失败'
-    
+
     if (error.response) {
       // 服务器返回了错误响应
       const { status, data } = error.response
       console.log('HTTP状态码:', status)
       console.log('响应数据:', data)
-      
+
       if (data?.message) {
         // 优先使用后端返回的具体错误信息
         errorMessage = data.message
@@ -236,7 +230,7 @@ const handleSubmit = async () => {
         errorMessage = '操作失败，请重试'
       }
     }
-    
+
     console.log('最终错误提示:', errorMessage)
     message.error(errorMessage)
   } finally {

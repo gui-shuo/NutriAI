@@ -78,13 +78,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { ElMessage } from 'element-plus'
-import {
-  Paperclip,
-  Promotion,
-  Loading,
-  Document,
-  Close
-} from '@element-plus/icons-vue'
+import { Paperclip, Promotion, Loading, Document, Close } from '@element-plus/icons-vue'
 
 const props = defineProps({
   disabled: {
@@ -131,12 +125,12 @@ const isOverLimit = computed(() => {
 })
 
 // 处理键盘事件
-const handleKeyDown = (event) => {
+const handleKeyDown = event => {
   // Shift + Enter 换行
   if (event.shiftKey && event.key === 'Enter') {
     return
   }
-  
+
   // Enter 发送
   if (event.key === 'Enter') {
     event.preventDefault()
@@ -147,45 +141,45 @@ const handleKeyDown = (event) => {
 // 发送消息
 const handleSend = () => {
   const text = inputText.value.trim()
-  
+
   if (!canSend.value) {
     return
   }
-  
+
   if (text.length > props.maxLength) {
     ElMessage.warning(`消息长度不能超过${props.maxLength}个字符`)
     return
   }
-  
+
   // 发送消息
   emit('send', {
     text,
     file: selectedFile.value
   })
-  
+
   // 清空输入
   inputText.value = ''
   selectedFile.value = null
 }
 
 // 处理文件选择
-const handleFileSelect = (file) => {
+const handleFileSelect = file => {
   // 检查文件大小
   if (file.size > props.maxFileSize) {
     ElMessage.error(`文件大小不能超过${formatFileSize(props.maxFileSize)}`)
     return false
   }
-  
+
   // 检查文件类型
   const fileExt = '.' + file.name.split('.').pop().toLowerCase()
   if (!props.acceptedFileTypes.includes(fileExt)) {
     ElMessage.error('不支持的文件类型')
     return false
   }
-  
+
   selectedFile.value = file
   emit('fileSelect', file)
-  
+
   return false // 阻止自动上传
 }
 
@@ -195,13 +189,13 @@ const clearFile = () => {
 }
 
 // 格式化文件大小
-const formatFileSize = (bytes) => {
+const formatFileSize = bytes => {
   if (bytes === 0) return '0 B'
-  
+
   const k = 1024
   const sizes = ['B', 'KB', 'MB', 'GB']
   const i = Math.floor(Math.log(bytes) / Math.log(k))
-  
+
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
 
@@ -347,7 +341,7 @@ defineExpose({
   .chat-input-container {
     padding: 12px 16px;
   }
-  
+
   .input-wrapper {
     gap: 8px;
   }

@@ -30,7 +30,7 @@ body {
 ::-webkit-scrollbar-thumb {
   background: var(--el-color-primary-light-5);
   border-radius: 4px;
-  
+
   &:hover {
     background: var(--el-color-primary);
   }
@@ -38,11 +38,11 @@ body {
 
 .el-button {
   transition: all 0.3s ease;
-  
+
   &:hover {
     transform: translateY(-2px);
   }
-  
+
   &:active {
     transform: translateY(0);
   }
@@ -61,7 +61,7 @@ body {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   padding: 24px;
   transition: all 0.3s ease;
-  
+
   &:hover {
     box-shadow: 0 8px 24px rgba(76, 175, 80, 0.2);
     transform: translateY(-4px);
@@ -93,7 +93,7 @@ body {
   align-items: center !important;
   border-radius: 8px !important;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
-  
+
   .el-message__content {
     font-size: 14px !important;
     font-weight: 500 !important;
@@ -101,13 +101,13 @@ body {
     padding-right: 16px !important;
     flex: 1 !important;
   }
-  
+
   .el-message__icon {
     font-size: 18px !important;
     margin-right: 10px !important;
     flex-shrink: 0 !important;
   }
-  
+
   .el-message__closeBtn {
     position: absolute !important;
     right: 12px !important;
@@ -120,7 +120,7 @@ body {
     text-align: center !important;
     color: rgba(0, 0, 0, 0.45) !important;
     flex-shrink: 0 !important;
-    
+
     &:hover {
       color: rgba(0, 0, 0, 0.75) !important;
     }
@@ -132,59 +132,59 @@ body {
   border: none !important;
   backdrop-filter: blur(10px);
   animation: message-slide-in 0.3s ease-out;
-  
+
   // 成功消息
   &.custom-message-success {
     background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%) !important;
-    
+
     .el-message__icon {
       color: #059669 !important;
     }
-    
+
     .el-message__content {
       color: #065f46 !important;
     }
   }
-  
+
   // 错误消息
   &.custom-message-error {
     background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%) !important;
-    
+
     .el-message__icon {
       color: #dc2626 !important;
     }
-    
+
     .el-message__content {
       color: #991b1b !important;
     }
   }
-  
+
   // 警告消息
   &.custom-message-warning {
     background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important;
-    
+
     .el-message__icon {
       color: #d97706 !important;
     }
-    
+
     .el-message__content {
       color: #92400e !important;
     }
   }
-  
+
   // 信息消息
   &.custom-message-info {
     background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important;
-    
+
     .el-message__icon {
       color: #2563eb !important;
     }
-    
+
     .el-message__content {
       color: #1e40af !important;
     }
   }
-  
+
   // 动画效果
   animation: message-slide-in 0.3s ease-out;
 }
@@ -241,11 +241,11 @@ body {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  
+
   .el-message-box__close {
     font-size: 16px !important;
     color: #909399 !important;
-    
+
     &:hover {
       color: #606266 !important;
     }
@@ -278,16 +278,16 @@ body {
 // 会员对话框样式修复
 .el-dialog.member-dialog {
   background-color: #ffffff !important;
-  
+
   .el-dialog__header {
     background-color: #ffffff !important;
     border-bottom: 1px solid #ebeef5 !important;
   }
-  
+
   .el-dialog__body {
     background-color: #ffffff !important;
   }
-  
+
   .el-dialog__footer {
     background-color: #ffffff !important;
     border-top: 1px solid #ebeef5 !important;

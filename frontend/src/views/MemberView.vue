@@ -15,7 +15,7 @@
         <div class="left-section">
           <!-- 成长值折线图 -->
           <GrowthChart :user-id="userId" />
-          
+
           <!-- 邀请面板 -->
           <InvitationPanel :member-info="memberInfo" />
         </div>
@@ -27,10 +27,10 @@
             :benefits="currentBenefits"
             :level-name="memberInfo?.currentLevel?.levelName"
           />
-          
+
           <!-- 等级对比表 -->
-          <LevelComparisonTable 
-            :current-level="memberInfo?.currentLevel" 
+          <LevelComparisonTable
+            :current-level="memberInfo?.currentLevel"
             :total-growth="memberInfo?.totalGrowth || 0"
             :next-level="memberInfo?.nextLevel"
             :growth-to-next-level="memberInfo?.growthToNextLevel || 0"
@@ -89,7 +89,7 @@ onMounted(() => {
 // 组件卸载前清理
 onBeforeUnmount(() => {
   console.log('MemberView 组件卸载，开始清理...')
-  
+
   // 清理可能残留的 Dialog 和 MessageBox
   setTimeout(() => {
     const dialogs = document.querySelectorAll('.el-dialog__wrapper')
@@ -97,23 +97,25 @@ onBeforeUnmount(() => {
       console.log('MemberView 卸载时清理 Dialog')
       dialog.remove()
     })
-    
+
     const messageBoxes = document.querySelectorAll('.el-message-box__wrapper')
     messageBoxes.forEach(box => {
       console.log('MemberView 卸载时清理 MessageBox')
       box.remove()
     })
-    
+
     const overlays = document.querySelectorAll('body > .el-overlay')
     overlays.forEach(overlay => {
-      const hasActiveModal = document.querySelector('.el-message-box__wrapper, .el-dialog__wrapper, .el-drawer__wrapper')
+      const hasActiveModal = document.querySelector(
+        '.el-message-box__wrapper, .el-dialog__wrapper, .el-drawer__wrapper'
+      )
       if (!hasActiveModal) {
         console.log('MemberView 卸载时清理遮罩层')
         overlay.remove()
       }
     })
   }, 50)
-  
+
   console.log('MemberView 清理完成')
 })
 </script>

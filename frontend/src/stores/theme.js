@@ -6,15 +6,19 @@ export const useThemeStore = defineStore('theme', () => {
   const isDark = ref(localStorage.getItem('nutri_theme') === 'dark')
 
   // Watch for theme changes
-  watch(isDark, (newValue) => {
-    if (newValue) {
-      document.documentElement.classList.add('dark')
-      localStorage.setItem('nutri_theme', 'dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-      localStorage.setItem('nutri_theme', 'light')
-    }
-  }, { immediate: true })
+  watch(
+    isDark,
+    newValue => {
+      if (newValue) {
+        document.documentElement.classList.add('dark')
+        localStorage.setItem('nutri_theme', 'dark')
+      } else {
+        document.documentElement.classList.remove('dark')
+        localStorage.setItem('nutri_theme', 'light')
+      }
+    },
+    { immediate: true }
+  )
 
   // Actions
   function toggleTheme() {

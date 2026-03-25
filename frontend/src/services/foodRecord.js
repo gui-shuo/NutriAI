@@ -9,7 +9,7 @@ import api from './api'
  * @param {Object} data - 饮食记录数据
  * @returns {Promise}
  */
-export const createFoodRecord = (data) => {
+export const createFoodRecord = data => {
   return api.post('/food/records', data)
 }
 
@@ -23,7 +23,7 @@ export const createFoodRecord = (data) => {
  * @param {string} params.mealType - 餐次类型
  * @returns {Promise}
  */
-export const getFoodRecords = (params) => {
+export const getFoodRecords = params => {
   return api.get('/food/records', { params })
 }
 
@@ -32,7 +32,7 @@ export const getFoodRecords = (params) => {
  * @param {number} id - 记录ID
  * @returns {Promise}
  */
-export const getFoodRecordById = (id) => {
+export const getFoodRecordById = id => {
   return api.get(`/food/records/${id}`)
 }
 
@@ -41,7 +41,7 @@ export const getFoodRecordById = (id) => {
  * @param {number} id - 记录ID
  * @returns {Promise}
  */
-export const deleteFoodRecord = (id) => {
+export const deleteFoodRecord = id => {
   return api.delete(`/food/records/${id}`)
 }
 
@@ -50,9 +50,9 @@ export const deleteFoodRecord = (id) => {
  * @param {string} date - 日期 (YYYY-MM-DD)
  * @returns {Promise}
  */
-export const getNutritionStats = (date) => {
-  return api.get('/food/stats', { 
-    params: date ? { date } : {} 
+export const getNutritionStats = date => {
+  return api.get('/food/stats', {
+    params: date ? { date } : {}
   })
 }
 
@@ -61,10 +61,10 @@ export const getNutritionStats = (date) => {
  * @param {File} file - 图片文件
  * @returns {Promise}
  */
-export const uploadFoodPhoto = (file) => {
+export const uploadFoodPhoto = file => {
   const formData = new FormData()
   formData.append('file', file)
-  
+
   return api.post('/food/photo', formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
@@ -92,6 +92,6 @@ export const getMealTypeList = () => {
 /**
  * 根据value获取餐次类型
  */
-export const getMealTypeByValue = (value) => {
+export const getMealTypeByValue = value => {
   return MealTypes[value] || null
 }

@@ -265,10 +265,10 @@ const loadStats = async () => {
     const token = localStorage.getItem('token')
     const response = await fetch('http://localhost:8080/api/admin/dashboard/stats', {
       headers: {
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`
       }
     })
-    
+
     const data = await response.json()
     if (data.code === 200) {
       stats.value = data.data
@@ -288,11 +288,11 @@ const loadUserGrowth = async () => {
       `http://localhost:8080/api/admin/dashboard/user-growth?days=${userGrowthDays.value}`,
       {
         headers: {
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`
         }
       }
     )
-    
+
     const data = await response.json()
     if (data.code === 200) {
       initUserGrowthChart(data.data)
@@ -310,11 +310,11 @@ const loadAIUsage = async () => {
       `http://localhost:8080/api/admin/dashboard/ai-usage-trend?days=${aiUsageDays.value}`,
       {
         headers: {
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`
         }
       }
     )
-    
+
     const data = await response.json()
     if (data.code === 200) {
       initAIUsageChart(data.data)
@@ -327,13 +327,13 @@ const loadAIUsage = async () => {
 }
 
 // 初始化用户增长图表
-const initUserGrowthChart = (data) => {
+const initUserGrowthChart = data => {
   if (!userGrowthChart.value) return
-  
+
   if (!userGrowthChartInstance) {
     userGrowthChartInstance = echarts.init(userGrowthChart.value)
   }
-  
+
   const option = {
     tooltip: {
       trigger: 'axis',
@@ -343,7 +343,7 @@ const initUserGrowthChart = (data) => {
       textStyle: {
         color: '#333'
       },
-      formatter: (params) => {
+      formatter: params => {
         const param = params[0]
         return `${param.axisValue}<br/>新增用户: <strong>${param.value}</strong>`
       }
@@ -384,49 +384,56 @@ const initUserGrowthChart = (data) => {
         }
       }
     },
-    series: [{
-      name: '新增用户',
-      type: 'line',
-      data: data.map(item => item.count),
-      smooth: true,
-      symbol: 'circle',
-      symbolSize: 6,
-      areaStyle: {
-        color: {
-          type: 'linear',
-          x: 0,
-          y: 0,
-          x2: 0,
-          y2: 1,
-          colorStops: [{
-            offset: 0, color: 'rgba(24, 144, 255, 0.3)'
-          }, {
-            offset: 1, color: 'rgba(24, 144, 255, 0.05)'
-          }]
+    series: [
+      {
+        name: '新增用户',
+        type: 'line',
+        data: data.map(item => item.count),
+        smooth: true,
+        symbol: 'circle',
+        symbolSize: 6,
+        areaStyle: {
+          color: {
+            type: 'linear',
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: [
+              {
+                offset: 0,
+                color: 'rgba(24, 144, 255, 0.3)'
+              },
+              {
+                offset: 1,
+                color: 'rgba(24, 144, 255, 0.05)'
+              }
+            ]
+          }
+        },
+        itemStyle: {
+          color: '#1890ff',
+          borderWidth: 2,
+          borderColor: '#fff'
+        },
+        lineStyle: {
+          width: 3
         }
-      },
-      itemStyle: {
-        color: '#1890ff',
-        borderWidth: 2,
-        borderColor: '#fff'
-      },
-      lineStyle: {
-        width: 3
       }
-    }]
+    ]
   }
-  
+
   userGrowthChartInstance.setOption(option)
 }
 
 // 初始化AI使用图表
-const initAIUsageChart = (data) => {
+const initAIUsageChart = data => {
   if (!aiUsageChart.value) return
-  
+
   if (!aiUsageChartInstance) {
     aiUsageChartInstance = echarts.init(aiUsageChart.value)
   }
-  
+
   const option = {
     tooltip: {
       trigger: 'axis',
@@ -492,11 +499,16 @@ const initAIUsageChart = (data) => {
             y: 0,
             x2: 0,
             y2: 1,
-            colorStops: [{
-              offset: 0, color: '#4facfe'
-            }, {
-              offset: 1, color: '#00f2fe'
-            }]
+            colorStops: [
+              {
+                offset: 0,
+                color: '#4facfe'
+              },
+              {
+                offset: 1,
+                color: '#00f2fe'
+              }
+            ]
           },
           borderRadius: [4, 4, 0, 0]
         }
@@ -513,29 +525,34 @@ const initAIUsageChart = (data) => {
             y: 0,
             x2: 0,
             y2: 1,
-            colorStops: [{
-              offset: 0, color: '#43e97b'
-            }, {
-              offset: 1, color: '#38f9d7'
-            }]
+            colorStops: [
+              {
+                offset: 0,
+                color: '#43e97b'
+              },
+              {
+                offset: 1,
+                color: '#38f9d7'
+              }
+            ]
           },
           borderRadius: [4, 4, 0, 0]
         }
       }
     ]
   }
-  
+
   aiUsageChartInstance.setOption(option)
 }
 
 // 初始化会员分布图表
 const initMemberChart = () => {
   if (!memberChart.value) return
-  
+
   if (!memberChartInstance) {
     memberChartInstance = echarts.init(memberChart.value)
   }
-  
+
   const option = {
     tooltip: {
       trigger: 'item',
@@ -587,23 +604,23 @@ const initMemberChart = () => {
           show: false
         },
         data: [
-          { 
-            value: stats.value.memberStats.free, 
+          {
+            value: stats.value.memberStats.free,
             name: '免费用户',
             itemStyle: { color: '#91cc75' }
           },
-          { 
-            value: stats.value.memberStats.bronze, 
+          {
+            value: stats.value.memberStats.bronze,
             name: '青铜会员',
             itemStyle: { color: '#fac858' }
           },
-          { 
-            value: stats.value.memberStats.silver, 
+          {
+            value: stats.value.memberStats.silver,
             name: '白银会员',
             itemStyle: { color: '#73c0de' }
           },
-          { 
-            value: stats.value.memberStats.gold, 
+          {
+            value: stats.value.memberStats.gold,
             name: '黄金会员',
             itemStyle: { color: '#ee6666' }
           }
@@ -611,7 +628,7 @@ const initMemberChart = () => {
       }
     ]
   }
-  
+
   memberChartInstance.setOption(option)
 }
 

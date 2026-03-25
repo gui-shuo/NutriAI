@@ -37,17 +37,17 @@
         <el-icon><User /></el-icon>
         <span>个人资料</span>
       </el-menu-item>
-      
+
       <el-menu-item index="edit">
         <el-icon><Edit /></el-icon>
         <span>编辑资料</span>
       </el-menu-item>
-      
+
       <el-menu-item index="password">
         <el-icon><Lock /></el-icon>
         <span>修改密码</span>
       </el-menu-item>
-      
+
       <el-menu-item index="health">
         <el-icon><TrendCharts /></el-icon>
         <span>健康档案</span>
@@ -89,17 +89,17 @@ const authStore = useAuthStore()
 const userInfo = computed(() => authStore.user)
 
 // 获取角色文本
-const getRoleText = (role) => {
+const getRoleText = role => {
   const roleMap = {
-    'SUPER_ADMIN': '超级管理员',
-    'ADMIN': '管理员',
-    'USER': '普通用户'
+    SUPER_ADMIN: '超级管理员',
+    ADMIN: '管理员',
+    USER: '普通用户'
   }
   return roleMap[role] || '普通用户'
 }
 
 // 菜单选择
-const handleSelect = (index) => {
+const handleSelect = index => {
   emit('change', index)
 }
 </script>

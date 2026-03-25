@@ -105,7 +105,9 @@
       >
         <template #title>
           <div class="alert-content">
-            <span>再获得 <strong>{{ growthToNextLevel }}</strong> 成长值即可升级到{{ nextLevel.levelName }}</span>
+            <span>再获得 <strong>{{ growthToNextLevel }}</strong> 成长值即可升级到{{
+              nextLevel.levelName
+            }}</span>
             <el-button
               type="primary"
               size="small"
@@ -196,7 +198,7 @@ const levelData = [
 ]
 
 // 判断是否当前等级
-const isCurrentLevel = (row) => {
+const isCurrentLevel = row => {
   return row.levelCode === props.currentLevel?.levelCode
 }
 
@@ -204,7 +206,7 @@ const isCurrentLevel = (row) => {
 const nextLevel = computed(() => {
   // 优先使用props传递的nextLevel
   if (props.nextLevel) return props.nextLevel
-  
+
   // 否则从levelData中计算
   if (!props.currentLevel) return null
   const currentIndex = levelData.findIndex(l => l.levelCode === props.currentLevel.levelCode)
@@ -257,12 +259,12 @@ const showGuide = () => {
 }
 
 // 格式化限制
-const formatLimit = (limit) => {
+const formatLimit = limit => {
   return limit === -1 ? '无限' : `${limit}次/天`
 }
 
 // 获取Tag类型
-const getTagType = (limit) => {
+const getTagType = limit => {
   if (limit === -1) return 'success'
   if (limit >= 30) return 'warning'
   if (limit >= 10) return 'info'

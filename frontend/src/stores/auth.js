@@ -26,22 +26,22 @@ export const useAuthStore = defineStore('auth', () => {
   const userName = computed(() => user.value?.nickname || user.value?.username || '')
 
   // Actions
-  const setToken = (newToken) => {
+  const setToken = newToken => {
     token.value = newToken
     localStorage.setItem('token', newToken)
   }
 
-  const setRefreshToken = (newRefreshToken) => {
+  const setRefreshToken = newRefreshToken => {
     refreshToken.value = newRefreshToken
     localStorage.setItem('refreshToken', newRefreshToken)
   }
 
-  const setUser = (userData) => {
+  const setUser = userData => {
     user.value = userData
     localStorage.setItem('user', JSON.stringify(userData))
   }
 
-  const login = async (loginData) => {
+  const login = async loginData => {
     try {
       const response = await api.post('/auth/login', loginData)
       if (response.data.code === 200) {
@@ -63,7 +63,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  const register = async (registerData) => {
+  const register = async registerData => {
     try {
       const response = await api.post('/auth/register', registerData)
       return {
@@ -123,7 +123,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  const updateUserInfo = (newUserInfo) => {
+  const updateUserInfo = newUserInfo => {
     user.value = { ...user.value, ...newUserInfo }
     localStorage.setItem('user', JSON.stringify(user.value))
   }

@@ -105,21 +105,24 @@ const isDragging = ref(false)
 const dragStart = ref({ x: 0, y: 0 })
 const imagePosition = ref({ x: 0, y: 0 })
 
-watch(() => props.modelValue, (val) => {
-  visible.value = val
-  if (val && props.imageFile) {
-    loadImage(props.imageFile)
+watch(
+  () => props.modelValue,
+  val => {
+    visible.value = val
+    if (val && props.imageFile) {
+      loadImage(props.imageFile)
+    }
   }
-})
+)
 
-watch(visible, (val) => {
+watch(visible, val => {
   emit('update:modelValue', val)
 })
 
 // 加载图片
-const loadImage = (file) => {
+const loadImage = file => {
   const reader = new FileReader()
-  reader.onload = (e) => {
+  reader.onload = e => {
     const img = new Image()
     img.onload = () => {
       imageData.value = img
@@ -141,37 +144,42 @@ const updateCanvas = () => {
   try {
     const canvas = canvasRef.value
     const ctx = canvas.getContext('2d')
-  
-  // 设置画布大小
-  canvas.width = 400
-  canvas.height = 400
 
-  // 清空画布
-  ctx.fillStyle = '#f0f0f0'
-  ctx.fillRect(0, 0, canvas.width, canvas.height)
+    // 设置画布大小
+    canvas.width = 400
+    canvas.height = 400
 
-  // 绘制图片
-  const scaledWidth = imageData.value.width * scale.value
-  const scaledHeight = imageData.value.height * scale.value
-  
-  ctx.drawImage(
-    imageData.value,
-    imagePosition.value.x,
-    imagePosition.value.y,
-    scaledWidth,
-    scaledHeight
-  )
+    // 清空画布
+    ctx.fillStyle = '#f0f0f0'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-  // 绘制裁剪框
-  const cropX = (canvas.width - cropSize.value) / 2
-  const cropY = (canvas.height - cropSize.value) / 2
+    // 绘制图片
+    const scaledWidth = imageData.value.width * scale.value
+    const scaledHeight = imageData.value.height * scale.value
 
-  // 暗色遮罩
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
-  ctx.fillRect(0, 0, canvas.width, cropY)
-  ctx.fillRect(0, cropY + cropSize.value, canvas.width, canvas.height - cropY - cropSize.value)
-  ctx.fillRect(0, cropY, cropX, cropSize.value)
-  ctx.fillRect(cropX + cropSize.value, cropY, canvas.width - cropX - cropSize.value, cropSize.value)
+    ctx.drawImage(
+      imageData.value,
+      imagePosition.value.x,
+      imagePosition.value.y,
+      scaledWidth,
+      scaledHeight
+    )
+
+    // 绘制裁剪框
+    const cropX = (canvas.width - cropSize.value) / 2
+    const cropY = (canvas.height - cropSize.value) / 2
+
+    // 暗色遮罩
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
+    ctx.fillRect(0, 0, canvas.width, cropY)
+    ctx.fillRect(0, cropY + cropSize.value, canvas.width, canvas.height - cropY - cropSize.value)
+    ctx.fillRect(0, cropY, cropX, cropSize.value)
+    ctx.fillRect(
+      cropX + cropSize.value,
+      cropY,
+      canvas.width - cropX - cropSize.value,
+      cropSize.value
+    )
 
     // 裁剪框边框
     ctx.strokeStyle = '#fff'
@@ -192,13 +200,13 @@ const updatePreview = () => {
   try {
     const previewCanvas = previewCanvasRef.value
     const previewCtx = previewCanvas.getContext('2d')
-    
+
     previewCanvas.width = cropSize.value
     previewCanvas.height = cropSize.value
 
     const canvas = canvasRef.value
     if (!canvas) return
-    
+
     const cropX = (canvas.width - cropSize.value) / 2
     const cropY = (canvas.height - cropSize.value) / 2
 
@@ -212,7 +220,7 @@ const updatePreview = () => {
 }
 
 // 拖拽开始
-const startDrag = (e) => {
+const startDrag = e => {
   isDragging.value = true
   dragStart.value = {
     x: e.offsetX - imagePosition.value.x,
@@ -221,14 +229,14 @@ const startDrag = (e) => {
 }
 
 // 拖拽中
-const onDrag = (e) => {
+const onDrag = e => {
   if (!isDragging.value) return
-  
+
   imagePosition.value = {
     x: e.offsetX - dragStart.value.x,
     y: e.offsetY - dragStart.value.y
   }
-  
+
   updateCanvas()
 }
 
@@ -244,13 +252,13 @@ const handleConfirm = async () => {
   uploading.value = true
   try {
     // 将canvas转换为blob
-    const blob = await new Promise((resolve) => {
+    const blob = await new Promise(resolve => {
       previewCanvasRef.value.toBlob(resolve, 'image/jpeg', 0.9)
     })
 
     // 创建File对象
     const file = new File([blob], 'avatar.jpg', { type: 'image/jpeg' })
-    
+
     emit('confirm', file)
     handleClose()
   } catch (error) {

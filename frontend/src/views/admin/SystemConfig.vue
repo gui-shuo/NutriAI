@@ -162,8 +162,8 @@
           v-if="isCreate"
           label="选择配置项"
         >
-          <el-select 
-            v-model="selectedOption" 
+          <el-select
+            v-model="selectedOption"
             placeholder="从预定义配置中选择"
             filterable
             style="width: 100%"
@@ -175,17 +175,17 @@
               :label="`${option.name} (${option.key})`"
               :value="option.key"
             >
-              <div style="display: flex; flex-direction: column;">
-                <span style="font-weight: bold;">{{ option.name }}</span>
-                <span style="font-size: 12px; color: #909399;">{{ option.description }}</span>
+              <div style="display: flex; flex-direction: column">
+                <span style="font-weight: bold">{{ option.name }}</span>
+                <span style="font-size: 12px; color: #909399">{{ option.description }}</span>
               </div>
             </el-option>
           </el-select>
-          <div style="margin-top: 8px; font-size: 12px; color: #909399;">
+          <div style="margin-top: 8px; font-size: 12px; color: #909399">
             或者手动输入自定义配置键
           </div>
         </el-form-item>
-        
+
         <el-form-item
           label="配置键"
           prop="configKey"
@@ -196,7 +196,7 @@
             placeholder="例如: ai.model"
           />
         </el-form-item>
-        
+
         <el-form-item
           v-if="isCreate"
           label="配置名称"
@@ -207,14 +207,14 @@
             placeholder="配置的显示名称"
           />
         </el-form-item>
-        
+
         <el-form-item
           label="配置值"
           prop="configValue"
         >
           <!-- 根据valueType显示不同的输入控件 -->
-          <el-select 
-            v-if="currentOption && currentOption.valueType === 'select'" 
+          <el-select
+            v-if="currentOption && currentOption.valueType === 'select'"
             v-model="editForm.configValue"
             style="width: 100%"
           >
@@ -225,8 +225,8 @@
               :value="opt.value"
             />
           </el-select>
-          <el-input-number 
-            v-else-if="editForm.configType === 'number'" 
+          <el-input-number
+            v-else-if="editForm.configType === 'number'"
             v-model.number="editForm.configValue"
             style="width: 100%"
           />
@@ -236,13 +236,13 @@
             active-value="true"
             inactive-value="false"
           />
-          <el-input 
-            v-else 
+          <el-input
+            v-else
             v-model="editForm.configValue"
             :placeholder="currentOption ? `默认值: ${currentOption.defaultValue}` : ''"
           />
         </el-form-item>
-        
+
         <el-form-item
           label="类型"
           prop="configType"
@@ -270,7 +270,7 @@
             />
           </el-select>
         </el-form-item>
-        
+
         <el-form-item
           label="描述"
           prop="description"
@@ -282,7 +282,7 @@
             placeholder="配置项的详细说明"
           />
         </el-form-item>
-        
+
         <el-form-item
           label="分类"
           prop="category"
@@ -313,7 +313,7 @@
             />
           </el-select>
         </el-form-item>
-        
+
         <el-form-item label="是否公开">
           <el-switch v-model="editForm.isPublic" />
           <span class="form-tip">公开后前端可直接访问</span>
@@ -376,10 +376,10 @@ const loadConfigOptions = async () => {
     const token = localStorage.getItem('token')
     const response = await fetch('http://localhost:8080/api/admin/config/options', {
       headers: {
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`
       }
     })
-    
+
     const data = await response.json()
     if (data.code === 200) {
       configOptions.value = data.data
@@ -391,7 +391,7 @@ const loadConfigOptions = async () => {
 }
 
 // 选择配置选项
-const handleOptionSelect = (key) => {
+const handleOptionSelect = key => {
   const option = configOptions.value.find(opt => opt.key === key)
   if (option) {
     editForm.configKey = option.key
@@ -409,16 +409,17 @@ const loadConfigs = async () => {
   loading.value = true
   try {
     const token = localStorage.getItem('token')
-    const url = activeCategory.value === 'all'
-      ? 'http://localhost:8080/api/admin/config'
-      : `http://localhost:8080/api/admin/config?category=${activeCategory.value}`
-    
+    const url =
+      activeCategory.value === 'all'
+        ? 'http://localhost:8080/api/admin/config'
+        : `http://localhost:8080/api/admin/config?category=${activeCategory.value}`
+
     const response = await fetch(url, {
       headers: {
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`
       }
     })
-    
+
     const data = await response.json()
     if (data.code === 200) {
       configList.value = data.data
@@ -451,7 +452,7 @@ const handleCreate = () => {
 }
 
 // 编辑配置
-const handleEdit = (row) => {
+const handleEdit = row => {
   isCreate.value = false
   Object.assign(editForm, {
     ...row,
@@ -464,20 +465,20 @@ const handleEdit = (row) => {
 const handleSave = async () => {
   try {
     await formRef.value.validate()
-    
+
     const token = localStorage.getItem('token')
-    
+
     if (isCreate.value) {
       // 创建新配置
       const response = await fetch('http://localhost:8080/api/admin/config', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(editForm)
       })
-      
+
       const data = await response.json()
       if (data.code === 200) {
         ElMessage.success('创建成功')
@@ -488,18 +489,15 @@ const handleSave = async () => {
       }
     } else {
       // 更新配置
-      const response = await fetch(
-        `http://localhost:8080/api/admin/config/${editForm.configKey}`,
-        {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ value: editForm.configValue })
-        }
-      )
-      
+      const response = await fetch(`http://localhost:8080/api/admin/config/${editForm.configKey}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ value: editForm.configValue })
+      })
+
       const data = await response.json()
       if (data.code === 200) {
         ElMessage.success('更新成功')
@@ -515,33 +513,29 @@ const handleSave = async () => {
 }
 
 // 删除配置
-const handleDelete = async (row) => {
+const handleDelete = async row => {
   try {
-    await ElMessageBox.confirm(
-      `确定要删除配置 "${row.configKey}" 吗？`,
-      '确认删除',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-        center: true,
-        customClass: 'custom-message-box',
-        showClose: true,
-        closeOnClickModal: false
-      }
-    )
-    
+    await ElMessageBox.confirm(`确定要删除配置 "${row.configKey}" 吗？`, '确认删除', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+      center: true,
+      customClass: 'custom-message-box',
+      showClose: true,
+      closeOnClickModal: false
+    })
+
     const token = localStorage.getItem('token')
     const response = await fetch(
       `http://localhost:8080/api/admin/config/${encodeURIComponent(row.configKey)}`,
       {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`
         }
       }
     )
-    
+
     const data = await response.json()
     if (data.code === 200) {
       ElMessage.success('删除成功')

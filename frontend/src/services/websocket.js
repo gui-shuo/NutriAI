@@ -1,7 +1,7 @@
 /**
  * AI聊天WebSocket客户端
  * 提供WebSocket连接管理、消息收发、断线重连等功能
- * 
+ *
  * @author NutriAI Team
  * @date 2025-12-03
  */
@@ -40,28 +40,28 @@ export class AIWebSocketClient {
   constructor() {
     // WebSocket实例
     this.ws = null
-    
+
     // 连接状态
     this.status = ref(ConnectionStatus.DISCONNECTED)
     this.isConnected = ref(false)
     this.isReceiving = ref(false)
-    
+
     // 重连配置
     this.reconnectAttempts = 0
     this.maxReconnectAttempts = 5
     this.reconnectDelay = 1000 // 初始延迟1秒
     this.reconnectTimer = null
-    
+
     // 心跳配置
     this.heartbeatInterval = 30000 // 30秒
     this.heartbeatTimer = null
-    
+
     // 当前响应累积内容
     this.currentResponse = ref('')
-    
+
     // 消息队列（在连接建立前缓存）
     this.messageQueue = []
-    
+
     // 事件处理器
     this.eventHandlers = {
       onOpen: null,
@@ -75,13 +75,13 @@ export class AIWebSocketClient {
       onPong: null,
       onAIError: null
     }
-    
+
     // 自动重连开关
     this.autoReconnect = true
-    
+
     console.log('🔧 AIWebSocketClient 初始化完成')
   }
-  
+
   /**
    * 连接WebSocket
    * @param {string} token - JWT Token
@@ -95,42 +95,42 @@ export class AIWebSocketClient {
         reject(error)
         return
       }
-      
+
       if (this.ws && this.ws.readyState === WebSocket.OPEN) {
         console.log('✅ WebSocket已连接，无需重复连接')
         resolve()
         return
       }
-      
+
       try {
         // 构建WebSocket URL（注意：路径已包含/api前缀）
         const wsUrl = `${WS_BASE_URL}?token=${token}`
         console.log('🔌 正在连接WebSocket:', wsUrl.replace(/token=.*/, 'token=***'))
-        
+
         this.status.value = ConnectionStatus.CONNECTING
         this.ws = new WebSocket(wsUrl)
-        
+
         // 连接打开
         this.ws.onopen = () => {
           console.log('✅ WebSocket连接成功')
           this.status.value = ConnectionStatus.CONNECTED
           this.isConnected.value = true
           this.reconnectAttempts = 0
-          
+
           // 启动心跳
           this.startHeartbeat()
-          
+
           // 发送队列中的消息
           this.flushMessageQueue()
-          
+
           // 触发回调
           this.eventHandlers.onOpen?.()
-          
+
           resolve()
         }
-        
+
         // 接收消息
-        this.ws.onmessage = (event) => {
+        this.ws.onmessage = event => {
           try {
             const message = JSON.parse(event.data)
             this.handleMessage(message)
@@ -138,24 +138,24 @@ export class AIWebSocketClient {
             console.error('❌ 消息解析失败:', error, event.data)
           }
         }
-        
+
         // 连接错误
-        this.ws.onerror = (error) => {
+        this.ws.onerror = error => {
           console.error('❌ WebSocket错误:', error)
           this.status.value = ConnectionStatus.ERROR
           this.eventHandlers.onError?.(error)
         }
-        
+
         // 连接关闭
-        this.ws.onclose = (event) => {
+        this.ws.onclose = event => {
           console.log(`🔴 WebSocket关闭 (代码: ${event.code}, 原因: ${event.reason || '无'})`)
           this.isConnected.value = false
           this.isReceiving.value = false
           this.stopHeartbeat()
-          
+
           // 触发回调
           this.eventHandlers.onClose?.(event)
-          
+
           // 尝试重连（如果不是正常关闭）
           if (event.code !== 1000 && this.autoReconnect) {
             this.attemptReconnect(token)
@@ -170,17 +170,17 @@ export class AIWebSocketClient {
       }
     })
   }
-  
+
   /**
    * 处理接收到的消息
    * @param {Object} message - 服务端消息
    */
   handleMessage(message) {
     console.log(`📨 [${message.type}]`, message)
-    
+
     // 触发通用消息回调
     this.eventHandlers.onMessage?.(message)
-    
+
     // 根据消息类型处理
     switch (message.type) {
       case MessageType.CONNECTION:
@@ -188,7 +188,7 @@ export class AIWebSocketClient {
         console.log(`✅ 连接确认: 用户ID=${message.userId}`)
         this.eventHandlers.onConnectionConfirm?.(message)
         break
-        
+
       case MessageType.START:
         // AI开始响应
         console.log('🎬 AI开始响应')
@@ -196,7 +196,7 @@ export class AIWebSocketClient {
         this.currentResponse.value = ''
         this.eventHandlers.onStreamStart?.(message)
         break
-        
+
       case MessageType.CHUNK:
         // AI响应片段
         if (message.content) {
@@ -204,7 +204,7 @@ export class AIWebSocketClient {
           this.eventHandlers.onStreamChunk?.(message)
         }
         break
-        
+
       case MessageType.COMPLETE:
         // AI响应完成
         console.log(`✅ AI响应完成 (字数: ${this.currentResponse.value.length})`)
@@ -215,25 +215,25 @@ export class AIWebSocketClient {
         })
         this.currentResponse.value = ''
         break
-        
+
       case MessageType.PONG:
         // 心跳响应
         console.log('💓 心跳正常')
         this.eventHandlers.onPong?.(message)
         break
-        
+
       case MessageType.ERROR:
         // 错误消息
         console.error('❌ 服务端错误:', message.message)
         this.eventHandlers.onAIError?.(message)
         ElMessage.error(message.message || '服务端错误')
         break
-        
+
       default:
         console.warn('⚠️ 未知消息类型:', message.type)
     }
   }
-  
+
   /**
    * 发送聊天消息
    * @param {string} message - 消息内容
@@ -244,17 +244,17 @@ export class AIWebSocketClient {
       console.warn('⚠️ 消息内容为空')
       return
     }
-    
+
     const chatMessage = {
       type: MessageType.CHAT,
       message: message.trim(),
       keepContext
     }
-    
+
     this.send(chatMessage)
     console.log('📤 已发送消息:', message.substring(0, 50) + (message.length > 50 ? '...' : ''))
   }
-  
+
   /**
    * 发送心跳
    */
@@ -264,7 +264,7 @@ export class AIWebSocketClient {
     }
     this.send(pingMessage)
   }
-  
+
   /**
    * 发送消息（通用方法）
    * @param {Object} message - 消息对象
@@ -275,7 +275,7 @@ export class AIWebSocketClient {
       this.messageQueue.push(message)
       return
     }
-    
+
     try {
       this.ws.send(JSON.stringify(message))
     } catch (error) {
@@ -283,35 +283,35 @@ export class AIWebSocketClient {
       throw error
     }
   }
-  
+
   /**
    * 发送队列中的消息
    */
   flushMessageQueue() {
     if (this.messageQueue.length === 0) return
-    
+
     console.log(`📤 发送队列中的${this.messageQueue.length}条消息`)
     while (this.messageQueue.length > 0) {
       const message = this.messageQueue.shift()
       this.send(message)
     }
   }
-  
+
   /**
    * 启动心跳
    */
   startHeartbeat() {
     this.stopHeartbeat()
-    
+
     this.heartbeatTimer = setInterval(() => {
       if (this.isConnected.value) {
         this.sendHeartbeat()
       }
     }, this.heartbeatInterval)
-    
+
     console.log('💓 心跳已启动')
   }
-  
+
   /**
    * 停止心跳
    */
@@ -322,7 +322,7 @@ export class AIWebSocketClient {
       console.log('💔 心跳已停止')
     }
   }
-  
+
   /**
    * 尝试重连
    * @param {string} token - JWT Token
@@ -334,46 +334,46 @@ export class AIWebSocketClient {
       ElMessage.error('WebSocket连接失败，请刷新页面重试')
       return
     }
-    
+
     this.reconnectAttempts++
     this.status.value = ConnectionStatus.RECONNECTING
-    
+
     const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1) // 指数退避
     console.log(`🔄 ${delay}ms后尝试第${this.reconnectAttempts}次重连...`)
-    
+
     this.reconnectTimer = setTimeout(() => {
       console.log(`🔄 开始第${this.reconnectAttempts}次重连`)
-      this.connect(token).catch((error) => {
+      this.connect(token).catch(error => {
         console.error('❌ 重连失败:', error)
       })
     }, delay)
   }
-  
+
   /**
    * 关闭连接
    * @param {boolean} autoReconnect - 是否允许自动重连
    */
   close(autoReconnect = false) {
     this.autoReconnect = autoReconnect
-    
+
     if (this.reconnectTimer) {
       clearTimeout(this.reconnectTimer)
       this.reconnectTimer = null
     }
-    
+
     this.stopHeartbeat()
-    
+
     if (this.ws) {
       console.log('🔴 主动关闭WebSocket连接')
       this.ws.close(1000, '正常关闭')
       this.ws = null
     }
-    
+
     this.isConnected.value = false
     this.isReceiving.value = false
     this.status.value = ConnectionStatus.DISCONNECTED
   }
-  
+
   /**
    * 注册事件处理器
    * @param {string} event - 事件名称
@@ -386,7 +386,7 @@ export class AIWebSocketClient {
       console.warn(`⚠️ 未知事件: ${event}`)
     }
   }
-  
+
   /**
    * 移除事件处理器
    * @param {string} event - 事件名称
@@ -396,7 +396,7 @@ export class AIWebSocketClient {
       this.eventHandlers[event] = null
     }
   }
-  
+
   /**
    * 获取连接状态
    * @returns {string}
@@ -404,7 +404,7 @@ export class AIWebSocketClient {
   getStatus() {
     return this.status.value
   }
-  
+
   /**
    * 检查是否已连接
    * @returns {boolean}

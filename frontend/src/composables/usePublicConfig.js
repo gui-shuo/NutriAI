@@ -15,11 +15,11 @@ export function usePublicConfig() {
   const loadConfig = async () => {
     loading.value = true
     error.value = null
-    
+
     try {
       const response = await fetch('http://localhost:8080/api/public/config')
       const data = await response.json()
-      
+
       if (data.code === 200) {
         config.value = data.data
         console.log('公开配置加载成功:', config.value)

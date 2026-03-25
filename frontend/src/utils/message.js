@@ -6,11 +6,11 @@ import { ElMessage } from 'element-plus'
  */
 
 const defaultOptions = {
-  offset: 0,               // offset设为0，由CSS的top控制位置
-  duration: 3000,          // 显示3秒
-  showClose: true,         // 显示关闭按钮
-  grouping: true,          // 相同消息合并
-  customClass: 'custom-message'  // 自定义样式类
+  offset: 0, // offset设为0，由CSS的top控制位置
+  duration: 3000, // 显示3秒
+  showClose: true, // 显示关闭按钮
+  grouping: true, // 相同消息合并
+  customClass: 'custom-message' // 自定义样式类
 }
 
 export const message = {
@@ -25,7 +25,7 @@ export const message = {
       ...options
     })
   },
-  
+
   /**
    * 错误消息
    */
@@ -33,12 +33,12 @@ export const message = {
     return ElMessage.error({
       message: msg,
       ...defaultOptions,
-      duration: 4000,  // 错误消息显示4秒
+      duration: 4000, // 错误消息显示4秒
       customClass: 'custom-message custom-message-error',
       ...options
     })
   },
-  
+
   /**
    * 警告消息
    */
@@ -50,7 +50,7 @@ export const message = {
       ...options
     })
   },
-  
+
   /**
    * 信息消息
    */

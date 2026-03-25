@@ -60,9 +60,7 @@
                 <el-icon><Odometer /></el-icon>
                 {{ record.calories || 0 }} 千卡
               </span>
-              <span class="detail-item">
-                蛋白质 {{ record.protein || 0 }}g
-              </span>
+              <span class="detail-item"> 蛋白质 {{ record.protein || 0 }}g </span>
             </div>
 
             <div
@@ -117,7 +115,7 @@ defineProps({
 defineEmits(['view', 'delete'])
 
 // 获取餐次类型标签类型
-const getMealTypeTagType = (mealType) => {
+const getMealTypeTagType = mealType => {
   const types = {
     BREAKFAST: 'warning',
     LUNCH: 'success',
@@ -128,7 +126,7 @@ const getMealTypeTagType = (mealType) => {
 }
 
 // 格式化时间
-const formatTime = (timeStr) => {
+const formatTime = timeStr => {
   if (!timeStr) return ''
   const date = new Date(timeStr)
   const month = String(date.getMonth() + 1).padStart(2, '0')

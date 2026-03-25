@@ -253,7 +253,7 @@ const handleLogin = async () => {
     // 处理错误
     if (error.response?.data) {
       const errorData = error.response.data
-      
+
       // 显示具体错误信息
       if (errorData.code === 40006) {
         message.error('用户名或密码错误')

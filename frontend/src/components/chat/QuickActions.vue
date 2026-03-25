@@ -170,14 +170,18 @@ const toggleExpand = () => {
 }
 
 // 处理快捷操作
-const handleQuickAction = (content) => {
+const handleQuickAction = content => {
   emit('action', content)
 }
 
 // 暴露方法
 defineExpose({
-  expand: () => { expanded.value = true },
-  collapse: () => { expanded.value = false }
+  expand: () => {
+    expanded.value = true
+  },
+  collapse: () => {
+    expanded.value = false
+  }
 })
 </script>
 
@@ -306,16 +310,16 @@ defineExpose({
   .quick-actions-container {
     padding: 12px 16px;
   }
-  
+
   .action-buttons {
     grid-template-columns: repeat(2, 1fr);
     gap: 6px;
   }
-  
+
   .action-btn {
     padding: 10px 12px;
   }
-  
+
   .btn-text {
     font-size: 12px;
   }

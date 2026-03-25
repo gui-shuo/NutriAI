@@ -411,20 +411,17 @@ const loadUsers = async () => {
       page: pagination.page,
       size: pagination.size
     })
-    
+
     if (searchForm.keyword) params.append('keyword', searchForm.keyword)
     if (searchForm.status) params.append('status', searchForm.status)
     if (searchForm.memberLevel) params.append('memberLevel', searchForm.memberLevel)
-    
-    const response = await fetch(
-      `http://localhost:8080/api/admin/users?${params}`,
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+
+    const response = await fetch(`http://localhost:8080/api/admin/users?${params}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
       }
-    )
-    
+    })
+
     const data = await response.json()
     if (data.code === 200) {
       userList.value = data.data.content
@@ -453,13 +450,13 @@ const handleReset = () => {
 }
 
 // 查看详情
-const handleView = (row) => {
+const handleView = row => {
   currentUser.value = row
   detailDialogVisible.value = true
 }
 
 // 编辑
-const handleEdit = (row) => {
+const handleEdit = row => {
   currentUser.value = row
   editForm.status = row.status
   editForm.memberLevel = row.memberLevel
@@ -471,52 +468,43 @@ const handleEdit = (row) => {
 const handleSaveEdit = async () => {
   try {
     const token = localStorage.getItem('token')
-    
+
     // 更新状态
     if (editForm.status !== currentUser.value.status) {
-      await fetch(
-        `http://localhost:8080/api/admin/users/${currentUser.value.id}/status`,
-        {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ status: editForm.status })
-        }
-      )
+      await fetch(`http://localhost:8080/api/admin/users/${currentUser.value.id}/status`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status: editForm.status })
+      })
     }
-    
+
     // 更新会员等级
     if (editForm.memberLevel !== currentUser.value.memberLevel) {
-      await fetch(
-        `http://localhost:8080/api/admin/users/${currentUser.value.id}/member-level`,
-        {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ memberLevel: editForm.memberLevel })
-        }
-      )
+      await fetch(`http://localhost:8080/api/admin/users/${currentUser.value.id}/member-level`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ memberLevel: editForm.memberLevel })
+      })
     }
-    
+
     // 更新角色
     if (editForm.role !== currentUser.value.role) {
-      await fetch(
-        `http://localhost:8080/api/admin/users/${currentUser.value.id}/role`,
-        {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ role: editForm.role })
-        }
-      )
+      await fetch(`http://localhost:8080/api/admin/users/${currentUser.value.id}/role`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ role: editForm.role })
+      })
     }
-    
+
     ElMessage.success('保存成功')
     editDialogVisible.value = false
     loadUsers()
@@ -527,7 +515,7 @@ const handleSaveEdit = async () => {
 }
 
 // 切换状态
-const handleToggleStatus = async (row) => {
+const handleToggleStatus = async row => {
   try {
     await ElMessageBox.confirm(
       `确定要${row.status === 'ACTIVE' ? '禁用' : '启用'}该用户吗？`,
@@ -542,36 +530,33 @@ const handleToggleStatus = async (row) => {
         closeOnClickModal: false
       }
     )
-    
+
     const token = localStorage.getItem('token')
     const newStatus = row.status === 'ACTIVE' ? 'DISABLED' : 'ACTIVE'
-    
+
     console.log('更新用户状态:', { userId: row.id, oldStatus: row.status, newStatus })
-    
-    const response = await fetch(
-      `http://localhost:8080/api/admin/users/${row.id}/status`,
-      {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ status: newStatus })
-      }
-    )
-    
+
+    const response = await fetch(`http://localhost:8080/api/admin/users/${row.id}/status`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ status: newStatus })
+    })
+
     console.log('响应状态:', response.status)
-    
+
     if (!response.ok) {
       const errorText = await response.text()
       console.error('服务器错误:', errorText)
       ElMessage.error(`操作失败: ${response.status} ${response.statusText}`)
       return
     }
-    
+
     const data = await response.json()
     console.log('响应数据:', data)
-    
+
     if (data.code === 200) {
       ElMessage.success('操作成功')
       loadUsers()
@@ -591,39 +576,39 @@ const handleExport = () => {
   try {
     // 准备导出数据
     const exportData = userList.value.map(user => ({
-      'ID': user.id,
-      '用户名': user.username,
-      '邮箱': user.email,
-      '手机号': user.phone || '-',
-      '状态': user.status === 'ACTIVE' ? '正常' : '禁用',
-      '角色': user.role,
-      '会员等级': user.memberLevel,
-      '成长值': user.growthValue,
-      '总对话数': user.totalChats,
-      '今日对话': user.todayChats,
-      '注册时间': formatDate(user.createdAt)
+      ID: user.id,
+      用户名: user.username,
+      邮箱: user.email,
+      手机号: user.phone || '-',
+      状态: user.status === 'ACTIVE' ? '正常' : '禁用',
+      角色: user.role,
+      会员等级: user.memberLevel,
+      成长值: user.growthValue,
+      总对话数: user.totalChats,
+      今日对话: user.todayChats,
+      注册时间: formatDate(user.createdAt)
     }))
-    
+
     // 转换为CSV
     const headers = Object.keys(exportData[0])
     const csvContent = [
       headers.join(','),
       ...exportData.map(row => headers.map(header => `"${row[header]}"`).join(','))
     ].join('\n')
-    
+
     // 添加BOM以支持中文
     const BOM = '\uFEFF'
     const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' })
     const link = document.createElement('a')
     const url = URL.createObjectURL(blob)
-    
+
     link.setAttribute('href', url)
     link.setAttribute('download', `用户数据_${new Date().toISOString().slice(0, 10)}.csv`)
     link.style.visibility = 'hidden'
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
-    
+
     ElMessage.success('导出成功')
   } catch (error) {
     console.error('导出失败:', error)
@@ -632,7 +617,7 @@ const handleExport = () => {
 }
 
 // 格式化日期
-const formatDate = (dateString) => {
+const formatDate = dateString => {
   if (!dateString) return '-'
   const date = new Date(dateString)
   return date.toLocaleString('zh-CN')

@@ -16,7 +16,7 @@
         v-if="announcements.length === 0"
         description="暂无公告"
       />
-      
+
       <div
         v-for="announcement in announcements"
         :key="announcement.id"
@@ -40,20 +40,21 @@
             <span class="date">{{ formatDate(announcement.createdAt) }}</span>
           </div>
         </div>
-        
+
         <div class="card-content">
           <p class="content">
             {{ announcement.content }}
           </p>
         </div>
-        
+
         <div
           v-if="announcement.startTime || announcement.endTime"
           class="card-footer"
         >
           <el-icon><Clock /></el-icon>
           <span class="validity">
-            有效期：{{ formatDate(announcement.startTime) }} 至 {{ formatDate(announcement.endTime) }}
+            有效期：{{ formatDate(announcement.startTime) }} 至
+            {{ formatDate(announcement.endTime) }}
           </span>
         </div>
       </div>
@@ -92,7 +93,7 @@ const loadAnnouncements = async () => {
     const response = await fetch(
       `http://localhost:8080/api/announcements?page=${currentPage.value}&size=${pageSize.value}`
     )
-    
+
     const data = await response.json()
     if (data.code === 200) {
       announcements.value = data.data.content || []
@@ -109,27 +110,27 @@ const loadAnnouncements = async () => {
 }
 
 // 获取类型标签
-const getTypeTag = (type) => {
+const getTypeTag = type => {
   const typeMap = {
-    'NOTICE': 'info',
-    'WARNING': 'warning',
-    'ERROR': 'danger'
+    NOTICE: 'info',
+    WARNING: 'warning',
+    ERROR: 'danger'
   }
   return typeMap[type] || 'info'
 }
 
 // 获取类型标签文本
-const getTypeLabel = (type) => {
+const getTypeLabel = type => {
   const labelMap = {
-    'NOTICE': '通知',
-    'WARNING': '警告',
-    'ERROR': '紧急'
+    NOTICE: '通知',
+    WARNING: '警告',
+    ERROR: '紧急'
   }
   return labelMap[type] || '通知'
 }
 
 // 格式化日期
-const formatDate = (dateString) => {
+const formatDate = dateString => {
   if (!dateString) return '-'
   const date = new Date(dateString)
   return date.toLocaleString('zh-CN', {

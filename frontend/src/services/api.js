@@ -18,7 +18,7 @@ let requests = []
 
 // 请求拦截器
 api.interceptors.request.use(
-  (config) => {
+  config => {
     // 添加请求ID
     config.headers['X-Request-ID'] = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
 
@@ -30,17 +30,17 @@ api.interceptors.request.use(
 
     return config
   },
-  (error) => {
+  error => {
     return Promise.reject(error)
   }
 )
 
 // 响应拦截器
 api.interceptors.response.use(
-  (response) => {
+  response => {
     return response
   },
-  async (error) => {
+  async error => {
     const config = error.config
     const status = error.response?.status
 

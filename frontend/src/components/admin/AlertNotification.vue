@@ -26,16 +26,18 @@
           v-if="alerts.length === 0"
           description="暂无告警"
         />
-        
+
         <div
           v-for="alert in alerts"
           :key="alert.id"
           class="alert-item"
-          :class="{ 'unread': !alert.read }"
+          :class="{ unread: !alert.read }"
         >
           <div class="alert-header">
             <el-tag
-              :type="alert.level === 'error' ? 'danger' : alert.level === 'warning' ? 'warning' : 'info'"
+              :type="
+                alert.level === 'error' ? 'danger' : alert.level === 'warning' ? 'warning' : 'info'
+              "
               size="small"
             >
               {{ levelMap[alert.level] }}
@@ -113,7 +115,10 @@ const unreadCount = computed(() => {
 
 // 连接WebSocket
 const connectWebSocket = () => {
-  if (ws.value && (ws.value.readyState === WebSocket.CONNECTING || ws.value.readyState === WebSocket.OPEN)) {
+  if (
+    ws.value &&
+    (ws.value.readyState === WebSocket.CONNECTING || ws.value.readyState === WebSocket.OPEN)
+  ) {
     console.log('⚠️ WebSocket已连接或正在连接中，跳过重复连接')
     return
   }
@@ -139,16 +144,16 @@ const connectWebSocket = () => {
     // 注意：WebSocket URL需要包含 /api 前缀（与后端context-path一致）
     const wsUrl = `ws://localhost:8080/api/ws/admin/alerts?token=${token}`
     console.log('🔌 正在连接WebSocket:', wsUrl)
-    
+
     ws.value = new WebSocket(wsUrl)
-    
+
     ws.value.onopen = () => {
       console.log('✅ WebSocket连接成功')
       isConnecting.value = false
       reconnectAttempts.value = 0 // 重置重连计数
     }
-    
-    ws.value.onmessage = (event) => {
+
+    ws.value.onmessage = event => {
       try {
         const alert = JSON.parse(event.data)
         handleNewAlert(alert)
@@ -156,16 +161,16 @@ const connectWebSocket = () => {
         console.error('解析告警消息失败:', error)
       }
     }
-    
+
     ws.value.onerror = () => {
       console.error('❌ WebSocket连接错误')
       isConnecting.value = false
     }
-    
-    ws.value.onclose = (event) => {
+
+    ws.value.onclose = event => {
       console.log('🔌 WebSocket连接关闭', event.code)
       isConnecting.value = false
-      
+
       // 只在非正常关闭时重连
       if (event.code !== 1000 && reconnectAttempts.value < maxReconnectAttempts) {
         reconnectAttempts.value++
@@ -182,16 +187,16 @@ const connectWebSocket = () => {
 }
 
 // 处理新告警
-const handleNewAlert = (alert) => {
+const handleNewAlert = alert => {
   const newAlert = {
     id: Date.now(),
     ...alert,
     read: false,
     time: new Date()
   }
-  
+
   alerts.value.unshift(newAlert)
-  
+
   // 显示通知
   ElNotification({
     title: alert.title,
@@ -200,7 +205,7 @@ const handleNewAlert = (alert) => {
     duration: 5000,
     position: 'top-right'
   })
-  
+
   // 播放提示音（可选）
   playNotificationSound()
 }
@@ -223,7 +228,7 @@ const playNotificationSound = () => {
 }
 
 // 标记为已读
-const markAsRead = (id) => {
+const markAsRead = id => {
   const alert = alerts.value.find(a => a.id === id)
   if (alert) {
     alert.read = true
@@ -239,7 +244,7 @@ const markAllAsRead = () => {
 }
 
 // 删除告警
-const deleteAlert = (id) => {
+const deleteAlert = id => {
   const index = alerts.value.findIndex(a => a.id === id)
   if (index !== -1) {
     alerts.value.splice(index, 1)
@@ -253,11 +258,11 @@ const clearAll = () => {
 }
 
 // 格式化时间
-const formatTime = (time) => {
+const formatTime = time => {
   const now = new Date()
   const alertTime = new Date(time)
   const diff = now - alertTime
-  
+
   if (diff < 60000) {
     return '刚刚'
   } else if (diff < 3600000) {
@@ -273,15 +278,11 @@ const formatTime = (time) => {
 const simulateAlert = () => {
   const types = ['info', 'warning', 'error']
   const titles = ['系统通知', '性能警告', '错误告警']
-  const contents = [
-    '系统运行正常',
-    'CPU使用率超过80%',
-    '数据库连接失败'
-  ]
-  
+  const contents = ['系统运行正常', 'CPU使用率超过80%', '数据库连接失败']
+
   const randomType = types[Math.floor(Math.random() * types.length)]
   const randomIndex = types.indexOf(randomType)
-  
+
   handleNewAlert({
     level: randomType,
     title: titles[randomIndex],
@@ -296,7 +297,7 @@ const globalConnectionKey = 'ws_admin_alerts_connected'
 onMounted(() => {
   // 检查是否已经有全局连接
   const alreadyConnected = sessionStorage.getItem(globalConnectionKey)
-  
+
   if (!alreadyConnected) {
     // 延迟连接WebSocket，避免路由切换时重复连接
     setTimeout(() => {
@@ -307,7 +308,7 @@ onMounted(() => {
   } else {
     console.log('⚠️ WebSocket已在其他组件实例中连接，跳过重复连接')
   }
-  
+
   // 开发环境下，每60秒模拟一个告警（降低频率）
   if (import.meta.env.DEV && !alreadyConnected) {
     const intervalId = setInterval(simulateAlert, 60000)
@@ -322,7 +323,7 @@ onUnmounted(() => {
   // 只在真正离开管理后台时关闭连接
   // 路由切换时不关闭
   const isLeavingAdmin = !window.location.pathname.startsWith('/admin')
-  
+
   if (isLeavingAdmin && ws.value) {
     console.log('🔌 离开管理后台，关闭WebSocket连接')
     ws.value.close(1000, 'Leaving admin') // 正常关闭

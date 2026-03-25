@@ -34,12 +34,12 @@
         v-if="!loading && chartData.dates.length > 0"
         class="chart-container"
       >
-        <v-chart 
-          :key="`chart-${timeRange}`" 
-          :option="chartOption" 
-          :autoresize="true" 
+        <v-chart
+          :key="`chart-${timeRange}`"
+          :option="chartOption"
+          :autoresize="true"
           :init-options="{ renderer: 'canvas' }"
-          style="height: 300px" 
+          style="height: 300px"
         />
       </div>
       <el-empty
@@ -92,14 +92,7 @@ import { getGrowthRecords } from '@/services/member'
 import message from '@/utils/message'
 
 // 注册ECharts组件
-use([
-  CanvasRenderer,
-  LineChart,
-  TitleComponent,
-  TooltipComponent,
-  LegendComponent,
-  GridComponent
-])
+use([CanvasRenderer, LineChart, TitleComponent, TooltipComponent, LegendComponent, GridComponent])
 
 defineProps({
   userId: {
@@ -115,43 +108,46 @@ const growthData = ref([])
 // 图表数据处理
 const chartData = computed(() => {
   if (!growthData.value.length) return { dates: [], values: [] }
-  
+
   // 计算时间范围的起始日期
   const now = new Date()
   const daysAgo = parseInt(timeRange.value)
   const startDate = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000)
-  
+
   // 过滤时间范围内的数据
   const filteredData = growthData.value.filter(record => {
     const recordDate = new Date(record.createdAt)
     return recordDate >= startDate
   })
-  
+
   // 按日期分组
   const dailyGrowthMap = {}
   filteredData.forEach(record => {
-    const date = new Date(record.createdAt).toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' })
+    const date = new Date(record.createdAt).toLocaleDateString('zh-CN', {
+      month: 'short',
+      day: 'numeric'
+    })
     dailyGrowthMap[date] = (dailyGrowthMap[date] || 0) + record.growthValue
   })
-  
+
   // 生成日期序列和累计值
   const dates = []
   const values = []
   let cumulativeGrowth = 0
-  
+
   // 按时间顺序排序
   const sortedEntries = Object.entries(dailyGrowthMap).sort((a, b) => {
     const dateA = new Date(a[0])
     const dateB = new Date(b[0])
     return dateA - dateB
   })
-  
+
   sortedEntries.forEach(([date, dailyGrowth]) => {
     cumulativeGrowth += dailyGrowth
     dates.push(date)
     values.push(cumulativeGrowth)
   })
-  
+
   return { dates, values }
 })
 
@@ -165,7 +161,7 @@ const chartOption = computed(() => ({
     textStyle: {
       color: '#374151'
     },
-    formatter: (params) => {
+    formatter: params => {
       const { name, value } = params[0]
       return `<div style="padding: 8px">
         <div style="margin-bottom: 4px; font-weight: 600">${name}</div>
@@ -259,11 +255,11 @@ const chartOption = computed(() => ({
 // 获取过滤后的数据（用于统计）
 const filteredGrowthData = computed(() => {
   if (!growthData.value.length) return []
-  
+
   const now = new Date()
   const daysAgo = parseInt(timeRange.value)
   const startDate = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000)
-  
+
   return growthData.value.filter(record => {
     const recordDate = new Date(record.createdAt)
     return recordDate >= startDate

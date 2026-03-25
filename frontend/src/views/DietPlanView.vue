@@ -73,7 +73,7 @@
             <h3 class="section-title">
               基本信息
             </h3>
-            
+
             <el-form-item
               label="计划天数"
               prop="days"
@@ -141,7 +141,7 @@
             <h3 class="section-title">
               个人数据（可选）
             </h3>
-            
+
             <el-row :gutter="20">
               <el-col :span="12">
                 <el-form-item label="性别">
@@ -191,12 +191,12 @@
             </el-row>
 
             <el-form-item label="每日热量">
-              <el-input-number 
-                v-model="formData.dailyCalories" 
-                :min="1000" 
-                :max="5000" 
+              <el-input-number
+                v-model="formData.dailyCalories"
+                :min="1000"
+                :max="5000"
                 :step="100"
-                style="width: 100%" 
+                style="width: 100%"
               />
               <span class="form-tip">留空则由AI自动计算</span>
             </el-form-item>
@@ -207,7 +207,7 @@
             <h3 class="section-title">
               饮食偏好
             </h3>
-            
+
             <el-form-item label="饮食偏好">
               <el-input
                 v-model="formData.preferences"
@@ -229,9 +229,9 @@
 
           <!-- 生成按钮 -->
           <el-form-item>
-            <el-button 
-              type="primary" 
-              size="large" 
+            <el-button
+              type="primary"
+              size="large"
               :loading="isGenerating"
               style="width: 100%"
               @click="handleGenerate"
@@ -260,17 +260,17 @@
               <el-tag type="success">
                 {{ generatedPlan.days }}天计划
               </el-tag>
-              <el-button 
-                type="primary" 
-                :icon="Download" 
+              <el-button
+                type="primary"
+                :icon="Download"
                 :loading="isExportingPdf"
                 @click="handleExportPdf"
               >
                 导出PDF
               </el-button>
-              <el-button 
-                type="info" 
-                :icon="Close" 
+              <el-button
+                type="info"
+                :icon="Close"
                 @click="handleClosePlan"
               >
                 关闭
@@ -280,8 +280,8 @@
         </template>
 
         <!-- Markdown渲染内容 -->
-        <div 
-          class="markdown-content" 
+        <div
+          class="markdown-content"
           v-html="renderedMarkdown"
         />
       </el-card>
@@ -301,13 +301,13 @@
             :percentage="Math.floor(progress)"
             :stroke-width="8"
           />
-          <p style="margin-top: 12px; font-size: 14px; color: #909399;">
+          <p style="margin-top: 12px; font-size: 14px; color: #909399">
             正在逐天生成详细计划，请耐心等待...
           </p>
-          <el-button 
+          <el-button
             v-if="currentTaskId"
-            type="danger" 
-            plain 
+            type="danger"
+            plain
             style="margin-top: 16px"
             @click="handleCancelGenerate"
           >
@@ -315,7 +315,7 @@
           </el-button>
           <p
             v-else
-            style="margin-top: 16px; color: #909399; font-size: 14px;"
+            style="margin-top: 16px; color: #909399; font-size: 14px"
           >
             正在创建任务，请稍候...
           </p>
@@ -335,7 +335,7 @@
           v-if="!historyLoading && historyList.length === 0"
           description="暂无历史记录"
         />
-        
+
         <el-timeline v-else>
           <el-timeline-item
             v-for="item in historyList"
@@ -343,8 +343,8 @@
             :timestamp="new Date(item.createdAt).toLocaleString('zh-CN')"
             placement="top"
           >
-            <el-card 
-              class="history-item" 
+            <el-card
+              class="history-item"
               shadow="hover"
             >
               <div
@@ -427,12 +427,8 @@ const formData = reactive({
 
 // 表单验证规则
 const formRules = {
-  days: [
-    { required: true, message: '请选择计划天数', trigger: 'change' }
-  ],
-  goal: [
-    { required: true, message: '请选择目标', trigger: 'change' }
-  ]
+  days: [{ required: true, message: '请选择计划天数', trigger: 'change' }],
+  goal: [{ required: true, message: '请选择目标', trigger: 'change' }]
 }
 
 // 状态
@@ -445,7 +441,6 @@ const pollInterval = ref(null)
 const historyDrawerVisible = ref(false)
 const historyList = ref([])
 const historyLoading = ref(false)
-
 
 // 配置marked
 marked.setOptions({
@@ -460,25 +455,45 @@ const renderedMarkdown = computed(() => {
   if (!generatedPlan.value || !generatedPlan.value.markdownContent) {
     return ''
   }
-  
+
   // 1. 使用marked将Markdown转换为HTML
   const html = marked.parse(generatedPlan.value.markdownContent)
-  
+
   // 2. 使用DOMPurify清理HTML，防止XSS攻击
   const cleanHtml = DOMPurify.sanitize(html, {
     ALLOWED_TAGS: [
-      'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-      'p', 'br', 'hr',
-      'strong', 'em', 'u', 'del',
-      'ul', 'ol', 'li',
-      'blockquote', 'pre', 'code',
-      'table', 'thead', 'tbody', 'tr', 'th', 'td',
-      'a', 'img'
+      'h1',
+      'h2',
+      'h3',
+      'h4',
+      'h5',
+      'h6',
+      'p',
+      'br',
+      'hr',
+      'strong',
+      'em',
+      'u',
+      'del',
+      'ul',
+      'ol',
+      'li',
+      'blockquote',
+      'pre',
+      'code',
+      'table',
+      'thead',
+      'tbody',
+      'tr',
+      'th',
+      'td',
+      'a',
+      'img'
     ],
     ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'id'],
     ALLOW_DATA_ATTR: false
   })
-  
+
   return cleanHtml
 })
 
@@ -487,62 +502,61 @@ const handleGenerate = async () => {
   try {
     // 验证表单
     await formRef.value.validate()
-    
+
     isGenerating.value = true
     progress.value = 0
-    
+
     const token = localStorage.getItem('token')
     if (!token) {
       ElMessage.error('请先登录')
       return
     }
-    
+
     console.log('发送饮食计划生成请求:', formData)
     console.log('请求URL:', 'http://localhost:8080/api/diet-plan/generate')
     console.log('请求token:', token ? '存在' : '不存在')
-    
+
     // 创建任务
     console.log('开始调用API...')
     const response = await fetch('http://localhost:8080/api/diet-plan/generate', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`
       },
       body: JSON.stringify(formData)
     })
     console.log('API调用完成')
-    
+
     console.log('生成API HTTP状态:', response.status, response.statusText)
-    
+
     if (!response.ok) {
       const errorText = await response.text()
       console.error('生成API错误响应:', errorText)
       throw new Error(`HTTP ${response.status}: ${response.statusText}`)
     }
-    
+
     const data = await response.json()
     console.log('生成API响应:', data)
-    
+
     if (data.code === 200) {
       console.log('API返回的data:', data.data)
       console.log('API返回的taskId:', data.data.taskId)
-      
+
       currentTaskId.value = data.data.taskId
       console.log('设置currentTaskId:', currentTaskId.value)
-      
+
       // 保存到localStorage，以便页面刷新后恢复
       localStorage.setItem('currentTaskId', currentTaskId.value)
       console.log('保存到localStorage:', localStorage.getItem('currentTaskId'))
-      
+
       ElMessage.success('任务已创建，开始生成...')
-      
+
       // 开始轮询任务状态
       startPolling()
     } else {
       throw new Error(data.message || '创建任务失败')
     }
-    
   } catch (error) {
     console.error('创建任务失败:', error)
     console.error('错误堆栈:', error.stack)
@@ -558,18 +572,18 @@ const startPolling = () => {
   if (pollInterval.value) {
     clearInterval(pollInterval.value)
   }
-  
+
   // 根据天数计算预计时间（每天约40秒）
   const estimatedSeconds = formData.days * 40
   const progressStep = 100 / estimatedSeconds
-  
+
   // 模拟进度条
   const progressTimer = setInterval(() => {
     if (progress.value < 95) {
       progress.value += progressStep
     }
   }, 1000)
-  
+
   // 轮询任务状态（每2秒查询一次）
   pollInterval.value = setInterval(async () => {
     try {
@@ -578,60 +592,58 @@ const startPolling = () => {
         `http://localhost:8080/api/diet-plan/task/${currentTaskId.value}/status`,
         {
           headers: {
-            'Authorization': `Bearer ${token}`
+            Authorization: `Bearer ${token}`
           }
         }
       )
-      
+
       const data = await response.json()
       console.log('轮询响应:', data)
-      
+
       if (data.code === 200) {
         const status = data.data
         console.log('任务状态:', status.status, '进度:', status.progress)
-        
+
         // 更新进度
         if (status.progress) {
           progress.value = status.progress
         }
-        
+
         // 检查任务状态
         if (status.status === 'completed') {
           console.log('任务已完成，准备清空currentTaskId')
           clearInterval(pollInterval.value)
           clearInterval(progressTimer)
           progress.value = 100
-          
+
           // 加载生成的计划
           await loadPlanDetail(status.planId)
-          
+
           isGenerating.value = false
           currentTaskId.value = null
           localStorage.removeItem('currentTaskId')
-          
+
           ElMessage.success('饮食计划生成成功！')
-          
+
           // 滚动到顶部
           setTimeout(() => {
             window.scrollTo({ top: 0, behavior: 'smooth' })
           }, 100)
-          
         } else if (status.status === 'failed') {
           clearInterval(pollInterval.value)
           clearInterval(progressTimer)
           isGenerating.value = false
           currentTaskId.value = null
           localStorage.removeItem('currentTaskId')
-          
+
           ElMessage.error('生成失败: ' + (status.errorMessage || '未知错误'))
-          
         } else if (status.status === 'cancelled') {
           clearInterval(pollInterval.value)
           clearInterval(progressTimer)
           isGenerating.value = false
           currentTaskId.value = null
           localStorage.removeItem('currentTaskId')
-          
+
           ElMessage.info('任务已取消')
         }
       }
@@ -642,20 +654,17 @@ const startPolling = () => {
 }
 
 // 加载计划详情
-const loadPlanDetail = async (planId) => {
+const loadPlanDetail = async planId => {
   try {
     const token = localStorage.getItem('token')
-    const response = await fetch(
-      `http://localhost:8080/api/diet-plan/history/${planId}`,
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+    const response = await fetch(`http://localhost:8080/api/diet-plan/history/${planId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
       }
-    )
-    
+    })
+
     const data = await response.json()
-    
+
     if (data.code === 200) {
       generatedPlan.value = data.data
     }
@@ -665,11 +674,11 @@ const loadPlanDetail = async (planId) => {
 }
 
 // 获取目标文本
-const getGoalText = (goal) => {
+const getGoalText = goal => {
   const goalMap = {
-    'lose_weight': '减脂塑形',
-    'gain_muscle': '增肌强壮',
-    'maintain': '健康维持'
+    lose_weight: '减脂塑形',
+    gain_muscle: '增肌强壮',
+    maintain: '健康维持'
   }
   return goalMap[goal] || goal
 }
@@ -677,7 +686,7 @@ const getGoalText = (goal) => {
 // 获取预计时间文本
 const getEstimatedTimeText = () => {
   const days = formData.days || 7
-  const minutes = Math.ceil(days * 40 / 60)
+  const minutes = Math.ceil((days * 40) / 60)
   return `预计需要 ${minutes} 分钟（生成 ${days} 天计划）`
 }
 
@@ -686,7 +695,7 @@ const handleExportPlan = () => {
   if (!generatedPlan.value) {
     return
   }
-  
+
   try {
     const content = generatedPlan.value.markdownContent
     const blob = new Blob([content], { type: 'text/markdown;charset=utf-8' })
@@ -698,7 +707,7 @@ const handleExportPlan = () => {
     link.click()
     document.body.removeChild(link)
     URL.revokeObjectURL(url)
-    
+
     ElMessage.success('饮食计划已导出')
   } catch (error) {
     console.error('导出失败:', error)
@@ -712,9 +721,9 @@ const handleExportPdf = async () => {
     ElMessage.warning('请先生成饮食计划')
     return
   }
-  
+
   isExportingPdf.value = true
-  
+
   try {
     const token = localStorage.getItem('token')
     const response = await fetch(
@@ -722,25 +731,25 @@ const handleExportPdf = async () => {
       {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`
         }
       }
     )
-    
+
     if (response.status === 403) {
       ElMessage.warning('此功能仅限黄金会员使用')
       return
     }
-    
+
     if (response.status === 404) {
       ElMessage.error('计划不存在或已过期，请重新生成')
       return
     }
-    
+
     if (!response.ok) {
       throw new Error('导出失败')
     }
-    
+
     // 下载PDF
     const blob = await response.blob()
     const url = URL.createObjectURL(blob)
@@ -751,7 +760,7 @@ const handleExportPdf = async () => {
     a.click()
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
-    
+
     ElMessage.success('PDF导出成功！')
   } catch (error) {
     console.error('PDF导出失败:', error)
@@ -763,53 +772,51 @@ const handleExportPdf = async () => {
 
 // 重置
 const handleReset = () => {
-  ElMessageBox.confirm(
-    '确定要重新设置吗？当前的计划内容将被清空。',
-    '重新设置',
-    {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-      center: true,
-      customClass: 'custom-message-box'
-    }
-  ).then(() => {
-    // 清空生成的计划
-    generatedPlan.value = null
-    progress.value = 0
-    isGenerating.value = false
-    currentTaskId.value = null
-    
-    // 手动重置表单数据到初始值
-    Object.assign(formData, {
-      days: 7,
-      goal: 'maintain',
-      exerciseLevel: 'medium',
-      gender: null,
-      age: null,
-      height: null,
-      weight: null,
-      dailyCalories: null,
-      preferences: '',
-      allergies: ''
-    })
-    
-    // 清除表单验证状态
-    if (formRef.value) {
-      formRef.value.clearValidate()
-    }
-    
-    // 清空localStorage
-    localStorage.removeItem('currentTaskId')
-    localStorage.removeItem('generatingPlan')
-    
-    ElMessage.success('已重置')
-    
-    // 滚动到顶部
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }).catch(() => {
-    // 取消重置
+  ElMessageBox.confirm('确定要重新设置吗？当前的计划内容将被清空。', '重新设置', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+    center: true,
+    customClass: 'custom-message-box'
   })
+    .then(() => {
+      // 清空生成的计划
+      generatedPlan.value = null
+      progress.value = 0
+      isGenerating.value = false
+      currentTaskId.value = null
+
+      // 手动重置表单数据到初始值
+      Object.assign(formData, {
+        days: 7,
+        goal: 'maintain',
+        exerciseLevel: 'medium',
+        gender: null,
+        age: null,
+        height: null,
+        weight: null,
+        dailyCalories: null,
+        preferences: '',
+        allergies: ''
+      })
+
+      // 清除表单验证状态
+      if (formRef.value) {
+        formRef.value.clearValidate()
+      }
+
+      // 清空localStorage
+      localStorage.removeItem('currentTaskId')
+      localStorage.removeItem('generatingPlan')
+
+      ElMessage.success('已重置')
+
+      // 滚动到顶部
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    })
+    .catch(() => {
+      // 取消重置
+    })
 }
 
 // 关闭详细计划
@@ -831,11 +838,13 @@ const goToHome = () => {
         center: true,
         customClass: 'custom-message-box'
       }
-    ).then(() => {
-      router.push('/')
-    }).catch(() => {
-      // 用户选择继续等待
-    })
+    )
+      .then(() => {
+        router.push('/')
+      })
+      .catch(() => {
+        // 用户选择继续等待
+      })
   } else {
     router.push('/')
   }
@@ -845,20 +854,17 @@ const goToHome = () => {
 const showHistory = async () => {
   historyDrawerVisible.value = true
   historyLoading.value = true
-  
+
   try {
     const token = localStorage.getItem('token')
-    const response = await fetch(
-      'http://localhost:8080/api/diet-plan/history?page=1&size=20',
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+    const response = await fetch('http://localhost:8080/api/diet-plan/history?page=1&size=20', {
+      headers: {
+        Authorization: `Bearer ${token}`
       }
-    )
-    
+    })
+
     const data = await response.json()
-    
+
     if (data.code === 200) {
       historyList.value = data.data.content
     }
@@ -871,11 +877,11 @@ const showHistory = async () => {
 }
 
 // 加载历史记录详情
-const loadHistoryDetail = async (planId) => {
+const loadHistoryDetail = async planId => {
   try {
     await loadPlanDetail(planId)
     historyDrawerVisible.value = false
-    
+
     // 滚动到顶部
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -887,41 +893,36 @@ const loadHistoryDetail = async (planId) => {
 }
 
 // 确认删除历史记录
-const confirmDeleteHistory = (planId) => {
-  ElMessageBox.confirm(
-    '确定要删除这条饮食计划记录吗？',
-    '删除确认',
-    {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-      center: true,
-      customClass: 'custom-message-box'
-    }
-  ).then(() => {
-    deleteHistory(planId)
-  }).catch(() => {
-    // 取消删除
+const confirmDeleteHistory = planId => {
+  ElMessageBox.confirm('确定要删除这条饮食计划记录吗？', '删除确认', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+    center: true,
+    customClass: 'custom-message-box'
   })
+    .then(() => {
+      deleteHistory(planId)
+    })
+    .catch(() => {
+      // 取消删除
+    })
 }
 
 // 删除历史记录
-const deleteHistory = async (planId) => {
+const deleteHistory = async planId => {
   try {
     const token = localStorage.getItem('token')
-    const response = await fetch(
-      `http://localhost:8080/api/diet-plan/${planId}`,
-      {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+    const response = await fetch(`http://localhost:8080/api/diet-plan/${planId}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
-    )
-    
+    })
+
     const data = await response.json()
-    
+
     if (data.code === 200) {
       ElMessage.success('删除成功')
       // 重新加载历史记录
@@ -941,18 +942,18 @@ const handleCancelGenerate = () => {
   console.log('当前状态 - isGenerating:', isGenerating.value)
   console.log('当前状态 - currentTaskId:', currentTaskId.value)
   console.log('localStorage中的taskId:', localStorage.getItem('currentTaskId'))
-  
+
   // 检查是否有正在进行的任务
   if (!currentTaskId.value) {
     console.warn('currentTaskId为空，无法取消')
     ElMessage.warning('没有正在进行的任务')
     return
   }
-  
+
   // 保存taskId，避免在确认期间被清空
   const taskIdToCancel = currentTaskId.value
   console.log('准备取消任务:', taskIdToCancel)
-  
+
   ElMessageBox.confirm(
     '确定要取消当前的饮食计划生成吗？取消后将在当前天数生成完成后停止（约30-40秒）。',
     '确认取消',
@@ -963,63 +964,65 @@ const handleCancelGenerate = () => {
       center: true,
       customClass: 'custom-message-box'
     }
-  ).then(async () => {
-    try {
-      const token = localStorage.getItem('token')
-      
-      console.log('取消任务:', taskIdToCancel)
-      
-      const response = await fetch(
-        `http://localhost:8080/api/diet-plan/task/${taskIdToCancel}/cancel`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`
+  )
+    .then(async () => {
+      try {
+        const token = localStorage.getItem('token')
+
+        console.log('取消任务:', taskIdToCancel)
+
+        const response = await fetch(
+          `http://localhost:8080/api/diet-plan/task/${taskIdToCancel}/cancel`,
+          {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
           }
+        )
+
+        const data = await response.json()
+        console.log('取消响应:', data)
+
+        if (data.code === 200) {
+          // 停止轮询
+          if (pollInterval.value) {
+            clearInterval(pollInterval.value)
+          }
+
+          isGenerating.value = false
+          progress.value = 0
+          currentTaskId.value = null
+          localStorage.removeItem('currentTaskId')
+
+          ElMessage.success('已取消生成')
+        } else {
+          ElMessage.error('取消失败: ' + data.message)
         }
-      )
-      
-      const data = await response.json()
-      console.log('取消响应:', data)
-      
-      if (data.code === 200) {
-        // 停止轮询
-        if (pollInterval.value) {
-          clearInterval(pollInterval.value)
-        }
-        
-        isGenerating.value = false
-        progress.value = 0
-        currentTaskId.value = null
-        localStorage.removeItem('currentTaskId')
-        
-        ElMessage.success('已取消生成')
-      } else {
-        ElMessage.error('取消失败: ' + data.message)
+      } catch (error) {
+        console.error('取消任务失败:', error)
+        ElMessage.error('取消失败: ' + error.message)
       }
-    } catch (error) {
-      console.error('取消任务失败:', error)
-      ElMessage.error('取消失败: ' + error.message)
-    }
-  }).catch(() => {
-    // 用户选择继续生成
-  })
+    })
+    .catch(() => {
+      // 用户选择继续生成
+    })
 }
 
 // 初始化
 onMounted(async () => {
   console.log('饮食计划生成页面已加载')
-  
+
   // 检查是否有进行中的任务
   const savedTaskId = localStorage.getItem('currentTaskId')
   console.log('检查localStorage中的taskId:', savedTaskId)
-  
+
   if (savedTaskId) {
     currentTaskId.value = savedTaskId
     isGenerating.value = true
-    
+
     console.log('恢复任务:', savedTaskId)
-    
+
     // 先查询一次任务状态，恢复进度
     try {
       const token = localStorage.getItem('token')
@@ -1027,22 +1030,22 @@ onMounted(async () => {
         `http://localhost:8080/api/diet-plan/task/${savedTaskId}/status`,
         {
           headers: {
-            'Authorization': `Bearer ${token}`
+            Authorization: `Bearer ${token}`
           }
         }
       )
-      
+
       const data = await response.json()
       if (data.code === 200 && data.data) {
         const status = data.data
         console.log('恢复任务状态:', status)
-        
+
         // 恢复进度
         if (status.progress) {
           progress.value = status.progress
           console.log('恢复进度:', status.progress + '%')
         }
-        
+
         // 检查任务是否已完成或失败
         if (status.status === 'completed') {
           console.log('任务已完成，加载结果')
@@ -1063,9 +1066,9 @@ onMounted(async () => {
     } catch (error) {
       console.error('恢复任务状态失败:', error)
     }
-    
+
     ElMessage.info('检测到未完成的任务，继续生成...')
-    
+
     // 恢复轮询
     startPolling()
   } else {
@@ -1175,7 +1178,6 @@ onBeforeUnmount(() => {
   color: #909399;
   margin-top: 4px;
 }
-
 
 .preview-content {
   display: flex;
@@ -1361,11 +1363,11 @@ onBeforeUnmount(() => {
   .plan-header {
     padding: 0 16px;
   }
-  
+
   .plan-body {
     padding: 16px;
   }
-  
+
   .header-title {
     font-size: 18px;
   }

@@ -50,19 +50,19 @@ const startTyping = () => {
   if (typingTimer) {
     clearTimeout(typingTimer)
   }
-  
+
   const type = () => {
     if (currentIndex < props.text.length) {
       displayedText.value = props.text.substring(0, currentIndex + 1)
       currentIndex++
-      
+
       typingTimer = setTimeout(type, props.speed)
     } else {
       isTyping.value = false
       emit('complete')
     }
   }
-  
+
   isTyping.value = true
   type()
 }
@@ -89,25 +89,32 @@ const showAll = () => {
 }
 
 // 监听文本变化
-watch(() => props.text, (newText, oldText) => {
-  if (props.streaming) {
-    // 流式接收时，实时显示新内容（无打字效果，避免延迟）
-    displayedText.value = newText
-    currentIndex = newText.length
-  } else if (newText && newText !== oldText) {
-    // 非流式时，显示打字效果
-    currentIndex = displayedText.value.length
-    startTyping()
-  }
-}, { immediate: true })
+watch(
+  () => props.text,
+  (newText, oldText) => {
+    if (props.streaming) {
+      // 流式接收时，实时显示新内容（无打字效果，避免延迟）
+      displayedText.value = newText
+      currentIndex = newText.length
+    } else if (newText && newText !== oldText) {
+      // 非流式时，显示打字效果
+      currentIndex = displayedText.value.length
+      startTyping()
+    }
+  },
+  { immediate: true }
+)
 
 // 监听streaming状态变化
-watch(() => props.streaming, (isStreaming) => {
-  if (isStreaming) {
-    // 开始流式接收，停止打字效果
-    stopTyping()
+watch(
+  () => props.streaming,
+  isStreaming => {
+    if (isStreaming) {
+      // 开始流式接收，停止打字效果
+      stopTyping()
+    }
   }
-})
+)
 
 // 组件挂载
 onMounted(() => {
@@ -149,7 +156,8 @@ defineExpose({
 }
 
 @keyframes blink {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {

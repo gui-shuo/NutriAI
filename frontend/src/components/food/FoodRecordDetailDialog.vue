@@ -124,16 +124,19 @@ const emit = defineEmits(['update:modelValue'])
 
 const visible = ref(false)
 
-watch(() => props.modelValue, (val) => {
-  visible.value = val
-})
+watch(
+  () => props.modelValue,
+  val => {
+    visible.value = val
+  }
+)
 
-watch(visible, (val) => {
+watch(visible, val => {
   emit('update:modelValue', val)
 })
 
 // 获取餐次类型标签类型
-const getMealTypeTagType = (mealType) => {
+const getMealTypeTagType = mealType => {
   const types = {
     BREAKFAST: 'warning',
     LUNCH: 'success',
@@ -144,7 +147,7 @@ const getMealTypeTagType = (mealType) => {
 }
 
 // 格式化日期时间
-const formatDateTime = (timeStr) => {
+const formatDateTime = timeStr => {
   if (!timeStr) return ''
   const date = new Date(timeStr)
   return date.toLocaleString('zh-CN', {
