@@ -6,7 +6,7 @@
  * @date 2025-12-03
  */
 
-import { ref, reactive } from 'vue'
+import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 
 // WebSocket URL配置
@@ -380,7 +380,7 @@ export class AIWebSocketClient {
    * @param {Function} handler - 处理函数
    */
   on(event, handler) {
-    if (this.eventHandlers.hasOwnProperty(event)) {
+    if (Object.prototype.hasOwnProperty.call(this.eventHandlers, event)) {
       this.eventHandlers[event] = handler
     } else {
       console.warn(`⚠️ 未知事件: ${event}`)
@@ -392,7 +392,7 @@ export class AIWebSocketClient {
    * @param {string} event - 事件名称
    */
   off(event) {
-    if (this.eventHandlers.hasOwnProperty(event)) {
+    if (Object.prototype.hasOwnProperty.call(this.eventHandlers, event)) {
       this.eventHandlers[event] = null
     }
   }

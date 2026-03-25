@@ -8,7 +8,7 @@
 
 import { ref, onMounted, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { createWebSocketClient, MessageType } from '@/services/websocket'
+import { createWebSocketClient } from '@/services/websocket'
 
 /**
  * AI WebSocket Hook

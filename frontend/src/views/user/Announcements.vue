@@ -2,12 +2,20 @@
   <div class="announcements-page">
     <div class="page-header">
       <h1>系统公告</h1>
-      <p class="subtitle">查看最新的系统通知和公告信息</p>
+      <p class="subtitle">
+        查看最新的系统通知和公告信息
+      </p>
     </div>
 
     <!-- 公告列表 -->
-    <div class="announcements-list" v-loading="loading">
-      <el-empty v-if="announcements.length === 0" description="暂无公告" />
+    <div
+      v-loading="loading"
+      class="announcements-list"
+    >
+      <el-empty
+        v-if="announcements.length === 0"
+        description="暂无公告"
+      />
       
       <div
         v-for="announcement in announcements"
@@ -24,7 +32,9 @@
             >
               {{ getTypeLabel(announcement.type) }}
             </el-tag>
-            <h3 class="title">{{ announcement.title }}</h3>
+            <h3 class="title">
+              {{ announcement.title }}
+            </h3>
           </div>
           <div class="header-right">
             <span class="date">{{ formatDate(announcement.createdAt) }}</span>
@@ -32,10 +42,15 @@
         </div>
         
         <div class="card-content">
-          <p class="content">{{ announcement.content }}</p>
+          <p class="content">
+            {{ announcement.content }}
+          </p>
         </div>
         
-        <div class="card-footer" v-if="announcement.startTime || announcement.endTime">
+        <div
+          v-if="announcement.startTime || announcement.endTime"
+          class="card-footer"
+        >
           <el-icon><Clock /></el-icon>
           <span class="validity">
             有效期：{{ formatDate(announcement.startTime) }} 至 {{ formatDate(announcement.endTime) }}
@@ -52,9 +67,9 @@
       :total="total"
       :page-sizes="[10, 20, 30, 50]"
       layout="total, sizes, prev, pager, next, jumper"
+      class="pagination"
       @size-change="loadAnnouncements"
       @current-change="loadAnnouncements"
-      class="pagination"
     />
   </div>
 </template>

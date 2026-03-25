@@ -1,20 +1,29 @@
 <template>
   <el-card class="nutrition-stats">
     <div class="stats-header">
-      <h2 class="title">今日营养摄入</h2>
+      <h2 class="title">
+        今日营养摄入
+      </h2>
       <el-date-picker
         v-model="currentDate"
         type="date"
         placeholder="选择日期"
         format="YYYY年MM月DD日"
         value-format="YYYY-MM-DD"
-        @change="handleDateChange"
         clearable
+        @change="handleDateChange"
       />
     </div>
 
-    <el-skeleton :loading="loading" animated :rows="3">
-      <div v-if="stats" class="stats-content">
+    <el-skeleton
+      :loading="loading"
+      animated
+      :rows="3"
+    >
+      <div
+        v-if="stats"
+        class="stats-content"
+      >
         <!-- 卡路里总览卡片 -->
         <div class="calorie-card">
           <div class="calorie-main">
@@ -22,11 +31,20 @@
               {{ stats.totalCalories || 0 }}
               <span class="unit">千卡</span>
             </div>
-            <div class="calorie-label">总卡路里</div>
+            <div class="calorie-label">
+              总卡路里
+            </div>
           </div>
           <div class="calorie-breakdown">
-            <div class="meal-item" v-for="meal in mealCalories" :key="meal.type">
-              <span class="meal-dot" :style="{ background: meal.color }"></span>
+            <div
+              v-for="meal in mealCalories"
+              :key="meal.type"
+              class="meal-item"
+            >
+              <span
+                class="meal-dot"
+                :style="{ background: meal.color }"
+              />
               <span class="meal-name">{{ meal.name }}</span>
               <span class="meal-value">{{ meal.value }}</span>
             </div>
@@ -36,31 +54,57 @@
         <!-- 营养成分卡片 -->
         <div class="nutrition-cards">
           <div class="nutrition-item protein">
-            <el-icon class="icon"><User /></el-icon>
-            <div class="value">{{ stats.totalProtein || 0 }}g</div>
-            <div class="label">蛋白质</div>
+            <el-icon class="icon">
+              <User />
+            </el-icon>
+            <div class="value">
+              {{ stats.totalProtein || 0 }}g
+            </div>
+            <div class="label">
+              蛋白质
+            </div>
           </div>
           <div class="nutrition-item carbs">
-            <el-icon class="icon"><Food /></el-icon>
-            <div class="value">{{ stats.totalCarbohydrates || 0 }}g</div>
-            <div class="label">碳水化合物</div>
+            <el-icon class="icon">
+              <Food />
+            </el-icon>
+            <div class="value">
+              {{ stats.totalCarbohydrates || 0 }}g
+            </div>
+            <div class="label">
+              碳水化合物
+            </div>
           </div>
           <div class="nutrition-item fat">
-            <el-icon class="icon"><Apple /></el-icon>
-            <div class="value">{{ stats.totalFat || 0 }}g</div>
-            <div class="label">脂肪</div>
+            <el-icon class="icon">
+              <Apple />
+            </el-icon>
+            <div class="value">
+              {{ stats.totalFat || 0 }}g
+            </div>
+            <div class="label">
+              脂肪
+            </div>
           </div>
           <div class="nutrition-item fiber">
-            <el-icon class="icon"><Grape /></el-icon>
-            <div class="value">{{ stats.totalFiber || 0 }}g</div>
-            <div class="label">膳食纤维</div>
+            <el-icon class="icon">
+              <Grape />
+            </el-icon>
+            <div class="value">
+              {{ stats.totalFiber || 0 }}g
+            </div>
+            <div class="label">
+              膳食纤维
+            </div>
           </div>
         </div>
 
         <!-- ECharts图表 -->
         <div class="charts-section">
           <div class="chart-container">
-            <h3 class="chart-title">营养成分占比</h3>
+            <h3 class="chart-title">
+              营养成分占比
+            </h3>
             <v-chart
               :key="`pie-${currentDate}`"
               class="chart"
@@ -70,7 +114,9 @@
             />
           </div>
           <div class="chart-container">
-            <h3 class="chart-title">餐次卡路里分布</h3>
+            <h3 class="chart-title">
+              餐次卡路里分布
+            </h3>
             <v-chart
               :key="`bar-${currentDate}`"
               class="chart"
@@ -89,7 +135,10 @@
         </div>
       </div>
 
-      <el-empty v-else description="暂无数据" />
+      <el-empty
+        v-else
+        description="暂无数据"
+      />
     </el-skeleton>
   </el-card>
 </template>

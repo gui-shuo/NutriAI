@@ -14,22 +14,37 @@
         accept="image/*"
         style="display: none"
         @change="handleFileChange"
-      />
+      >
 
-      <div v-if="!modelValue && !uploading" class="upload-hint">
-        <el-icon class="upload-icon"><Plus /></el-icon>
+      <div
+        v-if="!modelValue && !uploading"
+        class="upload-hint"
+      >
+        <el-icon class="upload-icon">
+          <Plus />
+        </el-icon>
         <div class="upload-text">
           <p>点击或拖拽上传食物照片</p>
-          <p class="upload-tip">支持 JPG、PNG 格式，最大 10MB</p>
+          <p class="upload-tip">
+            支持 JPG、PNG 格式，最大 10MB
+          </p>
         </div>
       </div>
 
-      <div v-else-if="uploading" class="upload-loading">
-        <el-icon class="is-loading"><Loading /></el-icon>
+      <div
+        v-else-if="uploading"
+        class="upload-loading"
+      >
+        <el-icon class="is-loading">
+          <Loading />
+        </el-icon>
         <p>上传中... {{ uploadProgress }}%</p>
       </div>
 
-      <div v-else class="image-preview">
+      <div
+        v-else
+        class="image-preview"
+      >
         <el-image
           :src="modelValue"
           fit="cover"
@@ -61,7 +76,7 @@ import { Plus, Loading, Picture, Delete } from '@element-plus/icons-vue'
 import { uploadFoodPhoto } from '@/services/foodRecord'
 import message from '@/utils/message'
 
-const props = defineProps({
+defineProps({
   modelValue: {
     type: String,
     default: ''

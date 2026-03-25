@@ -1,9 +1,14 @@
 <template>
   <div class="dashboard">
-    <h2 class="page-title">数据看板</h2>
+    <h2 class="page-title">
+      数据看板
+    </h2>
 
     <!-- 统计卡片 -->
-    <el-row :gutter="16" class="stats-row">
+    <el-row
+      :gutter="16"
+      class="stats-row"
+    >
       <el-col :span="6">
         <el-card class="stat-card">
           <div class="stat-content">
@@ -11,9 +16,15 @@
               <el-icon><User /></el-icon>
             </div>
             <div class="stat-info">
-              <div class="stat-label">总用户数</div>
-              <div class="stat-value">{{ stats.userStats.totalUsers }}</div>
-              <div class="stat-sub">今日新增: {{ stats.userStats.todayNewUsers }}</div>
+              <div class="stat-label">
+                总用户数
+              </div>
+              <div class="stat-value">
+                {{ stats.userStats.totalUsers }}
+              </div>
+              <div class="stat-sub">
+                今日新增: {{ stats.userStats.todayNewUsers }}
+              </div>
             </div>
           </div>
         </el-card>
@@ -26,9 +37,15 @@
               <el-icon><ChatDotRound /></el-icon>
             </div>
             <div class="stat-info">
-              <div class="stat-label">总对话数</div>
-              <div class="stat-value">{{ stats.chatStats.totalChats }}</div>
-              <div class="stat-sub">今日对话: {{ stats.chatStats.todayChats }}</div>
+              <div class="stat-label">
+                总对话数
+              </div>
+              <div class="stat-value">
+                {{ stats.chatStats.totalChats }}
+              </div>
+              <div class="stat-sub">
+                今日对话: {{ stats.chatStats.todayChats }}
+              </div>
             </div>
           </div>
         </el-card>
@@ -41,9 +58,15 @@
               <el-icon><Cpu /></el-icon>
             </div>
             <div class="stat-info">
-              <div class="stat-label">AI调用次数</div>
-              <div class="stat-value">{{ stats.aiStats.totalCalls }}</div>
-              <div class="stat-sub">成功率: {{ stats.aiStats.successRate.toFixed(1) }}%</div>
+              <div class="stat-label">
+                AI调用次数
+              </div>
+              <div class="stat-value">
+                {{ stats.aiStats.totalCalls }}
+              </div>
+              <div class="stat-sub">
+                成功率: {{ stats.aiStats.successRate.toFixed(1) }}%
+              </div>
             </div>
           </div>
         </el-card>
@@ -56,9 +79,15 @@
               <el-icon><TrendCharts /></el-icon>
             </div>
             <div class="stat-info">
-              <div class="stat-label">活跃用户</div>
-              <div class="stat-value">{{ stats.userStats.activeUsers }}</div>
-              <div class="stat-sub">最近7天</div>
+              <div class="stat-label">
+                活跃用户
+              </div>
+              <div class="stat-value">
+                {{ stats.userStats.activeUsers }}
+              </div>
+              <div class="stat-sub">
+                最近7天
+              </div>
             </div>
           </div>
         </el-card>
@@ -66,19 +95,33 @@
     </el-row>
 
     <!-- 图表区域 -->
-    <el-row :gutter="16" class="charts-row">
+    <el-row
+      :gutter="16"
+      class="charts-row"
+    >
       <el-col :span="12">
         <el-card>
           <template #header>
             <div class="card-header">
               <span>用户增长趋势</span>
-              <el-radio-group v-model="userGrowthDays" size="small" @change="loadUserGrowth">
-                <el-radio-button :value="7">7天</el-radio-button>
-                <el-radio-button :value="30">30天</el-radio-button>
+              <el-radio-group
+                v-model="userGrowthDays"
+                size="small"
+                @change="loadUserGrowth"
+              >
+                <el-radio-button :value="7">
+                  7天
+                </el-radio-button>
+                <el-radio-button :value="30">
+                  30天
+                </el-radio-button>
               </el-radio-group>
             </div>
           </template>
-          <div ref="userGrowthChart" class="chart"></div>
+          <div
+            ref="userGrowthChart"
+            class="chart"
+          />
         </el-card>
       </el-col>
 
@@ -87,13 +130,24 @@
           <template #header>
             <div class="card-header">
               <span>AI使用趋势</span>
-              <el-radio-group v-model="aiUsageDays" size="small" @change="loadAIUsage">
-                <el-radio-button :value="7">7天</el-radio-button>
-                <el-radio-button :value="30">30天</el-radio-button>
+              <el-radio-group
+                v-model="aiUsageDays"
+                size="small"
+                @change="loadAIUsage"
+              >
+                <el-radio-button :value="7">
+                  7天
+                </el-radio-button>
+                <el-radio-button :value="30">
+                  30天
+                </el-radio-button>
               </el-radio-group>
             </div>
           </template>
-          <div ref="aiUsageChart" class="chart"></div>
+          <div
+            ref="aiUsageChart"
+            class="chart"
+          />
         </el-card>
       </el-col>
     </el-row>
@@ -105,7 +159,10 @@
           <template #header>
             <span>会员等级分布</span>
           </template>
-          <div ref="memberChart" class="chart"></div>
+          <div
+            ref="memberChart"
+            class="chart"
+          />
         </el-card>
       </el-col>
 
@@ -114,7 +171,10 @@
           <template #header>
             <span>系统状态</span>
           </template>
-          <el-descriptions :column="2" border>
+          <el-descriptions
+            :column="2"
+            border
+          >
             <el-descriptions-item label="平均响应时间">
               {{ stats.chatStats.avgResponseTime.toFixed(0) }}ms
             </el-descriptions-item>

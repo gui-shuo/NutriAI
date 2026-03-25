@@ -3,16 +3,37 @@
     <template #header>
       <div class="card-header">
         <span class="title">成长值趋势</span>
-        <el-select v-model="timeRange" size="small" style="width: 120px" @change="handleTimeRangeChange">
-          <el-option label="最近7天" value="7" />
-          <el-option label="最近30天" value="30" />
-          <el-option label="最近90天" value="90" />
+        <el-select
+          v-model="timeRange"
+          size="small"
+          style="width: 120px"
+          @change="handleTimeRangeChange"
+        >
+          <el-option
+            label="最近7天"
+            value="7"
+          />
+          <el-option
+            label="最近30天"
+            value="30"
+          />
+          <el-option
+            label="最近90天"
+            value="90"
+          />
         </el-select>
       </div>
     </template>
 
-    <el-skeleton :loading="loading" animated :rows="8">
-      <div class="chart-container" v-if="!loading && chartData.dates.length > 0">
+    <el-skeleton
+      :loading="loading"
+      animated
+      :rows="8"
+    >
+      <div
+        v-if="!loading && chartData.dates.length > 0"
+        class="chart-container"
+      >
         <v-chart 
           :key="`chart-${timeRange}`" 
           :option="chartOption" 
@@ -21,21 +42,34 @@
           style="height: 300px" 
         />
       </div>
-      <el-empty v-else-if="!loading" description="暂无数据" :image-size="100" />
+      <el-empty
+        v-else-if="!loading"
+        description="暂无数据"
+        :image-size="100"
+      />
 
       <!-- 成长值统计 -->
       <div class="growth-stats">
         <div class="stat-item">
           <span class="stat-label">总获得</span>
-          <span class="stat-value" style="color: #67c23a">+{{ totalGained }}</span>
+          <span
+            class="stat-value"
+            style="color: #67c23a"
+          >+{{ totalGained }}</span>
         </div>
         <div class="stat-item">
           <span class="stat-label">平均/天</span>
-          <span class="stat-value" style="color: #409eff">{{ avgPerDay }}</span>
+          <span
+            class="stat-value"
+            style="color: #409eff"
+          >{{ avgPerDay }}</span>
         </div>
         <div class="stat-item">
           <span class="stat-label">最高/天</span>
-          <span class="stat-value" style="color: #e6a23c">{{ maxPerDay }}</span>
+          <span
+            class="stat-value"
+            style="color: #e6a23c"
+          >{{ maxPerDay }}</span>
         </div>
       </div>
     </el-skeleton>
@@ -67,7 +101,7 @@ use([
   GridComponent
 ])
 
-const props = defineProps({
+defineProps({
   userId: {
     type: Number,
     required: true

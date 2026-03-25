@@ -1,7 +1,12 @@
 <template>
   <div class="food-recognition-view">
     <div class="recognition-header">
-      <el-button :icon="ArrowLeft" @click="goToHome" text style="margin-bottom: 16px">
+      <el-button
+        :icon="ArrowLeft"
+        text
+        style="margin-bottom: 16px"
+        @click="goToHome"
+      >
         返回首页
       </el-button>
       <h2>🍎 AI食物识别</h2>
@@ -28,8 +33,8 @@
             <template #append>
               <el-button 
                 type="primary" 
-                @click="recognizeByName"
                 :loading="isRecognizing"
+                @click="recognizeByName"
               >
                 识别
               </el-button>
@@ -52,7 +57,9 @@
             :show-file-list="false"
             accept="image/*"
           >
-            <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+            <el-icon class="el-icon--upload">
+              <upload-filled />
+            </el-icon>
             <div class="el-upload__text">
               拖拽图片到此处或 <em>点击上传</em>
             </div>
@@ -64,24 +71,31 @@
           </el-upload>
           
           <!-- 预览图片 -->
-          <div v-if="previewUrl" class="preview-section">
+          <div
+            v-if="previewUrl"
+            class="preview-section"
+          >
             <div class="preview-image-wrapper">
-              <img :src="previewUrl" alt="预览" class="preview-image" />
+              <img
+                :src="previewUrl"
+                alt="预览"
+                class="preview-image"
+              >
               <el-button 
                 class="delete-image-btn"
                 type="danger" 
                 :icon="Delete"
                 circle
                 size="small"
-                @click="clearImage"
                 title="删除图片"
+                @click="clearImage"
               />
             </div>
             <el-button 
               type="primary" 
-              @click="recognizeByImage"
               :loading="isRecognizing"
               style="width: 100%; margin-top: 10px;"
+              @click="recognizeByImage"
             >
               开始识别
             </el-button>
@@ -95,9 +109,9 @@
             <el-tag 
               v-for="food in quickFoods" 
               :key="food"
-              @click="foodName = food; recognizeByName()"
               style="cursor: pointer"
               effect="plain"
+              @click="foodName = food; recognizeByName()"
             >
               {{ food }}
             </el-tag>
@@ -106,11 +120,16 @@
       </el-card>
 
       <!-- 右侧：识别结果或空状态 -->
-      <el-card class="result-card" v-if="recognitionResult">
+      <el-card
+        v-if="recognitionResult"
+        class="result-card"
+      >
         <template #header>
           <div class="result-header">
             <h3>识别结果</h3>
-            <el-tag type="success">{{ recognitionResult.totalCount }} 项</el-tag>
+            <el-tag type="success">
+              {{ recognitionResult.totalCount }} 项
+            </el-tag>
           </div>
         </template>
 
@@ -132,28 +151,36 @@
 
             <div class="nutrition-grid">
               <div class="nutrition-item">
-                <div class="nutrition-label">热量</div>
+                <div class="nutrition-label">
+                  热量
+                </div>
                 <div class="nutrition-value">
                   {{ food.nutrition.energy.toFixed(1) }}
                   <span class="unit">kcal</span>
                 </div>
               </div>
               <div class="nutrition-item">
-                <div class="nutrition-label">蛋白质</div>
+                <div class="nutrition-label">
+                  蛋白质
+                </div>
                 <div class="nutrition-value">
                   {{ food.nutrition.protein.toFixed(1) }}
                   <span class="unit">g</span>
                 </div>
               </div>
               <div class="nutrition-item">
-                <div class="nutrition-label">碳水</div>
+                <div class="nutrition-label">
+                  碳水
+                </div>
                 <div class="nutrition-value">
                   {{ food.nutrition.carbohydrate.toFixed(1) }}
                   <span class="unit">g</span>
                 </div>
               </div>
               <div class="nutrition-item">
-                <div class="nutrition-label">脂肪</div>
+                <div class="nutrition-label">
+                  脂肪
+                </div>
                 <div class="nutrition-value">
                   {{ food.nutrition.fat.toFixed(1) }}
                   <span class="unit">g</span>
@@ -176,18 +203,31 @@
       </el-card>
 
       <!-- 空状态提示 -->
-      <el-card class="empty-card" v-if="!recognitionResult && !isRecognizing">
+      <el-card
+        v-if="!recognitionResult && !isRecognizing"
+        class="empty-card"
+      >
         <div class="empty-content">
-          <el-icon :size="80" color="#dcdfe6"><Picture /></el-icon>
+          <el-icon
+            :size="80"
+            color="#dcdfe6"
+          >
+            <Picture />
+          </el-icon>
           <h3>开始识别食物</h3>
           <p>输入食物名称或上传图片，AI将为您分析营养成分</p>
         </div>
       </el-card>
 
       <!-- 加载状态 -->
-      <el-card class="loading-card" v-if="isRecognizing">
+      <el-card
+        v-if="isRecognizing"
+        class="loading-card"
+      >
         <div class="loading-content">
-          <el-icon class="loading-icon"><Loading /></el-icon>
+          <el-icon class="loading-icon">
+            <Loading />
+          </el-icon>
           <h3>AI正在识别食物...</h3>
           <p>请稍候</p>
         </div>
@@ -195,11 +235,16 @@
     </div>
 
     <!-- 识别历史 -->
-    <el-card class="history-card" v-if="history.length > 0">
+    <el-card
+      v-if="history.length > 0"
+      class="history-card"
+    >
       <template #header>
         <div class="history-header">
           <h3>📜 识别历史</h3>
-          <el-tag type="info">{{ history.length }} 条记录</el-tag>
+          <el-tag type="info">
+            {{ history.length }} 条记录
+          </el-tag>
         </div>
       </template>
       <el-timeline>
@@ -210,11 +255,17 @@
         >
           <div class="history-item">
             <div class="history-summary">
-              <span class="history-text" @click="toggleHistoryDetail(item.id)">
+              <span
+                class="history-text"
+                @click="toggleHistoryDetail(item.id)"
+              >
                 {{ getHistoryText(item.recognitionResult) }}
               </span>
               <div class="history-actions">
-                <el-icon class="expand-icon" @click="toggleHistoryDetail(item.id)">
+                <el-icon
+                  class="expand-icon"
+                  @click="toggleHistoryDetail(item.id)"
+                >
                   <ArrowDown v-if="!expandedHistory[item.id]" />
                   <ArrowUp v-else />
                 </el-icon>
@@ -223,19 +274,25 @@
                   :icon="Delete"
                   size="small"
                   circle
-                  @click="confirmDeleteHistory(item.id)"
                   title="删除记录"
+                  @click="confirmDeleteHistory(item.id)"
                 />
               </div>
             </div>
             
             <!-- 详细信息 -->
             <el-collapse-transition>
-              <div v-show="expandedHistory[item.id]" class="history-detail">
+              <div
+                v-show="expandedHistory[item.id]"
+                class="history-detail"
+              >
                 <div class="detail-info">
                   <div class="detail-row">
                     <span class="detail-label">识别方式:</span>
-                    <el-tag size="small" :type="item.recognitionType === 'TEXT' ? 'success' : 'primary'">
+                    <el-tag
+                      size="small"
+                      :type="item.recognitionType === 'TEXT' ? 'success' : 'primary'"
+                    >
                       {{ item.recognitionType === 'TEXT' ? '📝 文本识别' : '📷 图片识别' }}
                     </el-tag>
                   </div>
@@ -250,7 +307,10 @@
                 </div>
                 
                 <!-- 识别结果详情 -->
-                <div v-if="item.recognitionResult" class="result-detail">
+                <div
+                  v-if="item.recognitionResult"
+                  class="result-detail"
+                >
                   <h5>识别结果:</h5>
                   <div 
                     v-for="(food, index) in parseRecognitionResult(item.recognitionResult).foods" 
@@ -259,7 +319,10 @@
                   >
                     <div class="food-name-row">
                       <strong>{{ food.name }}</strong>
-                      <el-tag size="small" :type="getConfidenceType(food.confidence)">
+                      <el-tag
+                        size="small"
+                        :type="getConfidenceType(food.confidence)"
+                      >
                         {{ (food.confidence * 100).toFixed(0) }}%
                       </el-tag>
                     </div>

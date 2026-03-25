@@ -3,7 +3,10 @@
     <div class="member-layout">
       <!-- 会员信息卡片 -->
       <div class="member-header">
-        <MemberInfoCard :member-info="memberInfo" :loading="loading" />
+        <MemberInfoCard
+          :member-info="memberInfo"
+          :loading="loading"
+        />
       </div>
 
       <!-- 主要内容区 -->
@@ -20,7 +23,10 @@
         <!-- 右侧：权益列表和等级对比 -->
         <div class="right-section">
           <!-- 权益列表 -->
-          <BenefitsList :benefits="currentBenefits" :level-name="memberInfo?.currentLevel?.levelName" />
+          <BenefitsList
+            :benefits="currentBenefits"
+            :level-name="memberInfo?.currentLevel?.levelName"
+          />
           
           <!-- 等级对比表 -->
           <LevelComparisonTable 

@@ -1,59 +1,143 @@
 <template>
   <div class="system-config">
-    <h2 class="page-title">系统配置</h2>
+    <h2 class="page-title">
+      系统配置
+    </h2>
 
     <!-- 配置分类标签 -->
     <el-card class="category-card">
-      <el-tabs v-model="activeCategory" @tab-change="handleCategoryChange">
-        <el-tab-pane label="全部配置" name="all" />
-        <el-tab-pane label="AI配置" name="AI" />
-        <el-tab-pane label="系统配置" name="系统" />
-        <el-tab-pane label="用户配置" name="用户" />
-        <el-tab-pane label="安全配置" name="安全" />
-        <el-tab-pane label="通知配置" name="通知" />
+      <el-tabs
+        v-model="activeCategory"
+        @tab-change="handleCategoryChange"
+      >
+        <el-tab-pane
+          label="全部配置"
+          name="all"
+        />
+        <el-tab-pane
+          label="AI配置"
+          name="AI"
+        />
+        <el-tab-pane
+          label="系统配置"
+          name="系统"
+        />
+        <el-tab-pane
+          label="用户配置"
+          name="用户"
+        />
+        <el-tab-pane
+          label="安全配置"
+          name="安全"
+        />
+        <el-tab-pane
+          label="通知配置"
+          name="通知"
+        />
       </el-tabs>
     </el-card>
 
     <!-- 配置列表 -->
-    <el-card class="config-card" v-loading="loading">
+    <el-card
+      v-loading="loading"
+      class="config-card"
+    >
       <template #header>
         <div class="card-header">
           <span>配置列表</span>
-          <el-button type="primary" @click="handleCreate">
+          <el-button
+            type="primary"
+            @click="handleCreate"
+          >
             <el-icon><Plus /></el-icon>
             添加配置
           </el-button>
         </div>
       </template>
-      <el-table :data="configList" stripe>
-        <el-table-column prop="configKey" label="配置键" width="250" />
-        <el-table-column prop="configValue" label="配置值" width="200">
+      <el-table
+        :data="configList"
+        stripe
+      >
+        <el-table-column
+          prop="configKey"
+          label="配置键"
+          width="250"
+        />
+        <el-table-column
+          prop="configValue"
+          label="配置值"
+          width="200"
+        >
           <template #default="{ row }">
-            <el-tag v-if="row.configType === 'boolean'" :type="row.configValue === 'true' ? 'success' : 'info'">
+            <el-tag
+              v-if="row.configType === 'boolean'"
+              :type="row.configValue === 'true' ? 'success' : 'info'"
+            >
               {{ row.configValue }}
             </el-tag>
             <span v-else>{{ row.configValue }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="configType" label="类型" width="100">
+        <el-table-column
+          prop="configType"
+          label="类型"
+          width="100"
+        >
           <template #default="{ row }">
-            <el-tag size="small">{{ row.configType }}</el-tag>
+            <el-tag size="small">
+              {{ row.configType }}
+            </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="description" label="描述" show-overflow-tooltip />
-        <el-table-column prop="category" label="分类" width="100" />
-        <el-table-column label="公开" width="80">
+        <el-table-column
+          prop="description"
+          label="描述"
+          show-overflow-tooltip
+        />
+        <el-table-column
+          prop="category"
+          label="分类"
+          width="100"
+        />
+        <el-table-column
+          label="公开"
+          width="80"
+        >
           <template #default="{ row }">
-            <el-icon v-if="row.isPublic" color="#67c23a"><Check /></el-icon>
-            <el-icon v-else color="#909399"><Close /></el-icon>
+            <el-icon
+              v-if="row.isPublic"
+              color="#67c23a"
+            >
+              <Check />
+            </el-icon>
+            <el-icon
+              v-else
+              color="#909399"
+            >
+              <Close />
+            </el-icon>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="150" fixed="right">
+        <el-table-column
+          label="操作"
+          width="150"
+          fixed="right"
+        >
           <template #default="{ row }">
-            <el-button type="primary" link size="small" @click="handleEdit(row)">
+            <el-button
+              type="primary"
+              link
+              size="small"
+              @click="handleEdit(row)"
+            >
               编辑
             </el-button>
-            <el-button type="danger" link size="small" @click="handleDelete(row)">
+            <el-button
+              type="danger"
+              link
+              size="small"
+              @click="handleDelete(row)"
+            >
               删除
             </el-button>
           </template>
@@ -67,15 +151,23 @@
       :title="isCreate ? '创建配置' : '编辑配置'"
       width="700px"
     >
-      <el-form :model="editForm" label-width="120px" :rules="rules" ref="formRef">
+      <el-form
+        ref="formRef"
+        :model="editForm"
+        label-width="120px"
+        :rules="rules"
+      >
         <!-- 创建时显示配置选项选择器 -->
-        <el-form-item label="选择配置项" v-if="isCreate">
+        <el-form-item
+          v-if="isCreate"
+          label="选择配置项"
+        >
           <el-select 
             v-model="selectedOption" 
             placeholder="从预定义配置中选择"
             filterable
-            @change="handleOptionSelect"
             style="width: 100%"
+            @change="handleOptionSelect"
           >
             <el-option
               v-for="option in configOptions"
@@ -94,15 +186,32 @@
           </div>
         </el-form-item>
         
-        <el-form-item label="配置键" prop="configKey">
-          <el-input v-model="editForm.configKey" :disabled="!isCreate" placeholder="例如: ai.model" />
+        <el-form-item
+          label="配置键"
+          prop="configKey"
+        >
+          <el-input
+            v-model="editForm.configKey"
+            :disabled="!isCreate"
+            placeholder="例如: ai.model"
+          />
         </el-form-item>
         
-        <el-form-item label="配置名称" prop="configName" v-if="isCreate">
-          <el-input v-model="editForm.configName" placeholder="配置的显示名称" />
+        <el-form-item
+          v-if="isCreate"
+          label="配置名称"
+          prop="configName"
+        >
+          <el-input
+            v-model="editForm.configName"
+            placeholder="配置的显示名称"
+          />
         </el-form-item>
         
-        <el-form-item label="配置值" prop="configValue">
+        <el-form-item
+          label="配置值"
+          prop="configValue"
+        >
           <!-- 根据valueType显示不同的输入控件 -->
           <el-select 
             v-if="currentOption && currentOption.valueType === 'select'" 
@@ -134,26 +243,74 @@
           />
         </el-form-item>
         
-        <el-form-item label="类型" prop="configType">
-          <el-select v-model="editForm.configType" :disabled="!isCreate" style="width: 100%">
-            <el-option label="字符串" value="string" />
-            <el-option label="数字" value="number" />
-            <el-option label="布尔值" value="boolean" />
-            <el-option label="JSON" value="json" />
+        <el-form-item
+          label="类型"
+          prop="configType"
+        >
+          <el-select
+            v-model="editForm.configType"
+            :disabled="!isCreate"
+            style="width: 100%"
+          >
+            <el-option
+              label="字符串"
+              value="string"
+            />
+            <el-option
+              label="数字"
+              value="number"
+            />
+            <el-option
+              label="布尔值"
+              value="boolean"
+            />
+            <el-option
+              label="JSON"
+              value="json"
+            />
           </el-select>
         </el-form-item>
         
-        <el-form-item label="描述" prop="description">
-          <el-input v-model="editForm.description" type="textarea" :rows="3" placeholder="配置项的详细说明" />
+        <el-form-item
+          label="描述"
+          prop="description"
+        >
+          <el-input
+            v-model="editForm.description"
+            type="textarea"
+            :rows="3"
+            placeholder="配置项的详细说明"
+          />
         </el-form-item>
         
-        <el-form-item label="分类" prop="category">
-          <el-select v-model="editForm.category" style="width: 100%">
-            <el-option label="AI配置" value="AI" />
-            <el-option label="系统配置" value="系统" />
-            <el-option label="用户配置" value="用户" />
-            <el-option label="安全配置" value="安全" />
-            <el-option label="通知配置" value="通知" />
+        <el-form-item
+          label="分类"
+          prop="category"
+        >
+          <el-select
+            v-model="editForm.category"
+            style="width: 100%"
+          >
+            <el-option
+              label="AI配置"
+              value="AI"
+            />
+            <el-option
+              label="系统配置"
+              value="系统"
+            />
+            <el-option
+              label="用户配置"
+              value="用户"
+            />
+            <el-option
+              label="安全配置"
+              value="安全"
+            />
+            <el-option
+              label="通知配置"
+              value="通知"
+            />
           </el-select>
         </el-form-item>
         
@@ -163,8 +320,15 @@
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="editDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSave">保存</el-button>
+        <el-button @click="editDialogVisible = false">
+          取消
+        </el-button>
+        <el-button
+          type="primary"
+          @click="handleSave"
+        >
+          保存
+        </el-button>
       </template>
     </el-dialog>
   </div>

@@ -1,7 +1,10 @@
 <template>
   <span class="typing-effect">
     <span class="content">{{ displayedText }}</span>
-    <span v-if="isTyping" class="cursor">|</span>
+    <span
+      v-if="isTyping"
+      class="cursor"
+    >|</span>
   </span>
 </template>
 

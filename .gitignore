@@ -63,10 +63,9 @@ coverage/
 .DS_Store
 Thumbs.db
 
-# 前端自动生成文件
+# 前端自动生成类型声明
 src/auto-imports.d.ts
 src/components.d.ts
-.eslintrc-auto-import.json
 
 # ============================================
 # 后端相关 (backend/)

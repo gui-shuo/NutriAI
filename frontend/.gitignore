@@ -24,7 +24,6 @@ coverage
 *.sln
 *.sw?
 
-# Auto-generated files
+# Auto-generated type declarations
 src/auto-imports.d.ts
 src/components.d.ts
-.eslintrc-auto-import.json
