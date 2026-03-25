@@ -120,39 +120,54 @@ jobs:
             # 仓库已设为公开，无需登录（docker login 会直连 Docker Hub 认证服务器，国内无法访问）
             echo "💡 Docker Hub 仓库为公开，跳过登录"
 
+            # 检测可用的 docker compose 命令，若均不可用则自动安装插件
+            if sudo docker compose version &>/dev/null 2>&1; then
+              COMPOSE_CMD="sudo docker compose"
+              echo "✅ 使用 docker compose (v2 插件)"
+            elif sudo docker-compose version &>/dev/null 2>&1; then
+              COMPOSE_CMD="sudo docker-compose"
+              echo "✅ 使用 docker-compose (v1)"
+            else
+              echo "⚙️ 未找到可用的 docker compose，正在安装 docker-compose-plugin..."
+              sudo apt-get update -y -qq && sudo apt-get install -y -qq docker-compose-plugin
+              COMPOSE_CMD="sudo docker compose"
+              echo "✅ docker-compose-plugin 安装完成"
+            fi
+
             # 强制清理旧镜像，避免使用缓存
             echo "🧹 清理本地旧镜像..."
             sudo docker rmi "${DOCKER_USERNAME}/nutriai-backend:latest" 2>/dev/null || true
             sudo docker rmi "${DOCKER_USERNAME}/nutriai-frontend:latest" 2>/dev/null || true
             echo "✅ 旧镜像已清理，将从远程拉取最新版本"
 
-            # 拉取镜像，支持重试（最多3次）
+            # 直接用 docker pull 拉取每个镜像（绕过 compose，支持重试）
             echo "📥 拉取最新镜像..."
-            PULL_SUCCESS=false
-            for attempt in 1 2 3; do
-              echo "尝试拉取（第 ${attempt} 次）..."
-              if sudo docker-compose -f docker-compose.prod.yml pull; then
-                echo "✅ 镜像拉取成功"
-                PULL_SUCCESS=true
-                break
-              fi
-              echo "⚠️ 第 ${attempt} 次拉取失败，等待 10 秒后重试..."
-              sleep 10
-            done
+            pull_with_retry() {
+              local IMAGE=$1
+              for attempt in 1 2 3; do
+                echo "拉取 ${IMAGE}（第 ${attempt} 次）..."
+                if sudo docker pull "${IMAGE}"; then
+                  echo "✅ ${IMAGE} 拉取成功"
+                  return 0
+                fi
+                echo "⚠️ 第 ${attempt} 次失败，等待 10 秒后重试..."
+                sleep 10
+              done
+              echo "❌ ${IMAGE} 拉取失败！"
+              return 1
+            }
 
-            if [ "$PULL_SUCCESS" != "true" ]; then
-              echo "❌ 镜像拉取失败！请检查服务器网络或 Docker Hub 连接（如在国内，请配置镜像加速）"
-              exit 1
-            fi
+            pull_with_retry "${DOCKER_USERNAME}/nutriai-backend:latest"
+            pull_with_retry "${DOCKER_USERNAME}/nutriai-frontend:latest"
 
             # 启动容器
             echo "▶️ 启动容器..."
-            sudo docker-compose -f docker-compose.prod.yml up -d --remove-orphans
+            $COMPOSE_CMD -f docker-compose.prod.yml up -d --remove-orphans
 
             # 显示容器状态
             echo ""
             echo "📊 容器运行状态："
-            sudo docker-compose -f docker-compose.prod.yml ps
+            $COMPOSE_CMD -f docker-compose.prod.yml ps
 
             echo ""
             echo "============================================"
