@@ -1,4 +1,4 @@
-name: Deploy to Volcano Engine
+name: Deploy to Production
 
 on:
   workflow_dispatch:
@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   deploy:
-    name: 本地构建镜像并部署到云服务器
+    name: 构建镜像并部署到云服务器
     runs-on: ubuntu-latest
 
     steps:
@@ -26,10 +26,10 @@ jobs:
             echo "IMAGE_TAG=${GITHUB_SHA::7}" >> "$GITHUB_ENV"
           fi
 
-      - name: 🐳 构建后端镜像（GitHub Runner本地）
+      - name: 🐳 构建后端镜像
         run: docker build -t nutriai-backend:${{ env.IMAGE_TAG }} ./backend
 
-      - name: 🐳 构建前端镜像（GitHub Runner本地）
+      - name: 🐳 构建前端镜像
         run: |
           docker build \
             --build-arg VITE_API_BASE_URL="${{ secrets.PROD_API_BASE_URL }}" \
@@ -43,38 +43,20 @@ jobs:
           mkdir -p deploy-package
           docker save nutriai-backend:${{ env.IMAGE_TAG }} nutriai-frontend:${{ env.IMAGE_TAG }} | gzip > deploy-package/nutriai-images.tar.gz
           cp docker-compose.prod.yml deploy-package/docker-compose.prod.yml
-          echo "✅ 打包完成："
           ls -lh deploy-package/
 
-      - name: 🔑 配置SSH密钥
-        run: |
-          mkdir -p ~/.ssh && chmod 700 ~/.ssh
-          echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-          printf '%s\n' \
-            "Host deploy-target" \
-            "  HostName ${{ secrets.SERVER_HOST }}" \
-            "  User ${{ secrets.SERVER_USER }}" \
-            "  IdentityFile ~/.ssh/deploy_key" \
-            "  StrictHostKeyChecking no" \
-            "  UserKnownHostsFile /dev/null" \
-            "  BatchMode yes" \
-            "  ConnectTimeout 30" \
-            "  ServerAliveInterval 15" \
-            "  ServerAliveCountMax 3" \
-            "  LogLevel ERROR" \
-            > ~/.ssh/config
-          chmod 600 ~/.ssh/config
-          echo "✅ SSH配置完成"
-
       - name: 📤 上传部署包到服务器
-        run: |
-          set -e
-          ssh deploy-target "mkdir -p /tmp/nutriai-deploy && chmod 700 /tmp/nutriai-deploy"
-          scp deploy-package/nutriai-images.tar.gz deploy-package/docker-compose.prod.yml deploy-target:/tmp/nutriai-deploy/
-          echo "✅ 上传完成"
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          source: "deploy-package/*"
+          target: "/tmp/nutriai-deploy"
+          strip_components: 1
+          overwrite: true
 
-      - name: 🚀 在云服务器启动Docker服务
+      - name: 🚀 部署并启动容器
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -86,9 +68,8 @@ jobs:
             sudo cp -f /tmp/nutriai-deploy/nutriai-images.tar.gz /www/wwwroot/nutriai/
             sudo cp -f /tmp/nutriai-deploy/docker-compose.prod.yml /www/wwwroot/nutriai/
             cd /www/wwwroot/nutriai
-            # 更新 .env 中的镜像标签（.env 由管理员手动维护，此处仅更新 IMAGE_TAG）
             if [ ! -f .env ]; then
-              echo "ERROR: /www/wwwroot/nutriai/.env 不存在，请先手动创建（参考 .env.example）" && exit 1
+              echo "ERROR: /www/wwwroot/nutriai/.env 不存在，请先手动创建" && exit 1
             fi
             sudo sed -i "s/^IMAGE_TAG=.*/IMAGE_TAG=${{ env.IMAGE_TAG }}/" .env
             sudo chmod 600 .env
@@ -96,15 +77,10 @@ jobs:
             sudo docker compose --env-file .env -f docker-compose.prod.yml up -d
             sudo docker compose --env-file .env -f docker-compose.prod.yml ps
             sudo rm -rf /tmp/nutriai-deploy
-
-      - name: 🧹 清理SSH密钥
-        if: always()
-        run: rm -f ~/.ssh/deploy_key ~/.ssh/config
+            echo "✅ 部署完成"
 
       - name: 📈 部署结果摘要
         run: |
-          echo "## 🎉 Docker自动化部署完成" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "## 🎉 部署完成" >> "$GITHUB_STEP_SUMMARY"
           echo "- 镜像标签: ${{ env.IMAGE_TAG }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- 部署方式: GitHub Runner本地构建 + 服务器docker load（避免云服务器构建）" >> "$GITHUB_STEP_SUMMARY"
-          echo "- 服务器地址: ${{ secrets.SERVER_HOST }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- 服务器: ${{ secrets.SERVER_HOST }}" >> "$GITHUB_STEP_SUMMARY"
