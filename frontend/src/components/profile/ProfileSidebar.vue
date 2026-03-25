@@ -3,19 +3,10 @@
     <!-- 用户头像和基本信息 -->
     <div class="user-card">
       <div class="avatar-wrapper">
-        <el-avatar
-          :size="80"
-          :src="userInfo?.avatar"
-          class="avatar"
-        >
-          <img src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png">
+        <el-avatar :size="80" :src="userInfo?.avatar" class="avatar">
+          <img src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png" />
         </el-avatar>
-        <el-button
-          class="avatar-btn"
-          size="small"
-          circle
-          @click="emit('change', 'edit')"
-        >
+        <el-button class="avatar-btn" size="small" circle @click="emit('change', 'edit')">
           <el-icon><Edit /></el-icon>
         </el-button>
       </div>
@@ -28,11 +19,7 @@
     </div>
 
     <!-- 导航菜单 -->
-    <el-menu
-      :default-active="activeMenu"
-      class="sidebar-menu"
-      @select="handleSelect"
-    >
+    <el-menu :default-active="activeMenu" class="sidebar-menu" @select="handleSelect">
       <el-menu-item index="info">
         <el-icon><User /></el-icon>
         <span>个人资料</span>
@@ -56,11 +43,7 @@
 
     <!-- 返回首页按钮 -->
     <div class="sidebar-footer">
-      <el-button
-        type="primary"
-        class="back-btn"
-        @click="router.push('/')"
-      >
+      <el-button type="primary" class="back-btn" @click="router.push('/')">
         <el-icon><HomeFilled /></el-icon>
         返回首页
       </el-button>

@@ -14,10 +14,7 @@
     </div>
 
     <transition name="expand">
-      <div
-        v-show="expanded"
-        class="actions-content"
-      >
+      <div v-show="expanded" class="actions-content">
         <!-- 常用问题 -->
         <div class="action-section">
           <h4 class="section-title">

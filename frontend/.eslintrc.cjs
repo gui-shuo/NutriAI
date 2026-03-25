@@ -4,7 +4,8 @@ module.exports = {
   extends: [
     'plugin:vue/vue3-recommended',
     'eslint:recommended',
-    './.eslintrc-auto-import.json'
+    './.eslintrc-auto-import.json',
+    'prettier'
   ],
   parserOptions: {
     ecmaVersion: 'latest',

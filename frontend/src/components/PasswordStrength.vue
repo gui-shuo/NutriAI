@@ -1,14 +1,7 @@
 <template>
-  <div
-    v-if="password"
-    class="password-strength"
-  >
+  <div v-if="password" class="password-strength">
     <div class="strength-bar">
-      <div
-        class="strength-fill"
-        :class="strengthClass"
-        :style="{ width: strengthWidth }"
-      />
+      <div class="strength-fill" :class="strengthClass" :style="{ width: strengthWidth }" />
     </div>
     <div class="strength-text">
       <span :class="strengthClass">{{ strengthText }}</span>

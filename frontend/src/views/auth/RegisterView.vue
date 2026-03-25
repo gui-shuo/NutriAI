@@ -3,12 +3,8 @@
     <div class="register-card">
       <!-- Logo和标题 -->
       <div class="register-header">
-        <h1 class="logo">
-          🥗 NutriAI
-        </h1>
-        <p class="subtitle">
-          创建您的账号，开启健康饮食之旅
-        </p>
+        <h1 class="logo">🥗 NutriAI</h1>
+        <p class="subtitle">创建您的账号，开启健康饮食之旅</p>
       </div>
 
       <!-- 注册表单 -->
@@ -20,10 +16,7 @@
         label-position="top"
       >
         <!-- 用户名 -->
-        <el-form-item
-          label="用户名"
-          prop="username"
-        >
+        <el-form-item label="用户名" prop="username">
           <el-input
             v-model="registerForm.username"
             placeholder="3-20个字符，字母数字下划线"
@@ -32,25 +25,16 @@
             clearable
             @blur="checkUsername"
           />
-          <span
-            v-if="usernameAvailable === true"
-            class="validation-tip success"
-          >
+          <span v-if="usernameAvailable === true" class="validation-tip success">
             ✓ 用户名可用
           </span>
-          <span
-            v-else-if="usernameAvailable === false"
-            class="validation-tip error"
-          >
+          <span v-else-if="usernameAvailable === false" class="validation-tip error">
             ✗ 用户名已被占用
           </span>
         </el-form-item>
 
         <!-- 密码 -->
-        <el-form-item
-          label="密码"
-          prop="password"
-        >
+        <el-form-item label="密码" prop="password">
           <el-input
             v-model="registerForm.password"
             type="password"
@@ -64,10 +48,7 @@
         </el-form-item>
 
         <!-- 确认密码 -->
-        <el-form-item
-          label="确认密码"
-          prop="confirmPassword"
-        >
+        <el-form-item label="确认密码" prop="confirmPassword">
           <el-input
             v-model="registerForm.confirmPassword"
             type="password"
@@ -79,10 +60,7 @@
         </el-form-item>
 
         <!-- 邮箱 -->
-        <el-form-item
-          label="邮箱"
-          prop="email"
-        >
+        <el-form-item label="邮箱" prop="email">
           <el-input
             v-model="registerForm.email"
             placeholder="请输入邮箱地址"
@@ -91,23 +69,14 @@
             clearable
             @blur="checkEmail"
           />
-          <span
-            v-if="emailAvailable === true"
-            class="validation-tip success"
-          > ✓ 邮箱可用 </span>
-          <span
-            v-else-if="emailAvailable === false"
-            class="validation-tip error"
-          >
+          <span v-if="emailAvailable === true" class="validation-tip success"> ✓ 邮箱可用 </span>
+          <span v-else-if="emailAvailable === false" class="validation-tip error">
             ✗ 邮箱已被注册
           </span>
         </el-form-item>
 
         <!-- 手机号（可选） -->
-        <el-form-item
-          label="手机号（可选）"
-          prop="phone"
-        >
+        <el-form-item label="手机号（可选）" prop="phone">
           <el-input
             v-model="registerForm.phone"
             placeholder="请输入手机号"
@@ -119,10 +88,7 @@
         </el-form-item>
 
         <!-- 昵称（可选） -->
-        <el-form-item
-          label="昵称（可选）"
-          prop="nickname"
-        >
+        <el-form-item label="昵称（可选）" prop="nickname">
           <el-input
             v-model="registerForm.nickname"
             placeholder="请输入昵称"
@@ -133,10 +99,7 @@
         </el-form-item>
 
         <!-- 验证码 -->
-        <el-form-item
-          label="验证码"
-          prop="captcha"
-        >
+        <el-form-item label="验证码" prop="captcha">
           <div class="captcha-wrapper">
             <el-input
               v-model="registerForm.captcha"
@@ -145,21 +108,15 @@
               maxlength="4"
               class="captcha-input"
             />
-            <div
-              class="captcha-image-wrapper"
-              @click="refreshCaptcha"
-            >
+            <div class="captcha-image-wrapper" @click="refreshCaptcha">
               <img
                 v-if="captchaImage"
                 :src="captchaImage"
                 class="captcha-image"
                 alt="验证码"
                 title="点击刷新验证码"
-              >
-              <div
-                v-else
-                class="captcha-loading"
-              >
+              />
+              <div v-else class="captcha-loading">
                 <el-icon class="is-loading">
                   <Loading />
                 </el-icon>
@@ -173,19 +130,9 @@
         <el-form-item prop="agree">
           <el-checkbox v-model="registerForm.agree">
             我已阅读并同意
-            <el-link
-              type="primary"
-              :underline="false"
-            >
-              《用户协议》
-            </el-link>
+            <el-link type="primary" :underline="false"> 《用户协议》 </el-link>
             和
-            <el-link
-              type="primary"
-              :underline="false"
-            >
-              《隐私政策》
-            </el-link>
+            <el-link type="primary" :underline="false"> 《隐私政策》 </el-link>
           </el-checkbox>
         </el-form-item>
 
@@ -205,12 +152,7 @@
         <!-- 登录链接 -->
         <div class="login-link">
           已有账号？
-          <router-link
-            to="/login"
-            class="link"
-          >
-            立即登录
-          </router-link>
+          <router-link to="/login" class="link"> 立即登录 </router-link>
         </div>
       </el-form>
     </div>

@@ -3,73 +3,41 @@
     <template #header>
       <div class="card-header">
         <span class="title">等级对比</span>
-        <el-tag type="info">
-          5个等级
-        </el-tag>
+        <el-tag type="info"> 5个等级 </el-tag>
       </div>
     </template>
 
     <div class="table-wrapper">
-      <el-table
-        :data="levelData"
-        style="width: 100%"
-        stripe
-      >
-        <el-table-column
-          label="等级"
-          width="140"
-        >
+      <el-table :data="levelData" style="width: 100%" stripe>
+        <el-table-column label="等级" width="140">
           <template #default="{ row }">
             <div class="level-cell">
-              <div
-                class="level-badge"
-                :style="{ background: row.color }"
-              >
+              <div class="level-badge" :style="{ background: row.color }">
                 <el-icon><Trophy /></el-icon>
               </div>
               <div class="level-info">
                 <span class="level-name">{{ row.levelName }}</span>
-                <el-tag
-                  v-if="isCurrentLevel(row)"
-                  type="success"
-                  size="small"
-                >
-                  当前
-                </el-tag>
+                <el-tag v-if="isCurrentLevel(row)" type="success" size="small"> 当前 </el-tag>
               </div>
             </div>
           </template>
         </el-table-column>
 
-        <el-table-column
-          label="所需成长值"
-          width="120"
-          align="center"
-        >
+        <el-table-column label="所需成长值" width="120" align="center">
           <template #default="{ row }">
             <span class="growth-value">{{ row.growthRequired }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column
-          label="AI咨询"
-          width="110"
-          align="center"
-        >
+        <el-table-column label="AI咨询" width="110" align="center">
           <template #default="{ row }">
-            <el-tag
-              :type="getTagType(row.maxAiQueries)"
-              size="small"
-            >
+            <el-tag :type="getTagType(row.maxAiQueries)" size="small">
               {{ formatLimit(row.maxAiQueries) }}
             </el-tag>
           </template>
         </el-table-column>
 
-        <el-table-column
-          label="核心权益"
-          min-width="200"
-        >
+        <el-table-column label="核心权益" min-width="200">
           <template #default="{ row }">
             <div class="benefits-preview">
               <el-tag
@@ -81,10 +49,7 @@
               >
                 {{ benefit }}
               </el-tag>
-              <span
-                v-if="row.keyBenefits.length > 2"
-                class="more-benefits"
-              >
+              <span v-if="row.keyBenefits.length > 2" class="more-benefits">
                 +{{ row.keyBenefits.length - 2 }}项
               </span>
             </div>
@@ -94,37 +59,20 @@
     </div>
 
     <!-- 升级提示 -->
-    <div
-      v-if="currentLevel"
-      class="upgrade-hint"
-    >
-      <el-alert
-        v-if="nextLevel"
-        type="info"
-        :closable="false"
-      >
+    <div v-if="currentLevel" class="upgrade-hint">
+      <el-alert v-if="nextLevel" type="info" :closable="false">
         <template #title>
           <div class="alert-content">
-            <span>再获得 <strong>{{ growthToNextLevel }}</strong> 成长值即可升级到{{
-              nextLevel.levelName
-            }}</span>
-            <el-button
-              type="primary"
-              size="small"
-              text
-              @click="showGuide"
+            <span
+              >再获得 <strong>{{ growthToNextLevel }}</strong> 成长值即可升级到{{
+                nextLevel.levelName
+              }}</span
             >
-              查看攻略
-            </el-button>
+            <el-button type="primary" size="small" text @click="showGuide"> 查看攻略 </el-button>
           </div>
         </template>
       </el-alert>
-      <el-alert
-        v-else
-        type="success"
-        :closable="false"
-        title="恭喜！您已达到最高等级"
-      />
+      <el-alert v-else type="success" :closable="false" title="恭喜！您已达到最高等级" />
     </div>
   </el-card>
 </template>

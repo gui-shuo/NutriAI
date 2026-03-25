@@ -1,22 +1,14 @@
 <template>
   <div class="health-record">
     <div class="record-header">
-      <h2 class="title">
-        健康档案
-      </h2>
+      <h2 class="title">健康档案</h2>
     </div>
 
     <!-- BMI计算器 -->
     <div class="bmi-calculator">
-      <h3 class="section-title">
-        BMI 计算器
-      </h3>
+      <h3 class="section-title">BMI 计算器</h3>
 
-      <el-form
-        :model="bmiData"
-        label-width="80px"
-        class="bmi-form"
-      >
+      <el-form :model="bmiData" label-width="80px" class="bmi-form">
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="身高">
@@ -50,24 +42,14 @@
       </el-form>
 
       <!-- BMI结果显示 -->
-      <div
-        v-if="bmiResult"
-        class="bmi-result"
-      >
-        <div
-          class="result-card"
-          :class="bmiResult.level"
-        >
+      <div v-if="bmiResult" class="bmi-result">
+        <div class="result-card" :class="bmiResult.level">
           <div class="result-value">
             <span class="value">{{ bmiResult.value }}</span>
             <span class="unit">BMI</span>
           </div>
           <div class="result-status">
-            <el-tag
-              :type="bmiResult.tagType"
-              size="large"
-              effect="dark"
-            >
+            <el-tag :type="bmiResult.tagType" size="large" effect="dark">
               {{ bmiResult.status }}
             </el-tag>
           </div>
@@ -77,49 +59,21 @@
         <div class="bmi-info">
           <h4>BMI 指数说明</h4>
           <div class="info-grid">
-            <div
-              class="info-item"
-              :class="{ active: bmiResult.level === 'underweight' }"
-            >
-              <div class="info-label">
-                偏瘦
-              </div>
-              <div class="info-range">
-                &lt; 18.5
-              </div>
+            <div class="info-item" :class="{ active: bmiResult.level === 'underweight' }">
+              <div class="info-label">偏瘦</div>
+              <div class="info-range">&lt; 18.5</div>
             </div>
-            <div
-              class="info-item"
-              :class="{ active: bmiResult.level === 'normal' }"
-            >
-              <div class="info-label">
-                正常
-              </div>
-              <div class="info-range">
-                18.5 - 23.9
-              </div>
+            <div class="info-item" :class="{ active: bmiResult.level === 'normal' }">
+              <div class="info-label">正常</div>
+              <div class="info-range">18.5 - 23.9</div>
             </div>
-            <div
-              class="info-item"
-              :class="{ active: bmiResult.level === 'overweight' }"
-            >
-              <div class="info-label">
-                超重
-              </div>
-              <div class="info-range">
-                24.0 - 27.9
-              </div>
+            <div class="info-item" :class="{ active: bmiResult.level === 'overweight' }">
+              <div class="info-label">超重</div>
+              <div class="info-range">24.0 - 27.9</div>
             </div>
-            <div
-              class="info-item"
-              :class="{ active: bmiResult.level === 'obese' }"
-            >
-              <div class="info-label">
-                肥胖
-              </div>
-              <div class="info-range">
-                ≥ 28.0
-              </div>
+            <div class="info-item" :class="{ active: bmiResult.level === 'obese' }">
+              <div class="info-label">肥胖</div>
+              <div class="info-range">≥ 28.0</div>
             </div>
           </div>
 
@@ -137,40 +91,21 @@
       </div>
 
       <!-- 空状态 -->
-      <el-empty
-        v-else
-        description="请输入身高和体重计算 BMI"
-        :image-size="120"
-      />
+      <el-empty v-else description="请输入身高和体重计算 BMI" :image-size="120" />
     </div>
 
     <!-- 理想体重计算 -->
-    <div
-      v-if="bmiResult"
-      class="ideal-weight"
-    >
-      <h3 class="section-title">
-        理想体重范围
-      </h3>
+    <div v-if="bmiResult" class="ideal-weight">
+      <h3 class="section-title">理想体重范围</h3>
       <div class="weight-range">
         <div class="range-item">
-          <div class="range-label">
-            最小值
-          </div>
-          <div class="range-value">
-            {{ idealWeight.min }} kg
-          </div>
+          <div class="range-label">最小值</div>
+          <div class="range-value">{{ idealWeight.min }} kg</div>
         </div>
-        <div class="range-divider">
-          ~
-        </div>
+        <div class="range-divider">~</div>
         <div class="range-item">
-          <div class="range-label">
-            最大值
-          </div>
-          <div class="range-value">
-            {{ idealWeight.max }} kg
-          </div>
+          <div class="range-label">最大值</div>
+          <div class="range-value">{{ idealWeight.max }} kg</div>
         </div>
       </div>
       <div class="weight-tip">

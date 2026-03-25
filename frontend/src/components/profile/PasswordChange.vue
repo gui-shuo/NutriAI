@@ -1,23 +1,12 @@
 <template>
   <div class="password-change">
     <div class="change-header">
-      <h2 class="title">
-        修改密码
-      </h2>
+      <h2 class="title">修改密码</h2>
     </div>
 
-    <el-form
-      ref="formRef"
-      :model="formData"
-      :rules="rules"
-      label-width="120px"
-      class="change-form"
-    >
+    <el-form ref="formRef" :model="formData" :rules="rules" label-width="120px" class="change-form">
       <!-- 原密码 -->
-      <el-form-item
-        label="原密码"
-        prop="oldPassword"
-      >
+      <el-form-item label="原密码" prop="oldPassword">
         <el-input
           v-model="formData.oldPassword"
           type="password"
@@ -32,10 +21,7 @@
       </el-form-item>
 
       <!-- 新密码 -->
-      <el-form-item
-        label="新密码"
-        prop="newPassword"
-      >
+      <el-form-item label="新密码" prop="newPassword">
         <el-input
           v-model="formData.newPassword"
           type="password"
@@ -47,16 +33,11 @@
             <el-icon><Lock /></el-icon>
           </template>
         </el-input>
-        <div class="password-hint">
-          密码需包含大小写字母、数字，长度8-20位
-        </div>
+        <div class="password-hint">密码需包含大小写字母、数字，长度8-20位</div>
       </el-form-item>
 
       <!-- 确认密码 -->
-      <el-form-item
-        label="确认新密码"
-        prop="confirmPassword"
-      >
+      <el-form-item label="确认新密码" prop="confirmPassword">
         <el-input
           v-model="formData.confirmPassword"
           type="password"
@@ -72,11 +53,7 @@
 
       <!-- 操作按钮 -->
       <el-form-item>
-        <el-button
-          type="primary"
-          :loading="loading"
-          @click="handleSubmit"
-        >
+        <el-button type="primary" :loading="loading" @click="handleSubmit">
           <el-icon v-if="!loading">
             <Select />
           </el-icon>

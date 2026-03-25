@@ -1,29 +1,18 @@
 <template>
   <div class="profile-info">
     <div class="info-header">
-      <h2 class="title">
-        个人资料
-      </h2>
-      <el-button
-        type="primary"
-        @click="emit('edit')"
-      >
+      <h2 class="title">个人资料</h2>
+      <el-button type="primary" @click="emit('edit')">
         <el-icon><Edit /></el-icon>
         编辑资料
       </el-button>
     </div>
 
-    <el-skeleton
-      :loading="loading"
-      animated
-      :rows="6"
-    >
+    <el-skeleton :loading="loading" animated :rows="6">
       <div class="info-content">
         <!-- 基本信息 -->
         <div class="info-section">
-          <h3 class="section-title">
-            基本信息
-          </h3>
+          <h3 class="section-title">基本信息</h3>
           <div class="info-grid">
             <div class="info-item">
               <div class="item-label">
@@ -69,9 +58,7 @@
 
         <!-- 账号信息 -->
         <div class="info-section">
-          <h3 class="section-title">
-            账号信息
-          </h3>
+          <h3 class="section-title">账号信息</h3>
           <div class="info-grid">
             <div class="info-item">
               <div class="item-label">

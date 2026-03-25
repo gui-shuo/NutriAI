@@ -1,14 +1,7 @@
 <template>
   <div class="food-record-list">
-    <el-skeleton
-      :loading="loading"
-      animated
-      :rows="5"
-    >
-      <div
-        v-if="records.length > 0"
-        class="record-items"
-      >
+    <el-skeleton :loading="loading" animated :rows="5">
+      <div v-if="records.length > 0" class="record-items">
         <div
           v-for="record in records"
           :key="record.id"
@@ -17,22 +10,14 @@
         >
           <!-- 左侧照片 -->
           <div class="record-photo">
-            <el-image
-              v-if="record.photoUrl"
-              :src="record.photoUrl"
-              fit="cover"
-              class="photo-image"
-            >
+            <el-image v-if="record.photoUrl" :src="record.photoUrl" fit="cover" class="photo-image">
               <template #error>
                 <div class="image-slot">
                   <el-icon><Picture /></el-icon>
                 </div>
               </template>
             </el-image>
-            <div
-              v-else
-              class="photo-placeholder"
-            >
+            <div v-else class="photo-placeholder">
               <el-icon><Food /></el-icon>
             </div>
           </div>
@@ -43,10 +28,7 @@
               <h3 class="food-name">
                 {{ record.foodName }}
               </h3>
-              <el-tag
-                :type="getMealTypeTagType(record.mealType)"
-                size="small"
-              >
+              <el-tag :type="getMealTypeTagType(record.mealType)" size="small">
                 {{ record.mealTypeName }}
               </el-tag>
             </div>
@@ -63,26 +45,15 @@
               <span class="detail-item"> 蛋白质 {{ record.protein || 0 }}g </span>
             </div>
 
-            <div
-              v-if="record.notes"
-              class="info-notes"
-            >
+            <div v-if="record.notes" class="info-notes">
               <el-icon><Document /></el-icon>
               {{ record.notes }}
             </div>
           </div>
 
           <!-- 右侧操作 -->
-          <div
-            class="record-actions"
-            @click.stop
-          >
-            <el-button
-              type="danger"
-              size="small"
-              text
-              @click="$emit('delete', record)"
-            >
+          <div class="record-actions" @click.stop>
+            <el-button type="danger" size="small" text @click="$emit('delete', record)">
               <el-icon><Delete /></el-icon>
               删除
             </el-button>
@@ -90,10 +61,7 @@
         </div>
       </div>
 
-      <el-empty
-        v-else
-        description="暂无饮食记录"
-      />
+      <el-empty v-else description="暂无饮食记录" />
     </el-skeleton>
   </div>
 </template>

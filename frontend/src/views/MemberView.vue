@@ -3,10 +3,7 @@
     <div class="member-layout">
       <!-- 会员信息卡片 -->
       <div class="member-header">
-        <MemberInfoCard
-          :member-info="memberInfo"
-          :loading="loading"
-        />
+        <MemberInfoCard :member-info="memberInfo" :loading="loading" />
       </div>
 
       <!-- 主要内容区 -->

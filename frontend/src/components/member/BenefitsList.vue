@@ -3,9 +3,7 @@
     <template #header>
       <div class="card-header">
         <span class="title">{{ levelName }} 专属权益</span>
-        <el-tag type="primary">
-          {{ benefitItems.length }}项权益
-        </el-tag>
+        <el-tag type="primary"> {{ benefitItems.length }}项权益 </el-tag>
       </div>
     </template>
 
@@ -13,15 +11,8 @@
       <!-- 使用Element Plus的虚拟化列表 -->
       <el-scrollbar height="400px">
         <div class="benefit-items">
-          <div
-            v-for="(benefit, index) in benefitItems"
-            :key="index"
-            class="benefit-item"
-          >
-            <div
-              class="benefit-icon"
-              :style="{ background: benefit.color }"
-            >
+          <div v-for="(benefit, index) in benefitItems" :key="index" class="benefit-item">
+            <div class="benefit-icon" :style="{ background: benefit.color }">
               <el-icon :size="20">
                 <component :is="benefit.icon" />
               </el-icon>

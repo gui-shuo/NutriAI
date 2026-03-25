@@ -9,15 +9,8 @@
       @click="triggerFileInput"
     >
       <!-- 已上传的头像 -->
-      <div
-        v-if="avatarUrl"
-        class="avatar-preview"
-      >
-        <el-image
-          :src="avatarUrl"
-          fit="cover"
-          class="avatar-image"
-        />
+      <div v-if="avatarUrl" class="avatar-preview">
+        <el-image :src="avatarUrl" fit="cover" class="avatar-image" />
         <div class="avatar-mask">
           <el-icon class="icon-camera">
             <Camera />
@@ -27,18 +20,13 @@
       </div>
 
       <!-- 上传提示 -->
-      <div
-        v-else
-        class="upload-placeholder"
-      >
+      <div v-else class="upload-placeholder">
         <el-icon class="icon-upload">
           <Plus />
         </el-icon>
         <div class="upload-text">
           <p>点击或拖拽上传头像</p>
-          <p class="upload-hint">
-            支持 JPG、PNG 格式，文件小于 2MB
-          </p>
+          <p class="upload-hint">支持 JPG、PNG 格式，文件小于 2MB</p>
         </div>
       </div>
 
@@ -49,22 +37,14 @@
         accept="image/jpeg,image/png,image/jpg"
         style="display: none"
         @change="handleFileChange"
-      >
+      />
     </div>
 
     <!-- 上传进度 -->
-    <el-progress
-      v-if="uploading"
-      :percentage="uploadProgress"
-      class="upload-progress"
-    />
+    <el-progress v-if="uploading" :percentage="uploadProgress" class="upload-progress" />
 
     <!-- 图片裁剪对话框 -->
-    <ImageCropper
-      v-model="showCropper"
-      :image-file="selectedFile"
-      @confirm="handleCroppedImage"
-    />
+    <ImageCropper v-model="showCropper" :image-file="selectedFile" @confirm="handleCroppedImage" />
   </div>
 </template>
 

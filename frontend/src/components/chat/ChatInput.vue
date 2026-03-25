@@ -9,12 +9,7 @@
         :accept="acceptedFileTypes"
         :disabled="disabled"
       >
-        <el-button
-          :icon="Paperclip"
-          circle
-          :disabled="disabled"
-          title="上传文件"
-        />
+        <el-button :icon="Paperclip" circle :disabled="disabled" title="上传文件" />
       </el-upload>
 
       <!-- 输入框 -->
@@ -44,10 +39,7 @@
 
     <!-- 已选择的文件 -->
     <transition name="slide-up">
-      <div
-        v-if="selectedFile"
-        class="selected-file"
-      >
+      <div v-if="selectedFile" class="selected-file">
         <div class="file-info">
           <el-icon class="file-icon">
             <Document />
@@ -55,21 +47,12 @@
           <span class="file-name">{{ selectedFile.name }}</span>
           <span class="file-size">{{ formatFileSize(selectedFile.size) }}</span>
         </div>
-        <el-button
-          :icon="Close"
-          link
-          size="small"
-          @click="clearFile"
-        />
+        <el-button :icon="Close" link size="small" @click="clearFile" />
       </div>
     </transition>
 
     <!-- 字数统计 -->
-    <div
-      v-if="showCharCount"
-      class="char-count"
-      :class="{ warning: isOverLimit }"
-    >
+    <div v-if="showCharCount" class="char-count" :class="{ warning: isOverLimit }">
       {{ inputText.length }} / {{ maxLength }}
     </div>
   </div>

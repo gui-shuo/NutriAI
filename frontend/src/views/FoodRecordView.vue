@@ -3,21 +3,12 @@
     <div class="food-record-layout">
       <!-- 返回首页按钮 -->
       <div style="margin-bottom: 16px">
-        <el-button
-          :icon="ArrowLeft"
-          text
-          @click="goToHome"
-        >
-          返回首页
-        </el-button>
+        <el-button :icon="ArrowLeft" text @click="goToHome"> 返回首页 </el-button>
       </div>
 
       <!-- 头部统计卡片 -->
       <div class="stats-section">
-        <NutritionStats
-          :date="selectedDate"
-          @date-change="handleDateChange"
-        />
+        <NutritionStats :date="selectedDate" @date-change="handleDateChange" />
       </div>
 
       <!-- 主内容区 -->
@@ -26,10 +17,7 @@
           <template #header>
             <div class="card-header">
               <span class="title">饮食记录</span>
-              <el-button
-                type="primary"
-                @click="showAddDialog = true"
-              >
+              <el-button type="primary" @click="showAddDialog = true">
                 <el-icon><Plus /></el-icon>
                 添加记录
               </el-button>
@@ -88,16 +76,10 @@
     </div>
 
     <!-- 添加记录对话框 -->
-    <AddFoodRecordDialog
-      v-model="showAddDialog"
-      @success="handleAddSuccess"
-    />
+    <AddFoodRecordDialog v-model="showAddDialog" @success="handleAddSuccess" />
 
     <!-- 记录详情对话框 -->
-    <FoodRecordDetailDialog
-      v-model="showDetailDialog"
-      :record="selectedRecord"
-    />
+    <FoodRecordDetailDialog v-model="showDetailDialog" :record="selectedRecord" />
   </div>
 </template>
 

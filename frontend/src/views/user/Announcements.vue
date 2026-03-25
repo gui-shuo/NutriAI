@@ -2,20 +2,12 @@
   <div class="announcements-page">
     <div class="page-header">
       <h1>系统公告</h1>
-      <p class="subtitle">
-        查看最新的系统通知和公告信息
-      </p>
+      <p class="subtitle">查看最新的系统通知和公告信息</p>
     </div>
 
     <!-- 公告列表 -->
-    <div
-      v-loading="loading"
-      class="announcements-list"
-    >
-      <el-empty
-        v-if="announcements.length === 0"
-        description="暂无公告"
-      />
+    <div v-loading="loading" class="announcements-list">
+      <el-empty v-if="announcements.length === 0" description="暂无公告" />
 
       <div
         v-for="announcement in announcements"
@@ -25,11 +17,7 @@
       >
         <div class="card-header">
           <div class="header-left">
-            <el-tag
-              :type="getTypeTag(announcement.type)"
-              size="large"
-              effect="dark"
-            >
+            <el-tag :type="getTypeTag(announcement.type)" size="large" effect="dark">
               {{ getTypeLabel(announcement.type) }}
             </el-tag>
             <h3 class="title">
@@ -47,10 +35,7 @@
           </p>
         </div>
 
-        <div
-          v-if="announcement.startTime || announcement.endTime"
-          class="card-footer"
-        >
+        <div v-if="announcement.startTime || announcement.endTime" class="card-footer">
           <el-icon><Clock /></el-icon>
           <span class="validity">
             有效期：{{ formatDate(announcement.startTime) }} 至

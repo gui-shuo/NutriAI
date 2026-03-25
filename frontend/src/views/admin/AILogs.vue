@@ -1,37 +1,17 @@
 <template>
   <div class="ai-logs">
-    <h2 class="page-title">
-      AI日志查询
-    </h2>
+    <h2 class="page-title">AI日志查询</h2>
 
     <!-- 搜索筛选 -->
     <el-card class="search-card">
-      <el-form
-        :inline="true"
-        :model="searchForm"
-      >
+      <el-form :inline="true" :model="searchForm">
         <el-form-item label="用户ID">
-          <el-input
-            v-model="searchForm.userId"
-            placeholder="用户ID"
-            clearable
-          />
+          <el-input v-model="searchForm.userId" placeholder="用户ID" clearable />
         </el-form-item>
         <el-form-item label="状态">
-          <el-select
-            v-model="searchForm.status"
-            placeholder="全部"
-            clearable
-            style="width: 120px"
-          >
-            <el-option
-              label="成功"
-              value="success"
-            />
-            <el-option
-              label="失败"
-              value="error"
-            />
+          <el-select v-model="searchForm.status" placeholder="全部" clearable style="width: 120px">
+            <el-option label="成功" value="success" />
+            <el-option label="失败" value="error" />
           </el-select>
         </el-form-item>
         <el-form-item label="时间范围">
@@ -44,101 +24,38 @@
           />
         </el-form-item>
         <el-form-item>
-          <el-button
-            type="primary"
-            @click="handleSearch"
-          >
-            搜索
-          </el-button>
-          <el-button @click="handleReset">
-            重置
-          </el-button>
+          <el-button type="primary" @click="handleSearch"> 搜索 </el-button>
+          <el-button @click="handleReset"> 重置 </el-button>
         </el-form-item>
       </el-form>
     </el-card>
 
     <!-- 日志列表 -->
     <el-card>
-      <el-table
-        v-loading="loading"
-        :data="logList"
-        stripe
-      >
-        <el-table-column
-          prop="id"
-          label="ID"
-          width="80"
-        />
-        <el-table-column
-          prop="userId"
-          label="用户ID"
-          width="100"
-        />
-        <el-table-column
-          prop="username"
-          label="用户名"
-          width="120"
-        />
-        <el-table-column
-          prop="userMessage"
-          label="用户消息"
-          width="200"
-          show-overflow-tooltip
-        />
-        <el-table-column
-          prop="aiResponse"
-          label="AI回复"
-          width="200"
-          show-overflow-tooltip
-        />
-        <el-table-column
-          prop="model"
-          label="模型"
-          width="120"
-        />
-        <el-table-column
-          prop="tokensUsed"
-          label="Token"
-          width="80"
-        />
-        <el-table-column
-          prop="responseTime"
-          label="响应时间(ms)"
-          width="120"
-        />
-        <el-table-column
-          label="状态"
-          width="100"
-        >
+      <el-table v-loading="loading" :data="logList" stripe>
+        <el-table-column prop="id" label="ID" width="80" />
+        <el-table-column prop="userId" label="用户ID" width="100" />
+        <el-table-column prop="username" label="用户名" width="120" />
+        <el-table-column prop="userMessage" label="用户消息" width="200" show-overflow-tooltip />
+        <el-table-column prop="aiResponse" label="AI回复" width="200" show-overflow-tooltip />
+        <el-table-column prop="model" label="模型" width="120" />
+        <el-table-column prop="tokensUsed" label="Token" width="80" />
+        <el-table-column prop="responseTime" label="响应时间(ms)" width="120" />
+        <el-table-column label="状态" width="100">
           <template #default="{ row }">
             <el-tag :type="row.status === 'success' ? 'success' : 'danger'">
               {{ row.status === 'success' ? '成功' : '失败' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="createdAt"
-          label="时间"
-          width="180"
-        >
+        <el-table-column prop="createdAt" label="时间" width="180">
           <template #default="{ row }">
             {{ formatDate(row.createdAt) }}
           </template>
         </el-table-column>
-        <el-table-column
-          label="操作"
-          width="100"
-          fixed="right"
-        >
+        <el-table-column label="操作" width="100" fixed="right">
           <template #default="{ row }">
-            <el-button
-              type="primary"
-              link
-              size="small"
-              @click="handleView(row)"
-            >
-              详情
-            </el-button>
+            <el-button type="primary" link size="small" @click="handleView(row)"> 详情 </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -156,40 +73,23 @@
     </el-card>
 
     <!-- 详情对话框 -->
-    <el-dialog
-      v-model="detailVisible"
-      title="日志详情"
-      width="800px"
-    >
-      <el-descriptions
-        v-if="currentLog"
-        :column="2"
-        border
-      >
+    <el-dialog v-model="detailVisible" title="日志详情" width="800px">
+      <el-descriptions v-if="currentLog" :column="2" border>
         <el-descriptions-item label="日志ID">
           {{ currentLog.id }}
         </el-descriptions-item>
         <el-descriptions-item label="用户">
           {{ currentLog.username }} (ID: {{ currentLog.userId }})
         </el-descriptions-item>
-        <el-descriptions-item
-          label="会话ID"
-          :span="2"
-        >
+        <el-descriptions-item label="会话ID" :span="2">
           {{ currentLog.sessionId }}
         </el-descriptions-item>
-        <el-descriptions-item
-          label="用户消息"
-          :span="2"
-        >
+        <el-descriptions-item label="用户消息" :span="2">
           <div class="message-content">
             {{ currentLog.userMessage }}
           </div>
         </el-descriptions-item>
-        <el-descriptions-item
-          label="AI回复"
-          :span="2"
-        >
+        <el-descriptions-item label="AI回复" :span="2">
           <div class="message-content">
             {{ currentLog.aiResponse }}
           </div>
@@ -208,19 +108,12 @@
             {{ currentLog.status }}
           </el-tag>
         </el-descriptions-item>
-        <el-descriptions-item
-          v-if="currentLog.errorMessage"
-          label="错误信息"
-          :span="2"
-        >
+        <el-descriptions-item v-if="currentLog.errorMessage" label="错误信息" :span="2">
           <el-text type="danger">
             {{ currentLog.errorMessage }}
           </el-text>
         </el-descriptions-item>
-        <el-descriptions-item
-          label="创建时间"
-          :span="2"
-        >
+        <el-descriptions-item label="创建时间" :span="2">
           {{ formatDate(currentLog.createdAt) }}
         </el-descriptions-item>
       </el-descriptions>

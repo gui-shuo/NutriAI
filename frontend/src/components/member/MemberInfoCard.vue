@@ -1,27 +1,11 @@
 <template>
-  <el-card
-    class="member-info-card"
-    :body-style="{ padding: '0' }"
-  >
-    <el-skeleton
-      :loading="loading"
-      animated
-      :rows="3"
-    >
-      <div
-        v-if="memberInfo"
-        class="card-content"
-      >
+  <el-card class="member-info-card" :body-style="{ padding: '0' }">
+    <el-skeleton :loading="loading" animated :rows="3">
+      <div v-if="memberInfo" class="card-content">
         <!-- 顶部背景 -->
-        <div
-          class="card-header"
-          :style="{ background: levelGradient }"
-        >
+        <div class="card-header" :style="{ background: levelGradient }">
           <div class="level-badge">
-            <div
-              class="badge-icon"
-              :style="{ background: levelColor }"
-            >
+            <div class="badge-icon" :style="{ background: levelColor }">
               <el-icon :size="32">
                 <Trophy />
               </el-icon>
@@ -52,9 +36,11 @@
           />
           <div class="growth-footer">
             <span>总成长值: {{ memberInfo.totalGrowth }}</span>
-            <span v-if="memberInfo.nextLevel">距离{{ memberInfo.nextLevel.levelName }}还需{{
-              memberInfo.growthToNextLevel
-            }}成长值</span>
+            <span v-if="memberInfo.nextLevel"
+              >距离{{ memberInfo.nextLevel.levelName }}还需{{
+                memberInfo.growthToNextLevel
+              }}成长值</span
+            >
             <span v-else>已达到最高等级</span>
           </div>
         </div>
