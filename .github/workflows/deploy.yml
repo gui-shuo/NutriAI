@@ -51,18 +51,27 @@ jobs:
           mkdir -p ~/.ssh && chmod 700 ~/.ssh
           echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H "${{ secrets.SERVER_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+          printf '%s\n' \
+            "Host deploy-target" \
+            "  HostName ${{ secrets.SERVER_HOST }}" \
+            "  User ${{ secrets.SERVER_USER }}" \
+            "  IdentityFile ~/.ssh/deploy_key" \
+            "  StrictHostKeyChecking no" \
+            "  UserKnownHostsFile /dev/null" \
+            "  BatchMode yes" \
+            "  ConnectTimeout 30" \
+            "  ServerAliveInterval 15" \
+            "  ServerAliveCountMax 3" \
+            "  LogLevel ERROR" \
+            > ~/.ssh/config
+          chmod 600 ~/.ssh/config
+          echo "✅ SSH配置完成"
 
       - name: 📤 上传部署包到服务器
         run: |
           set -e
-          SSH_OPTS="-i ~/.ssh/deploy_key"
-          REMOTE="${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}"
-          ssh $SSH_OPTS "$REMOTE" "mkdir -p /tmp/nutriai-deploy && chmod 700 /tmp/nutriai-deploy"
-          scp $SSH_OPTS \
-            deploy-package/nutriai-images.tar.gz \
-            deploy-package/docker-compose.prod.yml \
-            "$REMOTE":/tmp/nutriai-deploy/
+          ssh deploy-target "mkdir -p /tmp/nutriai-deploy && chmod 700 /tmp/nutriai-deploy"
+          scp deploy-package/nutriai-images.tar.gz deploy-package/docker-compose.prod.yml deploy-target:/tmp/nutriai-deploy/
           echo "✅ 上传完成"
 
       - name: 🚀 在云服务器启动Docker服务
@@ -90,7 +99,7 @@ jobs:
 
       - name: 🧹 清理SSH密钥
         if: always()
-        run: rm -f ~/.ssh/deploy_key
+        run: rm -f ~/.ssh/deploy_key ~/.ssh/config
 
       - name: 📈 部署结果摘要
         run: |
