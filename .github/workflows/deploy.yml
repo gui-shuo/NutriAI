@@ -52,10 +52,10 @@ jobs:
           push: true
           platforms: linux/amd64
           tags: |
-            ccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}/nutriai-backend:${{ env.IMAGE_TAG }}
-            ccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}/nutriai-backend:latest
-          cache-from: type=registry,ref=ccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}/nutriai-backend:buildcache
-          cache-to: type=registry,ref=ccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}/nutriai-backend:buildcache,mode=max
+            sgccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}/nutriai-backend:${{ env.IMAGE_TAG }}
+            sgccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}/nutriai-backend:latest
+          cache-from: type=registry,ref=sgccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}/nutriai-backend:buildcache
+          cache-to: type=registry,ref=sgccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}/nutriai-backend:buildcache,mode=max
 
       # ==================== 6. 构建并推送前端镜像 ====================
       - name: 🐳 构建并推送前端镜像
@@ -68,10 +68,10 @@ jobs:
             VITE_API_BASE_URL=${{ secrets.PROD_API_BASE_URL }}
             VITE_WS_BASE_URL=${{ secrets.PROD_WS_BASE_URL }}
           tags: |
-            ccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}/nutriai-frontend:${{ env.IMAGE_TAG }}
-            ccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}/nutriai-frontend:latest
-          cache-from: type=registry,ref=ccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}/nutriai-frontend:buildcache
-          cache-to: type=registry,ref=ccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}/nutriai-frontend:buildcache,mode=max
+            sgccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}/nutriai-frontend:${{ env.IMAGE_TAG }}
+            sgccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}/nutriai-frontend:latest
+          cache-from: type=registry,ref=sgccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}/nutriai-frontend:buildcache
+          cache-to: type=registry,ref=sgccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}/nutriai-frontend:buildcache,mode=max
 
       # ==================== 7. 上传docker-compose到服务器 ====================
       - name: 📤 上传docker-compose到服务器
@@ -150,13 +150,13 @@ jobs:
 
             # ---- 2. 登录腾讯云 CCR（国内服务器可直接访问）----
             echo "🔐 登录腾讯云容器镜像服务..."
-            echo "${TCR_PASSWORD}" | $SUDO docker login ccr.ccs.tencentyun.com -u "${TCR_USERNAME}" --password-stdin
+            echo "${TCR_PASSWORD}" | $SUDO docker login sgccr.ccs.tencentyun.com -u "${TCR_USERNAME}" --password-stdin
             echo "✅ 登录成功"
 
             # ---- 3. 清理旧镜像 ----
             echo "🧹 清理本地旧镜像..."
-            $SUDO docker rmi "ccr.ccs.tencentyun.com/${TCR_NAMESPACE}/nutriai-backend:latest" 2>/dev/null || true
-            $SUDO docker rmi "ccr.ccs.tencentyun.com/${TCR_NAMESPACE}/nutriai-frontend:latest" 2>/dev/null || true
+            $SUDO docker rmi "sgccr.ccs.tencentyun.com/${TCR_NAMESPACE}/nutriai-backend:latest" 2>/dev/null || true
+            $SUDO docker rmi "sgccr.ccs.tencentyun.com/${TCR_NAMESPACE}/nutriai-frontend:latest" 2>/dev/null || true
             echo "✅ 旧镜像已清理"
 
             # ---- 4. 拉取镜像（直接 docker pull，支持重试，POSIX 兼容）----
@@ -179,8 +179,8 @@ jobs:
               return 1
             }
 
-            do_pull "ccr.ccs.tencentyun.com/${TCR_NAMESPACE}/nutriai-backend:latest"
-            do_pull "ccr.ccs.tencentyun.com/${TCR_NAMESPACE}/nutriai-frontend:latest"
+            do_pull "sgccr.ccs.tencentyun.com/${TCR_NAMESPACE}/nutriai-backend:latest"
+            do_pull "sgccr.ccs.tencentyun.com/${TCR_NAMESPACE}/nutriai-frontend:latest"
 
             # ---- 5. 启动容器 ----
             echo "▶️ 启动容器..."
@@ -191,7 +191,7 @@ jobs:
             echo "📊 容器运行状态："
             $COMPOSE_CMD -f docker-compose.prod.yml ps
 
-            $SUDO docker logout ccr.ccs.tencentyun.com
+            $SUDO docker logout sgccr.ccs.tencentyun.com
 
             echo ""
             echo "============================================"
@@ -225,6 +225,6 @@ jobs:
             echo "## ❌ 部署失败" >> "$GITHUB_STEP_SUMMARY"
           fi
           echo "- 镜像标签: ${{ env.IMAGE_TAG }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- 镜像仓库: ccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- 镜像仓库: sgccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}" >> "$GITHUB_STEP_SUMMARY"
           echo "- 服务器: ${{ secrets.SERVER_HOST }}" >> "$GITHUB_STEP_SUMMARY"
           echo "- 部署时间: $(date '+%Y-%m-%d %H:%M:%S')" >> "$GITHUB_STEP_SUMMARY"

@@ -14,7 +14,7 @@ services:
       - nutriai-network
 
   backend:
-    image: ccr.ccs.tencentyun.com/${TCR_NAMESPACE}/nutriai-backend:${IMAGE_TAG}
+    image: sgccr.ccs.tencentyun.com/${TCR_NAMESPACE}/nutriai-backend:${IMAGE_TAG}
     restart: always
     depends_on:
       redis:
@@ -45,7 +45,7 @@ services:
       - nutriai-network
 
   frontend:
-    image: ccr.ccs.tencentyun.com/${TCR_NAMESPACE}/nutriai-frontend:${IMAGE_TAG}
+    image: sgccr.ccs.tencentyun.com/${TCR_NAMESPACE}/nutriai-frontend:${IMAGE_TAG}
     restart: always
     depends_on:
       - backend
