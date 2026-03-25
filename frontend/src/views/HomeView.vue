@@ -112,7 +112,7 @@
         <div class="footer-content">
           <div class="footer-info">
             <p>
-              {{ getConfig('system.copyright_text', `© 2025 ${siteName}. All rights reserved.`) }}
+              {{ getConfig('system.copyright_text', `© 2026 ${siteName}. All rights reserved.`) }}
             </p>
             <p v-if="getConfig('system.icp_number')" class="icp-number">
               {{ getConfig('system.icp_number') }}

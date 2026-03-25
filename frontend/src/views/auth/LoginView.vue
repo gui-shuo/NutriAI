@@ -95,14 +95,6 @@
         </div>
       </el-form>
 
-      <!-- 快速登录提示 -->
-      <div class="quick-login-tip">
-        <el-divider>或使用测试账号登录</el-divider>
-        <p class="tip-text">
-          管理员：admin / admin123<br />
-          测试用户：testuser / Test123456
-        </p>
-      </div>
     </div>
   </div>
 </template>
