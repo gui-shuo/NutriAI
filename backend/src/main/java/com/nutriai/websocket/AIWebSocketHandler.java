@@ -2,6 +2,7 @@ package com.nutriai.websocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nutriai.service.AIStreamingService;
+import com.nutriai.service.MemberPermissionService;
 import com.nutriai.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ public class AIWebSocketHandler extends TextWebSocketHandler {
     
     private final WebSocketSessionManager sessionManager;
     private final AIStreamingService aiStreamingService;
+    private final MemberPermissionService memberPermissionService;
     private final ObjectMapper objectMapper;
     private final JwtUtil jwtUtil;
     
@@ -160,6 +162,16 @@ public class AIWebSocketHandler extends TextWebSocketHandler {
             sendError(session, "消息不能为空");
             return;
         }
+        
+        // 检查AI配额
+        if (!memberPermissionService.checkAiQuota(userId)) {
+            int quota = memberPermissionService.getDailyQuota(userId);
+            sendError(session, "今日AI咨询次数已达上限（" + quota + "次/天），升级会员可享受更多次数");
+            return;
+        }
+        
+        // 消耗配额
+        memberPermissionService.consumeAiQuota(userId);
         
         // 发送开始消息
         sendMessage(session, Map.of(

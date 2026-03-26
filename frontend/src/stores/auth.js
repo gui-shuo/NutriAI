@@ -1,12 +1,14 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import api from '@/services/api'
+import { getMemberPermissions } from '@/services/member'
 
 export const useAuthStore = defineStore('auth', () => {
   // 状态
   const token = ref(localStorage.getItem('token') || '')
   const refreshToken = ref(localStorage.getItem('refreshToken') || '')
   const user = ref(null)
+  const permissions = ref(null) // 会员权限信息
 
   // Getters
   const isTokenExpired = computed(() => {
@@ -24,6 +26,9 @@ export const useAuthStore = defineStore('auth', () => {
   const userRole = computed(() => user.value?.role || '')
   const isAdmin = computed(() => ['ADMIN', 'SUPER_ADMIN'].includes(userRole.value))
   const userName = computed(() => user.value?.nickname || user.value?.username || '')
+  const isVip = computed(() => permissions.value?.isVip || false)
+  const memberTier = computed(() => permissions.value?.tier || 'FREE')
+  const aiQuotaRemain = computed(() => permissions.value?.aiQuotaRemain ?? 0)
 
   // Actions
   const setToken = newToken => {
@@ -50,6 +55,9 @@ export const useAuthStore = defineStore('auth', () => {
         setToken(accessToken)
         setRefreshToken(newRefreshToken)
         setUser(userInfo)
+
+        // 登录后获取会员权限
+        fetchPermissions()
 
         return { success: true, data: response.data.data }
       }
@@ -92,6 +100,7 @@ export const useAuthStore = defineStore('auth', () => {
       token.value = ''
       refreshToken.value = ''
       user.value = null
+      permissions.value = null
 
       localStorage.removeItem('token')
       localStorage.removeItem('refreshToken')
@@ -128,6 +137,17 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.setItem('user', JSON.stringify(user.value))
   }
 
+  const fetchPermissions = async () => {
+    try {
+      const res = await getMemberPermissions()
+      if (res.data.code === 200) {
+        permissions.value = res.data.data
+      }
+    } catch (e) {
+      console.error('Failed to fetch permissions:', e)
+    }
+  }
+
   const checkAuth = () => {
     return isLoggedIn.value
   }
@@ -148,12 +168,16 @@ export const useAuthStore = defineStore('auth', () => {
     token,
     refreshToken,
     user,
+    permissions,
     // Getters
     isLoggedIn,
     isTokenExpired,
     userRole,
     isAdmin,
     userName,
+    isVip,
+    memberTier,
+    aiQuotaRemain,
     // Actions
     setToken,
     setRefreshToken,
@@ -163,6 +187,7 @@ export const useAuthStore = defineStore('auth', () => {
     logout,
     refreshAccessToken,
     updateUserInfo,
+    fetchPermissions,
     checkAuth
   }
 })

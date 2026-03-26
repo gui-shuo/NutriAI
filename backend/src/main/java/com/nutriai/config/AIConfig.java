@@ -26,8 +26,12 @@ public class AIConfig {
     @Value("${tongyi.api-key}")
     @Getter
     private String apiKey;
+
+    @Value("${tongyi.api-url:}")
+    @Getter
+    private String apiUrl;
     
-    @Value("${tongyi.model:qwen-max}")
+    @Value("${tongyi.model-name:${tongyi.model:qwen-max}}")
     @Getter
     private String modelName;
     
@@ -56,13 +60,19 @@ public class AIConfig {
      */
     @Bean
     public ChatLanguageModel chatLanguageModel() {
-        log.info("初始化默认ChatLanguageModel - 模型: {}, Timeout: {}秒", modelName, timeout);
+        log.info("初始化默认ChatLanguageModel - 模型: {}, API URL: {}, Timeout: {}秒", modelName, apiUrl, timeout);
         
         String effectiveKey = getEffectiveKey();
         
         System.setProperty("dashscope.api.connect.timeout", String.valueOf(timeout * 1000));
         System.setProperty("dashscope.api.read.timeout", String.valueOf(timeout * 1000));
         System.setProperty("dashscope.api.write.timeout", String.valueOf(timeout * 1000));
+        
+        // 通过系统属性设置自定义API地址（DashScope SDK v0.25.0不支持builder.baseUrl()）
+        if (apiUrl != null && !apiUrl.isBlank()) {
+            System.setProperty("dashscope.baseHttpApiUrl", apiUrl);
+            log.info("已设置DashScope自定义API地址: {}", apiUrl);
+        }
         
         return QwenChatModel.builder()
                 .apiKey(effectiveKey)
@@ -75,7 +85,7 @@ public class AIConfig {
      */
     @Bean
     public StreamingChatLanguageModel streamingChatLanguageModel() {
-        log.info("初始化默认StreamingChatLanguageModel - 模型: {}", modelName);
+        log.info("初始化默认StreamingChatLanguageModel - 模型: {}, API URL: {}", modelName, apiUrl);
         
         String effectiveKey = getEffectiveKey();
         

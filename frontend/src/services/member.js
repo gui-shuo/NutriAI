@@ -7,6 +7,9 @@ import api from './api'
 /** 获取会员信息 */
 export const getMemberInfo = () => api.get('/member/info')
 
+/** 获取会员权限概要（AI配额、VIP状态、功能权限等） */
+export const getMemberPermissions = () => api.get('/member/permissions')
+
 /**
  * 每日签到（返回获得成长值，0表示已签到）
  */

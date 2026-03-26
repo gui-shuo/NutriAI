@@ -94,7 +94,9 @@ jwt:
 # 通义千问API配置
 tongyi:
   api-key: ${TONGYI_API_KEY:}
-  model: qwen-turbo
+  api-url: ${TONGYI_API_URL:}
+  model-name: ${TONGYI_MODEL_NAME:qwen-turbo}
+  model: ${TONGYI_MODEL_NAME:qwen-turbo}
   max-tokens: 2000
   temperature: 0.7
   top-p: 0.9

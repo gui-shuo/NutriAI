@@ -10,7 +10,14 @@
     >
       <!-- 已上传的头像 -->
       <div v-if="avatarUrl" class="avatar-preview">
-        <el-image :key="avatarUrl" :src="avatarUrl" fit="cover" class="avatar-image" />
+        <img
+          :key="avatarUrl"
+          :src="avatarUrl"
+          referrerpolicy="no-referrer"
+          crossorigin="anonymous"
+          class="avatar-image"
+          @error="handleImageError"
+        />
         <div class="avatar-mask">
           <el-icon class="icon-camera">
             <Camera />
@@ -72,6 +79,16 @@ const showCropper = ref(false)
 const selectedFile = ref(null)
 
 const avatarUrl = computed(() => props.modelValue)
+
+// 图片加载错误时，尝试重新加载（移除crossorigin属性）
+const handleImageError = (e) => {
+  const img = e.target
+  if (img.crossOrigin !== null) {
+    img.crossOrigin = null
+    img.referrerPolicy = 'no-referrer'
+    img.src = props.modelValue
+  }
+}
 
 // 触发文件选择
 const triggerFileInput = () => {
@@ -216,6 +233,7 @@ const uploadFile = async file => {
       .avatar-image {
         width: 100%;
         height: 100%;
+        object-fit: cover;
       }
 
       .avatar-mask {

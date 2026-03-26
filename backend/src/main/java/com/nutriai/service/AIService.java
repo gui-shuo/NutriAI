@@ -33,6 +33,7 @@ public class AIService {
     private final PromptTemplateManager promptManager;
     private final ConversationContextManager contextManager;
     private final AIToolkit toolkit;
+    private final com.nutriai.ai.NutritionKnowledgeBase knowledgeBase;
     
     /**
      * 初始化用户的AI对话上下文
@@ -48,9 +49,12 @@ public class AIService {
                                      Double targetWeight, String healthGoal) {
         log.info("初始化用户 {} 的AI对话上下文", userId);
         
-        // 添加系统角色
-        String systemRole = promptManager.getTemplate("SYSTEM_ROLE").apply(java.util.Collections.emptyMap()).text();
-        contextManager.addSystemMessage(userId, systemRole);
+        // 构建用户画像
+        String userProfile = toolkit.buildUserProfile(user, height, weight, targetWeight, healthGoal);
+        
+        // 使用知识库增强的系统提示词
+        String systemPrompt = knowledgeBase.getEnhancedSystemPrompt(userProfile);
+        contextManager.addSystemMessage(userId, systemPrompt);
         
         // 保存用户信息到上下文
         contextManager.setContextData(userId, "user", user);
@@ -58,9 +62,6 @@ public class AIService {
         contextManager.setContextData(userId, "weight", weight);
         contextManager.setContextData(userId, "targetWeight", targetWeight);
         contextManager.setContextData(userId, "healthGoal", healthGoal);
-        
-        // 构建用户画像
-        String userProfile = toolkit.buildUserProfile(user, height, weight, targetWeight, healthGoal);
         contextManager.setContextData(userId, "userProfile", userProfile);
         
         log.info("用户 {} 的上下文初始化完成", userId);
@@ -108,6 +109,14 @@ public class AIService {
             if (toolkit.containsSensitiveContent(userMessage)) {
                 log.warn("用户 {} 的消息包含敏感医疗内容", userId);
                 return "您的问题涉及医疗诊断，建议咨询专业医生。" + toolkit.getMedicalDisclaimer();
+            }
+            
+            // 确保对话上下文已初始化（含知识库系统提示词）
+            List<ChatMessage> existingHistory = contextManager.getMessageHistory(userId);
+            if (existingHistory.isEmpty()) {
+                String systemPrompt = knowledgeBase.getEnhancedSystemPrompt(null);
+                contextManager.addSystemMessage(userId, systemPrompt);
+                log.info("用户 {} 首次对话，自动注入知识库系统提示词", userId);
             }
             
             // 添加用户消息到上下文

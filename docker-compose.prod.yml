@@ -1,3 +1,7 @@
+# 显式指定项目名称，确保所有容器都在 nutriai 项目下
+# 避免与 Inspo-Verse 等其他项目的容器互相干扰
+name: nutriai
+
 services:
   redis:
     image: redis:6.0-alpine

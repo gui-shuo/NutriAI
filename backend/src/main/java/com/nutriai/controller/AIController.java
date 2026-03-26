@@ -4,6 +4,7 @@ import com.nutriai.common.ApiResponse;
 import com.nutriai.entity.User;
 import com.nutriai.repository.UserRepository;
 import com.nutriai.service.AIService;
+import com.nutriai.service.MemberPermissionService;
 import com.nutriai.service.OssService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
@@ -36,6 +37,7 @@ public class AIController {
     private final AIService aiService;
     private final UserRepository userRepository;
     private final OssService ossService;
+    private final MemberPermissionService memberPermissionService;
 
     @Value("${nutriai.upload.local-path:./uploads}")
     private String uploadPath;
@@ -102,6 +104,12 @@ public class AIController {
                 chatRequest.getMaxTokens(),
                 chatRequest.getKeepContext());
             
+            // 检查AI配额
+            if (!memberPermissionService.checkAiQuota(userId)) {
+                int quota = memberPermissionService.getDailyQuota(userId);
+                return ApiResponse.error("今日AI咨询次数已达上限（" + quota + "次/天），升级会员可享受更多次数");
+            }
+
             // 调用AI服务（传递用户设置的参数）
             String response = aiService.chat(
                 userId, 
@@ -112,6 +120,9 @@ public class AIController {
                 chatRequest.getKeepContext()
             );
             
+            // 消耗配额
+            memberPermissionService.consumeAiQuota(userId);
+
             // 返回响应
             Map<String, Object> result = Map.of(
                 "message", response,
@@ -229,6 +240,19 @@ public class AIController {
                                       @RequestBody Map<String, Object> params) {
         try {
             Long userId = (Long) request.getAttribute("userId");
+
+            // 饮食计划需要白银及以上会员
+            String tier = memberPermissionService.getEffectiveTier(userId);
+            if ("FREE".equals(tier)) {
+                return ApiResponse.error("饮食计划功能需要白银及以上会员等级，请升级会员或开通VIP");
+            }
+
+            // 检查AI配额
+            if (!memberPermissionService.checkAiQuota(userId)) {
+                int quota = memberPermissionService.getDailyQuota(userId);
+                return ApiResponse.error("今日AI咨询次数已达上限（" + quota + "次/天），升级会员可享受更多次数");
+            }
+
             int days = params.get("days") != null ? 
                       Integer.parseInt(params.get("days").toString()) : 7;
             
@@ -237,6 +261,9 @@ public class AIController {
             }
             
             String plan = aiService.generateDietPlan(userId, days);
+
+            // 消耗配额
+            memberPermissionService.consumeAiQuota(userId);
             
             return ApiResponse.success(plan);
             

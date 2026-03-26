@@ -28,8 +28,9 @@
         <!-- 用户消息 -->
         <div v-if="message.role === 'user'" class="message-content">
           <div class="message-avatar">
-            <el-avatar :size="36" :src="userAvatar">
-              <el-icon><User /></el-icon>
+            <el-avatar :size="36">
+              <img v-if="userAvatar" :src="userAvatar" referrerpolicy="no-referrer" style="width: 100%; height: 100%; object-fit: cover" />
+              <el-icon v-else><User /></el-icon>
             </el-avatar>
           </div>
           <div class="message-bubble user-bubble">

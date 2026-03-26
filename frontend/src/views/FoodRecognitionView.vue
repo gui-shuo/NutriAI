@@ -128,28 +128,28 @@
               <div class="nutrition-item">
                 <div class="nutrition-label">热量</div>
                 <div class="nutrition-value">
-                  {{ food.nutrition.energy.toFixed(1) }}
+                  {{ food.nutrition.energy != null ? food.nutrition.energy.toFixed(1) : '—' }}
                   <span class="unit">kcal</span>
                 </div>
               </div>
               <div class="nutrition-item">
                 <div class="nutrition-label">蛋白质</div>
                 <div class="nutrition-value">
-                  {{ food.nutrition.protein.toFixed(1) }}
+                  {{ food.nutrition.protein != null ? food.nutrition.protein.toFixed(1) : '—' }}
                   <span class="unit">g</span>
                 </div>
               </div>
               <div class="nutrition-item">
                 <div class="nutrition-label">碳水</div>
                 <div class="nutrition-value">
-                  {{ food.nutrition.carbohydrate.toFixed(1) }}
+                  {{ food.nutrition.carbohydrate != null ? food.nutrition.carbohydrate.toFixed(1) : '—' }}
                   <span class="unit">g</span>
                 </div>
               </div>
               <div class="nutrition-item">
                 <div class="nutrition-label">脂肪</div>
                 <div class="nutrition-value">
-                  {{ food.nutrition.fat.toFixed(1) }}
+                  {{ food.nutrition.fat != null ? food.nutrition.fat.toFixed(1) : '—' }}
                   <span class="unit">g</span>
                 </div>
               </div>
@@ -502,7 +502,12 @@ const getConfidenceType = confidence => {
 }
 
 const getSourceText = source => {
-  const map = { database: '数据库（准确）', estimated: 'AI估算', default: '默认值' }
+  const map = {
+    database: '数据库（准确）',
+    estimated: 'AI估算',
+    default: '默认值',
+    'baidu-calorie-only': '百度识别（仅卡路里）'
+  }
   return map[source] || source
 }
 

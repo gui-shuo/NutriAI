@@ -122,8 +122,7 @@ jobs:
               echo "ERROR: 登录 CCR 失败" && exit 1
             fi
 
-            # 停止正在运行的旧容器
-            echo "==> 停止旧容器..."
+            # 检测 docker compose 命令
             COMPOSE_CMD=""
             docker compose version >/dev/null 2>&1 && COMPOSE_CMD="docker compose"
             if [ -z "$COMPOSE_CMD" ]; then
@@ -136,15 +135,18 @@ jobs:
             fi
             echo "==> 使用: $COMPOSE_CMD"
 
-            $COMPOSE_CMD -f docker-compose.prod.yml down --remove-orphans 2>/dev/null || true
+            # ⚠️ 安全：记录 Inspo-Verse 容器状态（部署前）
+            echo "==> [安全检查] 部署前 Inspo-Verse 容器状态："
+            docker ps --filter "name=inspo" --format "  {{.Names}}  {{.Status}}  {{.Ports}}" || true
+            echo ""
 
-            # 停止并移除可能存在的独立 Redis 容器（非 compose 管理的）
-            echo "==> 清理独立运行的 Redis 容器..."
-            docker stop nutriai-redis 2>/dev/null || true
-            docker rm nutriai-redis 2>/dev/null || true
+            # 停止正在运行的旧容器
+            # ✅ 使用 -p nutriai 精确限定项目范围，不会影响 Inspo-Verse
+            echo "==> 停止 nutriai 旧容器..."
+            $COMPOSE_CMD -p nutriai -f docker-compose.prod.yml down 2>/dev/null || true
 
-            # 清理旧镜像
-            echo "==> 清理旧镜像..."
+            # 清理 nutriai 旧镜像（仅删除 nutriai 镜像，不使用 docker image prune）
+            echo "==> 清理 nutriai 旧镜像..."
             docker rmi "hkccr.ccs.tencentyun.com/${TCR_NAMESPACE}/nutriai-backend:latest" 2>/dev/null || true
             docker rmi "hkccr.ccs.tencentyun.com/${TCR_NAMESPACE}/nutriai-frontend:latest" 2>/dev/null || true
 
@@ -180,16 +182,22 @@ jobs:
 
             echo "==> 镜像拉取完成"
 
-            # 用新镜像启动所有容器（包括 compose 管理的 Redis）
-            echo "==> 启动容器..."
-            $COMPOSE_CMD -f docker-compose.prod.yml up -d --force-recreate --remove-orphans
+            # 启动 nutriai 容器
+            # ✅ 使用 -p nutriai 精确限定，不使用 --remove-orphans 避免误删其他容器
+            echo "==> 启动 nutriai 容器..."
+            $COMPOSE_CMD -p nutriai -f docker-compose.prod.yml up -d --force-recreate
             if [ $? -ne 0 ]; then
               echo "ERROR: 容器启动失败" && exit 1
             fi
 
             echo ""
-            echo "==> 容器状态:"
-            $COMPOSE_CMD -f docker-compose.prod.yml ps
+            echo "==> nutriai 容器状态:"
+            $COMPOSE_CMD -p nutriai -f docker-compose.prod.yml ps
+
+            # ⚠️ 安全：验证 Inspo-Verse 容器未受影响（部署后）
+            echo ""
+            echo "==> [安全检查] 部署后 Inspo-Verse 容器状态："
+            docker ps --filter "name=inspo" --format "  {{.Names}}  {{.Status}}  {{.Ports}}" || true
 
             docker logout hkccr.ccs.tencentyun.com 2>/dev/null || true
 

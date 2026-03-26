@@ -32,6 +32,7 @@ public class AIStreamingService {
     private final AIConfig aiConfig;
     private final ConversationContextManager contextManager;
     private final AIToolkit toolkit;
+    private final com.nutriai.ai.NutritionKnowledgeBase knowledgeBase;
     
     /**
      * 流式聊天
@@ -66,6 +67,14 @@ public class AIStreamingService {
                 String warning = "您的问题涉及医疗诊断，建议咨询专业医生。" + toolkit.getMedicalDisclaimer();
                 onChunk.accept(warning, true);
                 return;
+            }
+            
+            // 确保对话上下文已初始化（含知识库系统提示词）
+            List<ChatMessage> existingHistory = contextManager.getMessageHistory(userId);
+            if (existingHistory.isEmpty()) {
+                String systemPrompt = knowledgeBase.getEnhancedSystemPrompt(null);
+                contextManager.addSystemMessage(userId, systemPrompt);
+                log.info("用户 {} 首次流式对话，自动注入知识库系统提示词", userId);
             }
             
             // 添加用户消息到上下文

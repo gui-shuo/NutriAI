@@ -159,17 +159,18 @@ public class FoodRecognitionServiceV2 {
                     String foodName = item.getString("name");
                     double probability = item.getDouble("probability");
 
-                    FoodItem.NutritionInfo nutrition = getNutritionInfo(foodName);
-
-                    // 若百度返回了卡路里信息则覆盖
+                    // 百度API卡路里（唯一可信数据来源）
+                    Double baiduCalorie = null;
                     if (item.has("calorie")) {
                         try {
-                            double calorie = Double.parseDouble(item.getString("calorie"));
-                            nutrition.setEnergy(calorie);
+                            baiduCalorie = Double.parseDouble(item.getString("calorie"));
                         } catch (NumberFormatException nfe) {
                             log.warn("解析卡路里失败: {}", item.optString("calorie"));
                         }
                     }
+
+                    // 其他营养成分仅从数据库获取，不使用AI估算或虚假数据
+                    FoodItem.NutritionInfo nutrition = getImageRecognitionNutrition(foodName, baiduCalorie);
 
                     foods.add(FoodItem.builder()
                             .name(foodName)
@@ -226,6 +227,41 @@ public class FoodRecognitionServiceV2 {
         }
 
         return estimateNutritionByAI(foodName).getNutrition();
+    }
+
+    /**
+     * 图片识别专用：获取营养信息
+     * 卡路里使用百度API返回值；其他营养成分仅从数据库查询，不使用AI估算或虚假数据
+     * 
+     * @param foodName 食物名称（百度识别结果）
+     * @param baiduCalorie 百度API返回的卡路里（可能为null）
+     */
+    private FoodItem.NutritionInfo getImageRecognitionNutrition(String foodName, Double baiduCalorie) {
+        List<FoodNutrition> dbResults = queryNutritionFromDatabase(foodName);
+
+        if (!dbResults.isEmpty()) {
+            FoodNutrition n = dbResults.get(0);
+            // 数据库有完整数据，卡路里以百度为准（如果有的话）
+            return FoodItem.NutritionInfo.builder()
+                    .energy(baiduCalorie != null ? baiduCalorie : n.getEnergy().doubleValue())
+                    .protein(n.getProtein().doubleValue())
+                    .carbohydrate(n.getCarbohydrate().doubleValue())
+                    .fat(n.getFat().doubleValue())
+                    .fiber(n.getDietaryFiber() != null ? n.getDietaryFiber().doubleValue() : null)
+                    .source("database")
+                    .build();
+        }
+
+        // 数据库无数据：仅返回百度卡路里，其他营养成分缺失
+        log.info("图片识别食物 '{}' 在数据库中未找到营养数据，仅返回百度卡路里", foodName);
+        return FoodItem.NutritionInfo.builder()
+                .energy(baiduCalorie)
+                .protein(null)
+                .carbohydrate(null)
+                .fat(null)
+                .fiber(null)
+                .source("baidu-calorie-only")
+                .build();
     }
     
     /**

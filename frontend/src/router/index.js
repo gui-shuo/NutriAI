@@ -55,7 +55,7 @@ const routes = [
     path: '/diet-plan',
     name: 'DietPlan',
     component: () => import('@/views/DietPlanView.vue'),
-    meta: { requiresAuth: true, title: 'AI饮食计划' }
+    meta: { requiresAuth: true, requiresMember: 'SILVER', title: 'AI饮食计划' }
   },
   {
     path: '/food-recognition',
@@ -151,7 +151,9 @@ router.beforeEach(async (to, from, next) => {
       try {
         const refreshed = await authStore.refreshAccessToken()
         if (refreshed) {
-          // 刷新成功，继续导航
+          // 刷新成功，获取最新权限
+          await authStore.fetchPermissions()
+          // 继续导航
           if (to.meta.requiresAdmin && !authStore.isAdmin) {
             ElMessage.error('您没有访问权限')
             next({ name: 'Home' })
@@ -174,11 +176,32 @@ router.beforeEach(async (to, from, next) => {
       return
     }
 
+    // 懒加载权限信息
+    if (!authStore.permissions) {
+      try {
+        await authStore.fetchPermissions()
+      } catch (e) {
+        // 忽略，使用默认权限
+      }
+    }
+
     // 检查是否需要管理员权限
     if (to.meta.requiresAdmin && !authStore.isAdmin) {
       ElMessage.error('您没有访问权限')
       next({ name: 'Home' })
       return
+    }
+
+    // 检查是否需要特定会员等级
+    if (to.meta.requiresMember) {
+      const tierOrder = { FREE: 0, SILVER: 1, GOLD: 2 }
+      const required = tierOrder[to.meta.requiresMember] || 0
+      const current = tierOrder[authStore.memberTier] || 0
+      if (current < required) {
+        ElMessage.warning('该功能需要白银及以上会员等级，请升级会员或开通VIP')
+        next({ name: 'Membership' })
+        return
+      }
     }
   }
 

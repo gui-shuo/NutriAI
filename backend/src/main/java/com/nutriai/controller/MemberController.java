@@ -3,6 +3,7 @@ package com.nutriai.controller;
 import com.nutriai.common.ApiResponse;
 import com.nutriai.dto.member.*;
 import com.nutriai.service.MemberService;
+import com.nutriai.service.MemberPermissionService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,16 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
+    private final MemberPermissionService memberPermissionService;
+
+    /**
+     * 获取会员权限概要（AI配额、VIP状态、功能权限等）
+     */
+    @GetMapping("/permissions")
+    public ApiResponse<java.util.Map<String, Object>> getPermissions(HttpServletRequest httpRequest) {
+        Long userId = getUserId(httpRequest);
+        return ApiResponse.success(memberPermissionService.getPermissionSummary(userId));
+    }
 
     /**
      * 获取会员信息
