@@ -12,12 +12,24 @@
 
       <!-- 食物名称 -->
       <el-form-item label="食物名称" prop="foodName">
-        <el-input
-          v-model="formData.foodName"
-          placeholder="请输入食物名称"
-          maxlength="100"
-          show-word-limit
-        />
+        <div class="food-name-input">
+          <el-input
+            v-model="formData.foodName"
+            placeholder="请输入食物名称"
+            maxlength="100"
+            show-word-limit
+            @keyup.enter="handleRecognizeByName"
+          />
+          <el-button
+            type="primary"
+            :loading="recognizing"
+            :disabled="!formData.foodName?.trim()"
+            @click="handleRecognizeByName"
+          >
+            <el-icon v-if="!recognizing"><Search /></el-icon>
+            智能识别
+          </el-button>
+        </div>
       </el-form-item>
 
       <!-- 记录时间 -->
@@ -34,12 +46,26 @@
 
       <!-- 食物照片 -->
       <el-form-item label="食物照片">
-        <FoodPhotoUpload v-model="formData.photoUrl" />
+        <FoodPhotoUpload
+          v-model="formData.photoUrl"
+          auto-recognize
+          @recognized="handlePhotoRecognized"
+        />
+        <div v-if="recognitionSource" class="recognition-hint">
+          <el-tag :type="recognitionSource === 'database' ? 'success' : 'warning'" size="small">
+            {{ recognitionSource === 'database' ? '营养数据来自数据库' : 'AI智能估算营养数据' }}
+          </el-tag>
+        </div>
       </el-form-item>
 
       <!-- 营养信息 -->
       <div class="nutrition-section">
-        <h3 class="section-title">营养信息</h3>
+        <div class="section-header">
+          <h3 class="section-title">营养信息</h3>
+          <el-tag v-if="nutritionAutoFilled" type="success" size="small" effect="plain">
+            已自动填充
+          </el-tag>
+        </div>
         <el-row :gutter="16">
           <el-col :span="12">
             <el-form-item label="份量(克)" prop="portion">
@@ -138,7 +164,8 @@
 
 <script setup>
 import { ref, reactive, watch } from 'vue'
-import { getMealTypeList, createFoodRecord } from '@/services/foodRecord'
+import { Search } from '@element-plus/icons-vue'
+import { getMealTypeList, createFoodRecord, recognizeByName } from '@/services/foodRecord'
 import FoodPhotoUpload from './FoodPhotoUpload.vue'
 import message from '@/utils/message'
 
@@ -153,8 +180,11 @@ const emit = defineEmits(['update:modelValue', 'success'])
 
 const formRef = ref()
 const loading = ref(false)
+const recognizing = ref(false)
 const visible = ref(false)
 const mealTypeList = getMealTypeList()
+const nutritionAutoFilled = ref(false)
+const recognitionSource = ref('')
 
 const formData = reactive({
   mealType: 'BREAKFAST',
@@ -190,6 +220,74 @@ watch(visible, val => {
   emit('update:modelValue', val)
 })
 
+/**
+ * 将识别结果自动填充到表单的营养信息字段
+ */
+const applyRecognitionResult = (result) => {
+  if (!result || !result.foods || result.foods.length === 0) return
+
+  const food = result.foods[0]
+  const nutrition = food.nutrition
+
+  // 如果识别结果有食物名称且当前表单没有填写，则自动填写
+  if (food.name && !formData.foodName) {
+    formData.foodName = food.name
+  }
+
+  // 默认100g份量（营养信息基于100g）
+  if (!formData.portion) {
+    formData.portion = 100
+  }
+
+  // 自动填充营养信息
+  if (nutrition) {
+    formData.calories = nutrition.energy ? Math.round(nutrition.energy * 100) / 100 : null
+    formData.protein = nutrition.protein ? Math.round(nutrition.protein * 100) / 100 : null
+    formData.carbohydrates = nutrition.carbohydrate ? Math.round(nutrition.carbohydrate * 100) / 100 : null
+    formData.fat = nutrition.fat ? Math.round(nutrition.fat * 100) / 100 : null
+    formData.fiber = nutrition.fiber ? Math.round(nutrition.fiber * 100) / 100 : null
+    recognitionSource.value = nutrition.source || 'estimated'
+  }
+
+  nutritionAutoFilled.value = true
+}
+
+/**
+ * 通过食物名称智能识别营养信息
+ */
+const handleRecognizeByName = async () => {
+  const name = formData.foodName?.trim()
+  if (!name) {
+    message.warning('请先输入食物名称')
+    return
+  }
+
+  recognizing.value = true
+  try {
+    const response = await recognizeByName(name)
+    if (response.data.code === 200 && response.data.data) {
+      applyRecognitionResult(response.data.data)
+      message.success('营养信息识别成功')
+    } else {
+      message.warning(response.data.message || '未能识别到营养信息')
+    }
+  } catch (error) {
+    console.error('识别失败:', error)
+    message.error('营养识别失败，请手动填写')
+  } finally {
+    recognizing.value = false
+  }
+}
+
+/**
+ * 处理照片上传后的识别结果
+ */
+const handlePhotoRecognized = (result) => {
+  if (result && result.foods && result.foods.length > 0) {
+    applyRecognitionResult(result)
+  }
+}
+
 const handleSubmit = async () => {
   try {
     await formRef.value.validate()
@@ -201,11 +299,13 @@ const handleSubmit = async () => {
       message.success('添加成功')
       emit('success')
       handleClose()
+    } else {
+      message.error(response.data.message || '添加失败')
     }
   } catch (error) {
     if (error !== false) {
       console.error('添加失败:', error)
-      message.error('添加失败')
+      message.error('添加失败，请稍后重试')
     }
   } finally {
     loading.value = false
@@ -227,23 +327,46 @@ const handleClose = () => {
     recordTime: new Date().toISOString().slice(0, 19),
     notes: ''
   })
+  nutritionAutoFilled.value = false
+  recognitionSource.value = ''
   visible.value = false
 }
 </script>
 
 <style scoped lang="scss">
 .record-form {
+  .food-name-input {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+
+    .el-input {
+      flex: 1;
+    }
+  }
+
+  .recognition-hint {
+    margin-top: 8px;
+  }
+
   .nutrition-section {
     border: 2px solid #f0f0f0;
     border-radius: 8px;
     padding: 20px;
     margin-bottom: 20px;
 
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
     .section-title {
       font-size: 16px;
       font-weight: 600;
       color: #303133;
-      margin: 0 0 16px 0;
+      margin: 0;
     }
 
     .el-form-item {

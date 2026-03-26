@@ -34,6 +34,9 @@ public class DietPlanHistory {
     @Column(name = "markdown_content", columnDefinition = "LONGTEXT")
     private String markdownContent;
     
+    @Column(name = "is_favorite", nullable = false)
+    private Boolean isFavorite = false;
+    
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
     

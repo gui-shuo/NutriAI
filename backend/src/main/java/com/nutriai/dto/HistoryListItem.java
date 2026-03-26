@@ -13,6 +13,7 @@ public class HistoryListItem {
     private String title;
     private Integer days;
     private String goal;
+    private Boolean isFavorite;
     private LocalDateTime createdAt;
     
     public static HistoryListItem fromEntity(com.nutriai.entity.DietPlanHistory history) {
@@ -21,6 +22,7 @@ public class HistoryListItem {
         item.setTitle(history.getTitle());
         item.setDays(history.getDays());
         item.setGoal(history.getGoal());
+        item.setIsFavorite(history.getIsFavorite() != null ? history.getIsFavorite() : false);
         item.setCreatedAt(history.getCreatedAt());
         return item;
     }

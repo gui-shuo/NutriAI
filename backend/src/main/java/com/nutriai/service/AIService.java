@@ -3,10 +3,10 @@ package com.nutriai.service;
 import com.nutriai.ai.AIToolkit;
 import com.nutriai.ai.ConversationContextManager;
 import com.nutriai.ai.PromptTemplateManager;
+import com.nutriai.config.AIConfig;
 import com.nutriai.entity.User;
 import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.model.chat.ChatLanguageModel;
-import dev.langchain4j.model.chat.StreamingChatLanguageModel;
 import dev.langchain4j.model.output.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +29,7 @@ import java.util.Map;
 public class AIService {
     
     private final ChatLanguageModel chatModel;
-    private final StreamingChatLanguageModel streamingChatModel;
+    private final AIConfig aiConfig;
     private final PromptTemplateManager promptManager;
     private final ConversationContextManager contextManager;
     private final AIToolkit toolkit;
@@ -131,10 +131,9 @@ public class AIService {
                 log.debug("不使用上下文记忆，只发送当前消息");
             }
             
-            // 调用AI模型（使用默认的chatModel，参数已在配置中设置）
-            // 注意：temperature和maxTokens需要在创建模型时设置，这里暂时使用默认配置
-            // TODO: Sprint 8 实现动态模型配置
-            Response<dev.langchain4j.data.message.AiMessage> response = chatModel.generate(messageHistory);
+            // 使用动态模型参数（按配置缓存复用）
+            ChatLanguageModel targetModel = aiConfig.getChatModel(actualModel, actualTemperature, actualMaxTokens);
+            Response<dev.langchain4j.data.message.AiMessage> response = targetModel.generate(messageHistory);
             String aiResponse = response.content().text();
             
             // 添加AI响应到上下文

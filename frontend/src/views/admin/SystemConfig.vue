@@ -188,6 +188,8 @@
 import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Check, Close, Plus } from '@element-plus/icons-vue'
+import { getConfigOptions, getAllConfigs, updateConfig, createConfig, deleteConfig } from '@/services/admin'
+import { useAuthStore } from '@/stores/auth'
 
 const loading = ref(false)
 const configList = ref([])
@@ -197,6 +199,8 @@ const activeCategory = ref('all')
 const editDialogVisible = ref(false)
 const isCreate = ref(false)
 const formRef = ref(null)
+const authStore = useAuthStore()
+const isSuperAdmin = computed(() => authStore.user?.role === 'SUPER_ADMIN')
 
 const editForm = reactive({
   configKey: '',
@@ -204,7 +208,7 @@ const editForm = reactive({
   configValue: '',
   configType: 'string',
   description: '',
-  category: 'system',
+  category: 'AI',
   isPublic: false
 })
 
@@ -223,17 +227,9 @@ const rules = {
 // 加载配置选项
 const loadConfigOptions = async () => {
   try {
-    const token = localStorage.getItem('token')
-    const response = await fetch('http://localhost:8080/api/admin/config/options', {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-
-    const data = await response.json()
+    const { data } = await getConfigOptions()
     if (data.code === 200) {
       configOptions.value = data.data
-      console.log('配置选项加载成功:', configOptions.value.length)
     }
   } catch (error) {
     console.error('加载配置选项失败:', error)
@@ -258,19 +254,8 @@ const handleOptionSelect = key => {
 const loadConfigs = async () => {
   loading.value = true
   try {
-    const token = localStorage.getItem('token')
-    const url =
-      activeCategory.value === 'all'
-        ? 'http://localhost:8080/api/admin/config'
-        : `http://localhost:8080/api/admin/config?category=${activeCategory.value}`
-
-    const response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-
-    const data = await response.json()
+    const category = activeCategory.value === 'all' ? undefined : activeCategory.value
+    const { data } = await getAllConfigs(category)
     if (data.code === 200) {
       configList.value = data.data
     }
@@ -289,13 +274,17 @@ const handleCategoryChange = () => {
 
 // 创建配置
 const handleCreate = () => {
+  if (!isSuperAdmin.value) {
+    ElMessage.warning('仅超级管理员可以创建配置')
+    return
+  }
   isCreate.value = true
   Object.assign(editForm, {
     configKey: '',
     configValue: '',
     configType: 'string',
     description: '',
-    category: 'system',
+    category: 'AI',
     isPublic: false
   })
   editDialogVisible.value = true
@@ -303,6 +292,10 @@ const handleCreate = () => {
 
 // 编辑配置
 const handleEdit = row => {
+  if (!isSuperAdmin.value) {
+    ElMessage.warning('仅超级管理员可以编辑配置')
+    return
+  }
   isCreate.value = false
   Object.assign(editForm, {
     ...row,
@@ -316,20 +309,8 @@ const handleSave = async () => {
   try {
     await formRef.value.validate()
 
-    const token = localStorage.getItem('token')
-
     if (isCreate.value) {
-      // 创建新配置
-      const response = await fetch('http://localhost:8080/api/admin/config', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(editForm)
-      })
-
-      const data = await response.json()
+      const { data } = await createConfig(editForm)
       if (data.code === 200) {
         ElMessage.success('创建成功')
         editDialogVisible.value = false
@@ -338,17 +319,7 @@ const handleSave = async () => {
         ElMessage.error(data.message || '创建失败')
       }
     } else {
-      // 更新配置
-      const response = await fetch(`http://localhost:8080/api/admin/config/${editForm.configKey}`, {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ value: editForm.configValue })
-      })
-
-      const data = await response.json()
+      const { data } = await updateConfig(editForm.configKey, editForm.configValue)
       if (data.code === 200) {
         ElMessage.success('更新成功')
         editDialogVisible.value = false
@@ -358,12 +329,19 @@ const handleSave = async () => {
       }
     }
   } catch (error) {
-    console.error('保存失败:', error)
+    if (error?.message) {
+      console.error('保存失败:', error)
+      ElMessage.error(error.response?.data?.message || '保存失败')
+    }
   }
 }
 
 // 删除配置
 const handleDelete = async row => {
+  if (!isSuperAdmin.value) {
+    ElMessage.warning('仅超级管理员可以删除配置')
+    return
+  }
   try {
     await ElMessageBox.confirm(`确定要删除配置 "${row.configKey}" 吗？`, '确认删除', {
       confirmButtonText: '确定',
@@ -375,18 +353,7 @@ const handleDelete = async row => {
       closeOnClickModal: false
     })
 
-    const token = localStorage.getItem('token')
-    const response = await fetch(
-      `http://localhost:8080/api/admin/config/${encodeURIComponent(row.configKey)}`,
-      {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    )
-
-    const data = await response.json()
+    const { data } = await deleteConfig(row.configKey)
     if (data.code === 200) {
       ElMessage.success('删除成功')
       loadConfigs()
@@ -394,9 +361,9 @@ const handleDelete = async row => {
       ElMessage.error(data.message || '删除失败')
     }
   } catch (error) {
-    if (error !== 'cancel') {
+    if (error !== 'cancel' && error?.message) {
       console.error('删除失败:', error)
-      ElMessage.error('删除失败')
+      ElMessage.error(error.response?.data?.message || '删除失败')
     }
   }
 }

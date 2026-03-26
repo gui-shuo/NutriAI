@@ -8,7 +8,7 @@
 
       <!-- 头部统计卡片 -->
       <div class="stats-section">
-        <NutritionStats :date="selectedDate" @date-change="handleDateChange" />
+        <NutritionStats :key="statsKey" :date="selectedDate" @date-change="handleDateChange" />
       </div>
 
       <!-- 主内容区 -->
@@ -104,6 +104,7 @@ const records = ref([])
 const currentPage = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
+const statsKey = ref(0)
 
 // 筛选
 const selectedDate = ref(new Date())
@@ -139,8 +140,13 @@ const fetchRecords = async () => {
     const response = await getFoodRecords(params)
     if (response.data.code === 200) {
       const data = response.data.data
-      records.value = data.content || []
-      total.value = data.totalElements || 0
+      if (data && data.content) {
+        records.value = data.content
+        total.value = data.totalElements || 0
+      } else {
+        records.value = []
+        total.value = 0
+      }
       console.log('获取到的记录数:', records.value.length)
     } else {
       message.error(response.data.message || '获取饮食记录失败')
@@ -179,12 +185,8 @@ const handleFilterChange = () => {
 const handleAddSuccess = () => {
   console.log('添加成功，刷新数据')
   fetchRecords()
-  // 强制刷新统计数据
-  const temp = selectedDate.value
-  selectedDate.value = new Date('2000-01-01')
-  setTimeout(() => {
-    selectedDate.value = temp
-  }, 10)
+  // 通过递增key强制NutritionStats组件重新挂载并刷新数据
+  statsKey.value++
 }
 
 // 查看详情
@@ -216,12 +218,8 @@ const handleDelete = async record => {
     if (response.data.code === 200) {
       message.success('删除成功')
       fetchRecords()
-      // 强制刷新统计数据
-      const temp = selectedDate.value
-      selectedDate.value = new Date('2000-01-01')
-      setTimeout(() => {
-        selectedDate.value = temp
-      }, 10)
+      // 通过递增key强制NutritionStats组件重新挂载并刷新数据
+      statsKey.value++
     }
   } catch (error) {
     if (error !== 'cancel') {
@@ -237,29 +235,8 @@ onMounted(() => {
 
 // 组件卸载前清理
 onBeforeUnmount(() => {
-  console.log('FoodRecordView 组件卸载，开始清理...')
-
-  // 清理可能残留的 MessageBox
-  setTimeout(() => {
-    const messageBoxes = document.querySelectorAll('.el-message-box__wrapper')
-    messageBoxes.forEach(box => {
-      console.log('FoodRecordView 卸载时清理 MessageBox')
-      box.remove()
-    })
-
-    const overlays = document.querySelectorAll('body > .el-overlay')
-    overlays.forEach(overlay => {
-      const hasActiveModal = document.querySelector(
-        '.el-message-box__wrapper, .el-dialog__wrapper, .el-drawer__wrapper'
-      )
-      if (!hasActiveModal) {
-        console.log('FoodRecordView 卸载时清理遮罩层')
-        overlay.remove()
-      }
-    })
-  }, 50)
-
-  console.log('FoodRecordView 清理完成')
+  // 清理资源
+  records.value = []
 })
 </script>
 

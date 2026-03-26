@@ -33,9 +33,11 @@ public class SystemAnnouncement {
     private String type;  // info/warning/error
     
     @Column(name = "priority")
+    @Builder.Default
     private Integer priority = 0;
     
     @Column(name = "is_active")
+    @Builder.Default
     private Boolean isActive = true;
     
     @Column(name = "start_time")

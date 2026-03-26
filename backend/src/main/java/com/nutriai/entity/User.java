@@ -40,15 +40,19 @@ public class User {
     @Column(length = 50)
     private String nickname;
     
+    @Builder.Default
     @Column(length = 20)
-    private String role = "USER";  // USER/ADMIN/SUPER_ADMIN
+    private String role = "USER";
     
+    @Builder.Default
     @Column(length = 20)
-    private String status = "ACTIVE";  // ACTIVE/DISABLED
+    private String status = "ACTIVE";
     
+    @Builder.Default
     @Column(name = "member_level", length = 20)
-    private String memberLevel = "FREE";  // FREE/BRONZE/SILVER/GOLD
+    private String memberLevel = "FREE";
     
+    @Builder.Default
     @Column(name = "growth_value")
     private Integer growthValue = 0;
     

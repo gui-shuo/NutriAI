@@ -54,19 +54,22 @@ public class AdminDashboardService {
                 .totalChats(totalChats)
                 .todayChats(todayChats)
                 .yesterdayChats(yesterdayChats)
-                .avgResponseTime(0.0)  // 历史数据没有响应时间
+                .avgResponseTime(getAvgResponseTimeSafe(todayStart, now))
                 .build();
         
         // AI统计（使用会话历史数据）
         long totalCalls = chatHistoryRepository.count();
         long todayCalls = chatHistoryRepository.countByCreatedAtAfter(todayStart);
-        double successRate = 100.0;  // 会话历史都是成功的
+        // 从日志表获取真实成功率
+        long logTotal = chatLogRepository.countByCreatedAtBetween(todayStart, now);
+        long logSuccess = chatLogRepository.countByStatusAndCreatedAtBetween("success", todayStart, now);
+        double successRate = logTotal > 0 ? (logSuccess * 100.0 / logTotal) : 100.0;
         
         DashboardStatsDTO.AIStats aiStats = DashboardStatsDTO.AIStats.builder()
                 .totalCalls(totalCalls)
                 .todayCalls(todayCalls)
                 .successRate(successRate)
-                .avgTokens(0.0)  // 历史数据没有token信息
+                .avgTokens(getAvgTokensSafe(todayStart, now))
                 .build();
         
         // 会员统计
@@ -135,5 +138,31 @@ public class AdminDashboardService {
         }
         
         return trendData;
+    }
+    
+    /**
+     * 安全获取平均响应时间，查询失败返回0
+     */
+    private double getAvgResponseTimeSafe(LocalDateTime start, LocalDateTime end) {
+        try {
+            Double avg = chatLogRepository.getAverageResponseTime(start, end);
+            return avg != null ? avg : 0.0;
+        } catch (Exception e) {
+            log.warn("获取平均响应时间失败", e);
+            return 0.0;
+        }
+    }
+    
+    /**
+     * 安全获取平均Token使用量，查询失败返回0
+     */
+    private double getAvgTokensSafe(LocalDateTime start, LocalDateTime end) {
+        try {
+            Double avg = chatLogRepository.getAverageTokensUsed(start, end);
+            return avg != null ? avg : 0.0;
+        } catch (Exception e) {
+            log.warn("获取平均Token使用量失败", e);
+            return 0.0;
+        }
     }
 }

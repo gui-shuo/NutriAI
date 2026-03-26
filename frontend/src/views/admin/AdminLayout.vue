@@ -71,13 +71,15 @@ import {
   SwitchButton
 } from '@element-plus/icons-vue'
 import AlertNotification from '@/components/admin/AlertNotification.vue'
+import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
 const route = useRoute()
+const authStore = useAuthStore()
 
-const userInfo = ref({
-  username: localStorage.getItem('username') || 'Admin'
-})
+const userInfo = computed(() => ({
+  username: authStore.user?.username || authStore.userName || 'Admin'
+}))
 
 const activeMenu = computed(() => route.path)
 
@@ -108,8 +110,7 @@ const handleLogout = async () => {
       closeOnClickModal: false
     })
 
-    localStorage.removeItem('token')
-    localStorage.removeItem('username')
+    await authStore.logout()
     ElMessage.success('已退出登录')
     router.push('/login')
   } catch {
@@ -118,9 +119,8 @@ const handleLogout = async () => {
 }
 
 onMounted(() => {
-  // 检查是否有管理员权限
-  const token = localStorage.getItem('token')
-  if (!token) {
+  // 由路由守卫保证已登录，这里仅做二次确认
+  if (!authStore.token) {
     ElMessage.error('请先登录')
     router.push('/login')
   }

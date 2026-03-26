@@ -1,4 +1,5 @@
 import { ref } from 'vue'
+import api from '@/services/api'
 
 /**
  * 公开配置组合式函数
@@ -17,12 +18,10 @@ export function usePublicConfig() {
     error.value = null
 
     try {
-      const response = await fetch('http://localhost:8080/api/public/config')
-      const data = await response.json()
+      const { data } = await api.get('/public/config')
 
       if (data.code === 200) {
         config.value = data.data
-        console.log('公开配置加载成功:', config.value)
         return config.value
       } else {
         error.value = data.message

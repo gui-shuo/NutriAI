@@ -146,6 +146,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { User, ChatDotRound, Cpu, TrendCharts } from '@element-plus/icons-vue'
+import { getDashboardStats, getUserGrowthTrend, getAIUsageTrend } from '@/services/admin'
 // 按需导入ECharts组件
 import * as echarts from 'echarts/core'
 import { LineChart, PieChart, BarChart } from 'echarts/charts'
@@ -210,14 +211,7 @@ let memberChartInstance = null
 // 加载统计数据
 const loadStats = async () => {
   try {
-    const token = localStorage.getItem('token')
-    const response = await fetch('http://localhost:8080/api/admin/dashboard/stats', {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-
-    const data = await response.json()
+    const { data } = await getDashboardStats()
     if (data.code === 200) {
       stats.value = data.data
       initMemberChart()
@@ -231,17 +225,7 @@ const loadStats = async () => {
 // 加载用户增长趋势
 const loadUserGrowth = async () => {
   try {
-    const token = localStorage.getItem('token')
-    const response = await fetch(
-      `http://localhost:8080/api/admin/dashboard/user-growth?days=${userGrowthDays.value}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    )
-
-    const data = await response.json()
+    const { data } = await getUserGrowthTrend(userGrowthDays.value)
     if (data.code === 200) {
       initUserGrowthChart(data.data)
     }
@@ -253,17 +237,7 @@ const loadUserGrowth = async () => {
 // 加载AI使用趋势
 const loadAIUsage = async () => {
   try {
-    const token = localStorage.getItem('token')
-    const response = await fetch(
-      `http://localhost:8080/api/admin/dashboard/ai-usage-trend?days=${aiUsageDays.value}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    )
-
-    const data = await response.json()
+    const { data } = await getAIUsageTrend(aiUsageDays.value)
     if (data.code === 200) {
       initAIUsageChart(data.data)
     } else {

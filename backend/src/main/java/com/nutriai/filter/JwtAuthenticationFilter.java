@@ -1,7 +1,7 @@
 package com.nutriai.filter;
 
+import com.nutriai.service.AuthService;
 import com.nutriai.util.JwtUtil;
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,6 +27,7 @@ import java.util.Collections;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     
     private final JwtUtil jwtUtil;
+    private final AuthService authService;
     
     @Override
     protected void doFilterInternal(HttpServletRequest request, 
@@ -37,7 +38,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String token = getTokenFromRequest(request);
             
             if (token != null) {
-                if (jwtUtil.validateToken(token)) {
+                // 检查Token是否在黑名单中（已退出登录）
+                if (authService.isTokenBlacklisted(token)) {
+                    request.setAttribute("jwt-error", "blacklisted");
+                    log.debug("JWT令牌已被加入黑名单: {}", request.getRequestURI());
+                } else if (jwtUtil.validateToken(token)) {
                     // Token有效，设置认证信息
                     Long userId = jwtUtil.getUserIdFromToken(token);
                     String role = jwtUtil.getRoleFromToken(token);

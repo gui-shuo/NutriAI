@@ -82,7 +82,7 @@ const props = defineProps({
   },
   acceptedFileTypes: {
     type: String,
-    default: '.txt,.pdf,.doc,.docx'
+    default: '.jpg,.jpeg,.png,.gif,.txt,.pdf,.doc,.docx'
   }
 })
 

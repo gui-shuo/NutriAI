@@ -63,7 +63,8 @@
       <el-form label-width="120px">
         <el-form-item label="AI模型">
           <el-select v-model="settings.model" style="width: 100%">
-            <el-option label="通义千问" value="qwen-max" />
+            <el-option label="Qwen3.5-Flash（推荐）" value="qwen3.5-flash" />
+            <el-option label="通义千问Max" value="qwen-max" />
             <el-option label="通义千问Plus" value="qwen-plus" />
             <el-option label="通义千问Turbo" value="qwen-turbo" />
           </el-select>
@@ -170,6 +171,7 @@ import ChatInput from '@/components/chat/ChatInput.vue'
 import QuickActions from '@/components/chat/QuickActions.vue'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
+import api from '@/services/api'
 
 // 路由
 const router = useRouter()
@@ -181,23 +183,26 @@ const chatInputRef = ref(null)
 // 状态
 const messages = ref([])
 const historyList = ref([])
-const favoritesList = ref([]) // 收藏列表
-const currentHistoryId = ref(null) // 当前会话ID
+const favoritesList = ref([])
+const currentHistoryId = ref(null)
 const isLoading = ref(false)
 const showHistory = ref(false)
 const showFavorites = ref(false)
 const showSettings = ref(false)
 
+// 保存定时器
+const saveTimer = ref(null)
+
 // 设置
 const settings = reactive({
-  model: 'qwen-max',
+  model: 'qwen3.5-flash',
   temperature: 0.7,
   maxTokens: 2000,
   keepContext: true,
   autoSave: true
 })
 
-// 收藏消息计算属性（从收藏列表中获取）
+// 收藏消息计算属性
 const favoriteMessages = computed(() => {
   return favoritesList.value
 })
@@ -209,31 +214,27 @@ const generateMessageId = () => {
 
 // 发送消息
 const handleSend = async ({ text, file }) => {
-  if (!text && !file) {
-    return
+  if (!text && !file) return
+
+  // 如果有文件但没有文本，生成描述文本
+  let messageText = text
+  if (file && !text) {
+    messageText = `请分析这个文件：${file.name}`
   }
 
   // 创建用户消息
   const userMessage = {
     id: generateMessageId(),
     role: 'user',
-    content: text,
+    content: messageText,
     timestamp: Date.now(),
-    file: file
-      ? {
-          name: file.name,
-          size: file.size,
-          type: file.type
-        }
-      : null
+    file: file ? { name: file.name, size: file.size, type: file.type } : null
   }
 
   messages.value.push(userMessage)
-
-  // 清空输入框
   chatInputRef.value?.clear()
 
-  // 创建AI消息（加载中）
+  // 创建AI消息占位
   const aiMessage = {
     id: generateMessageId(),
     role: 'assistant',
@@ -241,104 +242,78 @@ const handleSend = async ({ text, file }) => {
     timestamp: Date.now(),
     loading: true
   }
-
   messages.value.push(aiMessage)
   isLoading.value = true
 
   try {
-    // 调用真实后端API
-    const token = localStorage.getItem('token')
+    let aiResponse = ''
 
-    if (!token) {
-      console.error('❌ 未找到token，用户未登录')
-      ElMessage.error('请先登录')
-      const index = messages.value.findIndex(m => m.id === aiMessage.id)
-      if (index > -1) {
-        messages.value.splice(index, 1)
+    // 如果有文件附件，先上传文件
+    if (file) {
+      try {
+        const formData = new FormData()
+        formData.append('file', file)
+        const uploadRes = await api.post('/ai/upload', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+          timeout: 60000
+        })
+        if (uploadRes.data?.code === 200 && uploadRes.data?.data) {
+          // 将文件URL加入消息，让AI分析
+          messageText = `${messageText}\n\n[附件: ${file.name}](${uploadRes.data.data})`
+        }
+      } catch (uploadErr) {
+        console.warn('文件上传失败，将只发送文本消息:', uploadErr)
       }
-      return
     }
 
-    console.log('🚀 开始调用AI API...')
-    console.log('📝 请求参数:', {
-      message: text.substring(0, 50) + (text.length > 50 ? '...' : ''),
+    // 调用AI聊天API
+    const response = await api.post('/ai/chat', {
+      message: messageText,
       model: settings.model,
       temperature: settings.temperature,
       maxTokens: settings.maxTokens,
       keepContext: settings.keepContext
-    })
+    }, { timeout: 180000 })
 
-    const startTime = Date.now()
-    const response = await fetch('http://localhost:8080/api/ai/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        message: text,
-        model: settings.model,
-        temperature: settings.temperature,
-        maxTokens: settings.maxTokens,
-        keepContext: settings.keepContext
-      })
-    })
-
-    const duration = Date.now() - startTime
-    console.log(`⏱️ API响应时间: ${duration}ms`)
-
-    if (!response.ok) {
-      console.error(`❌ HTTP错误: ${response.status} ${response.statusText}`)
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`)
-    }
-
-    const data = await response.json()
-    console.log('📦 API响应数据:', data)
-
+    const data = response.data
     if (data.code === 200) {
-      // 提取AI回复
-      const aiResponse = data.data.message || data.data
-
-      if (!aiResponse || aiResponse.trim() === '') {
-        console.warn('⚠️ AI回复为空')
+      aiResponse = data.data?.message || data.data
+      if (!aiResponse || (typeof aiResponse === 'string' && !aiResponse.trim())) {
         throw new Error('AI回复为空，请重试')
       }
-
-      console.log('✅ AI回复成功，长度:', aiResponse.length)
-      console.log('📝 AI回复内容:', aiResponse.substring(0, 100))
-
-      // 找到messages数组中的AI消息并更新（确保Vue响应式更新）
-      const index = messages.value.findIndex(m => m.id === aiMessage.id)
-      if (index > -1) {
-        messages.value[index] = {
-          ...messages.value[index],
-          content: aiResponse,
-          loading: false
-        }
-        console.log('✅ 消息已更新到数组索引:', index)
-      } else {
-        console.error('❌ 未找到消息在数组中')
-      }
     } else {
-      console.error('❌ API返回错误:', data.message)
       throw new Error(data.message || '请求失败')
     }
-  } catch (error) {
-    console.error('❌ 发送消息失败:', error)
 
-    // 详细的错误信息
+    // 更新AI消息
+    const index = messages.value.findIndex(m => m.id === aiMessage.id)
+    if (index > -1) {
+      messages.value[index] = {
+        ...messages.value[index],
+        content: aiResponse,
+        loading: false,
+        timestamp: Date.now()
+      }
+    }
+  } catch (error) {
+    console.error('发送消息失败:', error)
+
     let errorMessage = '发送失败'
-    if (error.message.includes('Failed to fetch')) {
-      errorMessage = '无法连接到服务器，请检查后端是否启动'
-      console.error('💡 提示: 请确保后端服务运行在 http://localhost:8080')
-    } else if (error.message.includes('401')) {
+    const status = error.response?.status
+    const msg = error.response?.data?.message || error.message
+
+    if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+      errorMessage = 'AI响应超时，请稍后重试'
+    } else if (!error.response && error.message?.includes('Network')) {
+      errorMessage = '无法连接到服务器，请检查网络'
+    } else if (status === 401 || status === 403) {
       errorMessage = '认证失败，请重新登录'
-      console.error('💡 提示: token可能已过期')
-    } else if (error.message.includes('500')) {
-      errorMessage = 'AI服务异常，请检查API Key配置'
-      console.error('💡 提示: 检查后端日志，确认TONGYI_API_KEY是否正确配置')
-    } else {
-      errorMessage = `发送失败：${error.message}`
+    } else if (status === 429) {
+      errorMessage = '请求过于频繁，请稍后再试'
+    } else if (status >= 500) {
+      errorMessage = 'AI服务异常，请稍后重试'
+    } else if (msg) {
+      errorMessage = msg
     }
 
     ElMessage.error(errorMessage)
@@ -353,128 +328,6 @@ const handleSend = async ({ text, file }) => {
   }
 }
 
-// 模拟AI响应（实际开发中替换为真实API调用）
-// eslint-disable-next-line no-unused-vars
-const simulateAIResponse = async (aiMessage, userInput) => {
-  return new Promise(resolve => {
-    // 模拟网络延迟
-    setTimeout(() => {
-      // 根据用户输入生成不同的回复
-      let response = ''
-
-      if (userInput.includes('苹果') || userInput.includes('营养')) {
-        response = `## 苹果的营养成分分析
-
-**基本信息**（每100g）：
-- 🔥 能量：53 kcal
-- 🥤 水分：85%
-- 🍎 膳食纤维：1.2g
-
-**主要营养素**：
-1. **碳水化合物**：13.7g
-   - 主要是天然果糖
-   - 提供快速能量
-2. **维生素C**：4mg
-   - 增强免疫力
-   - 抗氧化作用
-3. **钾**：119mg
-   - 调节血压
-   - 维持心脏健康
-
-**健康益处**：
-- ✅ 低热量，适合减肥
-- ✅ 富含膳食纤维，促进消化
-- ✅ 含有多种抗氧化物质
-- ✅ 有助于控制血糖
-
-**食用建议**：
-- 每天1-2个为宜
-- 饭前或两餐之间食用最佳
-- 连皮一起吃营养更全面（需清洗干净）
-
-需要我帮你制定包含苹果的饮食计划吗？ 🍎`
-      } else if (userInput.includes('计划') || userInput.includes('饮食')) {
-        response = `## 健康饮食计划建议
-
-我可以根据你的具体需求为你制定个性化的饮食计划。
-
-**请告诉我以下信息**：
-
-1. **目标**：减脂 / 增肌 / 维持健康？
-2. **时长**：7天 / 14天 / 30天？
-3. **饮食偏好**：有无忌口或过敏食物？
-4. **运动情况**：轻度 / 中度 / 高强度？
-
-**我可以提供**：
-- 📅 详细的每日三餐安排
-- 📊 精确的营养素配比
-- 🛒 食材采购清单
-- 👨‍🍳 简单易做的烹饪方法
-
-请补充你的信息，我会为你量身定制！ 💪`
-      } else if (userInput.includes('能帮') || userInput.includes('做什么')) {
-        response = `## 我能为你提供的服务
-
-你好！我是你的AI营养师，我可以帮你：
-
-### 📊 营养分析
-- 分析食物的营养成分
-- 评估每日营养摄入
-- 对比不同食物的营养价值
-
-### 🍽️ 饮食计划
-- 制定个性化饮食方案
-- 提供减肥/增肌/健康饮食建议
-- 生成食材采购清单
-
-### 💡 健康建议
-- 解答营养相关问题
-- 提供健康饮食tips
-- 推荐适合的食谱
-
-### 🔍 食物识别
-- 上传食物图片识别
-- 估算食物热量
-- 营养成分分析
-
-有什么我可以帮助你的吗？😊`
-      } else {
-        response = `我理解你的问题了。
-
-${userInput}
-
-这是一个很好的问题！基于你的需求，我建议：
-
-1. **了解基础营养知识**
-   - 三大营养素的作用和配比
-   - 如何计算每日所需热量
-
-2. **关注食物质量**
-   - 选择天然、新鲜的食材
-   - 减少加工食品的摄入
-
-3. **保持饮食多样性**
-   - 每天摄入多种颜色的蔬果
-   - 适量摄入优质蛋白
-
-如果你想了解更详细的信息，可以：
-- 点击快捷按钮选择具体话题
-- 直接问我更具体的问题
-- 上传食物图片让我分析
-
-我随时准备帮助你！🌟`
-      }
-
-      // 更新AI消息
-      aiMessage.loading = false
-      aiMessage.content = response
-      aiMessage.timestamp = Date.now()
-
-      resolve()
-    }, 1500)
-  })
-}
-
 // 快捷操作
 const handleQuickAction = content => {
   handleSend({ text: content })
@@ -482,17 +335,11 @@ const handleQuickAction = content => {
 
 // 重新生成
 const handleRegenerate = async message => {
-  ElMessage.info('正在重新生成...')
-
-  // 找到这条消息的上一条用户消息
   const messageIndex = messages.value.findIndex(m => m.id === message.id)
   if (messageIndex > 0) {
     const userMessage = messages.value[messageIndex - 1]
     if (userMessage.role === 'user') {
-      // 移除当前AI消息
       messages.value.splice(messageIndex, 1)
-
-      // 重新发送
       await handleSend({ text: userMessage.content })
     }
   }
@@ -500,8 +347,7 @@ const handleRegenerate = async message => {
 
 // 文件选择
 const handleFileSelect = file => {
-  console.log('文件已选择:', file)
-  ElMessage.success(`文件 ${file.name} 已选择`)
+  ElMessage.info(`已选择文件: ${file.name}`)
 }
 
 // 清空历史（开启新对话）
@@ -529,6 +375,13 @@ const handleClearHistory = async () => {
       await saveHistoryToDatabase()
     }
 
+    // 清除后端对话上下文
+    try {
+      await api.delete('/ai/clear')
+    } catch {
+      // 静默处理，不影响前端流程
+    }
+
     // 清空消息和会话ID，开启新对话
     messages.value = []
     currentHistoryId.value = null
@@ -551,7 +404,6 @@ const handleExport = () => {
   }
 
   try {
-    // 生成导出内容
     let exportContent = '# AI营养师对话记录\n\n'
     exportContent += `导出时间：${new Date().toLocaleString('zh-CN')}\n\n`
     exportContent += '---\n\n'
@@ -559,23 +411,19 @@ const handleExport = () => {
     messages.value.forEach(msg => {
       const role = msg.role === 'user' ? '👤 用户' : '🤖 AI营养师'
       const time = new Date(msg.timestamp).toLocaleString('zh-CN')
-
       exportContent += `### ${role} - ${time}\n\n`
       exportContent += `${msg.content}\n\n`
-
       if (msg.favorite) {
         exportContent += `⭐ 已收藏\n\n`
       }
-
       exportContent += '---\n\n'
     })
 
-    // 创建下载
     const blob = new Blob([exportContent], { type: 'text/markdown;charset=utf-8' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    link.download = `AI营养师对话_${Date.now()}.md`
+    link.download = `AI营养师对话_${new Date().toISOString().slice(0, 10)}.md`
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
@@ -590,41 +438,26 @@ const handleExport = () => {
 
 // 显示历史记录
 const handleShowHistory = () => {
-  console.log('📖 打开历史记录')
   loadHistoryList()
   showHistory.value = true
 }
 
 // 显示收藏
 const handleShowFavorites = async () => {
-  console.log('⭐ 打开收藏列表')
   await loadFavoritesList()
   showFavorites.value = true
 }
 
 // 显示设置
 const handleShowSettings = () => {
-  console.log('⚙️ 打开设置')
   showSettings.value = true
 }
 
 // 保存设置
 const handleSaveSettings = () => {
-  // 保存设置到本地存储
   localStorage.setItem('aiChatSettings', JSON.stringify(settings))
   showSettings.value = false
-
-  console.log('💾 用户设置已保存:', {
-    model: settings.model,
-    temperature: settings.temperature,
-    maxTokens: settings.maxTokens,
-    keepContext: settings.keepContext
-  })
-
-  ElMessage.success({
-    message: '设置已保存！下次发送消息时生效',
-    duration: 3000
-  })
+  ElMessage.success('设置已保存')
 }
 
 // 加载设置
@@ -632,66 +465,103 @@ const loadSettings = () => {
   try {
     const saved = localStorage.getItem('aiChatSettings')
     if (saved) {
-      Object.assign(settings, JSON.parse(saved))
+      const parsed = JSON.parse(saved)
+      // 仅赋值合法字段，防止注入
+      if (parsed.model) settings.model = parsed.model
+      if (typeof parsed.temperature === 'number') settings.temperature = parsed.temperature
+      if (typeof parsed.maxTokens === 'number') settings.maxTokens = parsed.maxTokens
+      if (typeof parsed.keepContext === 'boolean') settings.keepContext = parsed.keepContext
+      if (typeof parsed.autoSave === 'boolean') settings.autoSave = parsed.autoSave
     }
-  } catch (error) {
-    console.error('加载设置失败:', error)
+  } catch {
+    // 忽略解析失败
   }
 }
 
 // 收藏消息
 const handleFavorite = async messageId => {
   const index = messages.value.findIndex(m => m.id === messageId)
-  if (index > -1) {
-    const message = messages.value[index]
+  if (index === -1) return
 
-    try {
-      const token = localStorage.getItem('token')
-      const response = await fetch('http://localhost:8080/api/ai-chat/favorite', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          messageContent: message.content,
-          messageRole: message.role
-        })
-      })
-
-      const data = await response.json()
-      if (data.code === 200) {
-        messages.value[index].favorite = true
-        messages.value[index].favoriteId = data.data.id
-        ElMessage.success('已收藏')
+  const message = messages.value[index]
+  try {
+    const response = await api.post('/ai-chat/favorite', {
+      messageContent: message.content,
+      messageRole: message.role
+    })
+    const data = response.data
+    if (data.code === 200) {
+      messages.value[index] = {
+        ...messages.value[index],
+        favorite: true,
+        favoriteId: data.data.id
       }
-    } catch (error) {
-      console.error('收藏失败:', error)
-      ElMessage.error('收藏失败')
+      ElMessage.success('已收藏')
+    } else {
+      ElMessage.error(data.message || '收藏失败')
     }
+  } catch (error) {
+    console.error('收藏失败:', error)
+    ElMessage.error('收藏失败')
   }
 }
 
-// 取消收藏
+// 取消收藏 - 支持从消息列表和收藏列表两种来源
 const handleUnfavorite = async msg => {
+  // 从消息列表取消收藏时 msg 是 messageId 字符串，从收藏弹窗取消时 msg 是对象
+  let favoriteId = null
+  let messageId = null
+
+  if (typeof msg === 'string' || typeof msg === 'number') {
+    // 从 MessageList 的 unfavorite 事件，参数是 message.id
+    messageId = msg
+    const message = messages.value.find(m => m.id === messageId)
+    favoriteId = message?.favoriteId
+    if (!favoriteId) {
+      ElMessage.error('未找到收藏记录')
+      return
+    }
+  } else {
+    // 从收藏弹窗取消收藏，msg 是收藏对象
+    favoriteId = msg.id
+  }
+
   try {
-    const token = localStorage.getItem('token')
-    const favoriteId = msg.id
-
-    const response = await fetch(`http://localhost:8080/api/ai-chat/favorite/${favoriteId}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-
-    const data = await response.json()
+    const response = await api.delete(`/ai-chat/favorite/${favoriteId}`)
+    const data = response.data
     if (data.code === 200) {
       ElMessage.success('已取消收藏')
-      // 重新加载收藏列表
-      await loadFavoritesList()
+
+      // 更新消息列表中的收藏状态
+      if (messageId) {
+        const index = messages.value.findIndex(m => m.id === messageId)
+        if (index > -1) {
+          messages.value[index] = {
+            ...messages.value[index],
+            favorite: false,
+            favoriteId: null
+          }
+        }
+      } else {
+        // 同步更新消息列表中对应收藏的状态
+        const msgIndex = messages.value.findIndex(
+          m => m.favoriteId && m.favoriteId.toString() === favoriteId.toString()
+        )
+        if (msgIndex > -1) {
+          messages.value[msgIndex] = {
+            ...messages.value[msgIndex],
+            favorite: false,
+            favoriteId: null
+          }
+        }
+      }
+
+      // 如果收藏面板打开，刷新收藏列表
+      if (showFavorites.value) {
+        await loadFavoritesList()
+      }
     } else {
-      ElMessage.error('取消收藏失败')
+      ElMessage.error(data.message || '取消收藏失败')
     }
   } catch (error) {
     console.error('取消收藏失败:', error)
@@ -703,21 +573,14 @@ const handleUnfavorite = async msg => {
 const copyMessage = content => {
   navigator.clipboard
     .writeText(content)
-    .then(() => {
-      ElMessage.success('已复制到剪贴板')
-    })
-    .catch(() => {
-      ElMessage.error('复制失败')
-    })
+    .then(() => ElMessage.success('已复制到剪贴板'))
+    .catch(() => ElMessage.error('复制失败'))
 }
 
 // 渲染Markdown
 const renderMarkdown = content => {
   if (!content) return ''
-  marked.setOptions({
-    breaks: true,
-    gfm: true
-  })
+  marked.setOptions({ breaks: true, gfm: true })
   const html = marked.parse(content)
   return DOMPurify.sanitize(html)
 }
@@ -741,106 +604,74 @@ const formatTime = timestamp => {
   })
 }
 
-// 生成对话标题
-// eslint-disable-next-line no-unused-vars
-const generateConversationTitle = firstMessage => {
-  if (!firstMessage) return '未命名对话'
-  return firstMessage.substring(0, 30) + (firstMessage.length > 30 ? '...' : '')
-}
-
-// 保存历史记录到数据库（一个会话只保存/更新一次）
+// 保存历史记录到数据库
 const saveHistoryToDatabase = async () => {
   if (messages.value.length === 0) return
 
   try {
-    const token = localStorage.getItem('token')
-    if (!token) return
-
-    // 生成标题（取第一条用户消息的前20个字符）
     const firstUserMessage = messages.value.find(m => m.role === 'user')
     const title = firstUserMessage
       ? firstUserMessage.content.substring(0, 20) +
         (firstUserMessage.content.length > 20 ? '...' : '')
       : '新对话'
 
-    // 如果当前会话已有ID，则更新；否则创建新记录
-    const response = await fetch('http://localhost:8080/api/ai-chat/history', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        id: currentHistoryId.value, // 如果有ID则更新
-        title: title,
-        messages: JSON.stringify(messages.value)
-      })
+    const response = await api.post('/ai-chat/history', {
+      id: currentHistoryId.value,
+      title: title,
+      messages: JSON.stringify(messages.value)
     })
 
-    const data = await response.json()
+    const data = response.data
     if (data.code === 200) {
-      // 保存会话ID，后续更新使用
       if (!currentHistoryId.value) {
         currentHistoryId.value = data.data.id
       }
-      console.log('✅ 历史记录已保存到数据库', currentHistoryId.value)
     }
   } catch (error) {
     console.error('保存历史记录失败:', error)
   }
 }
 
-// 保存当前对话到历史（已改为自动保存到数据库）
-// eslint-disable-next-line no-unused-vars
-const saveToHistory = async () => {
-  await saveHistoryToDatabase()
-  // 重新加载历史记录列表
-  await loadHistoryList()
+// 提取对话预览
+const extractPreview = (messagesJson) => {
+  try {
+    const msgs = typeof messagesJson === 'string' ? JSON.parse(messagesJson) : messagesJson
+    if (!Array.isArray(msgs) || msgs.length === 0) return '暂无内容'
+    const lastMsg = msgs[msgs.length - 1]
+    const content = lastMsg?.content || ''
+    return content.substring(0, 80) + (content.length > 80 ? '...' : '')
+  } catch {
+    return '暂无内容'
+  }
 }
 
 // 加载历史记录列表
 const loadHistoryList = async () => {
   try {
-    const token = localStorage.getItem('token')
-    if (!token) return
-
-    const response = await fetch('http://localhost:8080/api/ai-chat/history/all', {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-
-    const data = await response.json()
+    const response = await api.get('/ai-chat/history/all')
+    const data = response.data
     if (data.code === 200) {
-      // 转换数据格式
-      historyList.value = data.data.map(item => ({
+      historyList.value = (data.data || []).map(item => ({
         id: item.id.toString(),
         title: item.title,
-        messages: JSON.parse(item.messages),
-        timestamp: new Date(item.createdAt).getTime()
+        messages: typeof item.messages === 'string' ? JSON.parse(item.messages) : item.messages,
+        timestamp: new Date(item.createdAt).getTime(),
+        preview: extractPreview(item.messages)
       }))
     }
   } catch (error) {
     console.error('加载历史记录失败:', error)
+    ElMessage.error('加载历史记录失败')
   }
 }
 
 // 加载收藏列表
 const loadFavoritesList = async () => {
   try {
-    const token = localStorage.getItem('token')
-    if (!token) return
-
-    const response = await fetch('http://localhost:8080/api/ai-chat/favorite/all', {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-
-    const data = await response.json()
+    const response = await api.get('/ai-chat/favorite/all')
+    const data = response.data
     if (data.code === 200) {
-      // 转换数据格式
-      favoritesList.value = data.data.map(item => ({
+      favoritesList.value = (data.data || []).map(item => ({
         id: item.id.toString(),
         content: item.messageContent,
         role: item.messageRole,
@@ -850,13 +681,19 @@ const loadFavoritesList = async () => {
     }
   } catch (error) {
     console.error('加载收藏列表失败:', error)
+    ElMessage.error('加载收藏列表失败')
   }
 }
 
 // 加载历史对话
 const loadHistoryConversation = item => {
-  messages.value = JSON.parse(JSON.stringify(item.messages))
-  currentHistoryId.value = item.id // 设置当前会话ID
+  // 清除 loading 标志，避免恢复历史时消息仍显示为"正在加载"
+  const parsedMessages = JSON.parse(JSON.stringify(item.messages)).map(msg => ({
+    ...msg,
+    loading: false
+  }))
+  messages.value = parsedMessages
+  currentHistoryId.value = item.id
   showHistory.value = false
   ElMessage.success('历史记录已加载')
 }
@@ -871,53 +708,36 @@ const deleteHistory = async id => {
       customClass: 'ai-chat-delete-confirm'
     })
 
-    const token = localStorage.getItem('token')
-    const response = await fetch(`http://localhost:8080/api/ai-chat/history/${id}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-
-    const data = await response.json()
+    const response = await api.delete(`/ai-chat/history/${id}`)
+    const data = response.data
     if (data.code === 200) {
+      // 如果删除的是当前会话，重置会话ID
+      if (currentHistoryId.value && currentHistoryId.value.toString() === id.toString()) {
+        currentHistoryId.value = null
+      }
       ElMessage.success('已删除')
       await loadHistoryList()
     } else {
-      ElMessage.error('删除失败')
+      ElMessage.error(data.message || '删除失败')
     }
   } catch {
     // 用户取消
   }
 }
 
-// 初始化
-onMounted(() => {
-  loadSettings()
-  // loadFromLocalStorage() // 注释掉：每次打开都是全新对话，不加载历史
-  loadHistoryList()
-})
-
-// 清理（已移至下方的 onUnmounted）
-
 // 键盘快捷键
 const handleKeydown = e => {
-  // Ctrl/Cmd + K: 清空对话
   if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
     e.preventDefault()
     handleClearHistory()
   }
-
-  // Ctrl/Cmd + E: 导出对话
   if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
     e.preventDefault()
     handleExport()
   }
-
-  // Ctrl/Cmd + H: 打开历史记录
   if ((e.ctrlKey || e.metaKey) && e.key === 'h') {
     e.preventDefault()
-    showHistory.value = true
+    handleShowHistory()
   }
 }
 
@@ -925,28 +745,26 @@ const handleKeydown = e => {
 watch(
   () => messages.value,
   () => {
-    // 延迟保存，避免频繁调用API
-    if (messages.value.length > 0) {
+    if (messages.value.length > 0 && !isLoading.value) {
       clearTimeout(saveTimer.value)
       saveTimer.value = setTimeout(() => {
         saveHistoryToDatabase()
-      }, 5000) // 5秒后保存（延长时间，减少保存频率）
+      }, 5000)
     }
   },
   { deep: true }
 )
 
-// 保存定时器
-const saveTimer = ref(null)
-
+// 生命周期
 onMounted(() => {
+  loadSettings()
+  loadHistoryList()
   document.addEventListener('keydown', handleKeydown)
 })
 
 onUnmounted(() => {
   document.removeEventListener('keydown', handleKeydown)
 
-  // 清除保存定时器
   if (saveTimer.value) {
     clearTimeout(saveTimer.value)
   }
@@ -955,8 +773,6 @@ onUnmounted(() => {
   if (settings.autoSave && messages.value.length > 0) {
     saveHistoryToDatabase()
   }
-
-  // 不再在组件卸载时清理遮罩层，让 Element Plus 自己管理
 })
 </script>
 

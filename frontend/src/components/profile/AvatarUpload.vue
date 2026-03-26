@@ -26,7 +26,7 @@
         </el-icon>
         <div class="upload-text">
           <p>点击或拖拽上传头像</p>
-          <p class="upload-hint">支持 JPG、PNG 格式，文件小于 2MB</p>
+          <p class="upload-hint">支持 JPG、PNG 格式，文件小于 10MB</p>
         </div>
       </div>
 
@@ -163,7 +163,7 @@ const uploadFile = async file => {
       } else if (status === 401) {
         errorMessage = '登录已过期，请重新登录'
       } else if (status === 413) {
-        errorMessage = '文件过大，请选择小于2MB的图片'
+        errorMessage = '文件过大，请选择小于10MB的图片'
       } else if (status === 500) {
         errorMessage = '服务器错误，请稍后重试'
       } else {

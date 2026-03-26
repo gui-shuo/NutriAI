@@ -59,16 +59,59 @@ export const getNutritionStats = date => {
 /**
  * 上传食物照片
  * @param {File} file - 图片文件
+ * @param {Function} onProgress - 上传进度回调
  * @returns {Promise}
  */
-export const uploadFoodPhoto = file => {
+export const uploadFoodPhoto = (file, onProgress) => {
   const formData = new FormData()
   formData.append('file', file)
 
   return api.post('/food/photo', formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
-    }
+    },
+    onUploadProgress: onProgress
+      ? (progressEvent) => {
+          const percent = Math.round((progressEvent.loaded * 100) / (progressEvent.total || progressEvent.loaded))
+          onProgress(percent)
+        }
+      : undefined
+  })
+}
+
+/**
+ * 上传食物照片并自动识别营养信息
+ * @param {File} file - 图片文件
+ * @param {Function} onProgress - 上传进度回调
+ * @returns {Promise}
+ */
+export const uploadAndRecognize = (file, onProgress) => {
+  const formData = new FormData()
+  formData.append('file', file)
+
+  return api.post('/food/photo-recognize', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    timeout: 30000,
+    onUploadProgress: onProgress
+      ? (progressEvent) => {
+          const percent = Math.round((progressEvent.loaded * 100) / (progressEvent.total || progressEvent.loaded))
+          onProgress(percent)
+        }
+      : undefined
+  })
+}
+
+/**
+ * 通过食物名称识别营养信息
+ * @param {string} foodName - 食物名称
+ * @returns {Promise}
+ */
+export const recognizeByName = (foodName) => {
+  return api.post('/food/recognize-by-name', null, {
+    params: { foodName },
+    timeout: 15000
   })
 }
 

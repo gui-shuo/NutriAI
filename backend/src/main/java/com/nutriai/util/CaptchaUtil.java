@@ -8,8 +8,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.util.Base64;
-import java.util.Random;
 
 /**
  * 验证码工具类
@@ -23,7 +23,7 @@ public class CaptchaUtil {
     private static final int CODE_LENGTH = 4;
     private static final String CODE_CHARS = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
     
-    private final Random random = new Random();
+    private final SecureRandom random = new SecureRandom();
     
     /**
      * 生成验证码文本

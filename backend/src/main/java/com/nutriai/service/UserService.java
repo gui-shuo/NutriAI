@@ -4,6 +4,7 @@ import com.nutriai.dto.user.*;
 import com.nutriai.entity.User;
 import com.nutriai.exception.BusinessException;
 import com.nutriai.repository.UserRepository;
+import com.nutriai.service.sms.SmsProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.SecureRandom;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -26,6 +28,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final RedisTemplate<String, Object> redisTemplate;
+    private final SmsProvider smsProvider;
     
     private static final String SMS_CODE_PREFIX = "sms:code:";
     private static final int SMS_CODE_EXPIRE_MINUTES = 5;
@@ -36,7 +39,7 @@ public class UserService {
      */
     public UserProfileResponse getUserProfile(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> BusinessException.User.USER_NOT_FOUND);
+                .orElseThrow(() -> BusinessException.User.userNotFound());
         
         return UserProfileResponse.fromEntity(user);
     }
@@ -47,14 +50,14 @@ public class UserService {
     @Transactional
     public UserProfileResponse updateUserProfile(Long userId, UpdateProfileRequest request) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> BusinessException.User.USER_NOT_FOUND);
+                .orElseThrow(() -> BusinessException.User.userNotFound());
         
         // 更新邮箱
         if (request.getEmail() != null && !request.getEmail().isEmpty()) {
             // 检查邮箱是否已被使用
             if (userRepository.existsByEmail(request.getEmail()) && 
                 !request.getEmail().equals(user.getEmail())) {
-                throw BusinessException.User.EMAIL_ALREADY_EXISTS;
+                throw BusinessException.User.emailAlreadyExists();
             }
             user.setEmail(request.getEmail());
         }
@@ -82,20 +85,20 @@ public class UserService {
     public void changePassword(Long userId, ChangePasswordRequest request) {
         // 验证两次密码是否一致
         if (!request.isPasswordMatch()) {
-            throw BusinessException.Auth.PASSWORD_MISMATCH;
+            throw BusinessException.Auth.passwordMismatch();
         }
         
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> BusinessException.User.USER_NOT_FOUND);
+                .orElseThrow(() -> BusinessException.User.userNotFound());
         
         // 验证旧密码
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
-            throw BusinessException.User.OLD_PASSWORD_INCORRECT;
+            throw BusinessException.User.oldPasswordIncorrect();
         }
         
         // 检查新密码不能与旧密码相同
         if (request.getOldPassword().equals(request.getNewPassword())) {
-            throw BusinessException.User.NEW_PASSWORD_SAME_AS_OLD;
+            throw BusinessException.User.newPasswordSameAsOld();
         }
         
         // 更新密码
@@ -111,7 +114,13 @@ public class UserService {
     public SmsCodeResponse sendSmsCode(String phone) {
         // 检查手机号是否已被注册
         if (userRepository.existsByPhone(phone)) {
-            throw BusinessException.User.PHONE_ALREADY_EXISTS;
+            throw BusinessException.User.phoneAlreadyExists();
+        }
+        
+        // 检查发送频率（防刷：同一手机号60秒内不能重复发送）
+        String rateLimitKey = "sms:rate:" + phone;
+        if (Boolean.TRUE.equals(redisTemplate.hasKey(rateLimitKey))) {
+            throw new BusinessException(40111, "验证码发送过于频繁，请60秒后再试");
         }
         
         // 生成6位数字验证码
@@ -127,9 +136,18 @@ public class UserService {
                 TimeUnit.MINUTES
         );
         
-        // TODO: 实际项目中需要调用第三方短信服务发送验证码
-        // 这里仅模拟发送
-        log.info("发送短信验证码: phone={}, code={}, key={}", phone, code, key);
+        // 设置发送频率限制（60秒）
+        redisTemplate.opsForValue().set(rateLimitKey, "1", 60, TimeUnit.SECONDS);
+        
+        // 调用短信提供者发送验证码
+        boolean sent = smsProvider.sendVerificationCode(phone, code);
+        if (!sent) {
+            // 发送失败，清除Redis中的验证码
+            redisTemplate.delete(redisKey);
+            throw new BusinessException(40112, "验证码发送失败，请稍后重试");
+        }
+        
+        log.info("短信验证码发送成功: phone={}, provider={}, key={}", phone, smsProvider.getProviderName(), key);
         
         return SmsCodeResponse.builder()
                 .smsKey(key)
@@ -148,11 +166,11 @@ public class UserService {
         
         // 检查新手机号是否已被使用
         if (userRepository.existsByPhone(request.getNewPhone())) {
-            throw BusinessException.User.PHONE_ALREADY_EXISTS;
+            throw BusinessException.User.phoneAlreadyExists();
         }
         
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> BusinessException.User.USER_NOT_FOUND);
+                .orElseThrow(() -> BusinessException.User.userNotFound());
         
         user.setPhone(request.getNewPhone());
         userRepository.save(user);
@@ -169,28 +187,29 @@ public class UserService {
      */
     private void validateSmsCode(String key, String code) {
         if (key == null || code == null) {
-            throw BusinessException.User.SMS_CODE_INVALID;
+            throw BusinessException.User.smsCodeInvalid();
         }
         
         String redisKey = SMS_CODE_PREFIX + key;
         String storedCode = (String) redisTemplate.opsForValue().get(redisKey);
         
         if (storedCode == null) {
-            throw BusinessException.User.SMS_CODE_EXPIRED;
+            throw BusinessException.User.smsCodeExpired();
         }
         
         if (!storedCode.equalsIgnoreCase(code)) {
-            throw BusinessException.User.SMS_CODE_INVALID;
+            throw BusinessException.User.smsCodeInvalid();
         }
     }
     
     /**
-     * 生成短信验证码
+     * 生成短信验证码（使用安全随机数）
      */
     private String generateSmsCode() {
+        SecureRandom random = new SecureRandom();
         StringBuilder code = new StringBuilder();
         for (int i = 0; i < SMS_CODE_LENGTH; i++) {
-            code.append((int) (Math.random() * 10));
+            code.append(random.nextInt(10));
         }
         return code.toString();
     }

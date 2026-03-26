@@ -2,9 +2,9 @@ package com.nutriai.controller;
 
 import com.nutriai.common.ApiResponse;
 import com.nutriai.dto.user.*;
+import com.nutriai.service.HealthProfileService;
 import com.nutriai.service.OssService;
 import com.nutriai.service.UserService;
-import com.nutriai.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class UserController {
     
     private final UserService userService;
     private final OssService ossService;
-    private final JwtUtil jwtUtil;
+    private final HealthProfileService healthProfileService;
     
     /**
      * 获取当前用户资料
@@ -108,21 +108,31 @@ public class UserController {
     }
     
     /**
-     * 从Token中获取用户ID
+     * 获取健康档案
      */
-    private Long getUserIdFromToken(HttpServletRequest request) {
-        String token = getTokenFromRequest(request);
-        return jwtUtil.getUserIdFromToken(token);
+    @GetMapping("/health-profile")
+    public ApiResponse<HealthProfileResponse> getHealthProfile(HttpServletRequest request) {
+        Long userId = getUserIdFromToken(request);
+        HealthProfileResponse profile = healthProfileService.getHealthProfile(userId);
+        return ApiResponse.success(profile);
     }
     
     /**
-     * 从请求头中获取Token
+     * 保存/更新健康档案
      */
-    private String getTokenFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return null;
+    @PutMapping("/health-profile")
+    public ApiResponse<HealthProfileResponse> saveHealthProfile(
+            @Valid @RequestBody HealthProfileRequest request,
+            HttpServletRequest httpRequest) {
+        Long userId = getUserIdFromToken(httpRequest);
+        HealthProfileResponse profile = healthProfileService.saveHealthProfile(userId, request);
+        return ApiResponse.success("健康档案保存成功", profile);
+    }
+    
+    /**
+     * 从Token中获取用户ID（由JwtAuthenticationFilter注入）
+     */
+    private Long getUserIdFromToken(HttpServletRequest request) {
+        return (Long) request.getAttribute("userId");
     }
 }

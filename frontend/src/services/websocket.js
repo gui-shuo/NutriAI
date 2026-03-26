@@ -332,7 +332,7 @@ export class AIWebSocketClient {
 
   /**
    * 尝试重连
-   * @param {string} token - JWT Token
+   * @param {string} token - JWT Token (will be refreshed from localStorage)
    */
   attemptReconnect(token) {
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
@@ -349,8 +349,15 @@ export class AIWebSocketClient {
     console.log(`🔄 ${delay}ms后尝试第${this.reconnectAttempts}次重连...`)
 
     this.reconnectTimer = setTimeout(() => {
+      // 重连时重新获取最新 token（可能已刷新）
+      const freshToken = localStorage.getItem('token') || token
+      if (!freshToken) {
+        console.error('❌ Token已失效，停止重连')
+        this.status.value = ConnectionStatus.ERROR
+        return
+      }
       console.log(`🔄 开始第${this.reconnectAttempts}次重连`)
-      this.connect(token).catch(error => {
+      this.connect(freshToken).catch(error => {
         console.error('❌ 重连失败:', error)
       })
     }, delay)

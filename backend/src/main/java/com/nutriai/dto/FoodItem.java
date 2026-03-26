@@ -58,6 +58,11 @@ public class FoodItem {
         private Double fat;
         
         /**
+         * 膳食纤维（g/100g）
+         */
+        private Double fiber;
+        
+        /**
          * 数据来源：database（数据库）/ estimated（AI估算）
          */
         private String source;

@@ -71,7 +71,7 @@
         <el-form-item>
           <div class="form-options">
             <el-checkbox v-model="loginForm.rememberMe"> 记住我（7天免登录） </el-checkbox>
-            <el-link type="primary" :underline="false"> 忘记密码？ </el-link>
+            <el-link type="primary" :underline="false" @click="goForgotPassword"> 忘记密码？ </el-link>
           </div>
         </el-form-item>
 
@@ -163,6 +163,11 @@ const refreshCaptcha = () => {
   getCaptcha()
 }
 
+// 跳转到忘记密码页面
+const goForgotPassword = () => {
+  router.push('/forgot-password')
+}
+
 // 处理登录
 const handleLogin = async () => {
   if (!loginFormRef.value) return
@@ -171,7 +176,7 @@ const handleLogin = async () => {
     // 表单验证
     const valid = await loginFormRef.value.validate().catch(() => false)
     if (!valid) {
-      ElMessage.warning('请完善登录信息')
+      message.warning('请完善登录信息')
       return
     }
 
@@ -216,6 +221,9 @@ const handleLogin = async () => {
     // 增加失败计数
     loginFailCount.value++
 
+    // 标记是否已经刷新了验证码（避免重复刷新）
+    let captchaRefreshed = false
+
     // 处理错误
     if (error.response?.data) {
       const errorData = error.response.data
@@ -227,11 +235,9 @@ const handleLogin = async () => {
         message.error('登录失败次数过多，请输入验证码')
         showCaptcha.value = true
         await getCaptcha()
+        captchaRefreshed = true
       } else if (errorData.code === 40005) {
         message.error('验证码错误或已过期')
-        if (showCaptcha.value) {
-          refreshCaptcha()
-        }
       } else if (errorData.code === 40007) {
         message.error('账号已被禁用，请联系管理员')
       } else if (errorData.code === 40008) {
@@ -243,16 +249,14 @@ const handleLogin = async () => {
       message.error('网络错误，请稍后重试')
     }
 
-    // 失败3次后显示验证码
-    if (loginFailCount.value >= 3 && !showCaptcha.value) {
-      showCaptcha.value = true
-      await getCaptcha()
-      message.warning('连续登录失败，请输入验证码')
-    }
-
-    // 刷新验证码
-    if (showCaptcha.value) {
-      refreshCaptcha()
+    // 失败3次后显示验证码（前端补充保护，与后端同步）
+    if (!captchaRefreshed) {
+      if (loginFailCount.value >= 3 && !showCaptcha.value) {
+        showCaptcha.value = true
+        await getCaptcha()
+      } else if (showCaptcha.value) {
+        refreshCaptcha()
+      }
     }
   } finally {
     loading.value = false

@@ -76,7 +76,7 @@ public class OssService {
             return fileUrl;
         } catch (IOException e) {
             log.error("文件上传COS失败: key={}", key, e);
-            throw BusinessException.User.FILE_UPLOAD_FAILED;
+            throw BusinessException.User.fileUploadFailed();
         }
     }
 
@@ -107,11 +107,11 @@ public class OssService {
             throw new BusinessException("文件不能为空");
         }
         if (file.getSize() > maxFileSize) {
-            throw BusinessException.User.FILE_SIZE_EXCEEDED;
+            throw BusinessException.User.fileSizeExceeded();
         }
         String contentType = file.getContentType();
         if (contentType == null || !ALLOWED_IMAGE_TYPES.contains(contentType.toLowerCase())) {
-            throw BusinessException.User.FILE_TYPE_NOT_ALLOWED;
+            throw BusinessException.User.fileTypeNotAllowed();
         }
         String filename = file.getOriginalFilename();
         if (filename == null) {
@@ -120,7 +120,7 @@ public class OssService {
         String extension = getFileExtension(filename).toLowerCase();
         List<String> allowedExtensions = Arrays.asList(allowedTypes.split(","));
         if (!allowedExtensions.contains(extension)) {
-            throw BusinessException.User.FILE_TYPE_NOT_ALLOWED;
+            throw BusinessException.User.fileTypeNotAllowed();
         }
     }
 

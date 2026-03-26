@@ -62,7 +62,7 @@ public class AIChatService {
      * 获取历史记录列表
      */
     public Page<AIChatHistoryDTO> getHistoryList(Long userId, int page, int size) {
-        Pageable pageable = PageRequest.of(page - 1, size);
+        Pageable pageable = PageRequest.of(Math.max(page - 1, 0), size);
         return historyRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable)
                 .map(this::toHistoryDTO);
     }
@@ -121,7 +121,7 @@ public class AIChatService {
      * 获取收藏列表
      */
     public Page<AIChatFavoriteDTO> getFavoriteList(Long userId, int page, int size) {
-        Pageable pageable = PageRequest.of(page - 1, size);
+        Pageable pageable = PageRequest.of(Math.max(page - 1, 0), size);
         return favoriteRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable)
                 .map(this::toFavoriteDTO);
     }

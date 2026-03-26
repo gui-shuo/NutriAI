@@ -1,11 +1,13 @@
 package com.nutriai.controller;
 
 import com.nutriai.common.ApiResponse;
+import com.nutriai.dto.FoodRecognitionResult;
 import com.nutriai.dto.food.CreateFoodRecordRequest;
 import com.nutriai.dto.food.FoodRecordResponse;
 import com.nutriai.dto.food.NutritionStatsResponse;
 import com.nutriai.entity.FoodRecord;
 import com.nutriai.service.FoodRecordService;
+import com.nutriai.service.FoodRecognitionServiceV2;
 import com.nutriai.service.OssService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -28,6 +30,7 @@ import java.time.LocalDate;
 public class FoodRecordController {
     
     private final FoodRecordService foodRecordService;
+    private final FoodRecognitionServiceV2 foodRecognitionService;
     private final OssService ossService;
     
     /**
@@ -38,9 +41,17 @@ public class FoodRecordController {
     public ApiResponse<FoodRecordResponse> createFoodRecord(
             @Valid @RequestBody CreateFoodRecordRequest request,
             HttpServletRequest httpRequest) {
-        Long userId = getUserIdFromToken(httpRequest);
-        FoodRecordResponse response = foodRecordService.createFoodRecord(userId, request);
-        return ApiResponse.success("创建成功", response);
+        try {
+            Long userId = getUserIdFromToken(httpRequest);
+            if (userId == null) {
+                return ApiResponse.error("用户未登录");
+            }
+            FoodRecordResponse response = foodRecordService.createFoodRecord(userId, request);
+            return ApiResponse.success("创建成功", response);
+        } catch (Exception e) {
+            log.error("创建饮食记录失败", e);
+            return ApiResponse.error("创建饮食记录失败，请稍后重试");
+        }
     }
     
     /**
@@ -73,7 +84,7 @@ public class FoodRecordController {
             return ApiResponse.success(records);
         } catch (Exception e) {
             log.error("获取饮食记录失败", e);
-            return ApiResponse.error("获取饮食记录失败: " + e.getMessage());
+            return ApiResponse.error("获取饮食记录失败，请稍后重试");
         }
     }
     
@@ -134,7 +145,7 @@ public class FoodRecordController {
             return ApiResponse.success(stats);
         } catch (Exception e) {
             log.error("获取营养统计失败", e);
-            return ApiResponse.error("获取营养统计失败: " + e.getMessage());
+            return ApiResponse.error("获取营养统计失败，请稍后重试");
         }
     }
     
@@ -153,6 +164,77 @@ public class FoodRecordController {
         String photoUrl = ossService.uploadFoodPhoto(file);
         
         return ApiResponse.success("上传成功", photoUrl);
+    }
+    
+    /**
+     * 上传食物照片并自动识别营养信息
+     * POST /api/food/photo-recognize
+     * 对接百度AI图像识别，返回识别结果包含营养信息
+     */
+    @PostMapping("/photo-recognize")
+    public ApiResponse<FoodRecognitionResult> uploadAndRecognize(
+            @RequestParam("file") MultipartFile file,
+            HttpServletRequest httpRequest) {
+        Long userId = getUserIdFromToken(httpRequest);
+        log.info("上传食物照片并识别: userId={}, filename={}, size={}", 
+                 userId, file.getOriginalFilename(), file.getSize());
+        
+        try {
+            // 1. 上传照片到OSS
+            String photoUrl = ossService.uploadFoodPhoto(file);
+            
+            // 2. 调用图像识别服务
+            FoodRecognitionResult result = foodRecognitionService.recognizeByImage(userId, file);
+            
+            // 3. 将上传后的URL设置到结果中
+            result.setImageUrl(photoUrl);
+            
+            return ApiResponse.success("识别成功", result);
+        } catch (UnsupportedOperationException e) {
+            log.warn("图片识别功能未配置，仅返回上传结果: {}", e.getMessage());
+            // 即使识别未配置，也返回上传成功的URL
+            String photoUrl = ossService.uploadFoodPhoto(file);
+            FoodRecognitionResult result = FoodRecognitionResult.builder()
+                    .foods(java.util.List.of())
+                    .totalCount(0)
+                    .recognitionTime(0L)
+                    .imageUrl(photoUrl)
+                    .build();
+            return ApiResponse.success("照片上传成功，图片识别功能未启用", result);
+        } catch (Exception e) {
+            log.error("上传并识别失败", e);
+            return ApiResponse.error("识别失败，请稍后重试");
+        }
+    }
+    
+    /**
+     * 通过食物名称识别营养信息
+     * POST /api/food/recognize-by-name
+     * 用于添加饮食记录时自动填充营养信息
+     */
+    @PostMapping("/recognize-by-name")
+    public ApiResponse<FoodRecognitionResult> recognizeByName(
+            @RequestParam("foodName") String foodName,
+            HttpServletRequest httpRequest) {
+        Long userId = getUserIdFromToken(httpRequest);
+        
+        String trimmed = foodName == null ? "" : foodName.trim();
+        if (trimmed.isEmpty()) {
+            return ApiResponse.error("食物名称不能为空");
+        }
+        if (trimmed.length() > 100) {
+            return ApiResponse.error("食物名称过长");
+        }
+        
+        log.info("通过名称识别营养: userId={}, foodName={}", userId, trimmed);
+        
+        try {
+            FoodRecognitionResult result = foodRecognitionService.recognizeByName(userId, trimmed);
+            return ApiResponse.success("识别成功", result);
+        } catch (Exception e) {
+            log.error("食物名称识别失败", e);
+            return ApiResponse.error("识别失败，请稍后重试");
+        }
     }
     
     /**

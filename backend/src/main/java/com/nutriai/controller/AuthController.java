@@ -45,6 +45,15 @@ public class AuthController {
     }
     
     /**
+     * 刷新访问令牌
+     */
+    @PostMapping("/refresh")
+    public ApiResponse<LoginResponse> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
+        LoginResponse response = authService.refreshAccessToken(request.getRefreshToken());
+        return ApiResponse.success("令牌刷新成功", response);
+    }
+    
+    /**
      * 退出登录
      */
     @PostMapping("/logout")
@@ -71,7 +80,6 @@ public class AuthController {
     @GetMapping("/check-username")
     public ApiResponse<Boolean> checkUsername(@RequestParam String username) {
         boolean available = authService.checkUsernameAvailable(username);
-        // 始终返回成功状态，通过data字段传递可用性
         return ApiResponse.success(available ? "用户名可用" : "用户名已被占用", available);
     }
     
@@ -81,8 +89,29 @@ public class AuthController {
     @GetMapping("/check-email")
     public ApiResponse<Boolean> checkEmail(@RequestParam String email) {
         boolean available = authService.checkEmailAvailable(email);
-        // 始终返回成功状态，通过data字段传递可用性
         return ApiResponse.success(available ? "邮箱可用" : "邮箱已被注册", available);
+    }
+    
+    /**
+     * 忘记密码 - 发送重置验证码到邮箱
+     */
+    @PostMapping("/forgot-password")
+    public ApiResponse<Void> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        authService.sendPasswordResetCode(request.getEmail());
+        ApiResponse<Void> response = ApiResponse.success();
+        response.setMessage("验证码已发送到您的邮箱，15分钟内有效");
+        return response;
+    }
+    
+    /**
+     * 重置密码
+     */
+    @PostMapping("/reset-password")
+    public ApiResponse<Void> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        authService.resetPassword(request);
+        ApiResponse<Void> response = ApiResponse.success();
+        response.setMessage("密码重置成功，请使用新密码登录");
+        return response;
     }
     
     /**

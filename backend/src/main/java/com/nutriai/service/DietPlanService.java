@@ -14,15 +14,12 @@ import com.nutriai.repository.FoodNutritionRepository;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.OkHttpClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -108,7 +105,7 @@ public class DietPlanService {
             // 6. 构建响应
             
             DietPlanResponse response = DietPlanResponse.builder()
-                    .planId("plan_" + System.currentTimeMillis())
+                    .planId("plan_" + UUID.randomUUID().toString().replace("-", "").substring(0, 12))
                     .title(generatePlanTitle(request))
                     .days(request.getDays())
                     .goalDescription(getGoalDescription(request.getGoal()))
@@ -610,24 +607,7 @@ public class DietPlanService {
      */
     private String callDashScopeWithTimeout(String prompt) {
         try {
-            // 创建自定义的OkHttpClient with extended timeout
-            OkHttpClient customClient = new OkHttpClient.Builder()
-                    .connectTimeout(timeout, TimeUnit.SECONDS)
-                    .readTimeout(timeout, TimeUnit.SECONDS)
-                    .writeTimeout(timeout, TimeUnit.SECONDS)
-                    .build();
-            
-            // 使用反射设置Generation的httpClient
-            try {
-                Field httpClientField = Generation.class.getDeclaredField("httpClient");
-                httpClientField.setAccessible(true);
-                httpClientField.set(null, customClient);
-                log.info("✓ 成功设置DashScope HTTP客户端超时: {}秒", timeout);
-            } catch (Exception e) {
-                log.warn("无法通过反射设置HTTP客户端，使用默认配置: {}", e.getMessage());
-            }
-            
-            // 构建Generation参数
+            // 构建Generation参数（不使用反射修改全局httpClient，避免线程安全问题）
             GenerationParam param = GenerationParam.builder()
                     .apiKey(apiKey)
                     .model(modelName)
@@ -659,6 +639,76 @@ public class DietPlanService {
             case "high" -> "高强度运动";
             default -> "轻度运动";
         };
+    }
+    
+    /**
+     * 根据用户修改建议修改饮食计划
+     */
+    public DietPlanResponse modifyDietPlan(Long userId, DietPlanResponse originalPlan, 
+                                           String suggestion, String taskId, 
+                                           DietPlanTaskService taskService) {
+        log.info("开始修改饮食计划: userId={}, planId={}, suggestion={}", userId, originalPlan.getPlanId(), suggestion);
+        
+        try {
+            // 构建修改Prompt
+            String prompt = buildModifyPrompt(originalPlan, suggestion);
+            
+            if (taskId != null && taskService != null) {
+                taskService.updateTaskStatus(taskId, "running", 30, 0, null, null);
+            }
+            
+            // 调用AI生成修改后的计划
+            String modifiedContent = chatLanguageModel.generate(prompt);
+            
+            if (taskId != null && taskService != null) {
+                if (taskService.isTaskCancelled(taskId)) {
+                    throw new RuntimeException("任务已取消");
+                }
+                taskService.updateTaskStatus(taskId, "running", 80, 0, null, null);
+            }
+            
+            if (modifiedContent == null || modifiedContent.trim().isEmpty()) {
+                throw new RuntimeException("AI返回空响应");
+            }
+            
+            DietPlanResponse response = DietPlanResponse.builder()
+                    .planId("plan_" + UUID.randomUUID().toString().replace("-", "").substring(0, 12))
+                    .title(originalPlan.getTitle() + "（修改版）")
+                    .days(originalPlan.getDays())
+                    .goalDescription(originalPlan.getGoalDescription())
+                    .markdownContent(modifiedContent)
+                    .isFavorite(false)
+                    .timestamp(System.currentTimeMillis())
+                    .build();
+            
+            log.info("饮食计划修改成功: newPlanId={}", response.getPlanId());
+            return response;
+            
+        } catch (Exception e) {
+            log.error("修改饮食计划失败", e);
+            throw new RuntimeException("修改饮食计划失败: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * 构建修改建议Prompt
+     */
+    private String buildModifyPrompt(DietPlanResponse originalPlan, String suggestion) {
+        StringBuilder prompt = new StringBuilder();
+        prompt.append("# 任务：根据用户反馈修改饮食计划\n\n");
+        prompt.append("## 原始饮食计划\n");
+        prompt.append(originalPlan.getMarkdownContent()).append("\n\n");
+        prompt.append("## 用户的修改建议\n");
+        prompt.append(suggestion).append("\n\n");
+        prompt.append("## 要求\n");
+        prompt.append("1. 根据用户的修改建议对原始饮食计划进行调整\n");
+        prompt.append("2. 保持原有的Markdown格式不变\n");
+        prompt.append("3. 只修改用户提到的相关部分，其余保持不变\n");
+        prompt.append("4. 确保修改后的营养数据和热量仍然合理\n");
+        prompt.append("5. 如果用户要求替换食材，确保替换后的食材营养价值相当\n");
+        prompt.append("6. 在计划开头简要说明本次修改的内容\n\n");
+        prompt.append("请输出完整的修改后的饮食计划（Markdown格式）：\n");
+        return prompt.toString();
     }
     
 }

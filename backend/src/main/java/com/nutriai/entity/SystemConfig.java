@@ -39,6 +39,7 @@ public class SystemConfig {
     private String category;
     
     @Column(name = "is_public")
+    @Builder.Default
     private Boolean isPublic = false;
     
     @Column(name = "created_at", nullable = false, updatable = false)

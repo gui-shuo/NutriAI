@@ -54,17 +54,21 @@
 <script setup>
 import { ref } from 'vue'
 import { Plus, Loading, Picture, Delete } from '@element-plus/icons-vue'
-import { uploadFoodPhoto } from '@/services/foodRecord'
+import { uploadFoodPhoto, uploadAndRecognize } from '@/services/foodRecord'
 import message from '@/utils/message'
 
-defineProps({
+const props = defineProps({
   modelValue: {
     type: String,
     default: ''
+  },
+  autoRecognize: {
+    type: Boolean,
+    default: false
   }
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'recognized'])
 
 const fileInputRef = ref()
 const isDragOver = ref(false)
@@ -98,9 +102,9 @@ const handleDrop = event => {
 // 验证并上传文件
 const validateAndUpload = file => {
   // 验证文件类型
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif']
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp', 'image/bmp']
   if (!allowedTypes.includes(file.type)) {
-    message.error('只支持 JPG、PNG、GIF 格式的图片')
+    message.error('只支持 JPG、PNG、GIF、WebP、BMP 格式的图片')
     return
   }
 
@@ -119,29 +123,36 @@ const uploadFile = async file => {
   uploading.value = true
   uploadProgress.value = 0
 
+  const onProgress = (percent) => {
+    uploadProgress.value = percent
+  }
+
   try {
-    // 模拟进度（实际应该用axios的onUploadProgress）
-    const progressInterval = setInterval(() => {
-      if (uploadProgress.value < 90) {
-        uploadProgress.value += 10
+    if (props.autoRecognize) {
+      // 上传并识别模式：上传照片后自动调用AI识别营养信息
+      const response = await uploadAndRecognize(file, onProgress)
+      if (response.data.code === 200) {
+        const result = response.data.data
+        emit('update:modelValue', result.imageUrl || '')
+        emit('recognized', result)
+        message.success(response.data.message || '识别成功')
+      } else {
+        message.error(response.data.message || '识别失败')
       }
-    }, 200)
-
-    const response = await uploadFoodPhoto(file)
-
-    clearInterval(progressInterval)
-    uploadProgress.value = 100
-
-    if (response.data.code === 200) {
-      const photoUrl = response.data.data
-      emit('update:modelValue', photoUrl)
-      message.success('照片上传成功')
     } else {
-      message.error(response.data.message || '上传失败')
+      // 纯上传模式
+      const response = await uploadFoodPhoto(file, onProgress)
+      if (response.data.code === 200) {
+        const photoUrl = response.data.data
+        emit('update:modelValue', photoUrl)
+        message.success('照片上传成功')
+      } else {
+        message.error(response.data.message || '上传失败')
+      }
     }
   } catch (error) {
     console.error('上传失败:', error)
-    message.error('上传失败')
+    message.error('上传失败，请稍后重试')
   } finally {
     uploading.value = false
     uploadProgress.value = 0

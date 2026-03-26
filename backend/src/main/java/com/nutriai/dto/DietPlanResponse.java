@@ -52,6 +52,11 @@ public class DietPlanResponse {
     private NutritionSummary nutritionSummary;
     
     /**
+     * 是否收藏
+     */
+    private Boolean isFavorite;
+    
+    /**
      * 生成时间
      */
     private Long timestamp;

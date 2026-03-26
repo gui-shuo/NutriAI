@@ -264,30 +264,24 @@ public class AIWebSocketHandler extends TextWebSocketHandler {
     /**
      * 验证token并获取用户ID
      */
-    private Long validateTokenAndGetUserId(String token) throws Exception {
-        try {
-            // 移除Bearer前缀（如果有）
-            if (token.startsWith("Bearer ")) {
-                token = token.substring(7);
-            }
-            
-            // 验证token有效性
-            if (!jwtUtil.validateToken(token)) {
-                throw new Exception("Token无效或已过期");
-            }
-            
-            // 获取用户ID
-            Long userId = jwtUtil.getUserIdFromToken(token);
-            if (userId == null) {
-                throw new Exception("无法从Token中获取用户ID");
-            }
-            
-            log.debug("Token验证成功: userId={}", userId);
-            return userId;
-            
-        } catch (Exception e) {
-            log.error("Token验证失败: {}", e.getMessage());
-            throw new Exception("Token验证失败: " + e.getMessage());
+    private Long validateTokenAndGetUserId(String token) throws IllegalArgumentException {
+        // 移除Bearer前缀（如果有）
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
         }
+        
+        // 验证token有效性
+        if (!jwtUtil.validateToken(token)) {
+            throw new IllegalArgumentException("Token无效或已过期");
+        }
+        
+        // 获取用户ID
+        Long userId = jwtUtil.getUserIdFromToken(token);
+        if (userId == null) {
+            throw new IllegalArgumentException("无法从 Token 中获取用户ID");
+        }
+        
+        log.debug("Token验证成功: userId={}", userId);
+        return userId;
     }
 }

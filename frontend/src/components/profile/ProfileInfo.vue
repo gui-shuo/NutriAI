@@ -50,7 +50,7 @@
                 手机号
               </div>
               <div class="item-value">
-                {{ userProfile?.phone || '未绑定' }}
+                {{ maskPhone(userProfile?.phone) }}
               </div>
             </div>
           </div>
@@ -190,6 +190,12 @@ const formatDate = dateStr => {
     hour: '2-digit',
     minute: '2-digit'
   })
+}
+
+// 手机号脱敏
+const maskPhone = phone => {
+  if (!phone || phone.length < 7) return phone || '未绑定'
+  return phone.substring(0, 3) + '****' + phone.substring(7)
 }
 
 onMounted(() => {

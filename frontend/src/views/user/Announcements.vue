@@ -64,6 +64,7 @@
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Clock } from '@element-plus/icons-vue'
+import api from '@/services/api'
 
 const loading = ref(false)
 const announcements = ref([])
@@ -75,11 +76,10 @@ const total = ref(0)
 const loadAnnouncements = async () => {
   loading.value = true
   try {
-    const response = await fetch(
-      `http://localhost:8080/api/announcements?page=${currentPage.value}&size=${pageSize.value}`
-    )
+    const { data } = await api.get('/announcements', {
+      params: { page: currentPage.value, size: pageSize.value }
+    })
 
-    const data = await response.json()
     if (data.code === 200) {
       announcements.value = data.data.content || []
       total.value = data.data.totalElements || 0

@@ -44,14 +44,16 @@
             :auto-upload="false"
             :on-change="handleImageChange"
             :show-file-list="false"
-            accept="image/*"
+            :disabled="isRecognizing"
+            :limit="1"
+            accept="image/jpeg,image/png,image/gif,image/webp,image/bmp"
           >
             <el-icon class="el-icon--upload">
               <upload-filled />
             </el-icon>
             <div class="el-upload__text">拖拽图片到此处或 <em>点击上传</em></div>
             <template #tip>
-              <div class="el-upload__tip">支持 jpg/png 格式，大小不超过 5MB</div>
+              <div class="el-upload__tip">支持 JPG / PNG / GIF / WebP / BMP，大小不超过 5MB</div>
             </template>
           </el-upload>
 
@@ -87,7 +89,7 @@
             <el-tag
               v-for="food in quickFoods"
               :key="food"
-              style="cursor: pointer"
+              :style="{ cursor: isRecognizing ? 'not-allowed' : 'pointer', opacity: isRecognizing ? 0.5 : 1 }"
               effect="plain"
               @click="quickRecognize(food)"
             >
@@ -290,9 +292,13 @@ import {
 } from '@element-plus/icons-vue'
 import api from '@/services/api'
 
-// 路由
+// ─── 常量 ────────────────────────────────────────────────────────
+const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/bmp'])
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024 // 5MB
+
 const router = useRouter()
 
+// ─── 状态 ────────────────────────────────────────────────────────
 const foodName = ref('')
 const isRecognizing = ref(false)
 const recognitionResult = ref(null)
@@ -302,31 +308,51 @@ const selectedFile = ref(null)
 const expandedHistory = reactive({})
 const uploadRef = ref(null)
 
-const quickFoods = [
-  '苹果',
-  '香蕉',
-  '鸡胸肉',
-  '鸡蛋',
-  '牛奶',
-  '燕麦',
-  '西兰花',
-  '三文鱼',
-  '糙米',
-  '红薯'
-]
+const quickFoods = ['苹果', '香蕉', '鸡胸肉', '鸡蛋', '牛奶', '燕麦', '西兰花', '三文鱼', '糙米', '红薯']
 
-// 处理图片选择
+// ─── 图片处理 ────────────────────────────────────────────────────
+
+/** el-upload onChange 回调：校验文件类型和大小后再预览 */
 const handleImageChange = file => {
-  selectedFile.value = file.raw
-  previewUrl.value = URL.createObjectURL(file.raw)
+  const raw = file.raw
+  if (!raw) return
+
+  if (!ALLOWED_IMAGE_TYPES.has(raw.type)) {
+    ElMessage.error('仅支持 JPG / PNG / GIF / WebP / BMP 格式的图片')
+    // 清除 el-upload 内部文件列表
+    uploadRef.value?.clearFiles()
+    return
+  }
+  if (raw.size > MAX_IMAGE_SIZE) {
+    ElMessage.error('图片大小不能超过 5MB，请压缩后重试')
+    uploadRef.value?.clearFiles()
+    return
+  }
+
+  // 释放旧的 blob URL 再赋新值
+  if (previewUrl.value) URL.revokeObjectURL(previewUrl.value)
+  selectedFile.value = raw
+  previewUrl.value = URL.createObjectURL(raw)
 }
 
-// 通过图片识别
+/** 清除已选图片 */
+const clearImage = () => {
+  if (previewUrl.value) URL.revokeObjectURL(previewUrl.value)
+  previewUrl.value = null
+  selectedFile.value = null
+  uploadRef.value?.clearFiles()
+  ElMessage.success('已清除图片')
+}
+
+// ─── 识别逻辑 ─────────────────────────────────────────────────────
+
+/** 图片识别 */
 const recognizeByImage = async () => {
   if (!selectedFile.value) {
     ElMessage.warning('请先选择图片')
     return
   }
+  if (isRecognizing.value) return // 防止重复提交
 
   isRecognizing.value = true
   recognitionResult.value = null
@@ -336,58 +362,47 @@ const recognizeByImage = async () => {
     formData.append('image', selectedFile.value)
 
     const response = await api.post('/food-recognition/recognize-by-image', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+      headers: { 'Content-Type': 'multipart/form-data' }
     })
-
     const data = response.data
 
     if (data.code === 200) {
       recognitionResult.value = data.data
-      ElMessage.success('识别成功！')
+      ElMessage.success(`识别成功，共识别到 ${data.data.totalCount} 种食物`)
       loadHistory()
+    } else if (data.code === 4001) {
+      // 未识别到食物的业务状态
+      ElMessage.warning(data.message || '未能从图片中识别到食物，请换一张更清晰的照片')
     } else if (data.code === 501) {
-      ElMessage.warning(data.message)
+      ElMessage.info('图片识别功能暂未开放，建议使用文本输入或快捷输入')
     } else {
-      throw new Error(data.message)
+      ElMessage.error(data.message || '识别失败，请稍后重试')
     }
   } catch (error) {
-    console.error('识别失败:', error)
-    ElMessage.error('识别失败: ' + (error.response?.data?.message || error.message))
+    console.error('图片识别请求失败:', error)
+    const msg = error.response?.data?.message || error.message || '网络错误，请检查网络后重试'
+    ElMessage.error('识别失败: ' + msg)
   } finally {
     isRecognizing.value = false
   }
 }
 
-// 返回首页
-const goToHome = () => {
-  router.push('/')
-}
-
-// 快捷识别
-const quickRecognize = food => {
-  foodName.value = food
-  recognizeByName()
-}
-
-// 通过名称识别
+/** 文本识别 */
 const recognizeByName = async () => {
-  if (!foodName.value.trim()) {
+  const name = foodName.value.trim()
+  if (!name) {
     ElMessage.warning('请输入食物名称')
     return
   }
+  if (isRecognizing.value) return // 防止重复提交
 
   isRecognizing.value = true
   recognitionResult.value = null
 
   try {
     const response = await api.post('/food-recognition/recognize-by-name', null, {
-      params: {
-        foodName: foodName.value.trim()
-      }
+      params: { foodName: name }
     })
-
     const data = response.data
 
     if (data.code === 200) {
@@ -395,17 +410,26 @@ const recognizeByName = async () => {
       ElMessage.success('识别成功！')
       loadHistory()
     } else {
-      throw new Error(data.message)
+      ElMessage.error(data.message || '识别失败，请稍后重试')
     }
   } catch (error) {
-    console.error('识别失败:', error)
-    ElMessage.error('识别失败: ' + (error.response?.data?.message || error.message))
+    console.error('文本识别请求失败:', error)
+    const msg = error.response?.data?.message || error.message || '网络错误，请检查网络后重试'
+    ElMessage.error('识别失败: ' + msg)
   } finally {
     isRecognizing.value = false
   }
 }
 
-// 加载识别历史
+/** 快捷识别（防止正在识别时重复触发） */
+const quickRecognize = food => {
+  if (isRecognizing.value) return
+  foodName.value = food
+  recognizeByName()
+}
+
+// ─── 历史记录 ─────────────────────────────────────────────────────
+
 const loadHistory = async () => {
   try {
     const response = await api.get('/food-recognition/history')
@@ -418,55 +442,84 @@ const loadHistory = async () => {
   }
 }
 
-// 获取置信度类型
+const confirmDeleteHistory = id => {
+  ElMessageBox.confirm('确定要删除这条识别记录吗？', '删除确认', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+    center: true
+  })
+    .then(() => deleteHistory(id))
+    .catch(() => {})
+}
+
+const deleteHistory = async id => {
+  try {
+    const response = await api.delete(`/food-recognition/history/${id}`)
+    const data = response.data
+    if (data.code === 200) {
+      ElMessage.success('删除成功')
+      loadHistory()
+    } else {
+      ElMessage.error(data.message || '删除失败')
+    }
+  } catch (error) {
+    console.error('删除失败:', error)
+    ElMessage.error('删除失败: ' + (error.response?.data?.message || error.message))
+  }
+}
+
+const toggleHistoryDetail = id => {
+  expandedHistory[id] = !expandedHistory[id]
+}
+
+// ─── 工具函数 ─────────────────────────────────────────────────────
+
 const getConfidenceType = confidence => {
   if (confidence >= 0.9) return 'success'
   if (confidence >= 0.7) return 'warning'
   return 'info'
 }
 
-// 获取数据来源文本
 const getSourceText = source => {
-  const sourceMap = {
-    database: '数据库（准确）',
-    estimated: 'AI估算',
-    default: '默认值'
-  }
-  return sourceMap[source] || source
+  const map = { database: '数据库（准确）', estimated: 'AI估算', default: '默认值' }
+  return map[source] || source
 }
 
-// 格式化时间
 const formatTime = time => {
-  return new Date(time).toLocaleString('zh-CN')
+  if (!time) return ''
+  try {
+    return new Date(time).toLocaleString('zh-CN', {
+      year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit'
+    })
+  } catch {
+    return String(time)
+  }
 }
 
-// 获取历史文本
+const formatFullTime = time => {
+  if (!time) return ''
+  try {
+    return new Date(time).toLocaleString('zh-CN', {
+      year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', second: '2-digit'
+    })
+  } catch {
+    return String(time)
+  }
+}
+
 const getHistoryText = resultJson => {
   try {
     const result = JSON.parse(resultJson)
-    const foods = result.foods.map(f => f.name).join('、')
-    return `识别了 ${foods}`
+    const names = result.foods?.map(f => f.name).join('、') || '未知食物'
+    return `识别了 ${names}`
   } catch {
     return '识别记录'
   }
 }
 
-// 清除图片
-const clearImage = () => {
-  if (previewUrl.value) {
-    URL.revokeObjectURL(previewUrl.value)
-  }
-  previewUrl.value = null
-  selectedFile.value = null
-  ElMessage.success('已清除图片')
-}
-
-// 切换历史详情展开/收起
-const toggleHistoryDetail = id => {
-  expandedHistory[id] = !expandedHistory[id]
-}
-
-// 解析识别结果
 const parseRecognitionResult = resultJson => {
   try {
     return JSON.parse(resultJson)
@@ -475,90 +528,26 @@ const parseRecognitionResult = resultJson => {
   }
 }
 
-// 格式化完整时间
-const formatFullTime = time => {
-  const date = new Date(time)
-  return date.toLocaleString('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit'
-  })
-}
+const goToHome = () => router.push('/')
 
-// 确认删除历史记录
-const confirmDeleteHistory = id => {
-  ElMessageBox.confirm('确定要删除这条识别记录吗？', '删除确认', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning',
-    center: true,
-    customClass: 'custom-message-box'
-  })
-    .then(() => {
-      deleteHistory(id)
-    })
-    .catch(() => {
-      // 取消删除
-    })
-}
+// ─── 生命周期 ─────────────────────────────────────────────────────
 
-// 删除历史记录
-const deleteHistory = async id => {
-  try {
-    const response = await api.delete(`/food-recognition/history/${id}`)
-    const data = response.data
-
-    if (data.code === 200) {
-      ElMessage.success('删除成功')
-      // 重新加载历史记录
-      loadHistory()
-    } else {
-      throw new Error(data.message)
-    }
-  } catch (error) {
-    console.error('删除失败:', error)
-    ElMessage.error('删除失败: ' + (error.response?.data?.message || error.message))
-  }
-}
-
-// 初始化
 onMounted(() => {
   loadHistory()
 })
 
-// 组件卸载前清理
 onBeforeUnmount(() => {
-  console.log('FoodRecognitionView 组件卸载，开始清理...')
-
-  // 释放 blob URL，防止内存泄漏
   if (previewUrl.value) {
-    console.log('释放预览图片 blob URL')
     URL.revokeObjectURL(previewUrl.value)
     previewUrl.value = null
   }
-
-  // 清理 Upload 组件
-  if (uploadRef.value) {
-    console.log('清理 Upload 组件')
-    uploadRef.value.clearFiles?.()
-  }
-
-  // 清空所有数据
+  uploadRef.value?.clearFiles?.()
   selectedFile.value = null
   recognitionResult.value = null
   history.value = []
   foodName.value = ''
   isRecognizing.value = false
-
-  // 清空展开状态
-  Object.keys(expandedHistory).forEach(key => {
-    delete expandedHistory[key]
-  })
-
-  console.log('FoodRecognitionView 清理完成')
+  Object.keys(expandedHistory).forEach(key => delete expandedHistory[key])
 })
 </script>
 

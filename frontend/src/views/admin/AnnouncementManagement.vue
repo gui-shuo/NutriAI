@@ -104,6 +104,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
+import { getAllAnnouncements, createAnnouncement, updateAnnouncement, deleteAnnouncement } from '@/services/admin'
 
 const loading = ref(false)
 const announcementList = ref([])
@@ -137,14 +138,7 @@ const rules = {
 const loadAnnouncements = async () => {
   loading.value = true
   try {
-    const token = localStorage.getItem('token')
-    const response = await fetch('http://localhost:8080/api/admin/announcements', {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-
-    const data = await response.json()
+    const { data } = await getAllAnnouncements()
     if (data.code === 200) {
       announcementList.value = data.data
     }
@@ -186,7 +180,6 @@ const handleSave = async () => {
   try {
     await formRef.value.validate()
 
-    const token = localStorage.getItem('token')
     const requestData = {
       title: editForm.title,
       content: editForm.content,
@@ -197,75 +190,58 @@ const handleSave = async () => {
       endTime: editForm.timeRange ? editForm.timeRange[1] : null
     }
 
-    let response
+    let res
     if (isCreate.value) {
-      // 创建
-      response = await fetch('http://localhost:8080/api/admin/announcements', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(requestData)
-      })
+      res = await createAnnouncement(requestData)
     } else {
-      // 更新
-      response = await fetch(`http://localhost:8080/api/admin/announcements/${editForm.id}`, {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(requestData)
-      })
+      res = await updateAnnouncement(editForm.id, requestData)
     }
 
-    const data = await response.json()
-    if (data.code === 200) {
+    if (res.data.code === 200) {
       ElMessage.success(isCreate.value ? '创建成功' : '更新成功')
       editDialogVisible.value = false
       loadAnnouncements()
     } else {
-      ElMessage.error(data.message || '操作失败')
+      ElMessage.error(res.data.message || '操作失败')
     }
   } catch (error) {
-    console.error('保存失败:', error)
+    if (error?.message) {
+      console.error('保存失败:', error)
+      ElMessage.error(error.response?.data?.message || '保存失败')
+    }
   }
 }
 
 // 切换状态
 const handleToggleStatus = async row => {
+  const originalStatus = !row.isActive // el-switch 已经切换了，保存原值用于回滚
   try {
-    const token = localStorage.getItem('token')
-    const response = await fetch(`http://localhost:8080/api/admin/announcements/${row.id}`, {
-      method: 'PUT',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        ...row,
-        isActive: row.isActive
-      })
+    const { data } = await updateAnnouncement(row.id, {
+      title: row.title,
+      content: row.content,
+      type: row.type,
+      priority: row.priority,
+      isActive: row.isActive,
+      startTime: row.startTime,
+      endTime: row.endTime
     })
-
-    const data = await response.json()
     if (data.code === 200) {
-      ElMessage.success('状态更新成功')
+      ElMessage.success(row.isActive ? '公告已启用' : '公告已禁用')
     } else {
-      row.isActive = !row.isActive
-      ElMessage.error('状态更新失败')
+      row.isActive = originalStatus
+      ElMessage.error(data.message || '状态更新失败')
     }
   } catch (error) {
-    row.isActive = !row.isActive
+    row.isActive = originalStatus
     console.error('状态更新失败:', error)
+    ElMessage.error(error.response?.data?.message || '状态更新失败')
   }
 }
 
 // 删除公告
 const handleDelete = async row => {
   try {
-    await ElMessageBox.confirm(`确定要删除公告 "${row.title}" 吗？`, '确认删除', {
+    await ElMessageBox.confirm(`确定要删除公告 "​${row.title}​" 吗？`, '确认删除', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'warning',
@@ -275,24 +251,17 @@ const handleDelete = async row => {
       closeOnClickModal: false
     })
 
-    const token = localStorage.getItem('token')
-    const response = await fetch(`http://localhost:8080/api/admin/announcements/${row.id}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-
-    const data = await response.json()
+    const { data } = await deleteAnnouncement(row.id)
     if (data.code === 200) {
       ElMessage.success('删除成功')
       loadAnnouncements()
     } else {
-      ElMessage.error('删除失败')
+      ElMessage.error(data.message || '删除失败')
     }
   } catch (error) {
-    if (error !== 'cancel') {
+    if (error !== 'cancel' && error?.message) {
       console.error('删除失败:', error)
+      ElMessage.error(error.response?.data?.message || '删除失败')
     }
   }
 }

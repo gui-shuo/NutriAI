@@ -24,7 +24,7 @@
           />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleSearch"> 搜索 </el-button>
+          <el-button type="primary" @click="handleSearchClick"> 搜索 </el-button>
           <el-button @click="handleReset"> 重置 </el-button>
         </el-form-item>
       </el-form>
@@ -124,6 +124,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import { getAILogList } from '@/services/admin'
 
 const loading = ref(false)
 const logList = ref([])
@@ -145,26 +146,18 @@ const pagination = reactive({
 const loadLogs = async () => {
   loading.value = true
   try {
-    const token = localStorage.getItem('token')
-    const params = new URLSearchParams({
+    const params = {
       page: pagination.page,
       size: pagination.size
-    })
-
-    if (searchForm.userId) params.append('userId', searchForm.userId)
-    if (searchForm.status) params.append('status', searchForm.status)
+    }
+    if (searchForm.userId) params.userId = searchForm.userId
+    if (searchForm.status) params.status = searchForm.status
     if (searchForm.dateRange && searchForm.dateRange.length === 2) {
-      params.append('startDate', searchForm.dateRange[0].toISOString())
-      params.append('endDate', searchForm.dateRange[1].toISOString())
+      params.startDate = searchForm.dateRange[0].toISOString()
+      params.endDate = searchForm.dateRange[1].toISOString()
     }
 
-    const response = await fetch(`http://localhost:8080/api/admin/ai-logs?${params}`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-
-    const data = await response.json()
+    const { data } = await getAILogList(params)
     if (data.code === 200) {
       logList.value = data.data.content
       pagination.total = data.data.totalElements
@@ -178,6 +171,10 @@ const loadLogs = async () => {
 }
 
 const handleSearch = () => {
+  loadLogs()
+}
+
+const handleSearchClick = () => {
   pagination.page = 1
   loadLogs()
 }
@@ -186,7 +183,8 @@ const handleReset = () => {
   searchForm.userId = ''
   searchForm.status = ''
   searchForm.dateRange = null
-  handleSearch()
+  pagination.page = 1
+  loadLogs()
 }
 
 const handleView = row => {

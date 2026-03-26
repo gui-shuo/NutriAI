@@ -13,13 +13,19 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: () => import('@/views/auth/LoginView.vue'),
-    meta: { title: '登录' }
+    meta: { title: '登录', hideForAuth: true }
   },
   {
     path: '/register',
     name: 'Register',
     component: () => import('@/views/auth/RegisterView.vue'),
-    meta: { title: '注册' }
+    meta: { title: '注册', hideForAuth: true }
+  },
+  {
+    path: '/forgot-password',
+    name: 'ForgotPassword',
+    component: () => import('@/views/auth/ForgotPasswordView.vue'),
+    meta: { title: '忘记密码', hideForAuth: true }
   },
   {
     path: '/profile',

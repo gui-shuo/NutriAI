@@ -118,7 +118,7 @@ public class AdminUserService {
         
         // 统计用户的对话数
         long totalChats = chatLogRepository.countByUserId(user.getId());
-        long todayChats = chatLogRepository.countByCreatedAtBetween(todayStart, now);
+        long todayChats = chatLogRepository.countByUserIdAndCreatedAtBetween(user.getId(), todayStart, now);
         
         return UserManagementDTO.builder()
                 .id(user.getId())

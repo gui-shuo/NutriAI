@@ -14,7 +14,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       const payload = JSON.parse(atob(token.value.split('.')[1]))
       // 提前60秒认为过期，避免边界情况
-      return payload.exp * 1000 < Date.now() - 60000
+      return payload.exp * 1000 < Date.now() + 60000
     } catch {
       return true
     }

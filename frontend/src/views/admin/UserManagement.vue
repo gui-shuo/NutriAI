@@ -15,8 +15,8 @@
         </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="searchForm.status" placeholder="全部" clearable style="width: 120px">
-            <el-option label="正常" value="active" />
-            <el-option label="禁用" value="disabled" />
+            <el-option label="正常" value="ACTIVE" />
+            <el-option label="禁用" value="DISABLED" />
           </el-select>
         </el-form-item>
         <el-form-item label="会员等级">
@@ -33,7 +33,7 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleSearch">
+          <el-button type="primary" @click="handleSearchClick">
             <el-icon><Search /></el-icon>
             搜索
           </el-button>
@@ -162,8 +162,8 @@
         </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="editForm.status">
-            <el-option label="正常" value="active" />
-            <el-option label="禁用" value="disabled" />
+            <el-option label="正常" value="ACTIVE" />
+            <el-option label="禁用" value="DISABLED" />
           </el-select>
         </el-form-item>
         <el-form-item label="会员等级">
@@ -194,6 +194,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search, Download } from '@element-plus/icons-vue'
+import { getUserList, getUserDetail, updateUserStatus, updateUserMemberLevel, updateUserRole } from '@/services/admin'
 
 const loading = ref(false)
 const userList = ref([])
@@ -223,23 +224,15 @@ const editForm = reactive({
 const loadUsers = async () => {
   loading.value = true
   try {
-    const token = localStorage.getItem('token')
-    const params = new URLSearchParams({
+    const params = {
       page: pagination.page,
       size: pagination.size
-    })
+    }
+    if (searchForm.keyword) params.keyword = searchForm.keyword
+    if (searchForm.status) params.status = searchForm.status
+    if (searchForm.memberLevel) params.memberLevel = searchForm.memberLevel
 
-    if (searchForm.keyword) params.append('keyword', searchForm.keyword)
-    if (searchForm.status) params.append('status', searchForm.status)
-    if (searchForm.memberLevel) params.append('memberLevel', searchForm.memberLevel)
-
-    const response = await fetch(`http://localhost:8080/api/admin/users?${params}`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-
-    const data = await response.json()
+    const { data } = await getUserList(params)
     if (data.code === 200) {
       userList.value = data.data.content
       pagination.total = data.data.totalElements
@@ -254,6 +247,11 @@ const loadUsers = async () => {
 
 // 搜索
 const handleSearch = () => {
+  loadUsers()
+}
+
+// 搜索按钮点击
+const handleSearchClick = () => {
   pagination.page = 1
   loadUsers()
 }
@@ -263,7 +261,8 @@ const handleReset = () => {
   searchForm.keyword = ''
   searchForm.status = ''
   searchForm.memberLevel = ''
-  handleSearch()
+  pagination.page = 1
+  loadUsers()
 }
 
 // 查看详情
@@ -284,50 +283,32 @@ const handleEdit = row => {
 // 保存编辑
 const handleSaveEdit = async () => {
   try {
-    const token = localStorage.getItem('token')
+    const userId = currentUser.value.id
+    const promises = []
 
-    // 更新状态
     if (editForm.status !== currentUser.value.status) {
-      await fetch(`http://localhost:8080/api/admin/users/${currentUser.value.id}/status`, {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ status: editForm.status })
-      })
+      promises.push(updateUserStatus(userId, editForm.status))
     }
-
-    // 更新会员等级
     if (editForm.memberLevel !== currentUser.value.memberLevel) {
-      await fetch(`http://localhost:8080/api/admin/users/${currentUser.value.id}/member-level`, {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ memberLevel: editForm.memberLevel })
-      })
+      promises.push(updateUserMemberLevel(userId, editForm.memberLevel))
     }
-
-    // 更新角色
     if (editForm.role !== currentUser.value.role) {
-      await fetch(`http://localhost:8080/api/admin/users/${currentUser.value.id}/role`, {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ role: editForm.role })
-      })
+      promises.push(updateUserRole(userId, editForm.role))
     }
 
+    if (promises.length === 0) {
+      ElMessage.info('没有修改的内容')
+      editDialogVisible.value = false
+      return
+    }
+
+    await Promise.all(promises)
     ElMessage.success('保存成功')
     editDialogVisible.value = false
     loadUsers()
   } catch (error) {
     console.error('保存失败:', error)
-    ElMessage.error('保存失败')
+    ElMessage.error(error.response?.data?.message || '保存失败')
   }
 }
 
@@ -348,32 +329,8 @@ const handleToggleStatus = async row => {
       }
     )
 
-    const token = localStorage.getItem('token')
     const newStatus = row.status === 'ACTIVE' ? 'DISABLED' : 'ACTIVE'
-
-    console.log('更新用户状态:', { userId: row.id, oldStatus: row.status, newStatus })
-
-    const response = await fetch(`http://localhost:8080/api/admin/users/${row.id}/status`, {
-      method: 'PUT',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ status: newStatus })
-    })
-
-    console.log('响应状态:', response.status)
-
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error('服务器错误:', errorText)
-      ElMessage.error(`操作失败: ${response.status} ${response.statusText}`)
-      return
-    }
-
-    const data = await response.json()
-    console.log('响应数据:', data)
-
+    const { data } = await updateUserStatus(row.id, newStatus)
     if (data.code === 200) {
       ElMessage.success('操作成功')
       loadUsers()

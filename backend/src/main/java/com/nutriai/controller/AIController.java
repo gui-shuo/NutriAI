@@ -4,13 +4,21 @@ import com.nutriai.common.ApiResponse;
 import com.nutriai.entity.User;
 import com.nutriai.repository.UserRepository;
 import com.nutriai.service.AIService;
+import com.nutriai.service.OssService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * AI控制器
@@ -27,6 +35,10 @@ public class AIController {
     
     private final AIService aiService;
     private final UserRepository userRepository;
+    private final OssService ossService;
+
+    @Value("${nutriai.upload.local-path:./uploads}")
+    private String uploadPath;
     
     /**
      * 初始化AI对话
@@ -63,7 +75,7 @@ public class AIController {
             
         } catch (Exception e) {
             log.error("初始化AI对话失败", e);
-            return ApiResponse.error("初始化失败：" + e.getMessage());
+            return ApiResponse.error("初始化失败，请稍后重试");
         }
     }
     
@@ -115,7 +127,7 @@ public class AIController {
             
         } catch (Exception e) {
             log.error("AI对话失败", e);
-            return ApiResponse.error("对话失败：" + e.getMessage());
+            return ApiResponse.error("对话失败，请稍后重试");
         }
     }
     
@@ -129,6 +141,56 @@ public class AIController {
         private Double temperature;
         private Integer maxTokens;
         private Boolean keepContext;
+    }
+    
+    /**
+     * 上传聊天附件
+     * POST /api/ai/upload
+     */
+    @PostMapping("/upload")
+    public ApiResponse<String> uploadFile(HttpServletRequest request,
+                                          @RequestParam("file") MultipartFile file) {
+        try {
+            Long userId = (Long) request.getAttribute("userId");
+            
+            if (file == null || file.isEmpty()) {
+                return ApiResponse.error("文件不能为空");
+            }
+            if (file.getSize() > 10 * 1024 * 1024) {
+                return ApiResponse.error("文件大小不能超过10MB");
+            }
+            
+            log.info("用户 {} 上传聊天附件: {}, 大小: {}", userId, file.getOriginalFilename(), file.getSize());
+            
+            // 尝试上传到COS，失败则本地存储
+            String fileUrl;
+            try {
+                fileUrl = ossService.uploadFoodPhoto(file);
+            } catch (Exception e) {
+                log.warn("COS上传失败，使用本地存储: {}", e.getMessage());
+                fileUrl = saveLocally(file);
+            }
+            
+            return ApiResponse.success(fileUrl);
+            
+        } catch (Exception e) {
+            log.error("文件上传失败", e);
+            return ApiResponse.error("文件上传失败，请稍后重试");
+        }
+    }
+    
+    private String saveLocally(MultipartFile file) throws IOException {
+        String extension = "";
+        String originalName = file.getOriginalFilename();
+        if (originalName != null && originalName.contains(".")) {
+            extension = originalName.substring(originalName.lastIndexOf("."));
+        }
+        String fileName = "chat_" + UUID.randomUUID() + extension;
+        Path dir = Paths.get(uploadPath, "chat").toAbsolutePath();
+        Files.createDirectories(dir);
+        Path filePath = dir.resolve(fileName);
+        file.transferTo(filePath.toFile());
+        return "/uploads/chat/" + fileName;
     }
     
     /**
@@ -154,7 +216,7 @@ public class AIController {
             
         } catch (Exception e) {
             log.error("食物分析失败", e);
-            return ApiResponse.error("分析失败：" + e.getMessage());
+            return ApiResponse.error("分析失败，请稍后重试");
         }
     }
     
@@ -180,7 +242,7 @@ public class AIController {
             
         } catch (Exception e) {
             log.error("饮食计划生成失败", e);
-            return ApiResponse.error("生成失败：" + e.getMessage());
+            return ApiResponse.error("生成失败，请稍后重试");
         }
     }
     
@@ -196,7 +258,7 @@ public class AIController {
             return ApiResponse.success("对话历史已清除");
         } catch (Exception e) {
             log.error("清除对话历史失败", e);
-            return ApiResponse.error("清除失败：" + e.getMessage());
+            return ApiResponse.error("清除失败，请稍后重试");
         }
     }
     
@@ -214,7 +276,7 @@ public class AIController {
             return ApiResponse.success(stats);
         } catch (Exception e) {
             log.error("获取统计数据失败", e);
-            return ApiResponse.error("获取失败：" + e.getMessage());
+            return ApiResponse.error("获取失败，请稍后重试");
         }
     }
 }

@@ -115,9 +115,10 @@ const connectWebSocket = () => {
 
   try {
     isConnecting.value = true
-    // 注意：WebSocket URL需要包含 /api 前缀（与后端context-path一致）
-    const wsUrl = `ws://localhost:8080/api/ws/admin/alerts?token=${token}`
-    console.log('🔌 正在连接WebSocket:', wsUrl)
+    // 根据当前页面协议和主机动态构建 WebSocket URL
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+    const host = import.meta.env.VITE_WS_HOST || window.location.host
+    const wsUrl = `${protocol}//${host}/api/ws/admin/alerts?token=${token}`
 
     ws.value = new WebSocket(wsUrl)
 

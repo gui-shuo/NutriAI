@@ -51,6 +51,17 @@ public interface FoodRecordRepository extends JpaRepository<FoodRecord, Long> {
     );
     
     /**
+     * 根据用户ID、餐次类型和时间范围分页查询
+     */
+    Page<FoodRecord> findByUserIdAndMealTypeAndRecordTimeBetweenOrderByRecordTimeDesc(
+            Long userId,
+            FoodRecord.MealType mealType,
+            LocalDateTime startTime,
+            LocalDateTime endTime,
+            Pageable pageable
+    );
+    
+    /**
      * 统计指定时间范围内的记录数量
      */
     @Query("SELECT COUNT(f) FROM FoodRecord f WHERE f.userId = :userId " +

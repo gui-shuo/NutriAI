@@ -223,23 +223,28 @@ public class PdfExportService {
      * 加载中文字体
      */
     private PdfFont loadChineseFont() throws IOException {
-        // 尝试加载Windows系统中的中文字体
+        // 尝试多种系统中文字体路径（Windows + Linux + macOS）
         String[] fontPaths = {
-            "C:/Windows/Fonts/msyh.ttc,0",      // 微软雅黑
-            "C:/Windows/Fonts/simhei.ttf",      // 黑体
-            "C:/Windows/Fonts/simsun.ttc,0",    // 宋体
-            "C:/Windows/Fonts/simkai.ttf",      // 楷体
-            "STSong-Light"                       // iText内置中文字体（需要亚洲字体包）
+            // Linux 常见路径
+            "/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc,0",        // 文泉驿正黑
+            "/usr/share/fonts/truetype/wqy/wqy-microhei.ttc,0",      // 文泉驿微米黑
+            "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc,0",// Noto Sans CJK
+            "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc,0",
+            "/usr/share/fonts/noto-cjk/NotoSansCJK-Regular.ttc,0",
+            "/usr/share/fonts/google-noto-cjk/NotoSansCJK-Regular.ttc,0",
+            "/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf",
+            // Windows
+            "C:/Windows/Fonts/msyh.ttc,0",
+            "C:/Windows/Fonts/simhei.ttf",
+            "C:/Windows/Fonts/simsun.ttc,0",
+            // macOS
+            "/System/Library/Fonts/PingFang.ttc,0",
+            "/System/Library/Fonts/STHeiti Light.ttc,0",
         };
         
         for (String fontPath : fontPaths) {
             try {
-                PdfFont font;
-                if (fontPath.equals("STSong-Light")) {
-                    font = PdfFontFactory.createFont(fontPath, "UniGB-UCS2-H");
-                } else {
-                    font = PdfFontFactory.createFont(fontPath, PdfEncodings.IDENTITY_H);
-                }
+                PdfFont font = PdfFontFactory.createFont(fontPath, PdfEncodings.IDENTITY_H);
                 log.info("成功加载字体: {}", fontPath);
                 return font;
             } catch (Exception e) {
@@ -247,7 +252,29 @@ public class PdfExportService {
             }
         }
         
-        throw new IOException("无法加载任何中文字体");
+        // 尝试从 classpath 加载内嵌字体
+        try {
+            java.io.InputStream is = getClass().getResourceAsStream("/fonts/NotoSansSC-Regular.ttf");
+            if (is != null) {
+                byte[] fontBytes = is.readAllBytes();
+                PdfFont font = PdfFontFactory.createFont(fontBytes, PdfEncodings.IDENTITY_H);
+                log.info("成功加载内嵌字体: NotoSansSC-Regular.ttf");
+                return font;
+            }
+        } catch (Exception e) {
+            log.debug("无法加载内嵌字体: {}", e.getMessage());
+        }
+        
+        // 最终回退：iText内置字体
+        try {
+            PdfFont font = PdfFontFactory.createFont("STSong-Light", "UniGB-UCS2-H");
+            log.info("成功加载iText内置中文字体: STSong-Light");
+            return font;
+        } catch (Exception e) {
+            log.debug("无法加载iText内置字体: {}", e.getMessage());
+        }
+        
+        throw new IOException("无法加载任何中文字体，请安装中文字体包(如: apt-get install fonts-wqy-zenhei)");
     }
     
     /**

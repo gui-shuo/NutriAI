@@ -2,6 +2,7 @@ package com.nutriai.service;
 
 import com.nutriai.ai.AIToolkit;
 import com.nutriai.ai.ConversationContextManager;
+import com.nutriai.config.AIConfig;
 import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.model.StreamingResponseHandler;
@@ -28,6 +29,7 @@ import java.util.function.Consumer;
 public class AIStreamingService {
     
     private final StreamingChatLanguageModel streamingChatModel;
+    private final AIConfig aiConfig;
     private final ConversationContextManager contextManager;
     private final AIToolkit toolkit;
     
@@ -126,8 +128,9 @@ public class AIStreamingService {
                 }
             };
             
-            // 调用流式模型
-            streamingChatModel.generate(messageHistory, handler);
+            // 调用流式模型（按用户参数动态获取）
+            StreamingChatLanguageModel targetModel = aiConfig.getStreamingChatModel(actualModel, actualTemperature, actualMaxTokens);
+            targetModel.generate(messageHistory, handler);
             
         } catch (Exception e) {
             log.error("❌ 流式聊天失败: userId={}", userId, e);

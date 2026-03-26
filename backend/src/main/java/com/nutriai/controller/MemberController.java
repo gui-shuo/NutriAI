@@ -17,76 +17,71 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/member")
 @RequiredArgsConstructor
 public class MemberController {
-    
+
     private final MemberService memberService;
-    
+
     /**
      * 获取会员信息
      */
     @GetMapping("/info")
     public ApiResponse<MemberInfoResponse> getMemberInfo(HttpServletRequest httpRequest) {
-        try {
-            Long userId = getUserIdFromToken(httpRequest);
-            log.info("获取用户{}的会员信息", userId);
-            MemberInfoResponse memberInfo = memberService.getMemberInfo(userId);
-            return ApiResponse.success(memberInfo);
-        } catch (Exception e) {
-            log.error("获取会员信息失败", e);
-            return ApiResponse.error("获取会员信息失败: " + e.getMessage());
-        }
+        Long userId = getUserId(httpRequest);
+        log.debug("获取用户 {} 的会员信息", userId);
+        MemberInfoResponse memberInfo = memberService.getMemberInfo(userId);
+        return ApiResponse.success(memberInfo);
     }
-    
+
     /**
-     * 获取成长值记录
+     * 获取成长值记录（分页）
      */
     @GetMapping("/growth-records")
     public ApiResponse<Page<GrowthRecordResponse>> getGrowthRecords(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             HttpServletRequest httpRequest) {
-        Long userId = getUserIdFromToken(httpRequest);
-        Page<GrowthRecordResponse> records = memberService.getGrowthRecords(userId, page, size);
-        return ApiResponse.success(records);
+        Long userId = getUserId(httpRequest);
+        return ApiResponse.success(memberService.getGrowthRecords(userId, page, size));
     }
-    
+
+    /**
+     * 每日签到（返回获得的成长值，0 表示今日已签到）
+     */
+    @PostMapping("/sign-in")
+    public ApiResponse<Integer> dailySignIn(HttpServletRequest httpRequest) {
+        Long userId = getUserId(httpRequest);
+        int earned = memberService.dailySignIn(userId);
+        if (earned > 0) {
+            return ApiResponse.success("签到成功，获得 " + earned + " 成长值", earned);
+        } else {
+            return ApiResponse.success("今日已签到", 0);
+        }
+    }
+
     /**
      * 生成邀请链接
      */
     @GetMapping("/invitation/generate")
     public ApiResponse<GenerateInvitationResponse> generateInvitationLink(HttpServletRequest httpRequest) {
-        Long userId = getUserIdFromToken(httpRequest);
-        GenerateInvitationResponse response = memberService.generateInvitationLink(userId);
-        return ApiResponse.success(response);
+        Long userId = getUserId(httpRequest);
+        return ApiResponse.success(memberService.generateInvitationLink(userId));
     }
-    
+
     /**
-     * 查询邀请记录
+     * 查询邀请记录（分页）
      */
     @GetMapping("/invitation/records")
     public ApiResponse<Page<InvitationResponse>> getInvitationRecords(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             HttpServletRequest httpRequest) {
-        Long userId = getUserIdFromToken(httpRequest);
-        Page<InvitationResponse> records = memberService.getInvitationRecords(userId, page, size);
-        return ApiResponse.success(records);
+        Long userId = getUserId(httpRequest);
+        return ApiResponse.success(memberService.getInvitationRecords(userId, page, size));
     }
-    
-    /**
-     * 手动升级等级（管理员）
-     */
-    @PostMapping("/upgrade/{userId}")
-    public ApiResponse<Void> upgradeLevel(@PathVariable Long userId) {
-        // 这里应该添加管理员权限检查
-        var member = memberService.getMemberInfo(userId);
-        // TODO: 调用升级逻辑
-        return ApiResponse.success();
-    }
-    
-    /**
-     * 从Token中获取用户ID
-     */
-    private Long getUserIdFromToken(HttpServletRequest request) {
+
+    // ---- 私有工具方法 ----
+
+    private Long getUserId(HttpServletRequest request) {
         return (Long) request.getAttribute("userId");
     }
 }
+

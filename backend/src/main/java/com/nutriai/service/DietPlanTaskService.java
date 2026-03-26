@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
+import java.util.concurrent.Executor;
 
 /**
  * 饮食计划任务服务
@@ -28,13 +29,14 @@ public class DietPlanTaskService {
     private final DietPlanHistoryRepository historyRepository;
     private final DietPlanService dietPlanService;
     private final ObjectMapper objectMapper;
+    private final Executor asyncExecutor;
     
     /**
      * 创建生成任务
      */
     @Transactional
     public String createTask(Long userId, DietPlanRequest request) {
-        String taskId = "task_" + System.currentTimeMillis();
+        String taskId = "task_" + UUID.randomUUID().toString().replace("-", "").substring(0, 12);
         
         DietPlanTask task = new DietPlanTask();
         task.setTaskId(taskId);
@@ -55,11 +57,11 @@ public class DietPlanTaskService {
         log.info("创建任务: taskId={}, userId={}, days={}", taskId, userId, request.getDays());
         log.info("准备异步执行任务...");
         
-        // 使用CompletableFuture确保异步执行
+        // 使用Spring管理的线程池执行异步任务
         java.util.concurrent.CompletableFuture.runAsync(() -> {
             log.info("异步线程开始执行: taskId={}", taskId);
             executeTaskAsync(taskId, userId, request);
-        });
+        }, asyncExecutor);
         
         log.info("createTask方法返回，taskId={}", taskId);
         
@@ -217,8 +219,77 @@ public class DietPlanTaskService {
         history.setDays(response.getDays());
         history.setGoal(response.getGoalDescription());
         history.setMarkdownContent(response.getMarkdownContent());
+        history.setIsFavorite(false);
         
         historyRepository.save(history);
         log.info("已保存到历史记录: planId={}", response.getPlanId());
+    }
+    
+    /**
+     * 创建修改任务（基于已有计划+用户修改建议）
+     */
+    @Transactional
+    public String createModifyTask(Long userId, String originalPlanId, DietPlanResponse originalPlan, String suggestion) {
+        String taskId = "task_" + UUID.randomUUID().toString().replace("-", "").substring(0, 12) + "_mod";
+        
+        DietPlanTask task = new DietPlanTask();
+        task.setTaskId(taskId);
+        task.setUserId(userId);
+        task.setStatus("pending");
+        task.setProgress(0);
+        task.setTotalDays(originalPlan.getDays());
+        task.setCurrentDay(0);
+        
+        try {
+            java.util.Map<String, String> reqData = new java.util.HashMap<>();
+            reqData.put("originalPlanId", originalPlanId);
+            reqData.put("suggestion", suggestion);
+            task.setRequestData(objectMapper.writeValueAsString(reqData));
+        } catch (Exception e) {
+            log.error("序列化请求数据失败", e);
+        }
+        
+        taskRepository.save(task);
+        log.info("创建修改任务: taskId={}, userId={}, originalPlanId={}", taskId, userId, originalPlanId);
+        
+        java.util.concurrent.CompletableFuture.runAsync(() -> {
+            executeModifyTaskAsync(taskId, userId, originalPlan, suggestion);
+        }, asyncExecutor);
+        
+        return taskId;
+    }
+    
+    /**
+     * 异步执行修改任务
+     */
+    public void executeModifyTaskAsync(String taskId, Long userId, DietPlanResponse originalPlan, String suggestion) {
+        log.info("开始异步执行修改任务: taskId={}", taskId);
+        
+        try {
+            if (isTaskCancelled(taskId)) {
+                return;
+            }
+            
+            updateTaskStatus(taskId, "running", 10, 0, null, null);
+            
+            DietPlanResponse modified = dietPlanService.modifyDietPlan(userId, originalPlan, suggestion, taskId, this);
+            
+            if (isTaskCancelled(taskId)) {
+                return;
+            }
+            
+            // 保存修改后的计划为新的历史记录
+            saveToHistory(userId, modified);
+            
+            updateTaskStatus(taskId, "completed", 100, originalPlan.getDays(), modified.getPlanId(), null);
+            log.info("修改任务执行成功: taskId={}, newPlanId={}", taskId, modified.getPlanId());
+            
+        } catch (Exception e) {
+            if (isTaskCancelled(taskId)) {
+                return;
+            }
+            log.error("修改任务执行失败: taskId={}", taskId, e);
+            updateTaskStatus(taskId, "failed", 0, 0, null, e.getMessage());
+        }
     }
 }

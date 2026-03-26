@@ -27,5 +27,6 @@ public class CaptchaResponse {
     /**
      * 过期时间（秒）
      */
+    @Builder.Default
     private Long expiresIn = 300L; // 5分钟
 }

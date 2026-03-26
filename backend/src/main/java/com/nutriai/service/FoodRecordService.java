@@ -71,14 +71,20 @@ public class FoodRecordService {
         Pageable pageable = PageRequest.of(page, size);
         Page<FoodRecord> records;
         
-        if (startDate != null && endDate != null) {
-            // 按时间范围查询
+        if (startDate != null && endDate != null && mealType != null) {
+            // 按时间范围 + 餐次类型组合查询
+            LocalDateTime startTime = startDate.atStartOfDay();
+            LocalDateTime endTime = endDate.atTime(LocalTime.MAX);
+            records = foodRecordRepository.findByUserIdAndMealTypeAndRecordTimeBetweenOrderByRecordTimeDesc(
+                    userId, mealType, startTime, endTime, pageable);
+        } else if (startDate != null && endDate != null) {
+            // 仅按时间范围查询
             LocalDateTime startTime = startDate.atStartOfDay();
             LocalDateTime endTime = endDate.atTime(LocalTime.MAX);
             records = foodRecordRepository.findByUserIdAndRecordTimeBetweenOrderByRecordTimeDesc(
                     userId, startTime, endTime, pageable);
         } else if (mealType != null) {
-            // 按餐次类型查询
+            // 仅按餐次类型查询
             records = foodRecordRepository.findByUserIdAndMealTypeOrderByRecordTimeDesc(
                     userId, mealType, pageable);
         } else {

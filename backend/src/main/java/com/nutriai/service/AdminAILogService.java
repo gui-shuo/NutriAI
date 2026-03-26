@@ -9,8 +9,8 @@ import com.nutriai.entity.User;
 import com.nutriai.repository.AIChatHistoryRepository;
 import com.nutriai.repository.AIChatLogRepository;
 import com.nutriai.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -28,13 +28,23 @@ import java.util.Optional;
  */
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class AdminAILogService {
     
     private final AIChatLogRepository chatLogRepository;
     private final AIChatHistoryRepository chatHistoryRepository;
     private final UserRepository userRepository;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
+    
+    @Autowired
+    public AdminAILogService(AIChatLogRepository chatLogRepository,
+                             AIChatHistoryRepository chatHistoryRepository,
+                             UserRepository userRepository,
+                             ObjectMapper objectMapper) {
+        this.chatLogRepository = chatLogRepository;
+        this.chatHistoryRepository = chatHistoryRepository;
+        this.userRepository = userRepository;
+        this.objectMapper = objectMapper;
+    }
     
     /**
      * 分页查询AI日志（从ai_chat_history表查询）
@@ -80,6 +90,11 @@ public class AdminAILogService {
     private List<AIChatLogDTO> convertHistoryToLogDTOs(AIChatHistory history) {
         List<AIChatLogDTO> dtos = new ArrayList<>();
         
+        if (history.getMessages() == null || history.getMessages().isBlank()) {
+            log.warn("会话历史消息为空: historyId={}", history.getId());
+            return dtos;
+        }
+        
         try {
             // 解析messages JSON
             JsonNode messagesNode = objectMapper.readTree(history.getMessages());
@@ -95,8 +110,12 @@ public class AdminAILogService {
             if (messagesNode.isArray()) {
                 String lastUserMessage = null;
                 for (JsonNode messageNode : messagesNode) {
-                    String role = messageNode.get("role").asText();
-                    String content = messageNode.get("content").asText();
+                    JsonNode roleNode = messageNode.get("role");
+                    JsonNode contentNode = messageNode.get("content");
+                    if (roleNode == null || contentNode == null) continue;
+                    
+                    String role = roleNode.asText();
+                    String content = contentNode.asText();
                     
                     if ("user".equals(role)) {
                         lastUserMessage = content;
