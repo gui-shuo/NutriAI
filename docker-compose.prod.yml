@@ -6,9 +6,11 @@ services:
   redis:
     image: redis:6.0-alpine
     restart: always
-    command: redis-server --appendonly yes --requirepass "${REDIS_PASSWORD}"
+    command: redis-server --appendonly yes --requirepass "${REDIS_PASSWORD}" --maxmemory 64mb --maxmemory-policy allkeys-lru
     volumes:
       - redis-data:/data
+    mem_limit: 128m
+    memswap_limit: 128m
     healthcheck:
       test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
       interval: 10s
@@ -56,7 +58,9 @@ services:
       SMS_SIGN_NAME: ${SMS_SIGN_NAME:-NutriAI}
       SMS_TEMPLATE_ID: ${SMS_TEMPLATE_ID}
       # 不再运行本地MySQL，可以给后端更多内存
-      JAVA_OPTS: -Xms384m -Xmx512m -XX:+UseG1GC -XX:MaxGCPauseMillis=200
+      JAVA_OPTS: -Xms256m -Xmx384m -XX:+UseG1GC -XX:MaxGCPauseMillis=200
+    mem_limit: 512m
+    memswap_limit: 512m
     ports:
       - "8080:8080"
     networks:
@@ -67,6 +71,8 @@ services:
     restart: always
     depends_on:
       - backend
+    mem_limit: 64m
+    memswap_limit: 64m
     ports:
       - "3000:80"
     networks:
