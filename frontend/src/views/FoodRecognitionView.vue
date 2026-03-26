@@ -142,7 +142,11 @@
               <div class="nutrition-item">
                 <div class="nutrition-label">碳水</div>
                 <div class="nutrition-value">
-                  {{ food.nutrition.carbohydrate != null ? food.nutrition.carbohydrate.toFixed(1) : '—' }}
+                  {{
+                    food.nutrition.carbohydrate != null
+                      ? food.nutrition.carbohydrate.toFixed(1)
+                      : '—'
+                  }}
                   <span class="unit">g</span>
                 </div>
               </div>

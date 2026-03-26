@@ -122,7 +122,10 @@ const loadImage = file => {
         x: (CANVAS_SIZE - img.width * fitScale) / 2,
         y: (CANVAS_SIZE - img.height * fitScale) / 2
       }
-      cropSize.value = Math.min(200, Math.floor(Math.min(img.width * fitScale, img.height * fitScale)))
+      cropSize.value = Math.min(
+        200,
+        Math.floor(Math.min(img.width * fitScale, img.height * fitScale))
+      )
       nextTick(() => {
         updateCanvas()
       })
@@ -238,7 +241,17 @@ const updatePreview = () => {
     tempCanvas.getContext('2d').putImageData(croppedImageData, 0, 0)
 
     previewCtx.clearRect(0, 0, previewSize, previewSize)
-    previewCtx.drawImage(tempCanvas, 0, 0, cropSize.value, cropSize.value, 0, 0, previewSize, previewSize)
+    previewCtx.drawImage(
+      tempCanvas,
+      0,
+      0,
+      cropSize.value,
+      cropSize.value,
+      0,
+      0,
+      previewSize,
+      previewSize
+    )
   } catch (error) {
     console.error('预览更新失败:', error)
   }
@@ -335,11 +348,7 @@ const handleConfirm = async () => {
     const srcY = (cropY - imagePosition.value.y) / scale.value
     const srcSize = cropSize.value / scale.value
 
-    outCtx.drawImage(
-      imageData.value,
-      srcX, srcY, srcSize, srcSize,
-      0, 0, outputSize, outputSize
-    )
+    outCtx.drawImage(imageData.value, srcX, srcY, srcSize, srcSize, 0, 0, outputSize, outputSize)
 
     // 将canvas转换为blob
     const blob = await new Promise(resolve => {

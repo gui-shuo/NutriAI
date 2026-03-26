@@ -81,7 +81,7 @@ const selectedFile = ref(null)
 const avatarUrl = computed(() => props.modelValue)
 
 // 图片加载错误时，尝试重新加载（移除crossorigin属性）
-const handleImageError = (e) => {
+const handleImageError = e => {
   const img = e.target
   if (img.crossOrigin !== null) {
     img.crossOrigin = null
