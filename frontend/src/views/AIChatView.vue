@@ -267,13 +267,17 @@ const handleSend = async ({ text, file }) => {
     }
 
     // 调用AI聊天API
-    const response = await api.post('/ai/chat', {
-      message: messageText,
-      model: settings.model,
-      temperature: settings.temperature,
-      maxTokens: settings.maxTokens,
-      keepContext: settings.keepContext
-    }, { timeout: 180000 })
+    const response = await api.post(
+      '/ai/chat',
+      {
+        message: messageText,
+        model: settings.model,
+        temperature: settings.temperature,
+        maxTokens: settings.maxTokens,
+        keepContext: settings.keepContext
+      },
+      { timeout: 180000 }
+    )
 
     const data = response.data
     if (data.code === 200) {
@@ -633,7 +637,7 @@ const saveHistoryToDatabase = async () => {
 }
 
 // 提取对话预览
-const extractPreview = (messagesJson) => {
+const extractPreview = messagesJson => {
   try {
     const msgs = typeof messagesJson === 'string' ? JSON.parse(messagesJson) : messagesJson
     if (!Array.isArray(msgs) || msgs.length === 0) return '暂无内容'

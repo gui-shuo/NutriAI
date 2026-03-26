@@ -102,7 +102,14 @@ const handleDrop = event => {
 // 验证并上传文件
 const validateAndUpload = file => {
   // 验证文件类型
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp', 'image/bmp']
+  const allowedTypes = [
+    'image/jpeg',
+    'image/png',
+    'image/jpg',
+    'image/gif',
+    'image/webp',
+    'image/bmp'
+  ]
   if (!allowedTypes.includes(file.type)) {
     message.error('只支持 JPG、PNG、GIF、WebP、BMP 格式的图片')
     return
@@ -123,7 +130,7 @@ const uploadFile = async file => {
   uploading.value = true
   uploadProgress.value = 0
 
-  const onProgress = (percent) => {
+  const onProgress = percent => {
     uploadProgress.value = percent
   }
 

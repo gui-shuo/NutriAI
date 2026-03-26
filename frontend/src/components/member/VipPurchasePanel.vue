@@ -27,7 +27,10 @@
           v-for="plan in plans"
           :key="plan.id"
           class="plan-card"
-          :class="{ 'plan-selected': selectedPlanId === plan.id, 'plan-recommended': plan.badge === '推荐' }"
+          :class="{
+            'plan-selected': selectedPlanId === plan.id,
+            'plan-recommended': plan.badge === '推荐'
+          }"
           @click="selectedPlanId = plan.id"
         >
           <div v-if="plan.badge" class="plan-badge" :class="badgeClass(plan.badge)">
@@ -88,7 +91,7 @@
     >
       <el-skeleton :loading="orderLoading" animated :rows="4">
         <el-empty v-if="!orders.length" description="暂无订单记录" />
-        <el-table v-else :data="orders" style="width:100%">
+        <el-table v-else :data="orders" style="width: 100%">
           <el-table-column label="订单号" prop="orderNo" min-width="160" />
           <el-table-column label="套餐" prop="planName" width="120" />
           <el-table-column label="金额" width="90" align="center">
@@ -130,7 +133,9 @@
           <el-descriptions-item label="套餐">{{ pendingOrder.planName }}</el-descriptions-item>
           <el-descriptions-item label="金额">¥{{ pendingOrder.amount }}</el-descriptions-item>
           <el-descriptions-item label="订单号">{{ pendingOrder.orderNo }}</el-descriptions-item>
-          <el-descriptions-item label="有效期至">{{ formatDate(pendingOrder.expireTime) }}</el-descriptions-item>
+          <el-descriptions-item label="有效期至">{{
+            formatDate(pendingOrder.expireTime)
+          }}</el-descriptions-item>
         </el-descriptions>
 
         <div class="pay-countdown" v-if="countdown > 0">
@@ -139,21 +144,11 @@
         <div class="pay-expired" v-else>订单已超时，请重新下单</div>
 
         <div class="pay-buttons">
-          <el-button
-            type="primary"
-            size="large"
-            :disabled="countdown <= 0"
-            @click="openAlipayPage"
-          >
+          <el-button type="primary" size="large" :disabled="countdown <= 0" @click="openAlipayPage">
             <el-icon><CreditCard /></el-icon>
             跳转支付宝完成支付
           </el-button>
-          <el-button
-            type="success"
-            size="large"
-            :loading="queryLoading"
-            @click="manualQueryStatus"
-          >
+          <el-button type="success" size="large" :loading="queryLoading" @click="manualQueryStatus">
             <el-icon><Refresh /></el-icon>
             我已完成支付
           </el-button>
@@ -166,12 +161,13 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { CircleCheck, Present, CreditCard, Lock, Refresh } from '@element-plus/icons-vue'
 import {
-  CircleCheck, Present, CreditCard, Lock, Refresh
-} from '@element-plus/icons-vue'
-import {
-  getVipPlans, getVipStatus, createVipOrder,
-  queryVipOrderStatus, getVipOrderHistory
+  getVipPlans,
+  getVipStatus,
+  createVipOrder,
+  queryVipOrderStatus,
+  getVipOrderHistory
 } from '@/services/member'
 import message from '@/utils/message'
 
@@ -185,7 +181,7 @@ const vipStatus = ref(null)
 const payLoading = ref(false)
 const payDialogVisible = ref(false)
 const pendingOrder = ref(null)
-const pendingPayForm = ref('')   // 支付宝 HTML form
+const pendingPayForm = ref('') // 支付宝 HTML form
 
 // 倒计时
 const countdown = ref(0)
@@ -334,7 +330,9 @@ function startPolling() {
       if (res.data.code === 200 && res.data.data.paymentStatus === 'PAID') {
         handlePaySuccess()
       }
-    } catch (_) { /* ignore */ }
+    } catch (_) {
+      /* ignore */
+    }
   }, 5000) // 每5秒轮询
 }
 
@@ -361,21 +359,30 @@ async function showOrderHistory() {
 function formatDate(dt) {
   if (!dt) return '-'
   return new Date(dt).toLocaleString('zh-CN', {
-    year: 'numeric', month: '2-digit', day: '2-digit',
-    hour: '2-digit', minute: '2-digit'
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
   })
 }
 
 function badgeClass(badge) {
-  return {
-    '热门': 'badge-hot',
-    '推荐': 'badge-recommend',
-    '超值': 'badge-value'
-  }[badge] || ''
+  return (
+    {
+      热门: 'badge-hot',
+      推荐: 'badge-recommend',
+      超值: 'badge-value'
+    }[badge] || ''
+  )
 }
 
 function statusTagType(status) {
-  return { PAID: 'success', PENDING: 'warning', EXPIRED: 'info', CANCELLED: 'info', FAILED: 'danger' }[status] || 'info'
+  return (
+    { PAID: 'success', PENDING: 'warning', EXPIRED: 'info', CANCELLED: 'info', FAILED: 'danger' }[
+      status
+    ] || 'info'
+  )
 }
 </script>
 
@@ -453,9 +460,15 @@ function statusTagType(status) {
     font-weight: 600;
     color: #fff;
 
-    &.badge-hot      { background: linear-gradient(135deg, #f56c6c, #e91e63); }
-    &.badge-recommend { background: linear-gradient(135deg, #e6a23c, #f5a623); }
-    &.badge-value    { background: linear-gradient(135deg, #52c41a, #389e0d); }
+    &.badge-hot {
+      background: linear-gradient(135deg, #f56c6c, #e91e63);
+    }
+    &.badge-recommend {
+      background: linear-gradient(135deg, #e6a23c, #f5a623);
+    }
+    &.badge-value {
+      background: linear-gradient(135deg, #52c41a, #389e0d);
+    }
   }
 
   .plan-name {

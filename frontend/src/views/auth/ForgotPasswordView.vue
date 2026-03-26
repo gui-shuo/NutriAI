@@ -44,7 +44,9 @@
             class="submit-button"
             @click="handleSendCode"
           >
-            {{ countdown > 0 ? `重新发送 (${countdown}s)` : sendLoading ? '发送中...' : '发送验证码' }}
+            {{
+              countdown > 0 ? `重新发送 (${countdown}s)` : sendLoading ? '发送中...' : '发送验证码'
+            }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -60,7 +62,8 @@
         @submit.prevent="handleResetPassword"
       >
         <p class="form-tip">
-          验证码已发送至 <strong>{{ maskedEmail }}</strong>，请查收。
+          验证码已发送至 <strong>{{ maskedEmail }}</strong
+          >，请查收。
         </p>
 
         <el-form-item label="验证码" prop="code">
@@ -72,11 +75,7 @@
               maxlength="6"
               class="code-input"
             />
-            <el-button
-              :disabled="countdown > 0"
-              :loading="sendLoading"
-              @click="handleResendCode"
-            >
+            <el-button :disabled="countdown > 0" :loading="sendLoading" @click="handleResendCode">
               {{ countdown > 0 ? `${countdown}s` : '重新发送' }}
             </el-button>
           </div>
@@ -176,9 +175,7 @@ const maskedEmail = computed(() => {
   if (!email) return ''
   const [local, domain] = email.split('@')
   if (!domain) return email
-  const masked = local.length > 2
-    ? local[0] + '***' + local[local.length - 1]
-    : local[0] + '***'
+  const masked = local.length > 2 ? local[0] + '***' + local[local.length - 1] : local[0] + '***'
   return masked + '@' + domain
 })
 

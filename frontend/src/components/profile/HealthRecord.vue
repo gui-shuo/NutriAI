@@ -9,7 +9,13 @@
     </div>
 
     <el-skeleton :loading="loading" animated :rows="8">
-      <el-form ref="formRef" :model="formData" :rules="rules" label-width="100px" class="health-form">
+      <el-form
+        ref="formRef"
+        :model="formData"
+        :rules="rules"
+        label-width="100px"
+        class="health-form"
+      >
         <!-- 基础信息 -->
         <h3 class="section-title">基础信息</h3>
         <el-row :gutter="20">
@@ -121,7 +127,12 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="健康目标">
-              <el-select v-model="formData.healthGoals" multiple placeholder="请选择" style="width: 100%">
+              <el-select
+                v-model="formData.healthGoals"
+                multiple
+                placeholder="请选择"
+                style="width: 100%"
+              >
                 <el-option label="减重" value="减重" />
                 <el-option label="增肌" value="增肌" />
                 <el-option label="保持体重" value="保持体重" />
@@ -134,7 +145,12 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="饮食限制">
-              <el-select v-model="formData.dietaryRestrictions" multiple placeholder="请选择" style="width: 100%">
+              <el-select
+                v-model="formData.dietaryRestrictions"
+                multiple
+                placeholder="请选择"
+                style="width: 100%"
+              >
                 <el-option label="素食" value="素食" />
                 <el-option label="纯素" value="纯素" />
                 <el-option label="无麸质" value="无麸质" />
@@ -149,7 +165,14 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="过敏源">
-              <el-select v-model="formData.allergies" multiple filterable allow-create placeholder="选择或输入" style="width: 100%">
+              <el-select
+                v-model="formData.allergies"
+                multiple
+                filterable
+                allow-create
+                placeholder="选择或输入"
+                style="width: 100%"
+              >
                 <el-option label="花生" value="花生" />
                 <el-option label="牛奶" value="牛奶" />
                 <el-option label="鸡蛋" value="鸡蛋" />
@@ -162,7 +185,14 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="健康状况">
-              <el-select v-model="formData.medicalConditions" multiple filterable allow-create placeholder="选择或输入" style="width: 100%">
+              <el-select
+                v-model="formData.medicalConditions"
+                multiple
+                filterable
+                allow-create
+                placeholder="选择或输入"
+                style="width: 100%"
+              >
                 <el-option label="糖尿病" value="糖尿病" />
                 <el-option label="高血压" value="高血压" />
                 <el-option label="高血脂" value="高血脂" />
@@ -183,12 +213,20 @@
                 :step="50"
                 style="width: 100%"
               />
-              <div class="form-hint" v-if="!formData.dailyCalorieTarget">留空则系统根据身体指标自动计算</div>
+              <div class="form-hint" v-if="!formData.dailyCalorieTarget">
+                留空则系统根据身体指标自动计算
+              </div>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="备注">
-              <el-input v-model="formData.notes" type="textarea" :rows="2" maxlength="1000" show-word-limit />
+              <el-input
+                v-model="formData.notes"
+                type="textarea"
+                :rows="2"
+                maxlength="1000"
+                show-word-limit
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -260,7 +298,8 @@
         </div>
         <div class="weight-tip">
           <el-icon><InfoFilled /></el-icon>
-          根据您的身高 {{ formData.height }} cm，理想体重范围为 {{ idealWeight.min }} - {{ idealWeight.max }} kg
+          根据您的身高 {{ formData.height }} cm，理想体重范围为 {{ idealWeight.min }} -
+          {{ idealWeight.max }} kg
         </div>
       </div>
 
@@ -272,7 +311,11 @@
     </div>
 
     <!-- 空状态 -->
-    <el-empty v-if="!bmiResult && !loading" description="请填写身高和体重后保存，系统将自动计算 BMI" :image-size="120" />
+    <el-empty
+      v-if="!bmiResult && !loading"
+      description="请填写身高和体重后保存，系统将自动计算 BMI"
+      :image-size="120"
+    />
   </div>
 </template>
 
@@ -330,17 +373,37 @@ const calculateBMI = () => {
   let status, level, tagType, advice
 
   if (bmi < 18.5) {
-    status = '偏瘦'; level = 'underweight'; tagType = 'info'
-    advice = { title: '体重偏低，需要增加营养', description: '建议增加优质蛋白质和健康脂肪的摄入，配合适当的力量训练，逐步增加体重。' }
+    status = '偏瘦'
+    level = 'underweight'
+    tagType = 'info'
+    advice = {
+      title: '体重偏低，需要增加营养',
+      description: '建议增加优质蛋白质和健康脂肪的摄入，配合适当的力量训练，逐步增加体重。'
+    }
   } else if (bmi < 24) {
-    status = '正常'; level = 'normal'; tagType = 'success'
-    advice = { title: '体重正常，请继续保持', description: '继续保持均衡饮食和适量运动的良好习惯，定期监测体重变化。' }
+    status = '正常'
+    level = 'normal'
+    tagType = 'success'
+    advice = {
+      title: '体重正常，请继续保持',
+      description: '继续保持均衡饮食和适量运动的良好习惯，定期监测体重变化。'
+    }
   } else if (bmi < 28) {
-    status = '超重'; level = 'overweight'; tagType = 'warning'
-    advice = { title: '体重超重，建议减重', description: '建议控制饮食摄入，增加有氧运动，每周至少进行150分钟中等强度运动。' }
+    status = '超重'
+    level = 'overweight'
+    tagType = 'warning'
+    advice = {
+      title: '体重超重，建议减重',
+      description: '建议控制饮食摄入，增加有氧运动，每周至少进行150分钟中等强度运动。'
+    }
   } else {
-    status = '肥胖'; level = 'obese'; tagType = 'danger'
-    advice = { title: '体重肥胖，需要减重', description: '建议咨询专业营养师制定减重计划，结合饮食控制和规律运动，必要时就医检查。' }
+    status = '肥胖'
+    level = 'obese'
+    tagType = 'danger'
+    advice = {
+      title: '体重肥胖，需要减重',
+      description: '建议咨询专业营养师制定减重计划，结合饮食控制和规律运动，必要时就医检查。'
+    }
   }
   bmiResult.value = { value: bmi, status, level, tagType, advice }
 }
@@ -386,7 +449,9 @@ const handleSave = async () => {
     try {
       const valid = await formRef.value.validate()
       if (!valid) return
-    } catch { return }
+    } catch {
+      return
+    }
   }
 
   saving.value = true
@@ -480,23 +545,48 @@ onMounted(() => {
         align-items: center;
         margin-bottom: 24px;
 
-        &.underweight { background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); }
-        &.normal { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
-        &.overweight { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
-        &.obese { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+        &.underweight {
+          background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        }
+        &.normal {
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        &.overweight {
+          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        &.obese {
+          background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
 
         .result-value {
-          .value { font-size: 56px; font-weight: 700; line-height: 1; }
-          .unit { font-size: 18px; margin-left: 8px; opacity: 0.9; }
+          .value {
+            font-size: 56px;
+            font-weight: 700;
+            line-height: 1;
+          }
+          .unit {
+            font-size: 18px;
+            margin-left: 8px;
+            opacity: 0.9;
+          }
         }
 
         .result-status {
-          :deep(.el-tag) { font-size: 18px; padding: 12px 24px; border: none; }
+          :deep(.el-tag) {
+            font-size: 18px;
+            padding: 12px 24px;
+            border: none;
+          }
         }
       }
 
       .bmi-info {
-        h4 { font-size: 16px; font-weight: 600; color: #333; margin: 0 0 16px 0; }
+        h4 {
+          font-size: 16px;
+          font-weight: 600;
+          color: #333;
+          margin: 0 0 16px 0;
+        }
 
         .info-grid {
           display: grid;
@@ -504,7 +594,9 @@ onMounted(() => {
           gap: 12px;
           margin-bottom: 24px;
 
-          @media (max-width: 768px) { grid-template-columns: repeat(2, 1fr); }
+          @media (max-width: 768px) {
+            grid-template-columns: repeat(2, 1fr);
+          }
 
           .info-item {
             background: #f5f7fa;
@@ -520,13 +612,22 @@ onMounted(() => {
               box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
             }
 
-            .info-label { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
-            .info-range { font-size: 13px; opacity: 0.8; }
+            .info-label {
+              font-size: 14px;
+              font-weight: 600;
+              margin-bottom: 8px;
+            }
+            .info-range {
+              font-size: 13px;
+              opacity: 0.8;
+            }
           }
         }
 
         .health-advice {
-          :deep(.el-alert) { border-radius: 12px; }
+          :deep(.el-alert) {
+            border-radius: 12px;
+          }
         }
       }
     }
@@ -535,7 +636,12 @@ onMounted(() => {
   .ideal-weight {
     margin-top: 24px;
 
-    h4 { font-size: 16px; font-weight: 600; color: #333; margin: 0 0 16px 0; }
+    h4 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+      margin: 0 0 16px 0;
+    }
 
     .weight-range {
       display: flex;
@@ -550,11 +656,22 @@ onMounted(() => {
 
       .range-item {
         text-align: center;
-        .range-label { font-size: 14px; opacity: 0.9; margin-bottom: 8px; }
-        .range-value { font-size: 32px; font-weight: 700; }
+        .range-label {
+          font-size: 14px;
+          opacity: 0.9;
+          margin-bottom: 8px;
+        }
+        .range-value {
+          font-size: 32px;
+          font-weight: 700;
+        }
       }
 
-      .range-divider { font-size: 32px; font-weight: 300; opacity: 0.7; }
+      .range-divider {
+        font-size: 32px;
+        font-weight: 300;
+        opacity: 0.7;
+      }
     }
 
     .weight-tip {
@@ -567,7 +684,9 @@ onMounted(() => {
       background: #f5f7fa;
       border-radius: 8px;
 
-      .el-icon { font-size: 16px; }
+      .el-icon {
+        font-size: 16px;
+      }
     }
   }
 
@@ -579,12 +698,19 @@ onMounted(() => {
     padding: 24px;
     color: white;
 
-    h4 { font-size: 16px; margin: 0 0 12px; opacity: 0.9; }
+    h4 {
+      font-size: 16px;
+      margin: 0 0 12px;
+      opacity: 0.9;
+    }
 
     .calorie-value {
       font-size: 48px;
       font-weight: 700;
-      span { font-size: 18px; opacity: 0.8; }
+      span {
+        font-size: 18px;
+        opacity: 0.8;
+      }
     }
   }
 }

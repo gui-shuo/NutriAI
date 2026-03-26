@@ -57,12 +57,7 @@
 
     <!-- 修改手机号对话框 -->
     <el-dialog v-model="showPhoneDialog" title="修改手机号" width="460px" destroy-on-close>
-      <el-form
-        ref="phoneFormRef"
-        :model="phoneForm"
-        :rules="phoneRules"
-        label-width="100px"
-      >
+      <el-form ref="phoneFormRef" :model="phoneForm" :rules="phoneRules" label-width="100px">
         <el-form-item label="新手机号" prop="newPhone">
           <el-input
             v-model="phoneForm.newPhone"

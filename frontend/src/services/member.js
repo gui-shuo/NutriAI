@@ -41,15 +41,13 @@ export const getVipPlans = () => api.get('/vip/plans')
  * @param {number} planId 套餐ID
  * @returns {{ orderNo, payUrl, expireTime, ... }}
  */
-export const createVipOrder = (planId) =>
-  api.post('/vip/orders', { planId, paymentMethod: 'ALIPAY' })
+export const createVipOrder = planId => api.post('/vip/orders', { planId, paymentMethod: 'ALIPAY' })
 
 /**
  * 查询订单支付状态（前端轮询）
  * @param {string} orderNo
  */
-export const queryVipOrderStatus = (orderNo) =>
-  api.get(`/vip/orders/${orderNo}/status`)
+export const queryVipOrderStatus = orderNo => api.get(`/vip/orders/${orderNo}/status`)
 
 /** 获取当前用户 VIP 状态 */
 export const getVipStatus = () => api.get('/vip/status')
@@ -65,19 +63,18 @@ export const getVipOrderHistory = (page = 0, size = 10) =>
 // ========== 常量 ==========
 
 export const MemberLevels = {
-  ROOKIE:   { code: 'ROOKIE',   name: '新手会员', color: '#95a5a6', order: 1 },
-  BRONZE:   { code: 'BRONZE',   name: '青铜会员', color: '#cd7f32', order: 2 },
-  SILVER:   { code: 'SILVER',   name: '白银会员', color: '#c0c0c0', order: 3 },
-  GOLD:     { code: 'GOLD',     name: '黄金会员', color: '#ffd700', order: 4 },
+  ROOKIE: { code: 'ROOKIE', name: '新手会员', color: '#95a5a6', order: 1 },
+  BRONZE: { code: 'BRONZE', name: '青铜会员', color: '#cd7f32', order: 2 },
+  SILVER: { code: 'SILVER', name: '白银会员', color: '#c0c0c0', order: 3 },
+  GOLD: { code: 'GOLD', name: '黄金会员', color: '#ffd700', order: 4 },
   PLATINUM: { code: 'PLATINUM', name: '铂金会员', color: '#e5e4e2', order: 5 }
 }
 
 export const GrowthTypes = {
-  SIGN_IN:       { name: '每日签到',   color: '#67c23a' },
-  FOOD_RECORD:   { name: '记录饮食',   color: '#409eff' },
-  AI_CHAT:       { name: 'AI咨询',     color: '#e6a23c' },
-  INVITATION:    { name: '邀请好友',   color: '#f56c6c' },
-  LEVEL_UP:      { name: '等级提升',   color: '#909399' },
-  SYSTEM_REWARD: { name: '系统奖励',   color: '#ff69b4' }
+  SIGN_IN: { name: '每日签到', color: '#67c23a' },
+  FOOD_RECORD: { name: '记录饮食', color: '#409eff' },
+  AI_CHAT: { name: 'AI咨询', color: '#e6a23c' },
+  INVITATION: { name: '邀请好友', color: '#f56c6c' },
+  LEVEL_UP: { name: '等级提升', color: '#909399' },
+  SYSTEM_REWARD: { name: '系统奖励', color: '#ff69b4' }
 }
-

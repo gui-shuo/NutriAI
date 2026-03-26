@@ -89,7 +89,10 @@
             <el-tag
               v-for="food in quickFoods"
               :key="food"
-              :style="{ cursor: isRecognizing ? 'not-allowed' : 'pointer', opacity: isRecognizing ? 0.5 : 1 }"
+              :style="{
+                cursor: isRecognizing ? 'not-allowed' : 'pointer',
+                opacity: isRecognizing ? 0.5 : 1
+              }"
               effect="plain"
               @click="quickRecognize(food)"
             >
@@ -293,7 +296,13 @@ import {
 import api from '@/services/api'
 
 // ─── 常量 ────────────────────────────────────────────────────────
-const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/bmp'])
+const ALLOWED_IMAGE_TYPES = new Set([
+  'image/jpeg',
+  'image/png',
+  'image/gif',
+  'image/webp',
+  'image/bmp'
+])
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024 // 5MB
 
 const router = useRouter()
@@ -308,7 +317,18 @@ const selectedFile = ref(null)
 const expandedHistory = reactive({})
 const uploadRef = ref(null)
 
-const quickFoods = ['苹果', '香蕉', '鸡胸肉', '鸡蛋', '牛奶', '燕麦', '西兰花', '三文鱼', '糙米', '红薯']
+const quickFoods = [
+  '苹果',
+  '香蕉',
+  '鸡胸肉',
+  '鸡蛋',
+  '牛奶',
+  '燕麦',
+  '西兰花',
+  '三文鱼',
+  '糙米',
+  '红薯'
+]
 
 // ─── 图片处理 ────────────────────────────────────────────────────
 
@@ -490,8 +510,11 @@ const formatTime = time => {
   if (!time) return ''
   try {
     return new Date(time).toLocaleString('zh-CN', {
-      year: 'numeric', month: '2-digit', day: '2-digit',
-      hour: '2-digit', minute: '2-digit'
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
     })
   } catch {
     return String(time)
@@ -502,8 +525,12 @@ const formatFullTime = time => {
   if (!time) return ''
   try {
     return new Date(time).toLocaleString('zh-CN', {
-      year: 'numeric', month: '2-digit', day: '2-digit',
-      hour: '2-digit', minute: '2-digit', second: '2-digit'
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
     })
   } catch {
     return String(time)

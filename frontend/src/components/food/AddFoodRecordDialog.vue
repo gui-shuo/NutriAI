@@ -223,7 +223,7 @@ watch(visible, val => {
 /**
  * 将识别结果自动填充到表单的营养信息字段
  */
-const applyRecognitionResult = (result) => {
+const applyRecognitionResult = result => {
   if (!result || !result.foods || result.foods.length === 0) return
 
   const food = result.foods[0]
@@ -243,7 +243,9 @@ const applyRecognitionResult = (result) => {
   if (nutrition) {
     formData.calories = nutrition.energy ? Math.round(nutrition.energy * 100) / 100 : null
     formData.protein = nutrition.protein ? Math.round(nutrition.protein * 100) / 100 : null
-    formData.carbohydrates = nutrition.carbohydrate ? Math.round(nutrition.carbohydrate * 100) / 100 : null
+    formData.carbohydrates = nutrition.carbohydrate
+      ? Math.round(nutrition.carbohydrate * 100) / 100
+      : null
     formData.fat = nutrition.fat ? Math.round(nutrition.fat * 100) / 100 : null
     formData.fiber = nutrition.fiber ? Math.round(nutrition.fiber * 100) / 100 : null
     recognitionSource.value = nutrition.source || 'estimated'
@@ -282,7 +284,7 @@ const handleRecognizeByName = async () => {
 /**
  * 处理照片上传后的识别结果
  */
-const handlePhotoRecognized = (result) => {
+const handlePhotoRecognized = result => {
   if (result && result.foods && result.foods.length > 0) {
     applyRecognitionResult(result)
   }

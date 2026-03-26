@@ -241,7 +241,9 @@
     <!-- 历史记录抽屉 -->
     <el-drawer v-model="historyDrawerVisible" title="历史记录" direction="rtl" size="400px">
       <template #header>
-        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%">
+        <div
+          style="display: flex; align-items: center; justify-content: space-between; width: 100%"
+        >
           <span style="font-size: 16px; font-weight: 600">历史记录</span>
           <el-button
             :type="showFavoritesOnly ? 'warning' : 'default'"
@@ -254,7 +256,10 @@
         </div>
       </template>
       <div v-loading="historyLoading">
-        <el-empty v-if="!historyLoading && historyList.length === 0" :description="showFavoritesOnly ? '暂无收藏记录' : '暂无历史记录'" />
+        <el-empty
+          v-if="!historyLoading && historyList.length === 0"
+          :description="showFavoritesOnly ? '暂无收藏记录' : '暂无历史记录'"
+        />
 
         <el-timeline v-else>
           <el-timeline-item
@@ -267,7 +272,9 @@
               <div class="history-item-content" @click="loadHistoryDetail(item.planId)">
                 <h4>
                   {{ item.title }}
-                  <el-icon v-if="item.isFavorite" style="color: #e6a23c; margin-left: 4px"><StarFilled /></el-icon>
+                  <el-icon v-if="item.isFavorite" style="color: #e6a23c; margin-left: 4px"
+                    ><StarFilled
+                  /></el-icon>
                 </h4>
                 <p>
                   <el-tag size="small" type="primary"> {{ item.days }}天 </el-tag>
@@ -602,10 +609,9 @@ const handleExportPdf = async () => {
   isExportingPdf.value = true
 
   try {
-    const response = await api.get(
-      `/diet-plan/export-pdf/${generatedPlan.value.planId}`,
-      { responseType: 'blob' }
-    )
+    const response = await api.get(`/diet-plan/export-pdf/${generatedPlan.value.planId}`, {
+      responseType: 'blob'
+    })
 
     // 检查返回的是否为JSON错误(非PDF)
     if (response.data.type && response.data.type.includes('application/json')) {

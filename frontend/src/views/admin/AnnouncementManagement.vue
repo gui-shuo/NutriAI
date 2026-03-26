@@ -104,7 +104,12 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
-import { getAllAnnouncements, createAnnouncement, updateAnnouncement, deleteAnnouncement } from '@/services/admin'
+import {
+  getAllAnnouncements,
+  createAnnouncement,
+  updateAnnouncement,
+  deleteAnnouncement
+} from '@/services/admin'
 
 const loading = ref(false)
 const announcementList = ref([])

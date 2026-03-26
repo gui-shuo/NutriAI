@@ -77,7 +77,7 @@ const timeRange = ref('30')
 const growthData = ref([])
 
 /** 将 ISO datetime 转为 YYYY-MM-DD 字符串（稳定排序key） */
-const toDateKey = (isoStr) => {
+const toDateKey = isoStr => {
   const d = new Date(isoStr)
   const y = d.getFullYear()
   const m = String(d.getMonth() + 1).padStart(2, '0')
@@ -86,7 +86,7 @@ const toDateKey = (isoStr) => {
 }
 
 /** 将 YYYY-MM-DD 转为展示标签 "M月D日" */
-const formatLabel = (dateKey) => {
+const formatLabel = dateKey => {
   const [, m, d] = dateKey.split('-')
   return `${parseInt(m)}月${parseInt(d)}日`
 }
@@ -155,34 +155,48 @@ const chartOption = computed(() => ({
     axisLabel: { color: '#6b7280', fontSize: 12 },
     splitLine: { lineStyle: { color: '#f3f4f6', type: 'dashed' } }
   },
-  series: [{
-    name: '成长值',
-    type: 'line',
-    smooth: true,
-    symbol: 'circle',
-    symbolSize: 6,
-    data: chartData.value.values,
-    lineStyle: {
-      width: 3,
-      color: { type: 'linear', x: 0, y: 0, x2: 1, y2: 0,
-        colorStops: [{ offset: 0, color: '#667eea' }, { offset: 1, color: '#764ba2' }] }
-    },
-    itemStyle: { color: '#667eea', borderWidth: 2, borderColor: '#fff' },
-    areaStyle: {
-      color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
-        colorStops: [
-          { offset: 0, color: 'rgba(102,126,234,0.3)' },
-          { offset: 1, color: 'rgba(118,75,162,0.05)' }
-        ]
+  series: [
+    {
+      name: '成长值',
+      type: 'line',
+      smooth: true,
+      symbol: 'circle',
+      symbolSize: 6,
+      data: chartData.value.values,
+      lineStyle: {
+        width: 3,
+        color: {
+          type: 'linear',
+          x: 0,
+          y: 0,
+          x2: 1,
+          y2: 0,
+          colorStops: [
+            { offset: 0, color: '#667eea' },
+            { offset: 1, color: '#764ba2' }
+          ]
+        }
+      },
+      itemStyle: { color: '#667eea', borderWidth: 2, borderColor: '#fff' },
+      areaStyle: {
+        color: {
+          type: 'linear',
+          x: 0,
+          y: 0,
+          x2: 0,
+          y2: 1,
+          colorStops: [
+            { offset: 0, color: 'rgba(102,126,234,0.3)' },
+            { offset: 1, color: 'rgba(118,75,162,0.05)' }
+          ]
+        }
       }
     }
-  }]
+  ]
 }))
 
 // 统计
-const totalGained = computed(() =>
-  filteredGrowthData.value.reduce((s, r) => s + r.growthValue, 0)
-)
+const totalGained = computed(() => filteredGrowthData.value.reduce((s, r) => s + r.growthValue, 0))
 
 const avgPerDay = computed(() => {
   if (!filteredGrowthData.value.length) return 0

@@ -188,7 +188,13 @@
 import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Check, Close, Plus } from '@element-plus/icons-vue'
-import { getConfigOptions, getAllConfigs, updateConfig, createConfig, deleteConfig } from '@/services/admin'
+import {
+  getConfigOptions,
+  getAllConfigs,
+  updateConfig,
+  createConfig,
+  deleteConfig
+} from '@/services/admin'
 import { useAuthStore } from '@/stores/auth'
 
 const loading = ref(false)

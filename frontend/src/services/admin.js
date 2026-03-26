@@ -16,47 +16,44 @@ export const getAIUsageTrend = (days = 7) =>
 
 // ==================== 用户管理 ====================
 
-export const getUserList = (params) => api.get('/admin/users', { params })
+export const getUserList = params => api.get('/admin/users', { params })
 
-export const getUserDetail = (id) => api.get(`/admin/users/${id}`)
+export const getUserDetail = id => api.get(`/admin/users/${id}`)
 
-export const updateUserStatus = (id, status) =>
-  api.put(`/admin/users/${id}/status`, { status })
+export const updateUserStatus = (id, status) => api.put(`/admin/users/${id}/status`, { status })
 
 export const updateUserMemberLevel = (id, memberLevel) =>
   api.put(`/admin/users/${id}/member-level`, { memberLevel })
 
-export const updateUserRole = (id, role) =>
-  api.put(`/admin/users/${id}/role`, { role })
+export const updateUserRole = (id, role) => api.put(`/admin/users/${id}/role`, { role })
 
 // ==================== AI 日志管理 ====================
 
-export const getAILogList = (params) => api.get('/admin/ai-logs', { params })
+export const getAILogList = params => api.get('/admin/ai-logs', { params })
 
-export const getAILogDetail = (id) => api.get(`/admin/ai-logs/${id}`)
+export const getAILogDetail = id => api.get(`/admin/ai-logs/${id}`)
 
 // ==================== 系统配置 ====================
 
-export const getConfigOptions = (category) =>
+export const getConfigOptions = category =>
   api.get('/admin/config/options', { params: category ? { category } : {} })
 
-export const getAllConfigs = (category) =>
+export const getAllConfigs = category =>
   api.get('/admin/config', { params: category ? { category } : {} })
 
 export const updateConfig = (key, value) =>
   api.put(`/admin/config/${encodeURIComponent(key)}`, { value })
 
-export const createConfig = (dto) => api.post('/admin/config', dto)
+export const createConfig = dto => api.post('/admin/config', dto)
 
-export const deleteConfig = (key) =>
-  api.delete(`/admin/config/${encodeURIComponent(key)}`)
+export const deleteConfig = key => api.delete(`/admin/config/${encodeURIComponent(key)}`)
 
 // ==================== 公告管理 ====================
 
 export const getAllAnnouncements = () => api.get('/admin/announcements')
 
-export const createAnnouncement = (dto) => api.post('/admin/announcements', dto)
+export const createAnnouncement = dto => api.post('/admin/announcements', dto)
 
 export const updateAnnouncement = (id, dto) => api.put(`/admin/announcements/${id}`, dto)
 
-export const deleteAnnouncement = (id) => api.delete(`/admin/announcements/${id}`)
+export const deleteAnnouncement = id => api.delete(`/admin/announcements/${id}`)

@@ -194,7 +194,12 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Search, Download } from '@element-plus/icons-vue'
-import { getUserList, updateUserStatus, updateUserMemberLevel, updateUserRole } from '@/services/admin'
+import {
+  getUserList,
+  updateUserStatus,
+  updateUserMemberLevel,
+  updateUserRole
+} from '@/services/admin'
 
 const loading = ref(false)
 const userList = ref([])

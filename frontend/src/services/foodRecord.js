@@ -71,8 +71,10 @@ export const uploadFoodPhoto = (file, onProgress) => {
       'Content-Type': 'multipart/form-data'
     },
     onUploadProgress: onProgress
-      ? (progressEvent) => {
-          const percent = Math.round((progressEvent.loaded * 100) / (progressEvent.total || progressEvent.loaded))
+      ? progressEvent => {
+          const percent = Math.round(
+            (progressEvent.loaded * 100) / (progressEvent.total || progressEvent.loaded)
+          )
           onProgress(percent)
         }
       : undefined
@@ -95,8 +97,10 @@ export const uploadAndRecognize = (file, onProgress) => {
     },
     timeout: 30000,
     onUploadProgress: onProgress
-      ? (progressEvent) => {
-          const percent = Math.round((progressEvent.loaded * 100) / (progressEvent.total || progressEvent.loaded))
+      ? progressEvent => {
+          const percent = Math.round(
+            (progressEvent.loaded * 100) / (progressEvent.total || progressEvent.loaded)
+          )
           onProgress(percent)
         }
       : undefined
@@ -108,7 +112,7 @@ export const uploadAndRecognize = (file, onProgress) => {
  * @param {string} foodName - 食物名称
  * @returns {Promise}
  */
-export const recognizeByName = (foodName) => {
+export const recognizeByName = foodName => {
   return api.post('/food/recognize-by-name', null, {
     params: { foodName },
     timeout: 15000
