@@ -241,7 +241,7 @@ const handleToggleStatus = async row => {
 // 删除公告
 const handleDelete = async row => {
   try {
-    await ElMessageBox.confirm(`确定要删除公告 "​${row.title}​" 吗？`, '确认删除', {
+    await ElMessageBox.confirm(`确定要删除公告 "${row.title}" 吗？`, '确认删除', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'warning',

@@ -78,7 +78,7 @@ CREATE TABLE `users` (
   `status`            varchar(20)           DEFAULT 'ACTIVE',
   `member_level`      varchar(20)           DEFAULT 'FREE',
   `growth_value`      int                   DEFAULT '0',
-  `member_expire_time` timestamp            DEFAULT NULL,
+  `member_expire_time` timestamp NULL        DEFAULT NULL,
   `last_login_time`   datetime              DEFAULT NULL COMMENT '最后登录时间',
   `last_login_ip`     varchar(50)           DEFAULT NULL COMMENT '最后登录IP',
   `created_at`        datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
