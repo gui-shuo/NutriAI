@@ -48,10 +48,21 @@ export const getVipPlans = () => api.get('/vip/plans')
  * 创建充值订单
  * @param {number} planId 套餐ID
  * @param {string} payType 支付方式：alipay/wxpay/qqpay
- * @returns {{ orderNo, payUrl, expireTime, ... }}
  */
 export const createVipOrder = (planId, payType = 'alipay') =>
   api.post('/vip/orders', { planId, payType })
+
+/**
+ * 模拟支付确认
+ * @param {string} orderNo
+ */
+export const simulateVipPayment = orderNo => api.post(`/vip/orders/${orderNo}/simulate-pay`)
+
+/**
+ * 模拟退款
+ * @param {string} orderNo
+ */
+export const simulateVipRefund = orderNo => api.post(`/vip/orders/${orderNo}/simulate-refund`)
 
 /**
  * 查询订单支付状态（前端轮询）

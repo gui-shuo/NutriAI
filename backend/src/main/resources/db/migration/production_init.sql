@@ -24,6 +24,10 @@
 -- 第一步：清除旧表（按外键依赖逆序）
 -- ====================================================================
 DROP VIEW  IF EXISTS `v_food_category_stats`;
+DROP TABLE IF EXISTS `product_orders`;
+DROP TABLE IF EXISTS `consultation_orders`;
+DROP TABLE IF EXISTS `nutrition_products`;
+DROP TABLE IF EXISTS `nutritionists`;
 DROP TABLE IF EXISTS `growth_records`;
 DROP TABLE IF EXISTS `invitations`;
 DROP TABLE IF EXISTS `members`;
@@ -817,6 +821,124 @@ CREATE TABLE `system_configs` (
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='系统配置表（旧版）';
 
 -- ------------------------------------------------------------------
+-- 营养师表
+-- ------------------------------------------------------------------
+CREATE TABLE `nutritionists` (
+  `id`                 bigint       NOT NULL AUTO_INCREMENT,
+  `name`               varchar(50)  NOT NULL COMMENT '营养师姓名',
+  `avatar`             varchar(500)          DEFAULT NULL COMMENT '头像URL',
+  `title`              varchar(50)  NOT NULL COMMENT '职称',
+  `specialties`        json                  DEFAULT NULL COMMENT '擅长领域',
+  `introduction`       text                  DEFAULT NULL COMMENT '个人简介',
+  `experience_years`   int          NOT NULL DEFAULT 0 COMMENT '从业年限',
+  `consultation_fee`   decimal(10,2) NOT NULL COMMENT '咨询费用',
+  `rating`             decimal(3,1)          DEFAULT '5.0' COMMENT '用户评分',
+  `consultation_count` int                   DEFAULT 0 COMMENT '咨询次数',
+  `status`             varchar(20)  NOT NULL DEFAULT 'ONLINE' COMMENT '状态: ONLINE/OFFLINE/BUSY',
+  `certificates`       json                  DEFAULT NULL COMMENT '资格证书',
+  `working_hours`      varchar(200)          DEFAULT NULL COMMENT '工作时间',
+  `is_active`          tinyint(1)   NOT NULL DEFAULT 1 COMMENT '是否启用',
+  `sort_order`         int                   DEFAULT 0,
+  `created_at`         datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`         datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_nutritionist_status` (`status`),
+  KEY `idx_nutritionist_rating` (`rating`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='营养师表';
+
+-- ------------------------------------------------------------------
+-- 咨询订单表
+-- ------------------------------------------------------------------
+CREATE TABLE `consultation_orders` (
+  `id`                bigint       NOT NULL AUTO_INCREMENT,
+  `order_no`          varchar(32)  NOT NULL COMMENT '订单号',
+  `user_id`           bigint       NOT NULL COMMENT '用户ID',
+  `nutritionist_id`   bigint       NOT NULL COMMENT '营养师ID',
+  `nutritionist_name` varchar(50)  NOT NULL COMMENT '营养师姓名',
+  `amount`            decimal(10,2) NOT NULL COMMENT '金额',
+  `payment_method`    varchar(20)  NOT NULL DEFAULT 'SIMULATE' COMMENT '支付方式',
+  `payment_status`    varchar(20)  NOT NULL DEFAULT 'PENDING' COMMENT '支付状态',
+  `status`            varchar(20)  NOT NULL DEFAULT 'WAITING' COMMENT '咨询状态',
+  `consultation_type` varchar(20)  NOT NULL DEFAULT 'TEXT' COMMENT '咨询类型',
+  `description`       text                  DEFAULT NULL COMMENT '咨询描述',
+  `messages`          json                  DEFAULT NULL COMMENT '聊天记录',
+  `summary`           text                  DEFAULT NULL COMMENT '咨询总结',
+  `user_rating`       int                   DEFAULT NULL COMMENT '用户评分',
+  `user_review`       varchar(500)          DEFAULT NULL COMMENT '用户评价',
+  `expire_time`       datetime              DEFAULT NULL COMMENT '过期时间',
+  `paid_at`           datetime              DEFAULT NULL COMMENT '支付时间',
+  `started_at`        datetime              DEFAULT NULL COMMENT '开始时间',
+  `completed_at`      datetime              DEFAULT NULL COMMENT '完成时间',
+  `created_at`        datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`        datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_consult_order_no` (`order_no`),
+  KEY `idx_consult_user_id` (`user_id`),
+  KEY `idx_consult_nutritionist_id` (`nutritionist_id`),
+  KEY `idx_consult_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='咨询订单表';
+
+-- ------------------------------------------------------------------
+-- 营养产品表
+-- ------------------------------------------------------------------
+CREATE TABLE `nutrition_products` (
+  `id`              bigint        NOT NULL AUTO_INCREMENT,
+  `name`            varchar(200)  NOT NULL COMMENT '产品名称',
+  `image_url`       varchar(500)           DEFAULT NULL COMMENT '主图URL',
+  `image_urls`      json                   DEFAULT NULL COMMENT '图片列表',
+  `category`        varchar(50)   NOT NULL COMMENT '分类',
+  `brand`           varchar(100)           DEFAULT NULL COMMENT '品牌',
+  `brief`           varchar(500)           DEFAULT NULL COMMENT '简介',
+  `description`     text                   DEFAULT NULL COMMENT '详细描述',
+  `original_price`  decimal(10,2) NOT NULL COMMENT '原价',
+  `sale_price`      decimal(10,2) NOT NULL COMMENT '售价',
+  `stock`           int           NOT NULL DEFAULT 0 COMMENT '库存',
+  `sales_count`     int                    DEFAULT 0 COMMENT '销量',
+  `rating`          decimal(3,1)           DEFAULT '5.0' COMMENT '评分',
+  `review_count`    int                    DEFAULT 0 COMMENT '评价数',
+  `tags`            json                   DEFAULT NULL COMMENT '标签',
+  `specifications`  json                   DEFAULT NULL COMMENT '规格参数',
+  `status`          varchar(20)   NOT NULL DEFAULT 'ACTIVE' COMMENT '状态',
+  `is_recommended`  tinyint(1)             DEFAULT 0 COMMENT '是否推荐',
+  `sort_order`      int                    DEFAULT 0,
+  `created_at`      datetime      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`      datetime      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_product_category` (`category`),
+  KEY `idx_product_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='营养产品表';
+
+-- ------------------------------------------------------------------
+-- 产品订单表
+-- ------------------------------------------------------------------
+CREATE TABLE `product_orders` (
+  `id`               bigint        NOT NULL AUTO_INCREMENT,
+  `order_no`         varchar(32)   NOT NULL COMMENT '订单号',
+  `user_id`          bigint        NOT NULL COMMENT '用户ID',
+  `items`            json                   DEFAULT NULL COMMENT '商品列表',
+  `total_quantity`   int           NOT NULL COMMENT '总数量',
+  `total_amount`     decimal(10,2) NOT NULL COMMENT '总金额',
+  `payment_method`   varchar(20)   NOT NULL DEFAULT 'SIMULATE' COMMENT '支付方式',
+  `payment_status`   varchar(20)   NOT NULL DEFAULT 'PENDING' COMMENT '支付状态',
+  `order_status`     varchar(20)   NOT NULL DEFAULT 'PENDING_PAYMENT' COMMENT '订单状态',
+  `receiver_name`    varchar(50)            DEFAULT NULL COMMENT '收货人',
+  `receiver_phone`   varchar(20)            DEFAULT NULL COMMENT '联系电话',
+  `receiver_address` varchar(500)           DEFAULT NULL COMMENT '收货地址',
+  `tracking_no`      varchar(50)            DEFAULT NULL COMMENT '快递单号',
+  `remark`           varchar(500)           DEFAULT NULL COMMENT '备注',
+  `expire_time`      datetime               DEFAULT NULL COMMENT '过期时间',
+  `paid_at`          datetime               DEFAULT NULL COMMENT '支付时间',
+  `shipped_at`       datetime               DEFAULT NULL COMMENT '发货时间',
+  `completed_at`     datetime               DEFAULT NULL COMMENT '完成时间',
+  `created_at`       datetime      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`       datetime      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_prod_order_no` (`order_no`),
+  KEY `idx_prod_order_user_id` (`user_id`),
+  KEY `idx_prod_order_status` (`order_status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='产品订单表';
+
+-- ------------------------------------------------------------------
 -- Flyway 迁移历史记录表
 -- ------------------------------------------------------------------
 CREATE TABLE `flyway_schema_history` (
@@ -1092,6 +1214,41 @@ VALUES
   (1,'欢迎使用NutriAI健康饮食规划助手',
    '感谢您使用 NutriAI！我们基于AI技术提供个性化健康饮食规划服务。如有任何问题，请随时联系我们的客服团队。',
    'info',1,1,NOW(),NULL,1,NOW(),NOW());
+UNLOCK TABLES;
+
+-- ------------------------------------------------------------------
+-- 营养师种子数据
+-- ------------------------------------------------------------------
+LOCK TABLES `nutritionists` WRITE;
+INSERT INTO `nutritionists` (`name`,`avatar`,`title`,`specialties`,`introduction`,`experience_years`,`consultation_fee`,`rating`,`consultation_count`,`status`,`certificates`,`working_hours`,`is_active`,`sort_order`,`created_at`,`updated_at`) VALUES
+('张营养','https://api.dicebear.com/7.x/avataaars/svg?seed=zhang','高级营养师','["体重管理","运动营养","慢病营养"]','毕业于北京大学公共卫生学院营养与食品卫生学专业，拥有15年临床营养工作经验，帮助数千名客户实现健康管理目标。',15,128.00,4.9,326,'ONLINE','{"国家高级营养师":"2010年","中国营养学会注册营养师":"2012年"}','周一至周五 9:00-18:00',1,1,NOW(),NOW()),
+('李医师','https://api.dicebear.com/7.x/avataaars/svg?seed=li','注册营养师','["孕期营养","儿童营养","产后恢复"]','擅长孕产期及婴幼儿营养指导，曾在三甲医院临床营养科工作10年，对母婴营养有深入研究。',10,98.00,4.8,215,'ONLINE','{"注册营养师":"2014年","母婴营养师":"2015年"}','周一至周六 8:30-17:30',1,2,NOW(),NOW()),
+('王教授','https://api.dicebear.com/7.x/avataaars/svg?seed=wang','营养学教授','["糖尿病饮食","高血压饮食","肾病饮食","老年营养"]','某医科大学营养学教授，长期从事慢性病营养干预研究，发表学术论文50余篇。',25,198.00,5.0,189,'ONLINE','{"教授资格":"2005年","主任医师":"2008年"}','周二、周四 14:00-18:00',1,3,NOW(),NOW()),
+('赵健康','https://api.dicebear.com/7.x/avataaars/svg?seed=zhao','运动营养师','["健身增肌","减脂塑形","运动恢复","赛前备赛"]','前国家队运动营养顾问，擅长为运动员和健身爱好者制定个性化饮食与补剂方案。',12,158.00,4.7,278,'BUSY','{"运动营养师":"2013年","国家体育总局认证":"2015年"}','每日 10:00-20:00',1,4,NOW(),NOW()),
+('陈博士','https://api.dicebear.com/7.x/avataaars/svg?seed=chen','食品科学博士','["食品安全","功能食品","营养素补充","抗衰老营养"]','食品科学博士，在功能食品研发与营养素精准补充领域拥有丰富经验。',8,118.00,4.6,142,'ONLINE','{"食品科学博士":"2016年","注册营养师":"2017年"}','周一至周五 9:00-17:00',1,5,NOW(),NOW()),
+('刘中医','https://api.dicebear.com/7.x/avataaars/svg?seed=liu','中医营养师','["中医食疗","体质调理","季节养生","药膳调配"]','中医世家，结合传统中医食疗理论与现代营养学，为客户提供个性化调理方案。',20,168.00,4.8,203,'OFFLINE','{"中医执业医师":"2004年","高级营养师":"2010年"}','周一、三、五 9:00-16:00',1,6,NOW(),NOW());
+UNLOCK TABLES;
+
+-- ------------------------------------------------------------------
+-- 营养产品种子数据
+-- ------------------------------------------------------------------
+LOCK TABLES `nutrition_products` WRITE;
+INSERT INTO `nutrition_products` (`name`,`image_url`,`category`,`brand`,`brief`,`description`,`original_price`,`sale_price`,`stock`,`sales_count`,`rating`,`review_count`,`tags`,`specifications`,`status`,`is_recommended`,`sort_order`,`created_at`,`updated_at`) VALUES
+('乳清蛋白粉（巧克力味）',NULL,'PROTEIN','OptNutra','高纯度乳清蛋白，每份含25g蛋白质，促进肌肉恢复与增长','采用新西兰进口乳清原料，低脂低糖配方。每份(33g)含25g蛋白质、1.5g脂肪、3g碳水化合物。适合健身人群日常补充。',298.00,238.00,500,1268,4.8,356,'["高蛋白","低脂","健身必备"]','{"净含量":"1000g","口味":"巧克力","蛋白质含量":"75%","产地":"新西兰","保质期":"24个月"}','ACTIVE',1,1,NOW(),NOW()),
+('复合维生素B族',NULL,'VITAMIN','VitaPlus','B1+B2+B6+B12复合配方，改善疲劳、促进代谢','含8种B族维生素，科学配比，有效改善亚健康状态。每日1片，饭后服用。','128.00',89.00,800,856,4.7,198,'["B族维生素","抗疲劳","上班族"]','{"规格":"60片/瓶","每片含量":"见瓶身","适用人群":"成人","保质期":"36个月"}','ACTIVE',1,2,NOW(),NOW()),
+('深海鱼油软胶囊',NULL,'SUPPLEMENT','OmegaMax','富含EPA+DHA，维护心脑血管健康','采用深海野生鱼类提取，每粒含EPA 180mg + DHA 120mg。无重金属残留，通过第三方检测。',258.00,198.00,600,732,4.9,267,'["鱼油","DHA","心脑血管","中老年"]','{"规格":"100粒/瓶","EPA含量":"180mg/粒","DHA含量":"120mg/粒","保质期":"24个月"}','ACTIVE',1,3,NOW(),NOW()),
+('有机藜麦（三色混合）',NULL,'ORGANIC','GreenField','秘鲁进口有机藜麦，完全蛋白质，高膳食纤维','精选秘鲁高原有机藜麦，含白、红、黑三色。富含全部9种必需氨基酸，膳食纤维含量为大米的15倍。',88.00,68.00,300,445,4.6,89,'["有机","高蛋白","杂粮","减脂"]','{"净含量":"500g","产地":"秘鲁","有机认证":"USDA有机","烹饪方式":"煮/蒸15-20分钟"}','ACTIVE',0,4,NOW(),NOW()),
+('益生菌粉（成人款）',NULL,'HEALTH_FOOD','BioFlora','100亿CFU活性益生菌，调节肠道菌群平衡','含6种优质菌株，每袋含100亿CFU活菌。冻干技术保活，常温保存。',168.00,128.00,400,523,4.7,156,'["益生菌","肠道健康","免疫力"]','{"规格":"30袋/盒","活菌数":"100亿CFU/袋","菌株":"6种","保质期":"18个月"}','ACTIVE',1,5,NOW(),NOW()),
+('维生素C咀嚼片',NULL,'VITAMIN','VitaPlus','天然针叶樱桃提取，每片含100mg维生素C','采用天然针叶樱桃提取维生素C，口感酸甜，方便携带。提升免疫力，促进胶原蛋白合成。',68.00,49.00,1000,1532,4.5,423,'["维生素C","免疫力","天然提取"]','{"规格":"100片/瓶","含量":"100mg/片","口味":"酸甜","保质期":"24个月"}','ACTIVE',0,6,NOW(),NOW()),
+('胶原蛋白肽粉',NULL,'SUPPLEMENT','BeautyAge','小分子胶原蛋白肽，改善皮肤弹性与光泽','日本进口鱼胶原蛋白肽，分子量＜3000道尔顿，吸收率高。每袋5g纯胶原蛋白肽。',298.00,228.00,350,689,4.8,234,'["胶原蛋白","美容","抗衰老","女性"]','{"规格":"30袋/盒","每袋含量":"5g","原料产地":"日本","分子量":"<3000Da"}','ACTIVE',1,7,NOW(),NOW()),
+('螺旋藻片',NULL,'HEALTH_FOOD','GreenField','天然螺旋藻，富含蛋白质、维生素和矿物质','优质淡水螺旋藻，蛋白质含量高达65%，富含β-胡萝卜素和铁。碱性食品，适合日常补充。',158.00,118.00,500,312,4.6,88,'["螺旋藻","碱性食品","排毒"]','{"规格":"300片/瓶","每片含量":"250mg","蛋白质":"≥65%","保质期":"24个月"}','ACTIVE',0,8,NOW(),NOW()),
+('MCT油（中链甘油三酯）',NULL,'SUPPLEMENT','KetoFuel','椰子油提取MCT，生酮饮食伴侣，快速供能','从优质椰子油中提取C8+C10中链甘油三酯，快速转化为酮体提供能量。',188.00,148.00,250,367,4.7,112,'["MCT","生酮","快速供能","健身"]','{"净含量":"500ml","C8含量":"60%","C10含量":"40%","产地":"菲律宾","保质期":"18个月"}','ACTIVE',0,9,NOW(),NOW()),
+('蛋白棒（混合口味6支装）',NULL,'PROTEIN','OptNutra','高蛋白低糖零食棒，健身代餐好选择','每支含20g蛋白质，仅2g糖。巧克力、花生、曲奇三种口味各2支。方便携带，随时补充。',108.00,88.00,600,845,4.5,267,'["蛋白棒","代餐","低糖","便携"]','{"规格":"6支/盒","每支蛋白质":"20g","糖含量":"<2g/支","口味":"混合3种","保质期":"12个月"}','ACTIVE',1,10,NOW(),NOW()),
+('钙镁锌片',NULL,'VITAMIN','VitaPlus','钙+镁+锌+维D科学配比，强健骨骼','科学黄金配比Ca:Mg:Zn，添加维生素D3促进吸收。适合骨骼发育期和中老年人群。',98.00,75.00,700,421,4.6,134,'["补钙","骨骼健康","中老年"]','{"规格":"90片/瓶","钙含量":"400mg/片","保质期":"36个月","适用人群":"12岁以上"}','ACTIVE',0,11,NOW(),NOW()),
+('有机亚麻籽油',NULL,'ORGANIC','GreenField','冷榨有机亚麻籽油，富含α-亚麻酸','低温冷榨工艺，保留亚麻籽营养。α-亚麻酸含量≥55%，植物来源Omega-3。',78.00,62.00,400,234,4.7,67,'["亚麻籽油","Omega-3","有机","素食"]','{"净含量":"250ml","α-亚麻酸":"≥55%","工艺":"低温冷榨","保质期":"12个月"}','ACTIVE',0,12,NOW(),NOW()),
+('运动恢复电解质粉',NULL,'EQUIPMENT','HydroFit','科学电解质配方，快速补充运动流失矿物质','含钠、钾、镁、钙等电解质，低渗透压配方。运动后冲饮，快速补水恢复。',58.00,45.00,800,567,4.4,145,'["电解质","运动恢复","补水"]','{"规格":"20袋/盒","配方":"低渗透压","适用场景":"运动/出汗","保质期":"24个月"}','ACTIVE',0,13,NOW(),NOW()),
+('叶黄素蓝莓护眼片',NULL,'HEALTH_FOOD','VitaPlus','叶黄素+蓝莓提取物，缓解视疲劳','每片含叶黄素10mg、蓝莓提取物50mg。缓解用眼疲劳，保护视力。适合长时间使用电子设备人群。',138.00,108.00,500,389,4.7,134,'["护眼","叶黄素","蓝莓","上班族"]','{"规格":"60片/瓶","叶黄素":"10mg/片","蓝莓提取物":"50mg/片","保质期":"24个月"}','ACTIVE',1,14,NOW(),NOW()),
+('膳食纤维粉',NULL,'HEALTH_FOOD','BioFlora','可溶性膳食纤维，促进肠道蠕动','富含菊粉和低聚果糖，温和促进肠道健康。无味无色，可加入各种饮品食物中。',88.00,68.00,600,298,4.5,87,'["膳食纤维","肠道健康","便秘"]','{"规格":"30袋/盒","膳食纤维含量":"≥90%","热量":"<5kcal/袋","保质期":"24个月"}','ACTIVE',0,15,NOW(),NOW());
 UNLOCK TABLES;
 
 -- ------------------------------------------------------------------

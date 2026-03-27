@@ -35,7 +35,7 @@ public class VipController {
     }
 
     /**
-     * 创建充值订单（返回支付跳转URL）
+     * 创建充值订单
      */
     @PostMapping("/orders")
     public ApiResponse<VipOrderResponse> createOrder(
@@ -44,6 +44,28 @@ public class VipController {
         Long userId = getUserId(httpRequest);
         VipOrderResponse resp = vipService.createOrder(userId, request.getPlanId(), request.getPayType());
         return ApiResponse.success(resp);
+    }
+
+    /**
+     * 模拟支付确认（前端点击"确认支付"后调用）
+     */
+    @PostMapping("/orders/{orderNo}/simulate-pay")
+    public ApiResponse<VipOrderResponse> simulatePayment(
+            @PathVariable String orderNo,
+            HttpServletRequest httpRequest) {
+        Long userId = getUserId(httpRequest);
+        return ApiResponse.success(vipService.simulatePayment(userId, orderNo));
+    }
+
+    /**
+     * 模拟退款
+     */
+    @PostMapping("/orders/{orderNo}/simulate-refund")
+    public ApiResponse<VipOrderResponse> simulateRefund(
+            @PathVariable String orderNo,
+            HttpServletRequest httpRequest) {
+        Long userId = getUserId(httpRequest);
+        return ApiResponse.success(vipService.simulateRefund(userId, orderNo));
     }
 
     /**

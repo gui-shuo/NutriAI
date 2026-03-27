@@ -29,6 +29,8 @@
                   <el-dropdown-item command="diet-plan"> AI饮食计划 </el-dropdown-item>
                   <el-dropdown-item command="food-recognition"> AI食物识别 </el-dropdown-item>
                   <el-dropdown-item command="food-records"> 饮食记录 </el-dropdown-item>
+                  <el-dropdown-item command="consultation"> 营养师咨询 </el-dropdown-item>
+                  <el-dropdown-item command="product-shop"> 营养产品商城 </el-dropdown-item>
                   <el-dropdown-item command="membership"> 会员中心 </el-dropdown-item>
                   <el-dropdown-item v-if="isAdmin" command="admin"> 管理后台 </el-dropdown-item>
                   <el-dropdown-item divided command="logout"> 退出登录 </el-dropdown-item>
@@ -95,6 +97,20 @@
               <h3>饮食记录</h3>
               <p>记录每日饮食，分析营养摄入</p>
             </div>
+            <div class="feature-card" @click="goToFeature('consultation')">
+              <el-icon :size="48" color="#22c55e">
+                <service />
+              </el-icon>
+              <h3>营养师咨询</h3>
+              <p>专业营养师在线咨询，获取个性化指导</p>
+            </div>
+            <div class="feature-card" @click="goToFeature('product-shop')">
+              <el-icon :size="48" color="#22c55e">
+                <goods />
+              </el-icon>
+              <h3>营养产品商城</h3>
+              <p>优质营养产品，健康生活从此开始</p>
+            </div>
             <div class="feature-card" @click="goToFeature('membership')">
               <el-icon :size="48" color="#22c55e">
                 <trophy />
@@ -150,7 +166,9 @@ import {
   Calendar,
   Camera,
   Message,
-  Phone
+  Phone,
+  Service,
+  Goods
 } from '@element-plus/icons-vue'
 import { usePublicConfig } from '@/composables/usePublicConfig'
 
@@ -227,6 +245,10 @@ const handleCommand = command => {
     if (route.path !== '/food-recognition') router.push('/food-recognition')
   } else if (command === 'food-records') {
     if (route.path !== '/food-records') router.push('/food-records')
+  } else if (command === 'consultation') {
+    if (route.path !== '/consultation') router.push('/consultation')
+  } else if (command === 'product-shop') {
+    if (route.path !== '/product-shop') router.push('/product-shop')
   } else if (command === 'membership') {
     if (route.path !== '/membership') router.push('/membership')
   } else if (command === 'admin') {

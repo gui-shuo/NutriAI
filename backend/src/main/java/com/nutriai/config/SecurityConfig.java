@@ -57,7 +57,15 @@ public class SecurityConfig {
                                 "/public/**",  // 公开配置接口
                                 "/vip/plans",  // VIP套餐列表（未登录可查看）
                                 "/vip/epay/notify",  // 易支付异步回调（服务端无Token）
-                                "/vip/epay/return"   // 易支付同步跳转（浏览器重定向）
+                                "/vip/epay/return",  // 易支付同步跳转（浏览器重定向）
+                                "/consultation/nutritionists",  // 营养师列表（公开）
+                                "/consultation/nutritionists/online",  // 在线营养师列表（公开）
+                                "/consultation/nutritionists/*",  // 营养师详情（公开）
+                                "/products",  // 产品列表（公开）
+                                "/products/search",  // 产品搜索（公开）
+                                "/products/recommended",  // 推荐产品（公开）
+                                "/products/categories",  // 产品分类（公开）
+                                "/products/*"  // 产品详情（公开）
                         ).permitAll()
                         
                         // 其他所有请求都需要认证

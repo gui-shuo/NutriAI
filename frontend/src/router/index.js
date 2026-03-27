@@ -64,6 +64,18 @@ const routes = [
     meta: { requiresAuth: true, title: 'AI食物识别' }
   },
   {
+    path: '/consultation',
+    name: 'Consultation',
+    component: () => import('@/views/ConsultationView.vue'),
+    meta: { requiresAuth: true, title: '营养师咨询' }
+  },
+  {
+    path: '/product-shop',
+    name: 'ProductShop',
+    component: () => import('@/views/ProductShopView.vue'),
+    meta: { requiresAuth: true, title: '营养产品商城' }
+  },
+  {
     path: '/announcements',
     name: 'Announcements',
     component: () => import('@/views/user/Announcements.vue'),

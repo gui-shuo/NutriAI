@@ -120,6 +120,19 @@
           <el-table-column label="下单时间" min-width="140">
             <template #default="{ row }">{{ formatDate(row.createdAt) }}</template>
           </el-table-column>
+          <el-table-column label="操作" width="100" align="center">
+            <template #default="{ row }">
+              <el-button
+                v-if="row.paymentStatus === 'PAID'"
+                type="danger"
+                size="small"
+                text
+                @click="handleRefund(row)"
+              >
+                模拟退款
+              </el-button>
+            </template>
+          </el-table-column>
         </el-table>
       </el-skeleton>
       <template #footer>
@@ -127,10 +140,10 @@
       </template>
     </el-dialog>
 
-    <!-- 支付确认 Dialog -->
+    <!-- 模拟支付确认 Dialog -->
     <el-dialog
       v-model="payDialogVisible"
-      title="完成支付"
+      title="模拟支付"
       width="500px"
       :close-on-click-modal="false"
       @closed="handlePayDialogClose"
@@ -150,17 +163,25 @@
         </div>
         <div class="pay-expired" v-else>订单已超时，请重新下单</div>
 
+        <el-alert
+          type="info"
+          :closable="false"
+          show-icon
+          style="margin: 16px 0"
+        >
+          <template #title>当前为模拟支付模式，点击下方按钮即可模拟支付成功</template>
+        </el-alert>
+
         <div class="pay-buttons">
-          <el-button type="primary" size="large" :disabled="countdown <= 0" @click="openPayPage">
+          <el-button type="primary" size="large" :loading="queryLoading" :disabled="countdown <= 0" @click="confirmSimulatePayment">
             <el-icon><CreditCard /></el-icon>
-            打开支付页面
+            确认支付（模拟）
           </el-button>
-          <el-button type="success" size="large" :loading="queryLoading" @click="manualQueryStatus">
-            <el-icon><Refresh /></el-icon>
-            我已完成支付
+          <el-button size="large" @click="payDialogVisible = false">
+            取消
           </el-button>
         </div>
-        <p class="pay-hint">点击"打开支付页面"后，在新标签完成支付，返回此处点击"我已完成支付"</p>
+        <p class="pay-hint">模拟支付模式：点击"确认支付"将自动完成支付流程，无需真实付款</p>
       </div>
     </el-dialog>
   </el-card>
@@ -173,6 +194,8 @@ import {
   getVipPlans,
   getVipStatus,
   createVipOrder,
+  simulateVipPayment,
+  simulateVipRefund,
   queryVipOrderStatus,
   getVipOrderHistory
 } from '@/services/member'
@@ -188,7 +211,6 @@ const vipStatus = ref(null)
 const payLoading = ref(false)
 const payDialogVisible = ref(false)
 const pendingOrder = ref(null)
-const pendingPayUrl = ref('') // 支付跳转 URL
 const payType = ref('alipay') // 支付方式
 
 // 倒计时
@@ -202,7 +224,6 @@ const countdownStr = computed(() => {
 
 // 订单查询
 const queryLoading = ref(false)
-let pollTimer = null
 
 // 订单历史
 const orderHistoryVisible = ref(false)
@@ -253,10 +274,8 @@ async function handlePay() {
     const res = await createVipOrder(selectedPlanId.value, payType.value)
     if (res.data.code === 200) {
       pendingOrder.value = res.data.data
-      pendingPayUrl.value = res.data.data.payUrl
       payDialogVisible.value = true
       startCountdown()
-      startPolling()
     } else {
       message.error(res.data.message || '创建订单失败')
     }
@@ -268,30 +287,23 @@ async function handlePay() {
   }
 }
 
-function openPayPage() {
-  if (!pendingPayUrl.value) return
-  // 直接打开支付跳转URL
-  window.open(pendingPayUrl.value, '_blank')
-}
-
-async function manualQueryStatus() {
+async function confirmSimulatePayment() {
   if (!pendingOrder.value) return
   queryLoading.value = true
   try {
-    const res = await queryVipOrderStatus(pendingOrder.value.orderNo)
+    const res = await simulateVipPayment(pendingOrder.value.orderNo)
     if (res.data.code === 200) {
       const order = res.data.data
       if (order.paymentStatus === 'PAID') {
         handlePaySuccess()
-      } else if (order.paymentStatus === 'EXPIRED' || order.paymentStatus === 'CANCELLED') {
-        message.warning('订单已超时或已取消，请重新下单')
-        payDialogVisible.value = false
       } else {
-        message.info('支付尚未到账，请稍后再试')
+        message.error('模拟支付失败，请重试')
       }
+    } else {
+      message.error(res.data.message || '支付失败')
     }
   } catch (e) {
-    message.error('查询失败，请稍后重试')
+    message.error('支付失败，请稍后重试')
   } finally {
     queryLoading.value = false
   }
@@ -308,7 +320,6 @@ function handlePaySuccess() {
 function handlePayDialogClose() {
   clearTimers()
   pendingOrder.value = null
-  pendingPayUrl.value = ''
 }
 
 function startCountdown() {
@@ -322,27 +333,8 @@ function startCountdown() {
   }, 1000)
 }
 
-function startPolling() {
-  clearInterval(pollTimer)
-  pollTimer = setInterval(async () => {
-    if (!pendingOrder.value || !payDialogVisible.value) {
-      clearInterval(pollTimer)
-      return
-    }
-    try {
-      const res = await queryVipOrderStatus(pendingOrder.value.orderNo)
-      if (res.data.code === 200 && res.data.data.paymentStatus === 'PAID') {
-        handlePaySuccess()
-      }
-    } catch (_) {
-      /* ignore */
-    }
-  }, 5000) // 每5秒轮询
-}
-
 function clearTimers() {
   clearInterval(countdownTimer)
-  clearInterval(pollTimer)
 }
 
 async function showOrderHistory() {
@@ -355,6 +347,21 @@ async function showOrderHistory() {
     message.error('获取订单失败')
   } finally {
     orderLoading.value = false
+  }
+}
+
+async function handleRefund(row) {
+  try {
+    const res = await simulateVipRefund(row.orderNo)
+    if (res.data.code === 200) {
+      message.success('模拟退款成功')
+      showOrderHistory()
+      fetchVipStatus()
+    } else {
+      message.error(res.data.message || '退款失败')
+    }
+  } catch (e) {
+    message.error('退款操作失败')
   }
 }
 

@@ -34,7 +34,6 @@ public class VipService {
 
     private final VipPlanRepository vipPlanRepository;
     private final VipOrderRepository vipOrderRepository;
-    private final EPayService ePayService;
     private final MemberService memberService;
 
     private static final int ORDER_TIMEOUT_MINUTES = 30;
@@ -62,7 +61,7 @@ public class VipService {
     }
 
     /**
-     * 创建充值订单并生成支付跳转URL（支持选择支付方式）
+     * 创建充值订单（模拟支付模式：自动完成支付流程）
      * @param payType 支付方式：alipay/wxpay/qqpay，默认alipay
      */
     @Transactional
@@ -94,21 +93,7 @@ public class VipService {
                 .build();
         order = vipOrderRepository.save(order);
 
-        // 调用易支付生成支付跳转URL（未配置时返回友好提示）
-        if (!ePayService.isConfigured()) {
-            log.warn("易支付未配置，orderNo={}", orderNo);
-            throw new BusinessException("支付功能暂未开通，请联系管理员配置支付参数");
-        }
-
-        // 构建支付跳转URL
-        String payUrl = ePayService.buildPayUrl(
-                orderNo,
-                plan.getDiscountPrice(),
-                "NutriAI " + plan.getPlanName(),
-                payType
-        );
-
-        log.info("VIP订单创建成功, userId={}, orderNo={}, plan={}, payType={}", userId, orderNo, plan.getPlanName(), method);
+        log.info("VIP订单创建成功(模拟支付), userId={}, orderNo={}, plan={}, payType={}", userId, orderNo, plan.getPlanName(), method);
 
         return VipOrderResponse.builder()
                 .id(order.getId())
@@ -118,10 +103,62 @@ public class VipService {
                 .paymentMethod(method)
                 .paymentStatus("PENDING")
                 .paymentStatusName("待支付")
-                .payUrl(payUrl)   // 支付跳转URL，前端直接 window.open
                 .expireTime(expireTime)
                 .createdAt(order.getCreatedAt())
                 .build();
+    }
+
+    /**
+     * 模拟支付确认（前端调用，模拟用户完成支付）
+     */
+    @Transactional
+    public VipOrderResponse simulatePayment(Long userId, String orderNo) {
+        VipOrder order = vipOrderRepository.findByOrderNo(orderNo)
+                .orElseThrow(() -> new BusinessException("订单不存在"));
+
+        if (!order.getUserId().equals(userId)) {
+            throw new BusinessException("无权操作该订单");
+        }
+
+        if ("PAID".equals(order.getPaymentStatus())) {
+            return buildOrderResponse(order);
+        }
+
+        if (isTerminalStatus(order.getPaymentStatus())) {
+            throw new BusinessException("订单已关闭，无法支付");
+        }
+
+        // 模拟支付成功
+        String simulatedTradeNo = "SIM" + System.currentTimeMillis();
+        handlePaySuccess(order, simulatedTradeNo, "模拟支付成功");
+
+        order = vipOrderRepository.findByOrderNo(orderNo).orElse(order);
+        log.info("模拟支付成功, userId={}, orderNo={}", userId, orderNo);
+        return buildOrderResponse(order);
+    }
+
+    /**
+     * 模拟退款（前端调用，模拟订单退款）
+     */
+    @Transactional
+    public VipOrderResponse simulateRefund(Long userId, String orderNo) {
+        VipOrder order = vipOrderRepository.findByOrderNo(orderNo)
+                .orElseThrow(() -> new BusinessException("订单不存在"));
+
+        if (!order.getUserId().equals(userId)) {
+            throw new BusinessException("无权操作该订单");
+        }
+
+        if (!"PAID".equals(order.getPaymentStatus())) {
+            throw new BusinessException("仅已支付的订单可以退款");
+        }
+
+        order.setPaymentStatus("REFUNDED");
+        order.setRemark("模拟退款 - " + LocalDateTime.now());
+        vipOrderRepository.save(order);
+
+        log.info("模拟退款成功, userId={}, orderNo={}", userId, orderNo);
+        return buildOrderResponse(order);
     }
 
     /**
@@ -148,82 +185,17 @@ public class VipService {
             return buildOrderResponse(order);
         }
 
-        // 向易支付主动查询订单状态
-        try {
-            String tradeStatus = ePayService.queryTradeStatus(orderNo);
-            if ("1".equals(tradeStatus) || "TRADE_SUCCESS".equals(tradeStatus)) {
-                if (!"PAID".equals(order.getPaymentStatus())) {
-                    handlePaySuccess(order, orderNo, null);
-                }
-            }
-        } catch (Exception e) {
-            log.warn("查询易支付状态异常, orderNo={}: {}", orderNo, e.getMessage());
-        }
-
         // 重新加载
         order = vipOrderRepository.findByOrderNo(orderNo).orElse(order);
         return buildOrderResponse(order);
     }
 
     /**
-     * 处理易支付异步回调通知
-     *
-     * @param params 易支付 GET/POST 的所有参数
+     * 处理易支付异步回调通知（已弃用，使用模拟支付）
      */
     @Transactional
     public String handleEPayNotify(Map<String, String> params) {
-        // 1. 验签
-        String sign = params.get("sign");
-        if (!ePayService.verifyNotifySign(params, sign)) {
-            log.warn("易支付回调验签失败, params={}", params);
-            return "fail";
-        }
-
-        String tradeStatus = params.get("trade_status");
-        String outTradeNo  = params.get("out_trade_no");
-        String tradeNo     = params.get("trade_no");
-
-        if (outTradeNo == null) {
-            log.warn("易支付回调缺少必要参数 out_trade_no");
-            return "fail";
-        }
-
-        VipOrder order = vipOrderRepository.findByOrderNo(outTradeNo).orElse(null);
-        if (order == null) {
-            log.warn("易支付回调找不到订单, orderNo={}", outTradeNo);
-            return "fail";
-        }
-
-        // 2. 校验金额（防篡改）
-        String money = params.get("money");
-        if (money != null) {
-            try {
-                BigDecimal notifyAmount = new BigDecimal(money);
-                if (notifyAmount.compareTo(order.getAmount()) != 0) {
-                    log.warn("易支付回调金额不匹配, orderNo={}, expected={}, actual={}", outTradeNo, order.getAmount(), notifyAmount);
-                    return "fail";
-                }
-            } catch (NumberFormatException e) {
-                log.warn("易支付回调金额格式错误: {}", money);
-            }
-        }
-
-        // 3. 幂等：已处理则直接返回success
-        if ("PAID".equals(order.getPaymentStatus())) {
-            log.info("订单已处理过，忽略重复回调, orderNo={}", outTradeNo);
-            return "success";
-        }
-
-        // 4. 处理支付成功
-        if ("TRADE_SUCCESS".equals(tradeStatus)) {
-            String notifyData = params.toString();
-            if (notifyData.length() > 2000) {
-                notifyData = notifyData.substring(0, 2000);
-            }
-            handlePaySuccess(order, tradeNo != null ? tradeNo : outTradeNo, notifyData);
-            log.info("易支付支付成功处理完成, orderNo={}", outTradeNo);
-        }
-
+        log.info("易支付回调已弃用（模拟支付模式），忽略通知");
         return "success";
     }
 
