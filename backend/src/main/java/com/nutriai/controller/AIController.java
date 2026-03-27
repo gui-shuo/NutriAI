@@ -10,16 +10,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * AI控制器
@@ -38,9 +32,6 @@ public class AIController {
     private final UserRepository userRepository;
     private final OssService ossService;
     private final MemberPermissionService memberPermissionService;
-
-    @Value("${nutriai.upload.local-path:./uploads}")
-    private String uploadPath;
     
     /**
      * 初始化AI对话
@@ -173,14 +164,7 @@ public class AIController {
             
             log.info("用户 {} 上传聊天附件: {}, 大小: {}", userId, file.getOriginalFilename(), file.getSize());
             
-            // 尝试上传到COS，失败则本地存储
-            String fileUrl;
-            try {
-                fileUrl = ossService.uploadFoodPhoto(file);
-            } catch (Exception e) {
-                log.warn("COS上传失败，使用本地存储: {}", e.getMessage());
-                fileUrl = saveLocally(file);
-            }
+            String fileUrl = ossService.uploadFoodPhoto(file);
             
             return ApiResponse.success(fileUrl);
             
@@ -188,20 +172,6 @@ public class AIController {
             log.error("文件上传失败", e);
             return ApiResponse.error("文件上传失败，请稍后重试");
         }
-    }
-    
-    private String saveLocally(MultipartFile file) throws IOException {
-        String extension = "";
-        String originalName = file.getOriginalFilename();
-        if (originalName != null && originalName.contains(".")) {
-            extension = originalName.substring(originalName.lastIndexOf("."));
-        }
-        String fileName = "chat_" + UUID.randomUUID() + extension;
-        Path dir = Paths.get(uploadPath, "chat").toAbsolutePath();
-        Files.createDirectories(dir);
-        Path filePath = dir.resolve(fileName);
-        file.transferTo(filePath.toFile());
-        return "/uploads/chat/" + fileName;
     }
     
     /**

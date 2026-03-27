@@ -11,10 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -35,12 +31,6 @@ public class OssService {
 
     @Value("${nutriai.upload.allowed-types:jpg,jpeg,png,gif}")
     private String allowedTypes;
-
-    @Value("${nutriai.upload.local-path:./uploads}")
-    private String localUploadPath;
-
-    @Value("${nutriai.upload.base-url:http://localhost:8080}")
-    private String uploadBaseUrl;
 
     private static final List<String> ALLOWED_IMAGE_TYPES = Arrays.asList(
         "image/jpeg", "image/png", "image/gif", "image/jpg"
@@ -67,20 +57,9 @@ public class OssService {
     }
 
     /**
-     * 判断是否配置了腾讯云COS
-     */
-    private boolean isCosConfigured() {
-        return cosConfig.getSecretId() != null && !cosConfig.getSecretId().isBlank()
-                && cosConfig.getSecretKey() != null && !cosConfig.getSecretKey().isBlank();
-    }
-
-    /**
-     * 上传文件：COS可用时上传到COS，否则保存到本地
+     * 上传文件到腾讯云COS
      */
     private String uploadToCos(MultipartFile file, String key) {
-        if (!isCosConfigured()) {
-            return saveToLocal(file, key);
-        }
         try {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(file.getSize());
@@ -95,24 +74,7 @@ public class OssService {
             log.info("文件上传COS成功: key={}, url={}, size={}", key, fileUrl, file.getSize());
             return fileUrl;
         } catch (Exception e) {
-            log.error("文件上传COS失败，切换本地存储: key={}", key, e);
-            return saveToLocal(file, key);
-        }
-    }
-
-    /**
-     * 保存文件到本地磁盘
-     */
-    private String saveToLocal(MultipartFile file, String key) {
-        try {
-            Path filePath = Paths.get(localUploadPath, key).toAbsolutePath();
-            Files.createDirectories(filePath.getParent());
-            Files.write(filePath, file.getBytes());
-            String fileUrl = uploadBaseUrl + "/uploads/" + key;
-            log.info("文件保存本地成功: path={}, url={}, size={}", filePath, fileUrl, file.getSize());
-            return fileUrl;
-        } catch (IOException e) {
-            log.error("文件保存本地失败: key={}", key, e);
+            log.error("文件上传COS失败: key={}", key, e);
             throw BusinessException.User.fileUploadFailed();
         }
     }
@@ -130,15 +92,6 @@ public class OssService {
                 String key = fileUrl.substring(cosBaseUrl.length() + 1);
                 cosClient.deleteObject(cosConfig.getBucket(), key);
                 log.info("COS文件删除成功: key={}", key);
-            } else {
-                // 本地文件删除
-                String localPrefix = uploadBaseUrl + "/uploads/";
-                if (fileUrl.startsWith(localPrefix)) {
-                    String key = fileUrl.substring(localPrefix.length());
-                    Path filePath = Paths.get(localUploadPath, key).toAbsolutePath();
-                    Files.deleteIfExists(filePath);
-                    log.info("本地文件删除成功: path={}", filePath);
-                }
             }
         } catch (Exception e) {
             log.error("文件删除失败: {}", fileUrl, e);
