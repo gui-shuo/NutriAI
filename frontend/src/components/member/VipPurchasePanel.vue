@@ -70,7 +70,6 @@
         <el-radio-group v-model="payType" size="small">
           <el-radio-button value="alipay">支付宝</el-radio-button>
           <el-radio-button value="wxpay">微信支付</el-radio-button>
-          <el-radio-button value="qqpay">QQ钱包</el-radio-button>
         </el-radio-group>
       </div>
       <el-button

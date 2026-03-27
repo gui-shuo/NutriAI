@@ -57,6 +57,14 @@ services:
       SMS_SDK_APP_ID: ${SMS_SDK_APP_ID}
       SMS_SIGN_NAME: ${SMS_SIGN_NAME:-NutriAI}
       SMS_TEMPLATE_ID: ${SMS_TEMPLATE_ID}
+      # 码支付（EPay）聚合支付配置
+      EPAY_MERCHANT_ID: ${EPAY_MERCHANT_ID}
+      EPAY_MERCHANT_KEY: ${EPAY_MERCHANT_KEY}
+      EPAY_API_URL: ${EPAY_API_URL}
+      EPAY_SUBMIT_URL: ${EPAY_SUBMIT_URL}
+      EPAY_MAPI_URL: ${EPAY_MAPI_URL}
+      EPAY_NOTIFY_URL: ${EPAY_NOTIFY_URL}
+      EPAY_RETURN_URL: ${EPAY_RETURN_URL}
       # 不再运行本地MySQL，可以给后端更多内存
       JAVA_OPTS: -Xms256m -Xmx384m -XX:+UseG1GC -XX:MaxGCPauseMillis=200
     mem_limit: 512m

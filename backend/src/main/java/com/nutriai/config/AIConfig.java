@@ -68,12 +68,6 @@ public class AIConfig {
         System.setProperty("dashscope.api.read.timeout", String.valueOf(timeout * 1000));
         System.setProperty("dashscope.api.write.timeout", String.valueOf(timeout * 1000));
         
-        // 通过系统属性设置自定义API地址（DashScope SDK v0.25.0不支持builder.baseUrl()）
-        if (apiUrl != null && !apiUrl.isBlank()) {
-            System.setProperty("dashscope.baseHttpApiUrl", apiUrl);
-            log.info("已设置DashScope自定义API地址: {}", apiUrl);
-        }
-        
         return QwenChatModel.builder()
                 .apiKey(effectiveKey)
                 .modelName(modelName)
