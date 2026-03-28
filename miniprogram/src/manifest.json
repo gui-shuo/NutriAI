@@ -14,12 +14,7 @@
             "minified": true
         },
         "usingComponents": true,
-        "permission": {
-            "scope.userLocation": {
-                "desc": "获取位置信息用于推荐附近营养师"
-            }
-        },
-        "requiredPrivateInfos": ["chooseImage", "chooseVideo"]
+        "usingComponents": true
     },
     "uniStatistics": {
         "enable": false
