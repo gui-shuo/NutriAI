@@ -65,6 +65,8 @@ services:
       EPAY_MAPI_URL: ${EPAY_MAPI_URL}
       EPAY_NOTIFY_URL: ${EPAY_NOTIFY_URL:-}
       EPAY_RETURN_URL: ${EPAY_RETURN_URL:-}
+      WX_MINIAPP_APPID: ${WX_MINIAPP_APPID:-wxcf557b14e389275f}
+      WX_MINIAPP_SECRET: ${WX_MINIAPP_SECRET:-}
       JAVA_OPTS: -Xms384m -Xmx512m -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+UseStringDeduplication -XX:+OptimizeStringConcat -XX:MetaspaceSize=96m -XX:MaxMetaspaceSize=192m -Djava.security.egd=file:/dev/./urandom
     mem_limit: 768m
     memswap_limit: 768m

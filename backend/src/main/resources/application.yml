@@ -198,3 +198,9 @@ rate-limit:
   ai-rate: 10          # AI接口限流：每秒10个请求
   login-rate: 5        # 登录接口限流：每分钟5个请求
   window-seconds: 60   # 限流时间窗口（秒）
+
+# 微信小程序配置
+wechat:
+  miniapp:
+    appid: ${WX_MINIAPP_APPID:}
+    secret: ${WX_MINIAPP_SECRET:}
