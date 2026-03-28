@@ -193,7 +193,7 @@ function checkUsernameAvail() {
   usernameTimer = setTimeout(async () => {
     try {
       const res = await authApi.checkUsername(form.username.trim()) as any
-      usernameStatus.value = res.code === 200 && res.data?.available ? 'ok' : 'taken'
+      usernameStatus.value = res.code === 200 && res.data === true ? 'ok' : 'taken'
     } catch {
       usernameStatus.value = ''
     }
@@ -207,7 +207,7 @@ function checkEmailAvail() {
   emailTimer = setTimeout(async () => {
     try {
       const res = await authApi.checkEmail(form.email.trim()) as any
-      emailStatus.value = res.code === 200 && res.data?.available ? 'ok' : 'taken'
+      emailStatus.value = res.code === 200 && res.data === true ? 'ok' : 'taken'
     } catch {
       emailStatus.value = ''
     }
