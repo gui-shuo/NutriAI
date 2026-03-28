@@ -519,7 +519,7 @@ public class AuthService {
         
         if (body == null || (body.containsKey("errcode") && !Integer.valueOf(0).equals(body.get("errcode")))) {
             String errMsg = body != null ? String.valueOf(body.get("errmsg")) : "unknown";
-            log.error("微信登录失败: errcode={}, errmsg={}", body != null ? body.get("errcode") : "null", errMsg);
+            log.warn("微信登录失败: errcode={}, errmsg={}", body != null ? body.get("errcode") : "null", errMsg);
             throw new BusinessException(500, "微信登录失败: " + errMsg);
         }
         

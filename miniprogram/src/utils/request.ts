@@ -82,7 +82,9 @@ function request<T = any>(options: RequestOptions): Promise<ApiResponse<T>> {
       timeout: 30000,
       success: async (res: any) => {
         if (showLoading) uni.hideLoading()
-        if (res.statusCode === 401 || res.statusCode === 403) {
+        // Skip token refresh for auth endpoints — they don't use tokens
+        const isAuthUrl = url.includes('/auth/')
+        if (!isAuthUrl && (res.statusCode === 401 || res.statusCode === 403)) {
           try {
             const newToken = await refreshToken()
             header['Authorization'] = `Bearer ${newToken}`

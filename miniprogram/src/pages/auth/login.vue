@@ -153,6 +153,7 @@ async function handleLogin() {
 }
 
 async function handleWxLogin() {
+  if (wxLoading.value) return
   wxLoading.value = true
   uni.login({
     provider: 'weixin',

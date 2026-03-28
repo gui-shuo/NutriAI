@@ -120,13 +120,13 @@ public class JwtUtil {
         } catch (ExpiredJwtException e) {
             log.warn("JWT令牌已过期: {}", e.getMessage());
         } catch (UnsupportedJwtException e) {
-            log.error("不支持的JWT令牌: {}", e.getMessage());
+            log.debug("不支持的JWT令牌: {}", e.getMessage());
         } catch (MalformedJwtException e) {
-            log.error("JWT令牌格式错误: {}", e.getMessage());
+            log.debug("JWT令牌格式错误: {}", e.getMessage());
         } catch (SecurityException e) {
-            log.error("JWT签名验证失败: {}", e.getMessage());
+            log.debug("JWT签名验证失败: {}", e.getMessage());
         } catch (IllegalArgumentException e) {
-            log.error("JWT令牌为空: {}", e.getMessage());
+            log.debug("JWT令牌为空: {}", e.getMessage());
         }
         return null;
     }
@@ -142,7 +142,7 @@ public class JwtUtil {
                     .parseSignedClaims(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
-            log.error("JWT令牌验证失败: {}", e.getMessage());
+            log.debug("JWT令牌验证失败: {}", e.getMessage());
             return false;
         }
     }

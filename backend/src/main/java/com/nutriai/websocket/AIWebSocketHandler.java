@@ -64,7 +64,7 @@ public class AIWebSocketHandler extends TextWebSocketHandler {
             ));
             
         } catch (Exception e) {
-            log.error("❌ Token验证失败: sessionId={}", sessionId, e);
+            log.warn("Token验证失败: sessionId={}, reason={}", sessionId, e.getMessage());
             session.close(CloseStatus.POLICY_VIOLATION.withReason("Invalid token"));
         }
     }

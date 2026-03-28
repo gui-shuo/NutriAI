@@ -66,7 +66,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         } catch (Exception e) {
-            log.error("JWT认证过程异常: {}", e.getMessage());
+            log.debug("JWT认证过程异常: {}", e.getMessage());
             request.setAttribute("jwt-error", "error");
         }
         
