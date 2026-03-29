@@ -67,14 +67,27 @@
       </view>
     </view>
 
-    <!-- Recognition Result -->
-    <view v-if="result && !recognizing" class="result-section">
-      <view class="card result-card">
+    <!-- Recognition Results (multiple) -->
+    <view v-if="results.length > 0 && !recognizing" class="result-section">
+      <view class="result-count">
+        <text class="result-count-text">共识别出 {{ results.length }} 种食物</text>
+      </view>
+
+      <view
+        v-for="(item, index) in results"
+        :key="index"
+        class="card result-card"
+        :class="{ 'result-card-selected': selectedIndex === index }"
+        @tap="selectedIndex = index"
+      >
         <view class="result-header">
-          <text class="result-name">{{ result.name }}</text>
-          <text class="result-portion text-secondary" v-if="result.portion">
-            {{ result.portion }}
-          </text>
+          <view class="result-title-row">
+            <text class="result-name">{{ item.name }}</text>
+            <view class="confidence-badge" :class="confidenceClass(item.confidence)">
+              {{ formatConfidence(item.confidence) }}
+            </view>
+          </view>
+          <text class="result-portion text-secondary">每100g</text>
         </view>
 
         <view class="divider" />
@@ -82,34 +95,37 @@
         <view class="nutrition-grid">
           <view class="nutrition-card calories-card">
             <text class="n-icon">🔥</text>
-            <text class="n-value">{{ result.calories || 0 }}</text>
+            <text class="n-value">{{ item.calories || 0 }}</text>
             <text class="n-unit">千卡</text>
             <text class="n-label">热量</text>
           </view>
           <view class="nutrition-card">
             <text class="n-icon">🥩</text>
-            <text class="n-value">{{ result.protein || 0 }}g</text>
+            <text class="n-value">{{ item.protein || 0 }}g</text>
             <text class="n-label">蛋白质</text>
           </view>
           <view class="nutrition-card">
             <text class="n-icon">🧈</text>
-            <text class="n-value">{{ result.fat || 0 }}g</text>
+            <text class="n-value">{{ item.fat || 0 }}g</text>
             <text class="n-label">脂肪</text>
           </view>
           <view class="nutrition-card">
             <text class="n-icon">🍚</text>
-            <text class="n-value">{{ result.carbs || 0 }}g</text>
+            <text class="n-value">{{ item.carbs || 0 }}g</text>
             <text class="n-label">碳水</text>
           </view>
-          <view class="nutrition-card" v-if="result.fiber !== undefined">
+          <view class="nutrition-card" v-if="item.fiber">
             <text class="n-icon">🌾</text>
-            <text class="n-value">{{ result.fiber || 0 }}g</text>
+            <text class="n-value">{{ item.fiber }}g</text>
             <text class="n-label">膳食纤维</text>
           </view>
         </view>
-      </view>
 
-      <button class="btn-primary record-btn" @tap="goToRecord">📝 记录到饮食</button>
+        <button
+          class="btn-primary record-btn-inline"
+          @tap.stop="goToRecord(item)"
+        >📝 记录到饮食</button>
+      </view>
     </view>
 
     <!-- Error State -->
@@ -131,19 +147,20 @@ import { checkLogin } from '@/utils/common'
 
 interface RecognitionResult {
   name: string
+  confidence: number
   calories?: number
   protein?: number
   fat?: number
   carbs?: number
   fiber?: number
-  portion?: string
 }
 
 const mode = ref<'photo' | 'text'>('photo')
 const photoPath = ref('')
 const foodName = ref('')
 const recognizing = ref(false)
-const result = ref<RecognitionResult | null>(null)
+const results = ref<RecognitionResult[]>([])
+const selectedIndex = ref(0)
 const errorMsg = ref('')
 
 onLoad((options) => {
@@ -181,12 +198,16 @@ function chooseFromAlbum() {
 
 async function recognizePhoto(filePath: string) {
   recognizing.value = true
-  result.value = null
+  results.value = []
+  selectedIndex.value = 0
   errorMsg.value = ''
   try {
     const res = await foodApi.photoRecognize(filePath)
     if (res.code === 200 && res.data) {
-      result.value = parseFoodResult(res.data)
+      results.value = parseFoodResults(res.data)
+      if (results.value.length === 0) {
+        errorMsg.value = '无法识别该食物，请重试'
+      }
     } else {
       errorMsg.value = res.message || '无法识别该食物，请重试'
     }
@@ -204,12 +225,16 @@ async function searchByName() {
     return
   }
   recognizing.value = true
-  result.value = null
+  results.value = []
+  selectedIndex.value = 0
   errorMsg.value = ''
   try {
     const res = await foodApi.recognizeByName(name)
     if (res.code === 200 && res.data) {
-      result.value = parseFoodResult(res.data)
+      results.value = parseFoodResults(res.data)
+      if (results.value.length === 0) {
+        errorMsg.value = `未找到"${name}"的营养信息`
+      }
     } else {
       errorMsg.value = res.message || `未找到"${name}"的营养信息`
     }
@@ -220,46 +245,56 @@ async function searchByName() {
   }
 }
 
-// Parse backend FoodRecognitionResult into flat RecognitionResult
-function parseFoodResult(data: any): RecognitionResult | null {
-  // Backend returns { foods: [{ name, confidence, nutrition: { energy, protein, carbohydrate, fat, fiber } }] }
-  if (data.foods && Array.isArray(data.foods) && data.foods.length > 0) {
-    const top = data.foods[0]
-    const n = top.nutrition || {}
-    return {
-      name: top.name || '未知食物',
-      calories: n.energy || n.calories || 0,
-      protein: n.protein || 0,
-      fat: n.fat || 0,
-      carbs: n.carbohydrate || n.carbs || 0,
-      fiber: n.fiber || 0,
-      portion: '每100g'
-    }
+function parseFoodResults(data: any): RecognitionResult[] {
+  // Backend: { foods: [{ name, confidence, nutrition: { energy, protein, carbohydrate, fat, fiber } }] }
+  if (data.foods && Array.isArray(data.foods)) {
+    return data.foods.map((item: any) => {
+      const n = item.nutrition || {}
+      return {
+        name: item.name || '未知食物',
+        confidence: item.confidence || 0,
+        calories: n.energy || n.calories || 0,
+        protein: n.protein || 0,
+        fat: n.fat || 0,
+        carbs: n.carbohydrate || n.carbs || 0,
+        fiber: n.fiber || 0
+      }
+    })
   }
-  // Fallback: if backend returns flat format
+  // Fallback: single flat result
   if (data.name) {
-    return {
+    return [{
       name: data.name,
+      confidence: data.confidence || 1,
       calories: data.calories || data.energy || 0,
       protein: data.protein || 0,
       fat: data.fat || 0,
       carbs: data.carbs || data.carbohydrate || 0,
-      fiber: data.fiber || 0,
-      portion: data.portion || '每100g'
-    }
+      fiber: data.fiber || 0
+    }]
   }
-  return null
+  return []
 }
 
-function goToRecord() {
-  if (!result.value) return
+function formatConfidence(val: number): string {
+  if (!val) return '—'
+  return (val * 100).toFixed(1) + '%'
+}
+
+function confidenceClass(val: number): string {
+  if (val >= 0.8) return 'confidence-high'
+  if (val >= 0.5) return 'confidence-mid'
+  return 'confidence-low'
+}
+
+function goToRecord(item: RecognitionResult) {
   const data = encodeURIComponent(JSON.stringify({
-    foodName: result.value.name,
-    calories: result.value.calories || 0,
-    protein: result.value.protein || 0,
-    fat: result.value.fat || 0,
-    carbs: result.value.carbs || 0,
-    portion: result.value.portion || ''
+    foodName: item.name,
+    calories: item.calories || 0,
+    protein: item.protein || 0,
+    fat: item.fat || 0,
+    carbs: item.carbs || 0,
+    portion: '每100g'
   }))
   uni.navigateTo({ url: `/pages/food-records/index?prefill=${data}` })
 }
@@ -372,23 +407,65 @@ function goToRecord() {
   color: #666;
 }
 
-/* Result */
+/* Result Count */
+.result-count {
+  padding: 16rpx 0;
+}
+.result-count-text {
+  font-size: 26rpx;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Result Card */
 .result-card {
   padding: 30rpx;
+  margin-bottom: 20rpx;
+  border: 4rpx solid transparent;
+  transition: border-color 0.2s;
 }
+.result-card-selected {
+  border-color: #07c160;
+}
+
 .result-header {
   margin-bottom: 10rpx;
 }
+.result-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 .result-name {
-  display: block;
-  font-size: 38rpx;
+  font-size: 36rpx;
   font-weight: 700;
   color: #333;
 }
 .result-portion {
   display: block;
-  font-size: 26rpx;
-  margin-top: 8rpx;
+  font-size: 24rpx;
+  margin-top: 6rpx;
+}
+
+/* Confidence Badge */
+.confidence-badge {
+  font-size: 22rpx;
+  font-weight: 600;
+  padding: 6rpx 16rpx;
+  border-radius: 20rpx;
+  flex-shrink: 0;
+}
+.confidence-high {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+.confidence-mid {
+  background: #fff3e0;
+  color: #e65100;
+}
+.confidence-low {
+  background: #fce4ec;
+  color: #c62828;
 }
 
 .nutrition-grid {
@@ -443,8 +520,15 @@ function goToRecord() {
   margin-top: 4rpx;
 }
 
-.record-btn {
-  margin-top: 24rpx;
+.record-btn-inline {
+  margin-top: 20rpx;
+  height: 72rpx;
+  line-height: 72rpx;
+  font-size: 26rpx;
+  background: #07c160;
+  color: #fff;
+  border: none;
+  border-radius: 12rpx;
 }
 
 /* Error */
