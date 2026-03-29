@@ -28,8 +28,8 @@ export const foodApi = {
   createRecord: (data: any) => request({ url: '/food/records', method: 'POST', data }),
   deleteRecord: (id: number) => request({ url: `/food/records/${id}`, method: 'DELETE' }),
   getStats: (date: string) => request({ url: `/food/stats?date=${date}` }),
-  photoRecognize: (filePath: string) => uploadFile({ url: '/food/photo-recognize', filePath, name: 'file' }),
-  recognizeByName: (name: string) => request({ url: '/food/recognize-by-name', method: 'POST', data: { foodName: name } })
+  photoRecognize: (filePath: string) => uploadFile({ url: '/food-recognition/recognize-by-image', filePath, name: 'image' }),
+  recognizeByName: (name: string) => request({ url: '/food-recognition/recognize-by-name', method: 'POST', data: { foodName: name } })
 }
 
 // ============ AI Diet Plan ============
