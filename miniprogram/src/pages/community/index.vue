@@ -32,25 +32,25 @@
         </view>
 
         <!-- Image Grid -->
-        <view class="image-grid" v-if="post.imageUrls && post.imageUrls.length > 0">
+        <view class="image-grid" v-if="getPostImages(post).length > 0">
           <view
             class="grid-item"
-            v-for="(img, idx) in post.imageUrls.slice(0, getMaxImages(post.imageUrls.length))"
+            v-for="(img, idx) in getPostImages(post).slice(0, getMaxImages(getPostImages(post).length))"
             :key="idx"
           >
             <image class="grid-img" :src="img" mode="aspectFill" />
             <view
               class="more-badge"
-              v-if="idx === getMaxImages(post.imageUrls.length) - 1 && post.imageUrls.length > getMaxImages(post.imageUrls.length)"
+              v-if="idx === getMaxImages(getPostImages(post).length) - 1 && getPostImages(post).length > getMaxImages(getPostImages(post).length)"
             >
-              +{{ post.imageUrls.length - getMaxImages(post.imageUrls.length) }}
+              +{{ getPostImages(post).length - getMaxImages(getPostImages(post).length) }}
             </view>
           </view>
         </view>
 
         <!-- Video Thumbnail -->
-        <view class="video-thumb" v-if="post.videoUrl && (!post.imageUrls || post.imageUrls.length === 0)">
-          <image class="video-cover" :src="post.videoCover || post.videoUrl + '?x-oss-process=video/snapshot,t_1000'" mode="aspectFill" />
+        <view class="video-thumb" v-if="post.videoUrl && getPostImages(post).length === 0">
+          <image class="video-cover" :src="post.videoUrl + '?x-oss-process=video/snapshot,t_1000'" mode="aspectFill" />
           <view class="play-icon">▶</view>
         </view>
 
@@ -58,15 +58,11 @@
         <view class="post-footer">
           <view class="footer-item">
             <text class="icon">❤️</text>
-            <text class="count">{{ post.likeCount || 0 }}</text>
+            <text class="count">{{ post.likesCount || 0 }}</text>
           </view>
           <view class="footer-item">
             <text class="icon">💬</text>
-            <text class="count">{{ post.commentCount || 0 }}</text>
-          </view>
-          <view class="footer-item">
-            <text class="icon">👁️</text>
-            <text class="count">{{ post.viewCount || 0 }}</text>
+            <text class="count">{{ post.commentsCount || 0 }}</text>
           </view>
         </view>
       </view>
@@ -113,6 +109,15 @@ const categoryList = computed(() => [
 
 function getMaxImages(total: number): number {
   return total === 1 ? 1 : total <= 4 ? total : 3
+}
+
+function getPostImages(post: any): string[] {
+  if (Array.isArray(post.images)) return post.images
+  if (typeof post.images === 'string' && post.images) {
+    try { return JSON.parse(post.images) } catch { return [] }
+  }
+  if (Array.isArray(post.imageUrls)) return post.imageUrls
+  return []
 }
 
 function switchCategory(value: string) {

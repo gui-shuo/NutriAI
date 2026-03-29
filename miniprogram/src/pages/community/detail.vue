@@ -2,9 +2,9 @@
   <view class="detail-page" v-if="post">
     <!-- Author Info Bar -->
     <view class="author-bar">
-      <image class="avatar" :src="defaultAvatar(post.authorAvatar)" mode="aspectFill" />
+      <image class="avatar" :src="defaultAvatar(post.avatarUrl)" mode="aspectFill" />
       <view class="author-info">
-        <text class="nickname">{{ post.authorNickname || post.authorUsername }}</text>
+        <text class="nickname">{{ post.username }}</text>
         <text class="time">{{ formatTime(post.createdAt) }}</text>
       </view>
       <view
@@ -27,12 +27,12 @@
     </view>
 
     <!-- Image Gallery -->
-    <view class="image-gallery" v-if="post.imageUrls && post.imageUrls.length > 0">
+    <view class="image-gallery" v-if="postImages.length > 0">
       <image
-        v-for="(img, idx) in post.imageUrls"
+        v-for="(img, idx) in postImages"
         :key="idx"
         class="gallery-img"
-        :class="{ 'single-img': post.imageUrls.length === 1 }"
+        :class="{ 'single-img': postImages.length === 1 }"
         :src="img"
         mode="aspectFill"
         @tap="previewImage(idx)"
@@ -45,7 +45,6 @@
         :src="post.videoUrl"
         class="post-video"
         controls
-        :poster="post.videoCover"
         object-fit="contain"
       />
     </view>
@@ -54,39 +53,35 @@
     <view class="stats-bar">
       <view class="stat-item" :class="{ liked: isLiked }" @tap="handleLike">
         <text class="stat-icon">{{ isLiked ? '❤️' : '🤍' }}</text>
-        <text class="stat-count">{{ post.likeCount || 0 }}</text>
+        <text class="stat-count">{{ post.likesCount || 0 }}</text>
       </view>
       <view class="stat-item">
         <text class="stat-icon">💬</text>
-        <text class="stat-count">{{ post.commentCount || 0 }}</text>
-      </view>
-      <view class="stat-item">
-        <text class="stat-icon">👁️</text>
-        <text class="stat-count">{{ post.viewCount || 0 }}</text>
+        <text class="stat-count">{{ post.commentsCount || 0 }}</text>
       </view>
     </view>
 
     <!-- Comments Section -->
     <view class="comments-section">
-      <view class="section-title">评论 ({{ post.commentCount || 0 }})</view>
+      <view class="section-title">评论 ({{ post.commentsCount || 0 }})</view>
 
       <view class="comment-list" v-if="comments.length > 0">
         <view class="comment-item" v-for="comment in comments" :key="comment.id">
-          <image class="comment-avatar" :src="defaultAvatar(comment.authorAvatar)" mode="aspectFill" />
+          <image class="comment-avatar" :src="defaultAvatar(comment.avatarUrl)" mode="aspectFill" />
           <view class="comment-body">
             <view class="comment-header">
-              <text class="comment-nick">{{ comment.authorNickname || comment.authorUsername }}</text>
+              <text class="comment-nick">{{ comment.username }}</text>
               <text class="comment-time">{{ formatTime(comment.createdAt) }}</text>
             </view>
-            <view class="reply-tag" v-if="comment.replyToNickname">
-              回复 <text class="reply-nick">@{{ comment.replyToNickname }}</text>
+            <view class="reply-tag" v-if="comment.replyToUsername">
+              回复 <text class="reply-nick">@{{ comment.replyToUsername }}</text>
             </view>
             <text class="comment-content">{{ comment.content }}</text>
             <view class="comment-actions">
               <text class="action-btn" @tap="setReply(comment)">回复</text>
               <text
                 class="action-btn delete"
-                v-if="comment.authorId === userStore.userInfo?.id"
+                v-if="comment.userId === userStore.userInfo?.id"
                 @tap="deleteComment(comment.id)"
               >删除</text>
             </view>
@@ -116,14 +111,14 @@
     <!-- Bottom Input Bar -->
     <view class="bottom-bar">
       <view class="reply-hint" v-if="replyTo" @tap="cancelReply">
-        <text>回复 @{{ replyTo.authorNickname }}</text>
+        <text>回复 @{{ replyTo.username }}</text>
         <text class="cancel-reply">✕</text>
       </view>
       <view class="input-row">
         <input
           class="comment-input"
           v-model="commentText"
-          :placeholder="replyTo ? `回复 @${replyTo.authorNickname}` : '写评论...'"
+          :placeholder="replyTo ? `回复 @${replyTo.username}` : '写评论...'"
           :adjust-position="true"
           confirm-type="send"
           @confirm="submitComment"
@@ -157,13 +152,24 @@ const isLiked = ref(false)
 const isFollowed = ref(false)
 
 const comments = ref<any[]>([])
-const commentPage = ref(1)
+const commentPage = ref(0)
 const commentLoading = ref(false)
 const commentNoMore = ref(false)
 const commentText = ref('')
 const replyTo = ref<any>(null)
 
-const isAuthor = computed(() => post.value?.authorId === userStore.userInfo?.id)
+const isAuthor = computed(() => post.value?.userId === userStore.userInfo?.id)
+
+// Backend stores images as JSON string, parse to array
+const postImages = computed(() => {
+  if (!post.value) return []
+  if (Array.isArray(post.value.images)) return post.value.images
+  if (typeof post.value.images === 'string' && post.value.images) {
+    try { return JSON.parse(post.value.images) } catch { return [] }
+  }
+  if (Array.isArray(post.value.imageUrls)) return post.value.imageUrls
+  return []
+})
 
 async function loadPost() {
   pageLoading.value = true
@@ -171,11 +177,10 @@ async function loadPost() {
     const res = await communityApi.getPost(postId.value)
     post.value = res.data
     isLiked.value = res.data?.liked || false
-    // Check follow status
-    if (post.value?.authorId && !isAuthor.value) {
+    if (post.value?.userId && !isAuthor.value) {
       try {
-        const followRes = await communityApi.getFollowStatus(post.value.authorId)
-        isFollowed.value = followRes.data?.followed || false
+        const followRes = await communityApi.getFollowStatus(post.value.userId)
+        isFollowed.value = followRes.data?.isFollowing || followRes.data?.followed || false
       } catch {}
     }
   } catch {
@@ -193,7 +198,8 @@ async function loadComments() {
       page: commentPage.value,
       size: 15
     })
-    const list = res.data?.content || res.data?.records || res.data?.list || res.data || []
+    const page = res.data
+    const list = page?.content || page?.records || page?.list || (Array.isArray(page) ? page : [])
     comments.value = [...comments.value, ...list]
     commentNoMore.value = list.length < 15
     commentPage.value++
@@ -206,7 +212,7 @@ async function loadComments() {
 
 function previewImage(index: number) {
   uni.previewImage({
-    urls: post.value.imageUrls,
+    urls: postImages.value,
     current: index
   })
 }
@@ -214,9 +220,9 @@ function previewImage(index: number) {
 async function handleLike() {
   if (!checkLogin()) return
   try {
-    await communityApi.toggleLike({ postId: postId.value })
-    isLiked.value = !isLiked.value
-    post.value.likeCount += isLiked.value ? 1 : -1
+    const res = await communityApi.toggleLike({ targetType: 'POST', targetId: postId.value })
+    isLiked.value = res.data?.liked ?? !isLiked.value
+    post.value.likesCount = (post.value.likesCount || 0) + (isLiked.value ? 1 : -1)
   } catch {
     uni.showToast({ title: '操作失败', icon: 'none' })
   }
@@ -225,8 +231,8 @@ async function handleLike() {
 async function handleFollow() {
   if (!checkLogin()) return
   try {
-    await communityApi.toggleFollow(post.value.authorId)
-    isFollowed.value = !isFollowed.value
+    const res = await communityApi.toggleFollow(post.value.userId)
+    isFollowed.value = res.data?.followed ?? !isFollowed.value
     uni.showToast({ title: isFollowed.value ? '已关注' : '已取消关注', icon: 'none' })
   } catch {
     uni.showToast({ title: '操作失败', icon: 'none' })
@@ -249,18 +255,17 @@ async function submitComment() {
     const data: any = { content: text }
     if (replyTo.value) {
       data.parentId = replyTo.value.id
-      data.replyToUserId = replyTo.value.authorId
+      data.replyToUserId = replyTo.value.userId
     }
     await communityApi.addComment(postId.value, data)
     commentText.value = ''
     replyTo.value = null
     uni.showToast({ title: '评论成功', icon: 'success' })
-    // Reload comments
     comments.value = []
-    commentPage.value = 1
+    commentPage.value = 0
     commentNoMore.value = false
     loadComments()
-    if (post.value) post.value.commentCount = (post.value.commentCount || 0) + 1
+    if (post.value) post.value.commentsCount = (post.value.commentsCount || 0) + 1
   } catch {
     uni.showToast({ title: '评论失败', icon: 'none' })
   }
@@ -275,7 +280,7 @@ async function deleteComment(id: number) {
         try {
           await communityApi.deleteComment(id)
           comments.value = comments.value.filter(c => c.id !== id)
-          if (post.value) post.value.commentCount = Math.max(0, (post.value.commentCount || 0) - 1)
+          if (post.value) post.value.commentsCount = Math.max(0, (post.value.commentsCount || 0) - 1)
           uni.showToast({ title: '已删除', icon: 'success' })
         } catch {
           uni.showToast({ title: '删除失败', icon: 'none' })
