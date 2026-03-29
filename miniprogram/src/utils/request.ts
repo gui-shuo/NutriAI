@@ -139,11 +139,21 @@ function uploadFile(options: { url: string, filePath: string, name?: string, for
           } catch {
             resolve(res.data as any)
           }
+        } else if (res.statusCode === 401) {
+          clearTokens()
+          uni.showToast({ title: '登录已过期，请重新登录', icon: 'none' })
+          setTimeout(() => uni.reLaunch({ url: '/pages/auth/login' }), 1500)
+          reject(new Error('登录已过期'))
         } else {
-          reject(new Error(`上传失败(${res.statusCode})`))
+          let msg = `上传失败(${res.statusCode})`
+          try {
+            const body = JSON.parse(res.data)
+            if (body.message) msg = body.message
+          } catch {}
+          reject(new Error(msg))
         }
       },
-      fail: () => reject(new Error('上传失败'))
+      fail: (err) => reject(new Error(err?.errMsg || '网络连接失败'))
     })
   })
 }
