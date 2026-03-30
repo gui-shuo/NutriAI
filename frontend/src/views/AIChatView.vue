@@ -33,6 +33,8 @@
         ref="messageListRef"
         :messages="messages"
         :waiting-text="waitingText"
+        :streaming-message-id="streamingMessageId"
+        :streaming-content="streamingContent"
         @regenerate="handleRegenerate"
         @favorite="handleFavorite"
         @unfavorite="handleUnfavorite"
@@ -181,9 +183,16 @@ import QuickActions from '@/components/chat/QuickActions.vue'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
 import api from '@/services/api'
+import { useAuthStore } from '@/stores/auth'
+import { createWebSocketClient, ConnectionStatus } from '@/services/websocket'
 
 // 路由
 const router = useRouter()
+const authStore = useAuthStore()
+
+// WebSocket客户端
+const wsClient = createWebSocketClient()
+const wsConnected = computed(() => wsClient.isConnected.value)
 
 // 组件引用
 const messageListRef = ref(null)
@@ -198,6 +207,8 @@ const isLoading = ref(false)
 const waitingText = ref('')
 const waitingTimer = ref(null)
 const waitingSeconds = ref(0)
+const streamingMessageId = ref(null)
+const streamingContent = ref('')
 const showHistory = ref(false)
 const showFavorites = ref(false)
 const showSettings = ref(false)
@@ -247,6 +258,9 @@ const stopWaitingTimer = () => {
   waitingText.value = ''
 }
 
+// 当前等待响应的AI消息ID
+let pendingAiMessageId = null
+
 // 发送消息
 const handleSend = async ({ text, file }) => {
   if (!text && !file) return
@@ -269,40 +283,57 @@ const handleSend = async ({ text, file }) => {
   messages.value.push(userMessage)
   chatInputRef.value?.clear()
 
+  // 如果有文件附件，先上传文件
+  if (file) {
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      const uploadRes = await api.post('/ai/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        timeout: 60000
+      })
+      if (uploadRes.data?.code === 200 && uploadRes.data?.data) {
+        messageText = `${messageText}\n\n[附件: ${file.name}](${uploadRes.data.data})`
+      }
+    } catch (uploadErr) {
+      console.warn('文件上传失败，将只发送文本消息:', uploadErr)
+    }
+  }
+
   // 创建AI消息占位
+  const aiMessageId = generateMessageId()
   const aiMessage = {
-    id: generateMessageId(),
+    id: aiMessageId,
     role: 'assistant',
     content: '',
     timestamp: Date.now(),
     loading: true
   }
   messages.value.push(aiMessage)
+  pendingAiMessageId = aiMessageId
   isLoading.value = true
+  streamingMessageId.value = null
+  streamingContent.value = ''
   startWaitingTimer()
 
-  try {
-    let aiResponse = ''
-
-    // 如果有文件附件，先上传文件
-    if (file) {
-      try {
-        const formData = new FormData()
-        formData.append('file', file)
-        const uploadRes = await api.post('/ai/upload', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-          timeout: 60000
-        })
-        if (uploadRes.data?.code === 200 && uploadRes.data?.data) {
-          // 将文件URL加入消息，让AI分析
-          messageText = `${messageText}\n\n[附件: ${file.name}](${uploadRes.data.data})`
-        }
-      } catch (uploadErr) {
-        console.warn('文件上传失败，将只发送文本消息:', uploadErr)
-      }
+  // 确保WebSocket已连接
+  if (!wsClient.isReady()) {
+    try {
+      await wsClient.connect(authStore.token)
+    } catch (err) {
+      console.error('WebSocket连接失败，回退到HTTP:', err)
+      await sendViaHttp(messageText, aiMessageId)
+      return
     }
+  }
 
-    // 调用AI聊天API
+  // 通过WebSocket发送消息
+  wsClient.sendMessage(messageText, settings.keepContext)
+}
+
+// HTTP回退方案（WebSocket不可用时）
+const sendViaHttp = async (messageText, aiMessageId) => {
+  try {
     const response = await api.post(
       '/ai/chat',
       {
@@ -317,27 +348,24 @@ const handleSend = async ({ text, file }) => {
 
     const data = response.data
     if (data.code === 200) {
-      aiResponse = data.data?.message || data.data
+      const aiResponse = data.data?.message || data.data
       if (!aiResponse || (typeof aiResponse === 'string' && !aiResponse.trim())) {
         throw new Error('AI回复为空，请重试')
+      }
+      const index = messages.value.findIndex(m => m.id === aiMessageId)
+      if (index > -1) {
+        messages.value[index] = {
+          ...messages.value[index],
+          content: aiResponse,
+          loading: false,
+          timestamp: Date.now()
+        }
       }
     } else {
       throw new Error(data.message || '请求失败')
     }
-
-    // 更新AI消息
-    const index = messages.value.findIndex(m => m.id === aiMessage.id)
-    if (index > -1) {
-      messages.value[index] = {
-        ...messages.value[index],
-        content: aiResponse,
-        loading: false,
-        timestamp: Date.now()
-      }
-    }
   } catch (error) {
     console.error('发送消息失败:', error)
-
     let errorMessage = '发送失败'
     const status = error.response?.status
     const msg = error.response?.data?.message || error.message
@@ -357,9 +385,7 @@ const handleSend = async ({ text, file }) => {
     }
 
     ElMessage.error(errorMessage)
-
-    // 移除失败的AI消息
-    const index = messages.value.findIndex(m => m.id === aiMessage.id)
+    const index = messages.value.findIndex(m => m.id === aiMessageId)
     if (index > -1) {
       messages.value.splice(index, 1)
     }
@@ -367,6 +393,77 @@ const handleSend = async ({ text, file }) => {
     stopWaitingTimer()
     isLoading.value = false
   }
+}
+
+// WebSocket事件处理
+const setupWebSocketHandlers = () => {
+  wsClient.on('onStreamStart', () => {
+    stopWaitingTimer()
+    if (pendingAiMessageId) {
+      streamingMessageId.value = pendingAiMessageId
+      streamingContent.value = ''
+      const index = messages.value.findIndex(m => m.id === pendingAiMessageId)
+      if (index > -1) {
+        messages.value[index].loading = false
+      }
+    }
+  })
+
+  wsClient.on('onStreamChunk', message => {
+    if (message.content) {
+      streamingContent.value += message.content
+    }
+  })
+
+  wsClient.on('onStreamComplete', message => {
+    if (pendingAiMessageId) {
+      const fullContent = message.fullContent || streamingContent.value
+      const index = messages.value.findIndex(m => m.id === pendingAiMessageId)
+      if (index > -1) {
+        messages.value[index] = {
+          ...messages.value[index],
+          content: fullContent,
+          loading: false,
+          timestamp: Date.now()
+        }
+      }
+      streamingMessageId.value = null
+      streamingContent.value = ''
+      pendingAiMessageId = null
+    }
+    stopWaitingTimer()
+    isLoading.value = false
+  })
+
+  wsClient.on('onAIError', message => {
+    ElMessage.error(message.message || 'AI响应出错')
+    if (pendingAiMessageId) {
+      const index = messages.value.findIndex(m => m.id === pendingAiMessageId)
+      if (index > -1) {
+        messages.value.splice(index, 1)
+      }
+      pendingAiMessageId = null
+    }
+    streamingMessageId.value = null
+    streamingContent.value = ''
+    stopWaitingTimer()
+    isLoading.value = false
+  })
+
+  wsClient.on('onClose', () => {
+    if (isLoading.value && pendingAiMessageId) {
+      ElMessage.warning('连接断开，请重试')
+      const index = messages.value.findIndex(m => m.id === pendingAiMessageId)
+      if (index > -1) {
+        messages.value.splice(index, 1)
+      }
+      pendingAiMessageId = null
+      streamingMessageId.value = null
+      streamingContent.value = ''
+      stopWaitingTimer()
+      isLoading.value = false
+    }
+  })
 }
 
 // 快捷操作
@@ -797,15 +894,25 @@ watch(
 )
 
 // 生命周期
-onMounted(() => {
+onMounted(async () => {
   loadSettings()
   loadHistoryList()
   document.addEventListener('keydown', handleKeydown)
+  setupWebSocketHandlers()
+  // 自动连接WebSocket
+  if (authStore.token) {
+    try {
+      await wsClient.connect(authStore.token)
+    } catch (err) {
+      console.warn('WebSocket连接失败，将使用HTTP回退:', err)
+    }
+  }
 })
 
 onUnmounted(() => {
   document.removeEventListener('keydown', handleKeydown)
   stopWaitingTimer()
+  wsClient.close(false)
 
   if (saveTimer.value) {
     clearTimeout(saveTimer.value)
