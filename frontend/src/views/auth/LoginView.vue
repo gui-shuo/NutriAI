@@ -96,6 +96,27 @@
           <router-link to="/register" class="link"> 立即注册 </router-link>
         </div>
       </el-form>
+
+      <!-- 第三方登录 -->
+      <div class="social-login-section">
+        <el-divider>其他登录方式</el-divider>
+        <div class="social-buttons">
+          <el-tooltip content="微信登录" placement="top">
+            <button class="social-btn wechat-btn" @click="handleSocialLogin('wechat')" :disabled="socialLoading">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                <path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 0 1 .213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 0 0 .167-.054l1.903-1.114a.864.864 0 0 1 .717-.098 10.16 10.16 0 0 0 2.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178A1.17 1.17 0 0 1 4.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178 1.17 1.17 0 0 1-1.162-1.178c0-.651.52-1.18 1.162-1.18zm5.34 2.867c-1.797-.052-3.746.512-5.28 1.786-1.72 1.428-2.687 3.72-1.78 6.22.942 2.453 3.666 4.229 6.884 4.229.826 0 1.622-.12 2.361-.336a.722.722 0 0 1 .598.082l1.584.926a.272.272 0 0 0 .14.047c.134 0 .24-.111.24-.247 0-.06-.023-.12-.038-.177l-.327-1.233a.582.582 0 0 1-.023-.156.49.49 0 0 1 .201-.398C23.024 18.48 24 16.82 24 14.98c0-3.21-2.931-5.837-7.062-6.122zm-2.18 2.769c.535 0 .969.44.969.982a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.982.97-.982zm4.553 0c.535 0 .969.44.969.982a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.982.97-.982z"/>
+              </svg>
+            </button>
+          </el-tooltip>
+          <el-tooltip content="QQ登录" placement="top">
+            <button class="social-btn qq-btn" @click="handleSocialLogin('qq')" :disabled="socialLoading">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                <path d="M21.395 15.035a39.548 39.548 0 0 0-1.42-2.256c.009-.021.016-.042.025-.063.511-1.205.778-2.503.778-3.774C20.778 4.014 16.764 0 11.836 0S2.893 4.014 2.893 8.942c0 1.271.267 2.569.778 3.774.009.021.016.042.025.063a39.56 39.56 0 0 0-1.42 2.256c-1.025 1.74-1.117 2.673-.897 2.995.226.33 1.213.212 2.705-.527a11.49 11.49 0 0 0 .396 1.006c.455.987 1.016 1.736 1.6 2.233.052.044.096.082.149.124-.074.052-.138.107-.179.161-.535.695-.329 1.17.084 1.578.435.431 1.386.766 2.455.93 1.044.162 1.873.067 2.705-.1.832-.169 1.392-.373 1.905-.563.512.19 1.073.394 1.905.563.832.167 1.661.262 2.705.1 1.069-.164 2.02-.499 2.455-.93.413-.408.619-.883.084-1.578-.041-.054-.105-.109-.179-.161.053-.042.097-.08.149-.124.584-.497 1.145-1.246 1.6-2.233a11.51 11.51 0 0 0 .396-1.006c1.492.739 2.479.857 2.705.527.22-.322.128-1.255-.897-2.995z"/>
+              </svg>
+            </button>
+          </el-tooltip>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -105,6 +126,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { Loading } from '@element-plus/icons-vue'
 import { useAuthStore } from '@/stores/auth'
+import { socialAuthApi } from '@/services/socialAuth'
 import api from '@/services/api'
 import message from '@/utils/message'
 
@@ -271,6 +293,31 @@ onMounted(() => {
     router.push('/')
   }
 })
+
+// 第三方社交登录
+const socialLoading = ref(false)
+
+const handleSocialLogin = async (provider) => {
+  socialLoading.value = true
+  try {
+    let response
+    if (provider === 'wechat') {
+      response = await socialAuthApi.getWechatAuthUrl('login')
+    } else if (provider === 'qq') {
+      response = await socialAuthApi.getQqAuthUrl('login')
+    }
+    if (response?.data?.code === 200 && response.data.data) {
+      window.location.href = response.data.data
+    } else {
+      message.warning(response?.data?.message || '该登录方式暂未开通，请使用账号密码登录')
+    }
+  } catch (error) {
+    const errMsg = error.response?.data?.message || '该登录方式暂未开通'
+    message.warning(errMsg)
+  } finally {
+    socialLoading.value = false
+  }
+}
 </script>
 
 <style scoped lang="scss">
@@ -418,5 +465,55 @@ onMounted(() => {
   .register-link {
     color: #9ca3af;
   }
+}
+
+.social-login-section {
+  margin-top: 8px;
+
+  :deep(.el-divider__text) {
+    font-size: 13px;
+    color: #9ca3af;
+  }
+}
+
+.social-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 8px;
+}
+
+.social-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+.wechat-btn {
+  color: #07c160;
+  &:hover { border-color: #07c160; background: #f0fdf4; }
+}
+
+.qq-btn {
+  color: #12b7f5;
+  &:hover { border-color: #12b7f5; background: #eff6ff; }
 }
 </style>

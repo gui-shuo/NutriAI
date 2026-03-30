@@ -15,7 +15,7 @@
           v-model="form.username"
           class="input"
           placeholder="请输入用户名"
-          :disabled="loginLoading || wxLoading"
+          :disabled="loginLoading"
         />
       </view>
 
@@ -26,7 +26,7 @@
           class="input"
           type="password"
           placeholder="请输入密码"
-          :disabled="loginLoading || wxLoading"
+          :disabled="loginLoading"
         />
       </view>
 
@@ -38,7 +38,7 @@
             v-model="form.captchaCode"
             class="input"
             placeholder="请输入验证码"
-            :disabled="loginLoading || wxLoading"
+            :disabled="loginLoading"
           />
         </view>
         <view class="captcha-img-wrap" @tap="loadCaptcha">
@@ -56,20 +56,10 @@
       <button
         class="btn-primary"
         :loading="loginLoading"
-        :disabled="loginLoading || wxLoading"
+        :disabled="loginLoading"
         @tap="handleLogin"
       >
         登录
-      </button>
-
-      <!-- WeChat Login -->
-      <button
-        class="btn-wx"
-        :loading="wxLoading"
-        :disabled="loginLoading || wxLoading"
-        @tap="handleWxLogin"
-      >
-        微信一键登录
       </button>
 
       <!-- Links -->
@@ -106,7 +96,6 @@ const form = reactive({
 const captchaImage = ref('')
 const captchaKey = ref('')
 const loginLoading = ref(false)
-const wxLoading = ref(false)
 
 onLoad(() => {
   loadCaptcha()
@@ -158,40 +147,6 @@ async function handleLogin() {
   } finally {
     loginLoading.value = false
   }
-}
-
-async function handleWxLogin() {
-  if (wxLoading.value) return
-  wxLoading.value = true
-  uni.login({
-    provider: 'weixin',
-    success: async (loginRes) => {
-      if (!loginRes?.code) {
-        uni.showToast({ title: '获取微信code失败', icon: 'none' })
-        wxLoading.value = false
-        return
-      }
-      try {
-        const res = await userStore.wxLogin(loginRes.code)
-        if (res.code === 200) {
-          uni.showToast({ title: '登录成功', icon: 'success' })
-          setTimeout(() => {
-            uni.switchTab({ url: '/pages/index/index' })
-          }, 800)
-        } else {
-          uni.showToast({ title: res.message || '微信登录失败', icon: 'none' })
-        }
-      } catch {
-        uni.showToast({ title: '微信登录失败', icon: 'none' })
-      } finally {
-        wxLoading.value = false
-      }
-    },
-    fail: () => {
-      uni.showToast({ title: '微信登录取消', icon: 'none' })
-      wxLoading.value = false
-    }
-  })
 }
 
 function goTo(url: string) {
@@ -309,22 +264,6 @@ function goTo(url: string) {
   border-radius: 16rpx;
   border: none;
   margin-bottom: 24rpx;
-
-  &[disabled] {
-    opacity: 0.6;
-  }
-}
-
-.btn-wx {
-  width: 100%;
-  height: 88rpx;
-  line-height: 88rpx;
-  background: #fff;
-  color: #07c160;
-  font-size: 32rpx;
-  font-weight: 600;
-  border-radius: 16rpx;
-  border: 2rpx solid #07c160;
 
   &[disabled] {
     opacity: 0.6;

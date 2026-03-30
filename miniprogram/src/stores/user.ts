@@ -38,17 +38,6 @@ export const useUserStore = defineStore('user', () => {
     return res
   }
 
-  // 微信登录
-  async function wxLogin(code: string) {
-    const res = await request<any>({
-      url: '/auth/wx-login',
-      method: 'POST',
-      data: { code }
-    })
-    if (res.code === 200) _saveLogin(res.data)
-    return res
-  }
-
   // 注册
   async function register(data: any) {
     return request({ url: '/auth/register', method: 'POST', data })
@@ -87,5 +76,5 @@ export const useUserStore = defineStore('user', () => {
     } catch {}
   }
 
-  return { userInfo, isLoggedIn, isAdmin, login, wxLogin, register, logout, restore, fetchUserInfo }
+  return { userInfo, isLoggedIn, isAdmin, login, register, logout, restore, fetchUserInfo }
 })

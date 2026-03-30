@@ -69,7 +69,11 @@ public class SecurityConfig {
                                 "/community/feed",  // 社区动态列表（公开浏览）
                                 "/app-versions/latest",  // APP最新版本（公开）
                                 "/app-versions/list",  // APP版本列表（公开）
-                                "/app-versions/download/*"  // APP下载（公开）
+                                "/app-versions/download/*",  // APP下载（公开）
+                                "/auth/social/wechat/auth-url",  // 微信授权URL（公开）
+                                "/auth/social/qq/auth-url",  // QQ授权URL（公开）
+                                "/auth/social/wechat/login",  // 微信登录（公开）
+                                "/auth/social/qq/login"  // QQ登录（公开）
                         ).permitAll()
                         
                         // 其他所有请求都需要认证

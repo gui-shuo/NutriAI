@@ -68,6 +68,9 @@ public class User {
     @Column(name = "wx_open_id", unique = true, length = 100)
     private String wxOpenId;
     
+    @Column(name = "qq_open_id", unique = true, length = 100)
+    private String qqOpenId;
+    
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
     

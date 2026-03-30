@@ -60,6 +60,8 @@ public class LoginResponse {
         private String role;
         private String status;
         private LocalDateTime lastLoginTime;
+        private boolean wechatBound;
+        private boolean qqBound;
         
         /**
          * 从User实体构建UserInfo
@@ -75,6 +77,8 @@ public class LoginResponse {
                     .role(user.getRole())
                     .status(user.getStatus())
                     .lastLoginTime(user.getLastLoginTime())
+                    .wechatBound(user.getWxOpenId() != null && !user.getWxOpenId().isBlank())
+                    .qqBound(user.getQqOpenId() != null && !user.getQqOpenId().isBlank())
                     .build();
         }
     }

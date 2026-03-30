@@ -24,6 +24,9 @@
 
         <!-- 收货地址 -->
         <AddressManager v-if="activeMenu === 'address'" />
+
+        <!-- 账号绑定 -->
+        <AccountBinding v-if="activeMenu === 'bindAccount'" />
       </div>
     </div>
   </div>
@@ -37,6 +40,7 @@ import ProfileEdit from '@/components/profile/ProfileEdit.vue'
 import PasswordChange from '@/components/profile/PasswordChange.vue'
 import HealthRecord from '@/components/profile/HealthRecord.vue'
 import AddressManager from '@/components/profile/AddressManager.vue'
+import AccountBinding from '@/components/profile/AccountBinding.vue'
 
 // 当前激活的菜单
 const activeMenu = ref('info')

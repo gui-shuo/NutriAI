@@ -28,6 +28,12 @@ const routes = [
     meta: { title: '忘记密码', hideForAuth: true }
   },
   {
+    path: '/auth/callback/:provider',
+    name: 'SocialCallback',
+    component: () => import('@/views/auth/SocialCallbackView.vue'),
+    meta: { title: '社交登录' }
+  },
+  {
     path: '/profile',
     name: 'Profile',
     component: () => import('@/views/ProfileView.vue'),
