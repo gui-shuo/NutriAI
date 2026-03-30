@@ -5,6 +5,29 @@
     "versionName": "1.0.0",
     "versionCode": "100",
     "transformPx": false,
+    "h5": {
+        "title": "NutriAI - AI智能健康饮食助手",
+        "router": {
+            "mode": "hash",
+            "base": "/h5/"
+        },
+        "devServer": {
+            "port": 5173,
+            "proxy": {
+                "/api": {
+                    "target": "https://nutriai.itshuo.me",
+                    "changeOrigin": true,
+                    "secure": true
+                }
+            }
+        },
+        "optimization": {
+            "treeShaking": {
+                "enable": true
+            }
+        },
+        "sdkConfigs": {}
+    },
     "mp-weixin": {
         "appid": "wxcf557b14e389275f",
         "setting": {
@@ -13,8 +36,40 @@
             "postcss": true,
             "minified": true
         },
-        "usingComponents": true,
         "usingComponents": true
+    },
+    "app-plus": {
+        "distribute": {
+            "android": {
+                "permissions": [
+                    "<uses-permission android:name=\"android.permission.INTERNET\"/>",
+                    "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>",
+                    "<uses-permission android:name=\"android.permission.CAMERA\"/>",
+                    "<uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\"/>",
+                    "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\"/>"
+                ],
+                "minSdkVersion": 21
+            },
+            "icons": {
+                "android": {
+                    "hdpi": "static/icons/icon-72.png",
+                    "xhdpi": "static/icons/icon-96.png",
+                    "xxhdpi": "static/icons/icon-144.png",
+                    "xxxhdpi": "static/icons/icon-192.png"
+                }
+            },
+            "splashscreen": {
+                "androidStyle": "common"
+            }
+        },
+        "modules": {},
+        "statusbar": {
+            "immersed": true
+        },
+        "softinput": {
+            "navBar": "auto",
+            "mode": "adjustResize"
+        }
     },
     "uniStatistics": {
         "enable": false

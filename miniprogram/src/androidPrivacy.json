@@ -1,0 +1,28 @@
+{
+  "version": "1",
+  "prompt": "template",
+  "title": "用户协议和隐私政策",
+  "message": "NutriAI非常重视您的隐私保护和个人信息保护。在您使用我们的服务前，请仔细阅读<a href=\"https://nutriai.itshuo.me/h5/#/pages/legal/index?type=privacy\">《隐私政策》</a>和<a href=\"https://nutriai.itshuo.me/h5/#/pages/legal/index?type=terms\">《用户协议》</a>的全部内容，同意并接受全部条款后方可开始使用我们的服务。",
+  "buttonAccept": "同意并继续",
+  "buttonRefuse": "不同意",
+  "second": {
+    "title": "温馨提示",
+    "message": "您需要同意用户协议和隐私政策才能使用NutriAI。如您不同意，很遗憾我们将无法为您提供服务。",
+    "buttonAccept": "同意并继续",
+    "buttonRefuse": "退出应用"
+  },
+  "styles": {
+    "backgroundColor": "#ffffff",
+    "borderRadius": "8px",
+    "title": {
+      "color": "#333333"
+    },
+    "buttonAccept": {
+      "color": "#ffffff",
+      "backgroundColor": "#4CAF50"
+    },
+    "buttonRefuse": {
+      "color": "#999999"
+    }
+  }
+}
