@@ -63,7 +63,7 @@ export class AIWebSocketClient {
     this.reconnectTimer = null
 
     // 心跳配置
-    this.heartbeatInterval = 30000 // 30秒
+    this.heartbeatInterval = 15000 // 15秒（CDN可能30秒超时，保持活跃）
     this.heartbeatTimer = null
 
     // 当前响应累积内容
@@ -113,6 +113,9 @@ export class AIWebSocketClient {
       }
 
       try {
+        // 重置自动重连
+        this.autoReconnect = true
+
         // 构建WebSocket URL（注意：路径已包含/api前缀）
         const wsUrl = `${WS_BASE_URL}?token=${token}`
         console.log('🔌 正在连接WebSocket:', wsUrl.replace(/token=.*/, 'token=***'))

@@ -249,7 +249,11 @@ const startWaitingTimer = () => {
   waitingText.value = ''
   waitingTimer.value = setInterval(() => {
     waitingSeconds.value++
-    if (waitingSeconds.value >= 15) {
+    if (waitingSeconds.value >= 60) {
+      waitingText.value = '🔄 AI仍在处理中，网络延迟较大，请继续等待...'
+    } else if (waitingSeconds.value >= 30) {
+      waitingText.value = '⏳ AI正在生成回复，由于网络原因请耐心等待...'
+    } else if (waitingSeconds.value >= 15) {
       waitingText.value = '🧠 AI正在深度思考，请耐心等待...'
     } else if (waitingSeconds.value >= 5) {
       waitingText.value = '⏳ 网络响应中，请稍候...'
@@ -405,69 +409,95 @@ const sendViaHttp = async (messageText, aiMessageId) => {
 
 // WebSocket事件处理
 const setupWebSocketHandlers = () => {
-  wsClient.on('onStreamStart', () => {
-    stopWaitingTimer()
-    if (pendingAiMessageId) {
-      streamingMessageId.value = pendingAiMessageId
+  // 使用通用消息处理器直接处理所有消息类型
+  wsClient.on('onMessage', message => {
+    const type = message.type
+
+    if (type === 'start') {
+      console.log('[AI Chat] Stream START')
+      // 不立即取消loading，等待实际内容到达再切换
       streamingContent.value = ''
-      const index = messages.value.findIndex(m => m.id === pendingAiMessageId)
-      if (index > -1) {
-        messages.value[index].loading = false
-      }
-    }
-  })
 
-  wsClient.on('onStreamChunk', message => {
-    if (message.content) {
-      streamingContent.value += message.content
-    }
-  })
-
-  wsClient.on('onStreamComplete', message => {
-    if (pendingAiMessageId) {
-      const fullContent = message.fullContent || streamingContent.value
-      const index = messages.value.findIndex(m => m.id === pendingAiMessageId)
-      if (index > -1) {
-        messages.value[index] = {
-          ...messages.value[index],
-          content: fullContent,
-          loading: false,
-          timestamp: Date.now()
+    } else if (type === 'chunk') {
+      if (message.content && pendingAiMessageId) {
+        streamingContent.value += message.content
+        // 首个有效内容到达：从loading切换到流式显示
+        if (!streamingMessageId.value) {
+          stopWaitingTimer()
+          streamingMessageId.value = pendingAiMessageId
+          const index = messages.value.findIndex(m => m.id === pendingAiMessageId)
+          if (index > -1) {
+            messages.value[index] = { ...messages.value[index], loading: false }
+          }
         }
+      }
+
+    } else if (type === 'complete') {
+      console.log('[AI Chat] Stream COMPLETE')
+      if (pendingAiMessageId) {
+        // 使用本地累积内容（onMessage在switch之前触发，currentResponse还未清空）
+        const fullContent = streamingContent.value || wsClient.currentResponse.value || ''
+        console.log('[AI Chat] Final content length:', fullContent.length)
+        const index = messages.value.findIndex(m => m.id === pendingAiMessageId)
+        if (index > -1) {
+          messages.value[index] = {
+            ...messages.value[index],
+            content: fullContent,
+            loading: false,
+            timestamp: Date.now()
+          }
+        }
+        streamingMessageId.value = null
+        streamingContent.value = ''
+        pendingAiMessageId = null
+      }
+      waitingText.value = ''
+      stopWaitingTimer()
+      isLoading.value = false
+
+    } else if (type === 'error') {
+      console.error('[AI Chat] Stream ERROR:', message.message)
+      ElMessage.error(message.message || 'AI响应出错')
+      if (pendingAiMessageId) {
+        const index = messages.value.findIndex(m => m.id === pendingAiMessageId)
+        if (index > -1) {
+          messages.value.splice(index, 1)
+        }
+        pendingAiMessageId = null
       }
       streamingMessageId.value = null
       streamingContent.value = ''
-      pendingAiMessageId = null
+      waitingText.value = ''
+      stopWaitingTimer()
+      isLoading.value = false
     }
-    stopWaitingTimer()
-    isLoading.value = false
-  })
-
-  wsClient.on('onAIError', message => {
-    ElMessage.error(message.message || 'AI响应出错')
-    if (pendingAiMessageId) {
-      const index = messages.value.findIndex(m => m.id === pendingAiMessageId)
-      if (index > -1) {
-        messages.value.splice(index, 1)
-      }
-      pendingAiMessageId = null
-    }
-    streamingMessageId.value = null
-    streamingContent.value = ''
-    stopWaitingTimer()
-    isLoading.value = false
   })
 
   wsClient.on('onClose', () => {
     if (isLoading.value && pendingAiMessageId) {
-      ElMessage.warning('连接断开，请重试')
-      const index = messages.value.findIndex(m => m.id === pendingAiMessageId)
-      if (index > -1) {
-        messages.value.splice(index, 1)
+      const partialContent = streamingContent.value || wsClient.currentResponse.value
+      if (partialContent) {
+        // 连接断开但有部分内容，保留
+        const index = messages.value.findIndex(m => m.id === pendingAiMessageId)
+        if (index > -1) {
+          messages.value[index] = {
+            ...messages.value[index],
+            content: partialContent,
+            loading: false,
+            timestamp: Date.now()
+          }
+        }
+      } else {
+        ElMessage.warning('连接断开，请重试')
+        const index = messages.value.findIndex(m => m.id === pendingAiMessageId)
+        if (index > -1) {
+          messages.value.splice(index, 1)
+        }
       }
       pendingAiMessageId = null
       streamingMessageId.value = null
       streamingContent.value = ''
+      waitingText.value = ''
       stopWaitingTimer()
       isLoading.value = false
     }
