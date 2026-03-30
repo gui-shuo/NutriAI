@@ -57,6 +57,13 @@
           <el-button type="primary" size="large" @click="getStarted"> 立即开始 </el-button>
           <el-button size="large" @click="learnMore"> 了解更多 </el-button>
         </div>
+        <div class="hero-mobile-hint">
+          📱 手机用户？访问
+          <a href="/h5/" target="_blank" class="h5-link">H5移动版</a>
+          或前往
+          <router-link to="/download" class="h5-link">下载中心</router-link>
+          获取APP
+        </div>
       </div>
 
       <!-- 功能特色 -->
@@ -164,6 +171,10 @@
             <router-link to="/legal/privacy">隐私政策</router-link>
             <span class="sep">|</span>
             <router-link to="/legal/disclaimer">免责声明</router-link>
+            <span class="sep">|</span>
+            <a href="/h5/" target="_blank">H5移动版</a>
+            <span class="sep">|</span>
+            <router-link to="/download">APP下载</router-link>
           </div>
         </div>
       </div>
@@ -376,6 +387,18 @@ const goToFeature = feature => {
   display: flex;
   gap: 16px;
   justify-content: center;
+}
+
+.hero-mobile-hint {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #64748b;
+}
+.h5-link {
+  color: #22c55e;
+  font-weight: 600;
+  text-decoration: none;
+  &:hover { color: #16a34a; text-decoration: underline; }
 }
 
 /* 功能特色 */

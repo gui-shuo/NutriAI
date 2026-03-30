@@ -84,6 +84,25 @@ public class OssService {
     }
 
     /**
+     * 上传APK安装包
+     */
+    public String uploadApk(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw new BusinessException("文件不能为空");
+        }
+        if (file.getSize() > 200 * 1024 * 1024) {
+            throw new BusinessException("APK文件大小不能超过200MB");
+        }
+        String contentType = file.getContentType();
+        String filename = file.getOriginalFilename();
+        if (filename == null || !filename.toLowerCase().endsWith(".apk")) {
+            throw new BusinessException("仅支持APK文件");
+        }
+        String key = "releases/apk/" + UUID.randomUUID() + ".apk";
+        return uploadToCos(file, key);
+    }
+
+    /**
      * 上传文件到腾讯云COS
      */
     private String uploadToCos(MultipartFile file, String key) {

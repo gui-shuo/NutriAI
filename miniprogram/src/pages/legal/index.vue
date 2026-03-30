@@ -16,11 +16,18 @@
         </view>
         <view class="section">
           <view class="section-title">三、用户责任</view>
-          <view class="section-text">1. 用户应确保注册信息的真实性和准确性。\n2. 用户不得利用本应用从事任何违法违规活动。\n3. 用户在社区发布的内容应遵守中华人民共和国相关法律法规。\n4. 用户应妥善保管账号信息。</view>
+          <view class="section-text">1. 用户应确保注册信息的真实性和准确性。
+2. 用户不得利用本应用从事任何违法违规活动。
+3. 用户在社区发布的内容应遵守中华人民共和国相关法律法规。
+4. 用户应妥善保管账号信息。</view>
         </view>
         <view class="section">
           <view class="section-title">四、免责声明</view>
-          <view class="section-text highlight">1. AI营养建议、饮食计划、食物识别结果等均为算法生成，仅供参考，不能替代专业医生、营养师的建议。\n2. 如您有任何健康问题，请务必咨询有资质的专业医疗人员。\n3. 本应用不对因使用AI生成内容而造成的任何损失承担责任。\n4. 社区中用户发布的内容不代表本应用立场。\n5. 商城中展示的产品信息来源于第三方，本应用不对产品质量做任何担保。</view>
+          <view class="section-text highlight">1. AI营养建议、饮食计划、食物识别结果等均为算法生成，仅供参考，不能替代专业医生、营养师的建议。
+2. 如您有任何健康问题，请务必咨询有资质的专业医疗人员。
+3. 本应用不对因使用AI生成内容而造成的任何损失承担责任。
+4. 社区中用户发布的内容不代表本应用立场。
+5. 商城中展示的产品信息来源于第三方，本应用不对产品质量做任何担保。</view>
         </view>
         <view class="section">
           <view class="section-title">五、知识产权</view>
@@ -40,19 +47,34 @@
       <view v-if="type === 'privacy'">
         <view class="section">
           <view class="section-title">一、信息收集</view>
-          <view class="section-text">为提供服务，我们可能收集以下信息：\n1. 注册信息：用户名、邮箱地址、手机号码（选填）。\n2. 健康档案信息：身高、体重、年龄等（用户自愿填写）。\n3. 饮食记录：用户主动记录的每日饮食信息。\n4. 设备信息：设备型号、操作系统版本。\n5. 使用数据：功能使用频率、页面访问记录。</view>
+          <view class="section-text">为提供服务，我们可能收集以下信息：
+1. 注册信息：用户名、邮箱地址、手机号码（选填）。
+2. 健康档案信息：身高、体重、年龄等（用户自愿填写）。
+3. 饮食记录：用户主动记录的每日饮食信息。
+4. 设备信息：设备型号、操作系统版本。
+5. 使用数据：功能使用频率、页面访问记录。</view>
         </view>
         <view class="section">
           <view class="section-title">二、信息用途</view>
-          <view class="section-text">我们收集的信息仅用于：\n1. 提供和改善AI饮食建议的个性化服务。\n2. 维护账号安全和应用正常运行。\n3. 向用户发送服务相关通知。\n4. 统计和分析以改善用户体验（数据已匿名化）。</view>
+          <view class="section-text">我们收集的信息仅用于：
+1. 提供和改善AI饮食建议的个性化服务。
+2. 维护账号安全和应用正常运行。
+3. 向用户发送服务相关通知。
+4. 统计和分析以改善用户体验（数据已匿名化）。</view>
         </view>
         <view class="section">
           <view class="section-title">三、信息安全</view>
-          <view class="section-text">1. 用户密码采用 BCrypt 加密存储。\n2. 数据传输全程采用 HTTPS 加密协议。\n3. 数据库存储于安全认证的云服务器中。\n4. 定期审查安全策略，防止数据泄露。</view>
+          <view class="section-text">1. 用户密码采用 BCrypt 加密存储。
+2. 数据传输全程采用 HTTPS 加密协议。
+3. 数据库存储于安全认证的云服务器中。
+4. 定期审查安全策略，防止数据泄露。</view>
         </view>
         <view class="section">
           <view class="section-title">四、信息共享</view>
-          <view class="section-text highlight">我们不会向任何第三方出售、出租或共享您的个人信息，除非：\n1. 获得您的明确授权同意。\n2. 根据法律法规或司法机关的强制要求。\n3. 为保护其他用户或公众的安全和权益。</view>
+          <view class="section-text highlight">我们不会向任何第三方出售、出租或共享您的个人信息，除非：
+1. 获得您的明确授权同意。
+2. 根据法律法规或司法机关的强制要求。
+3. 为保护其他用户或公众的安全和权益。</view>
         </view>
         <view class="section">
           <view class="section-title">五、用户权利</view>
@@ -75,19 +97,29 @@
         </view>
         <view class="section">
           <view class="section-title">一、AI 生成内容声明</view>
-          <view class="section-text highlight">1. AI生成的所有内容仅供参考，不构成医疗建议、诊断或治疗方案。\n2. AI生成内容可能存在不准确、不完整或过时的情况。\n3. 用户不应将AI建议作为制定饮食方案的唯一依据。\n4. 对于患有糖尿病、高血压、肾病、食物过敏等疾病的用户，请务必遵循专业医生的指导。</view>
+          <view class="section-text highlight">1. AI生成的所有内容仅供参考，不构成医疗建议、诊断或治疗方案。
+2. AI生成内容可能存在不准确、不完整或过时的情况。
+3. 用户不应将AI建议作为制定饮食方案的唯一依据。
+4. 对于患有糖尿病、高血压、肾病、食物过敏等疾病的用户，请务必遵循专业医生的指导。</view>
         </view>
         <view class="section">
           <view class="section-title">二、食物识别与营养数据声明</view>
-          <view class="section-text">1. 食物识别功能基于第三方图像识别API，识别结果可能存在误差。\n2. 营养成分数据来源于公开数据库，准确性和时效性不作保证。\n3. 不同品牌、产地、烹饪方式的食物营养成分可能差异较大。</view>
+          <view class="section-text">1. 食物识别功能基于第三方图像识别API，识别结果可能存在误差。
+2. 营养成分数据来源于公开数据库，准确性和时效性不作保证。
+3. 不同品牌、产地、烹饪方式的食物营养成分可能差异较大。</view>
         </view>
         <view class="section">
           <view class="section-title">三、健康与医疗声明</view>
-          <view class="section-text highlight">本应用不是医疗器械或医疗服务平台，不具备任何医疗资质。\n1. 不能用于疾病的预防、诊断、治疗或监测。\n2. 如出现健康问题，请立即就医。\n3. 孕妇、哺乳期女性、儿童、老年人及慢性疾病患者调整饮食前应咨询专业医疗人员。</view>
+          <view class="section-text highlight">本应用不是医疗器械或医疗服务平台，不具备任何医疗资质。
+1. 不能用于疾病的预防、诊断、治疗或监测。
+2. 如出现健康问题，请立即就医。
+3. 孕妇、哺乳期女性、儿童、老年人及慢性疾病患者调整饮食前应咨询专业医疗人员。</view>
         </view>
         <view class="section">
           <view class="section-title">四、产品商城声明</view>
-          <view class="section-text">1. 商城产品信息来源于第三方，不对其真实性做任何担保。\n2. 营养补充剂不能替代正常饮食和药物治疗。\n3. 购买使用营养产品前建议咨询专业人员。</view>
+          <view class="section-text">1. 商城产品信息来源于第三方，不对其真实性做任何担保。
+2. 营养补充剂不能替代正常饮食和药物治疗。
+3. 购买使用营养产品前建议咨询专业人员。</view>
         </view>
         <view class="section">
           <view class="section-title">五、社区内容声明</view>

@@ -43,6 +43,10 @@
             <el-icon><ChatDotRound /></el-icon>
             <span>社区管理</span>
           </el-menu-item>
+          <el-menu-item index="/admin/app-versions">
+            <el-icon><Download /></el-icon>
+            <span>APP版本</span>
+          </el-menu-item>
         </el-menu>
       </el-aside>
 
@@ -87,7 +91,8 @@ import {
   SwitchButton,
   ChatLineSquare,
   UserFilled,
-  ShoppingCart
+  ShoppingCart,
+  Download
 } from '@element-plus/icons-vue'
 import AlertNotification from '@/components/admin/AlertNotification.vue'
 import { useAuthStore } from '@/stores/auth'
@@ -112,7 +117,8 @@ const breadcrumbTitle = computed(() => {
     '/admin/feedbacks': '反馈管理',
     '/admin/nutritionists': '营养师管理',
     '/admin/products': '产品管理',
-    '/admin/community': '社区管理'
+    '/admin/community': '社区管理',
+    '/admin/app-versions': 'APP版本管理'
   }
   return titles[route.path] || '管理后台'
 })

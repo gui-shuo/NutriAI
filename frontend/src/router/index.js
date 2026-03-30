@@ -112,6 +112,12 @@ const routes = [
     meta: { title: '免责声明' }
   },
   {
+    path: '/download',
+    name: 'Download',
+    component: () => import('@/views/DownloadView.vue'),
+    meta: { title: 'APP下载' }
+  },
+  {
     path: '/admin',
     component: () => import('@/views/admin/AdminLayout.vue'),
     meta: { requiresAuth: true, requiresAdmin: true },
@@ -173,6 +179,12 @@ const routes = [
         name: 'AdminCommunity',
         component: () => import('@/views/admin/CommunityManagement.vue'),
         meta: { title: '社区管理' }
+      },
+      {
+        path: 'app-versions',
+        name: 'AdminAppVersions',
+        component: () => import('@/views/admin/AppVersionManagement.vue'),
+        meta: { title: 'APP版本管理' }
       }
     ]
   },
