@@ -32,6 +32,7 @@
       <MessageList
         ref="messageListRef"
         :messages="messages"
+        :waiting-text="waitingText"
         @regenerate="handleRegenerate"
         @favorite="handleFavorite"
         @unfavorite="handleUnfavorite"
@@ -194,6 +195,9 @@ const historyList = ref([])
 const favoritesList = ref([])
 const currentHistoryId = ref(null)
 const isLoading = ref(false)
+const waitingText = ref('')
+const waitingTimer = ref(null)
+const waitingSeconds = ref(0)
 const showHistory = ref(false)
 const showFavorites = ref(false)
 const showSettings = ref(false)
@@ -218,6 +222,29 @@ const favoriteMessages = computed(() => {
 // 生成消息ID
 const generateMessageId = () => {
   return `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+}
+
+// 等待提示计时器
+const startWaitingTimer = () => {
+  waitingSeconds.value = 0
+  waitingText.value = ''
+  waitingTimer.value = setInterval(() => {
+    waitingSeconds.value++
+    if (waitingSeconds.value >= 15) {
+      waitingText.value = '🧠 AI正在深度思考，请耐心等待...'
+    } else if (waitingSeconds.value >= 5) {
+      waitingText.value = '⏳ 网络响应中，请稍候...'
+    }
+  }, 1000)
+}
+
+const stopWaitingTimer = () => {
+  if (waitingTimer.value) {
+    clearInterval(waitingTimer.value)
+    waitingTimer.value = null
+  }
+  waitingSeconds.value = 0
+  waitingText.value = ''
 }
 
 // 发送消息
@@ -252,6 +279,7 @@ const handleSend = async ({ text, file }) => {
   }
   messages.value.push(aiMessage)
   isLoading.value = true
+  startWaitingTimer()
 
   try {
     let aiResponse = ''
@@ -336,6 +364,7 @@ const handleSend = async ({ text, file }) => {
       messages.value.splice(index, 1)
     }
   } finally {
+    stopWaitingTimer()
     isLoading.value = false
   }
 }
@@ -776,6 +805,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   document.removeEventListener('keydown', handleKeydown)
+  stopWaitingTimer()
 
   if (saveTimer.value) {
     clearTimeout(saveTimer.value)

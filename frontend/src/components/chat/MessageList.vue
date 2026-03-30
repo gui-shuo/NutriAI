@@ -61,6 +61,7 @@
               <span />
               <span />
               <span />
+              <div v-if="waitingText" class="waiting-hint">{{ waitingText }}</div>
             </div>
             <!-- 消息内容 -->
             <div v-else class="message-text">
@@ -138,6 +139,10 @@ const props = defineProps({
     default: null
   },
   streamingContent: {
+    type: String,
+    default: ''
+  },
+  waitingText: {
     type: String,
     default: ''
   }
@@ -462,6 +467,21 @@ defineExpose({
   display: flex;
   gap: 6px;
   padding: 8px 0;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.waiting-hint {
+  width: 100%;
+  font-size: 12px;
+  color: #909399;
+  margin-top: 6px;
+  animation: fadeInHint 0.3s ease;
+}
+
+@keyframes fadeInHint {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .typing-indicator span {
