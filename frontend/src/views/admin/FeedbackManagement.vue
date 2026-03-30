@@ -135,17 +135,25 @@
     </el-dialog>
 
     <!-- 回复对话框 -->
-    <el-dialog v-model="replyVisible" title="回复反馈" width="500px">
+    <el-dialog v-model="replyVisible" title="回复反馈" width="560px">
       <div v-if="replyTarget" class="reply-form">
         <div class="reply-feedback-info">
           <span class="reply-type">{{ getTypeIcon(replyTarget.type) }}</span>
           <span class="reply-title">{{ replyTarget.title }}</span>
         </div>
+
+        <!-- 快捷模板按钮 -->
+        <div class="template-bar">
+          <span class="template-label">快捷模板：</span>
+          <el-button size="small" type="warning" plain @click="applyTemplate('PROCESSING')">🔧 维护中</el-button>
+          <el-button size="small" type="success" plain @click="applyTemplate('RESOLVED')">✅ 修复完毕</el-button>
+        </div>
+
         <el-input
           v-model="replyContent"
           type="textarea"
           placeholder="请输入回复内容..."
-          :rows="5"
+          :rows="6"
           maxlength="1000"
           show-word-limit
         />
@@ -156,6 +164,10 @@
             <el-radio-button value="PROCESSING">处理中</el-radio-button>
             <el-radio-button value="CLOSED">已关闭</el-radio-button>
           </el-radio-group>
+        </div>
+        <div class="email-hint">
+          <el-icon><InfoFilled /></el-icon>
+          <span>回复将同时通过邮件通知用户（需用户已绑定邮箱或在反馈中填写邮箱）</span>
         </div>
       </div>
       <template #footer>
@@ -168,7 +180,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { ArrowDown } from '@element-plus/icons-vue'
+import { ArrowDown, InfoFilled } from '@element-plus/icons-vue'
 import {
   getAllFeedbacks,
   replyFeedback,
@@ -257,6 +269,20 @@ const openReply = (item) => {
   replyStatus.value = 'RESOLVED'
   replyVisible.value = true
   detailVisible.value = false
+}
+
+const applyTemplate = (templateType) => {
+  if (!replyTarget.value) return
+  const username = replyTarget.value.username || '用户'
+  const title = replyTarget.value.title || '您的反馈'
+
+  if (templateType === 'PROCESSING') {
+    replyContent.value = `尊敬的${username}，您好！\n\n感谢您提交的反馈。您反馈的问题「${title}」我们已收到并确认，目前该问题正在维护处理中，我们的技术团队正在积极排查和修复。\n\n我们会尽快完成处理，届时将再次通知您。感谢您的耐心等待与支持！`
+    replyStatus.value = 'PROCESSING'
+  } else if (templateType === 'RESOLVED') {
+    replyContent.value = `尊敬的${username}，您好！\n\n感谢您提交的反馈。您反馈的问题「${title}」已经修复完毕，请您更新至最新版本体验。\n\n如问题仍然存在或有其他建议，欢迎继续反馈。感谢您对 NutriAI 的支持！`
+    replyStatus.value = 'RESOLVED'
+  }
 }
 
 const handleReply = async () => {
@@ -464,6 +490,33 @@ onMounted(() => {
     margin-top: 14px;
     font-size: 14px;
     color: #6b7280;
+  }
+
+  .template-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+
+    .template-label {
+      font-size: 13px;
+      color: #6b7280;
+      white-space: nowrap;
+    }
+  }
+
+  .email-hint {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    font-size: 12px;
+    color: #9ca3af;
+
+    .el-icon {
+      font-size: 14px;
+      color: #a0aec0;
+    }
   }
 }
 </style>

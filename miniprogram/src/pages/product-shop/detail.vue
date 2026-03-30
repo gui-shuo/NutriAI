@@ -78,15 +78,53 @@
           <!-- Address Info -->
           <view class="form-section">
             <text class="form-label">收货信息</text>
+            <view class="manage-link" @tap="goAddressManage">管理</view>
           </view>
-          <view class="form-group">
-            <input class="form-input" v-model="address.name" placeholder="收货人姓名" />
+
+          <!-- Saved Address Selection -->
+          <view v-if="savedAddresses.length > 0 && !useManualAddress">
+            <view
+              class="saved-address-item"
+              :class="{ active: selectedAddressId === addr.id }"
+              v-for="addr in savedAddresses.slice(0, 3)"
+              :key="addr.id"
+              @tap="selectSavedAddress(addr)"
+            >
+              <view class="saved-addr-radio">
+                <view class="radio-dot" :class="{ checked: selectedAddressId === addr.id }"></view>
+              </view>
+              <view class="saved-addr-info">
+                <view class="saved-addr-top">
+                  <text class="saved-addr-name">{{ addr.receiverName }}</text>
+                  <text class="saved-addr-phone">{{ addr.receiverPhone }}</text>
+                  <view class="saved-addr-default" v-if="addr.isDefault">默认</view>
+                </view>
+                <text class="saved-addr-detail">{{ getAddrFullAddress(addr) }}</text>
+              </view>
+            </view>
+            <view class="manual-entry-link" @tap="useManualAddress = true">
+              <text>+ 使用新地址</text>
+            </view>
           </view>
-          <view class="form-group">
-            <input class="form-input" v-model="address.phone" placeholder="联系电话" type="number" maxlength="11" />
-          </view>
-          <view class="form-group">
-            <textarea class="form-textarea" v-model="address.detail" placeholder="详细地址" :maxlength="200" />
+
+          <!-- Manual Address Input -->
+          <view v-else>
+            <view class="back-to-saved" v-if="savedAddresses.length > 0" @tap="useManualAddress = false">
+              <text>← 选择已有地址</text>
+            </view>
+            <view class="form-group">
+              <input class="form-input" v-model="address.name" placeholder="收货人姓名" />
+            </view>
+            <view class="form-group">
+              <input class="form-input" v-model="address.phone" placeholder="联系电话" type="number" maxlength="11" />
+            </view>
+            <view class="form-group">
+              <textarea class="form-textarea" v-model="address.detail" placeholder="详细地址" :maxlength="200" />
+            </view>
+            <view class="save-address-check" @tap="saveNewAddress = !saveNewAddress">
+              <view class="check-box" :class="{ checked: saveNewAddress }">✓</view>
+              <text class="check-label">保存到我的地址</text>
+            </view>
           </view>
 
           <!-- Total -->
@@ -123,9 +161,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onUnmounted } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
-import { productApi } from '@/services/api'
+import { productApi, addressApi } from '@/services/api'
 import { checkLogin } from '@/utils/common'
 
 const product = ref<any>(null)
@@ -137,6 +175,9 @@ const orderNo = ref('')
 const orderError = ref('')
 const quantity = ref(1)
 const address = ref({ name: '', phone: '', detail: '' })
+const savedAddresses = ref<any[]>([])
+const selectedAddressId = ref<number | null>(null)
+const useManualAddress = ref(false)
 
 const productImages = computed(() => {
   if (!product.value) return []
@@ -169,18 +210,96 @@ function previewImage(index: number) {
 function openPurchase() {
   if (!checkLogin()) return
   quantity.value = 1
+  loadSavedAddresses()
   showPurchase.value = true
 }
 
+async function loadSavedAddresses() {
+  try {
+    const res = await addressApi.getList()
+    savedAddresses.value = res.data || []
+    if (savedAddresses.value.length > 0) {
+      const defaultAddr = savedAddresses.value.find((a: any) => a.isDefault) || savedAddresses.value[0]
+      selectedAddressId.value = defaultAddr.id
+      useManualAddress.value = false
+    } else {
+      useManualAddress.value = true
+    }
+  } catch {
+    savedAddresses.value = []
+    useManualAddress.value = true
+  }
+}
+
+function selectSavedAddress(addr: any) {
+  selectedAddressId.value = addr.id
+}
+
+function getAddrFullAddress(addr: any): string {
+  let s = ''
+  if (addr.province) s += addr.province
+  if (addr.city) s += addr.city
+  if (addr.district) s += addr.district
+  s += addr.detailAddress
+  return s
+}
+
+function goAddressManage() {
+  uni.navigateTo({ url: '/pages/address/index' })
+}
+
+// Listen for address selection from address page
+uni.$on('address-selected', (addr: any) => {
+  savedAddresses.value = savedAddresses.value.map((a: any) => a.id === addr.id ? addr : a)
+  if (!savedAddresses.value.find((a: any) => a.id === addr.id)) {
+    savedAddresses.value.unshift(addr)
+  }
+  selectedAddressId.value = addr.id
+  useManualAddress.value = false
+})
+
+onUnmounted(() => {
+  uni.$off('address-selected')
+})
+
+const saveNewAddress = ref(true)
+
 async function confirmOrder() {
-  if (!address.value.name.trim()) {
-    return uni.showToast({ title: '请输入收货人姓名', icon: 'none' })
-  }
-  if (!address.value.phone.trim() || address.value.phone.length < 11) {
-    return uni.showToast({ title: '请输入正确的手机号', icon: 'none' })
-  }
-  if (!address.value.detail.trim()) {
-    return uni.showToast({ title: '请输入详细地址', icon: 'none' })
+  let receiverName: string, receiverPhone: string, receiverAddress: string
+
+  if (!useManualAddress.value && selectedAddressId.value) {
+    const selected = savedAddresses.value.find((a: any) => a.id === selectedAddressId.value)
+    if (!selected) {
+      return uni.showToast({ title: '请选择收货地址', icon: 'none' })
+    }
+    receiverName = selected.receiverName
+    receiverPhone = selected.receiverPhone
+    receiverAddress = getAddrFullAddress(selected)
+  } else {
+    if (!address.value.name.trim()) {
+      return uni.showToast({ title: '请输入收货人姓名', icon: 'none' })
+    }
+    if (!address.value.phone.trim() || address.value.phone.length < 11) {
+      return uni.showToast({ title: '请输入正确的手机号', icon: 'none' })
+    }
+    if (!address.value.detail.trim()) {
+      return uni.showToast({ title: '请输入详细地址', icon: 'none' })
+    }
+    receiverName = address.value.name
+    receiverPhone = address.value.phone
+    receiverAddress = address.value.detail
+
+    // Save new address if checkbox is checked
+    if (saveNewAddress.value) {
+      try {
+        await addressApi.add({
+          receiverName: address.value.name,
+          receiverPhone: address.value.phone,
+          detailAddress: address.value.detail,
+          isDefault: savedAddresses.value.length === 0
+        })
+      } catch { /* ignore save failure */ }
+    }
   }
 
   uni.showLoading({ title: '提交订单...' })
@@ -188,14 +307,13 @@ async function confirmOrder() {
     const orderData = {
       productId: product.value.id,
       quantity: quantity.value,
-      receiverName: address.value.name,
-      receiverPhone: address.value.phone,
-      receiverAddress: address.value.detail
+      receiverName,
+      receiverPhone,
+      receiverAddress
     }
     const res = await productApi.createOrder(orderData)
     const no = res.data?.orderNo || res.data
 
-    // Simulate payment
     uni.showLoading({ title: '支付中...' })
     await productApi.simulatePay(no)
 
@@ -471,6 +589,137 @@ async function loadProduct(id: number) {
   font-size: 28rpx;
   font-weight: 600;
   color: #333;
+}
+
+.manage-link {
+  font-size: 26rpx;
+  color: #07c160;
+}
+
+/* Saved Address Selection */
+.saved-address-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16rpx;
+  padding: 20rpx;
+  border: 2rpx solid #eee;
+  border-radius: 12rpx;
+  margin-bottom: 12rpx;
+}
+
+.saved-address-item.active {
+  border-color: #07c160;
+  background: rgba(7, 193, 96, 0.03);
+}
+
+.saved-addr-radio {
+  padding-top: 6rpx;
+}
+
+.radio-dot {
+  width: 36rpx;
+  height: 36rpx;
+  border: 2rpx solid #ddd;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.radio-dot.checked {
+  border-color: #07c160;
+  background: #07c160;
+}
+
+.radio-dot.checked::after {
+  content: '';
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.saved-addr-info {
+  flex: 1;
+}
+
+.saved-addr-top {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 8rpx;
+}
+
+.saved-addr-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.saved-addr-phone {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.saved-addr-default {
+  font-size: 18rpx;
+  color: #fff;
+  background: #07c160;
+  padding: 2rpx 10rpx;
+  border-radius: 6rpx;
+}
+
+.saved-addr-detail {
+  font-size: 24rpx;
+  color: #999;
+  line-height: 1.4;
+}
+
+.manual-entry-link {
+  text-align: center;
+  padding: 16rpx;
+  font-size: 26rpx;
+  color: #07c160;
+  border: 2rpx dashed #07c160;
+  border-radius: 12rpx;
+  margin-bottom: 16rpx;
+}
+
+.back-to-saved {
+  font-size: 26rpx;
+  color: #07c160;
+  margin-bottom: 16rpx;
+}
+
+.save-address-check {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-top: 8rpx;
+  margin-bottom: 16rpx;
+}
+
+.check-box {
+  width: 36rpx;
+  height: 36rpx;
+  border: 2rpx solid #ddd;
+  border-radius: 6rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22rpx;
+  color: transparent;
+}
+
+.check-box.checked {
+  background: #07c160;
+  border-color: #07c160;
+  color: #fff;
+}
+
+.check-label {
+  font-size: 26rpx;
+  color: #666;
 }
 
 .quantity-selector {

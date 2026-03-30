@@ -72,6 +72,98 @@ public class EmailService {
     }
 
     /**
+     * 发送反馈回复通知邮件给用户
+     */
+    @Async
+    public void sendFeedbackReplyNotification(String toEmail, String username,
+                                               String feedbackTitle, String feedbackType,
+                                               String feedbackContent, String adminReply,
+                                               String status) {
+        String typeText = switch (feedbackType) {
+            case "BUG" -> "🐛 Bug报告";
+            case "FEATURE" -> "💡 功能建议";
+            case "SUGGESTION" -> "📝 意见建议";
+            default -> "📋 其他反馈";
+        };
+
+        String statusText;
+        String statusColor;
+        String statusEmoji;
+        String greeting;
+
+        if ("PROCESSING".equals(status)) {
+            statusText = "维护中";
+            statusColor = "#409eff";
+            statusEmoji = "🔧";
+            greeting = "尊敬的 " + username + " 用户，您好！\n\n"
+                    + "感谢您提交的反馈。您反馈的问题「" + feedbackTitle + "」我们已收到，"
+                    + "目前该问题正在维护处理中，我们的技术团队正在积极修复。";
+        } else {
+            statusText = "已修复";
+            statusColor = "#67c23a";
+            statusEmoji = "✅";
+            greeting = "尊敬的 " + username + " 用户，您好！\n\n"
+                    + "感谢您提交的反馈。您反馈的问题「" + feedbackTitle + "」已经修复完毕，"
+                    + "请您体验并确认问题是否已解决。";
+        }
+
+        String subject = "【NutriAI】您的反馈已回复 - " + statusEmoji + " " + statusText;
+        String htmlContent = buildFeedbackReplyHtml(username, feedbackTitle, typeText,
+                feedbackContent, adminReply, statusText, statusColor, statusEmoji, greeting);
+        try {
+            sendHtmlMail(toEmail, subject, htmlContent);
+        } catch (Exception e) {
+            log.error("发送反馈回复邮件失败: to={}, title={}", toEmail, feedbackTitle, e);
+        }
+    }
+
+    /**
+     * 构建反馈回复通知邮件HTML
+     */
+    private String buildFeedbackReplyHtml(String username, String title, String typeText,
+                                           String feedbackContent, String adminReply,
+                                           String statusText, String statusColor,
+                                           String statusEmoji, String greeting) {
+        return """
+            <!DOCTYPE html>
+            <html>
+            <head><meta charset="UTF-8"></head>
+            <body style="margin:0;padding:0;background-color:#f4f4f4;font-family:'Microsoft YaHei',Arial,sans-serif;">
+              <div style="max-width:600px;margin:40px auto;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.1);">
+                <div style="background:linear-gradient(135deg,#667eea 0%%,#764ba2 100%%);padding:30px;text-align:center;">
+                  <h1 style="color:#ffffff;margin:0;font-size:28px;">🥗 NutriAI</h1>
+                  <p style="color:rgba(255,255,255,0.85);margin:8px 0 0;font-size:14px;">反馈回复通知</p>
+                </div>
+                <div style="padding:32px;">
+                  <div style="display:flex;align-items:center;margin-bottom:20px;">
+                    <span style="display:inline-block;background:%s;color:#fff;padding:6px 16px;border-radius:20px;font-size:14px;font-weight:bold;">%s %s</span>
+                    <span style="margin-left:12px;color:#667eea;font-size:13px;">%s</span>
+                  </div>
+                  <p style="color:#4b5563;font-size:14px;line-height:1.8;margin:0 0 20px;white-space:pre-wrap;">%s</p>
+                  <div style="background:#f9fafb;border-left:4px solid #667eea;padding:16px;border-radius:0 8px 8px 0;margin-bottom:20px;">
+                    <p style="color:#6b7280;font-size:13px;margin:0 0 8px;font-weight:bold;">📋 您反馈的问题：</p>
+                    <p style="color:#1f2937;font-size:14px;margin:0;font-weight:600;">%s</p>
+                    <p style="color:#6b7280;font-size:13px;margin:8px 0 0;line-height:1.6;">%s</p>
+                  </div>
+                  <div style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border-left:4px solid #22c55e;padding:16px;border-radius:0 8px 8px 0;margin-bottom:20px;">
+                    <p style="color:#166534;font-size:13px;margin:0 0 8px;font-weight:bold;">💬 管理员回复：</p>
+                    <p style="color:#1f2937;font-size:14px;margin:0;line-height:1.8;white-space:pre-wrap;">%s</p>
+                  </div>
+                  <p style="color:#9ca3af;font-size:12px;line-height:1.6;">
+                    如有其他问题，欢迎继续通过应用内的「意见反馈」功能联系我们。
+                  </p>
+                </div>
+                <div style="background:#f8f9fa;padding:16px;text-align:center;border-top:1px solid #eee;">
+                  <p style="color:#aaa;font-size:12px;margin:0;">此邮件由系统自动发送，请勿直接回复 | NutriAI 健康饮食助手</p>
+                </div>
+              </div>
+            </body>
+            </html>
+            """.formatted(statusColor, statusEmoji, statusText, typeText,
+                          greeting, title, feedbackContent, adminReply);
+    }
+
+    /**
      * 构建反馈通知邮件HTML
      */
     private String buildFeedbackNotificationHtml(String title, String typeText, String content,

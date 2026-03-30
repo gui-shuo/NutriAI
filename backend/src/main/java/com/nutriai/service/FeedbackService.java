@@ -99,6 +99,9 @@ public class FeedbackService {
         feedback = feedbackRepository.save(feedback);
         log.info("管理员回复反馈 #{}: status={}", feedbackId, feedback.getStatus());
 
+        // 异步发送邮件通知用户
+        sendReplyNotificationToUser(feedback);
+
         return toDTO(feedback);
     }
 
@@ -143,6 +146,46 @@ public class FeedbackService {
             );
         } catch (Exception e) {
             log.error("发送反馈通知邮件失败: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * 异步发送回复通知邮件给用户
+     */
+    @Async
+    public void sendReplyNotificationToUser(Feedback feedback) {
+        try {
+            // 优先使用反馈中的联系方式（如果是邮箱），否则查找用户邮箱
+            String toEmail = null;
+            String contactInfo = feedback.getContactInfo();
+            if (contactInfo != null && contactInfo.contains("@")) {
+                toEmail = contactInfo.trim();
+            }
+
+            User user = userRepository.findById(feedback.getUserId()).orElse(null);
+            String username = feedback.getUsername();
+
+            if (toEmail == null && user != null && user.getEmail() != null && !user.getEmail().isEmpty()) {
+                toEmail = user.getEmail();
+            }
+            if (user != null && user.getNickname() != null && !user.getNickname().isEmpty()) {
+                username = user.getNickname();
+            }
+
+            if (toEmail == null) {
+                log.warn("无法发送反馈回复邮件: 用户 {} 无有效邮箱", feedback.getUserId());
+                return;
+            }
+
+            emailService.sendFeedbackReplyNotification(
+                    toEmail, username,
+                    feedback.getTitle(), feedback.getType(),
+                    feedback.getContent(), feedback.getAdminReply(),
+                    feedback.getStatus()
+            );
+            log.info("反馈回复邮件已发送: feedbackId={}, to={}", feedback.getId(), toEmail);
+        } catch (Exception e) {
+            log.error("发送反馈回复邮件失败: feedbackId={}, error={}", feedback.getId(), e.getMessage());
         }
     }
 

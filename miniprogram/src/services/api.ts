@@ -110,6 +110,15 @@ export const feedbackApi = {
   getMyFeedbacks: (params?: any) => request({ url: '/feedback/my', data: params })
 }
 
+// ============ Addresses ============
+export const addressApi = {
+  getList: () => request({ url: '/addresses' }),
+  add: (data: any) => request({ url: '/addresses', method: 'POST', data }),
+  update: (id: number, data: any) => request({ url: `/addresses/${id}`, method: 'PUT', data }),
+  remove: (id: number) => request({ url: `/addresses/${id}`, method: 'DELETE' }),
+  setDefault: (id: number) => request({ url: `/addresses/${id}/default`, method: 'PUT' })
+}
+
 // ============ Announcements ============
 export const announcementApi = {
   getList: (params?: any) => request({ url: '/announcements', data: params })
