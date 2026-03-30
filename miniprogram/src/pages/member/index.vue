@@ -2,10 +2,36 @@
   <view class="page">
     <!-- VIP Status Banner -->
     <view v-if="isVip" class="vip-banner vip-active">
-      <view class="vip-badge">👑 {{ vipLevelText }}</view>
-      <view class="vip-expiry">
-        到期时间：{{ vipExpiry }}
-        <text class="remaining">（剩余{{ remainingDays }}天）</text>
+      <view class="vip-top-row">
+        <text class="vip-icon-big">👑</text>
+        <view class="vip-info">
+          <view class="vip-name-row">
+            <text class="vip-plan-name">{{ vipStatus.planName || vipLevelText }}</text>
+            <view class="vip-tag-badge">VIP</view>
+          </view>
+          <text class="vip-username">{{ memberInfo.username || '会员用户' }}</text>
+        </view>
+      </view>
+      <view class="vip-detail-row">
+        <view class="vip-detail-item">
+          <text class="vip-detail-label">到期时间</text>
+          <text class="vip-detail-val">{{ vipExpiry }}</text>
+        </view>
+        <view class="vip-detail-item">
+          <text class="vip-detail-label">剩余天数</text>
+          <text class="vip-detail-val accent">{{ remainingDays }}天</text>
+        </view>
+        <view class="vip-detail-item">
+          <text class="vip-detail-label">会员等级</text>
+          <text class="vip-detail-val">{{ memberInfo.currentLevel?.levelName || '青铜会员' }}</text>
+        </view>
+      </view>
+      <!-- Level Progress -->
+      <view v-if="memberInfo.nextLevel" class="level-progress-row">
+        <text class="level-progress-text">距{{ memberInfo.nextLevel.levelName }}还需 {{ memberInfo.growthToNextLevel || 0 }} 成长值</text>
+        <view class="progress-bar-bg">
+          <view class="progress-bar-fill" :style="{ width: (memberInfo.upgradeProgress || 0) + '%' }"></view>
+        </view>
       </view>
     </view>
     <view v-else class="vip-banner vip-inactive" @tap="scrollToPlan">
@@ -82,14 +108,26 @@
         <text class="font-bold">成长中心</text>
         <text class="text-primary text-sm">总成长值：{{ memberInfo.totalGrowth || 0 }}</text>
       </view>
+
+      <!-- Growth Chart -->
+      <view v-if="growthChartData.length" class="growth-chart">
+        <view class="chart-bars">
+          <view v-for="(bar, i) in growthChartData" :key="i" class="chart-bar-col">
+            <text class="chart-bar-val">{{ bar.value > 0 ? '+' + bar.value : bar.value }}</text>
+            <view class="chart-bar" :class="{ negative: bar.value < 0 }" :style="{ height: bar.height + 'rpx' }"></view>
+            <text class="chart-bar-label">{{ bar.label }}</text>
+          </view>
+        </view>
+      </view>
+
       <view v-if="growthRecords.length" class="growth-list">
         <view v-for="record in growthRecords" :key="record.id" class="growth-item flex-between">
           <view>
             <text class="growth-desc">{{ record.description }}</text>
             <text class="growth-time text-sm text-secondary">{{ formatTime(record.createdAt) }}</text>
           </view>
-          <text class="growth-points" :class="record.points > 0 ? 'text-primary' : 'text-danger'">
-            {{ record.points > 0 ? '+' : '' }}{{ record.points }}
+          <text class="growth-points" :class="record.growthValue > 0 ? 'text-primary' : 'text-danger'">
+            {{ record.growthValue > 0 ? '+' : '' }}{{ record.growthValue }}
           </text>
         </view>
       </view>
@@ -143,7 +181,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { useUserStore } from '@/stores/user'
 import { memberApi, vipApi } from '@/services/api'
@@ -152,12 +190,14 @@ import { checkLogin, formatTime, formatDate } from '@/utils/common'
 const userStore = useUserStore()
 
 const memberInfo = ref<any>({})
+const vipStatus = ref<any>({})
 const signInInfo = ref<any>({})
 const weekDays = ref<any[]>([])
 const vipPlans = ref<any[]>([])
 const selectedPlan = ref<any>(null)
 const purchasing = ref(false)
 const growthRecords = ref<any[]>([])
+const growthChartData = ref<any[]>([])
 const invitationCode = ref('')
 const invitationRecords = ref<any[]>([])
 const showBenefits = ref(false)
@@ -172,21 +212,19 @@ const vipLevelMap: Record<string, string> = {
 }
 
 const isVip = computed(() => {
-  const info = memberInfo.value
-  return info.vipLevel && info.vipLevel !== 'NORMAL' && info.vipExpiry && new Date(info.vipExpiry) > new Date()
+  return vipStatus.value.isVip === true
 })
 
-const vipLevelText = computed(() => vipLevelMap[memberInfo.value.vipLevel] || '普通用户')
+const vipLevelText = computed(() => vipLevelMap[memberInfo.value.vipLevel] || vipStatus.value.planName || '普通用户')
 
 const vipExpiry = computed(() => {
-  if (!memberInfo.value.vipExpiry) return ''
-  return formatDate(new Date(memberInfo.value.vipExpiry))
+  const expiry = vipStatus.value.vipExpireAt || memberInfo.value.vipExpiry
+  if (!expiry) return ''
+  return formatDate(new Date(expiry))
 })
 
 const remainingDays = computed(() => {
-  if (!memberInfo.value.vipExpiry) return 0
-  const diff = new Date(memberInfo.value.vipExpiry).getTime() - Date.now()
-  return Math.max(0, Math.ceil(diff / 86400000))
+  return vipStatus.value.remainDays || 0
 })
 
 const vipBenefits = [
@@ -221,10 +259,47 @@ function buildWeekDays(signedDates: string[] = []) {
   weekDays.value = days
 }
 
+function buildGrowthChart(records: any[]) {
+  const dayMap: Record<string, number> = {}
+  const today = new Date()
+  // Init last 7 days
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(today)
+    d.setDate(today.getDate() - i)
+    dayMap[formatDate(d)] = 0
+  }
+  // Accumulate from records
+  for (const r of records) {
+    if (!r.createdAt) continue
+    const dateStr = formatDate(new Date(r.createdAt))
+    if (dateStr in dayMap) {
+      dayMap[dateStr] += (r.growthValue || 0)
+    }
+  }
+  const vals = Object.values(dayMap)
+  const maxAbs = Math.max(1, ...vals.map(v => Math.abs(v)))
+  const chartData = Object.entries(dayMap).map(([date, value]) => ({
+    label: date.slice(5), // MM-DD
+    value,
+    height: Math.max(8, Math.abs(value) / maxAbs * 120)
+  }))
+  growthChartData.value = chartData
+}
+
 async function loadMemberInfo() {
   try {
     const res = await memberApi.getInfo()
-    if (res.code === 200) memberInfo.value = res.data || {}
+    if (res.code === 200) {
+      memberInfo.value = res.data || {}
+      if (res.data?.invitationCode) invitationCode.value = res.data.invitationCode
+    }
+  } catch {}
+}
+
+async function loadVipStatus() {
+  try {
+    const res = await vipApi.getVipStatus()
+    if (res.code === 200) vipStatus.value = res.data || {}
   } catch {}
 }
 
@@ -263,8 +338,13 @@ async function loadVipPlans() {
 
 async function loadGrowthRecords() {
   try {
-    const res = await memberApi.getGrowthRecords({ page: 1, size: 10 })
-    if (res.code === 200) growthRecords.value = res.data?.content || res.data?.records || res.data?.list || res.data || []
+    // Spring Pageable is 0-indexed: page 0 = first page
+    const res = await memberApi.getGrowthRecords({ page: 0, size: 20 })
+    if (res.code === 200) {
+      const records = res.data?.content || res.data?.records || res.data?.list || res.data || []
+      growthRecords.value = records
+      buildGrowthChart(records)
+    }
   } catch {}
 }
 
@@ -293,6 +373,7 @@ async function handlePurchase() {
       if (payRes.code === 200) {
         uni.showToast({ title: '开通成功！', icon: 'success' })
         loadMemberInfo()
+        loadVipStatus()
         userStore.fetchUserInfo()
       } else {
         uni.showToast({ title: payRes.message || '支付失败', icon: 'none' })
@@ -327,7 +408,7 @@ function copyCode() {
 
 async function loadInvitationRecords() {
   try {
-    const res = await memberApi.getInvitationRecords({ page: 1, size: 10 })
+    const res = await memberApi.getInvitationRecords({ page: 0, size: 10 })
     if (res.code === 200) invitationRecords.value = res.data?.content || res.data?.records || res.data?.list || res.data || []
   } catch {}
 }
@@ -335,6 +416,7 @@ async function loadInvitationRecords() {
 onShow(() => {
   if (!checkLogin()) return
   loadMemberInfo()
+  loadVipStatus()
   loadSignInCalendar()
   loadVipPlans()
   loadGrowthRecords()
@@ -349,17 +431,117 @@ onShow(() => {
   padding-bottom: 30rpx;
 }
 
+/* VIP Banner */
 .vip-banner {
   padding: 40rpx 30rpx;
   color: #fff;
 
   &.vip-active {
     background: linear-gradient(135deg, #d4a248, #b8860b, #c89632);
+    padding-bottom: 30rpx;
   }
 
   &.vip-inactive {
     background: linear-gradient(135deg, #07c160, #06ad56);
   }
+}
+
+.vip-top-row {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin-bottom: 24rpx;
+}
+
+.vip-icon-big {
+  font-size: 64rpx;
+}
+
+.vip-info {
+  flex: 1;
+}
+
+.vip-name-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.vip-plan-name {
+  font-size: 34rpx;
+  font-weight: 700;
+}
+
+.vip-tag-badge {
+  background: rgba(255, 255, 255, 0.3);
+  color: #fff;
+  font-size: 20rpx;
+  font-weight: 700;
+  padding: 4rpx 14rpx;
+  border-radius: 8rpx;
+  letter-spacing: 2rpx;
+}
+
+.vip-username {
+  font-size: 26rpx;
+  opacity: 0.85;
+  margin-top: 4rpx;
+  display: block;
+}
+
+.vip-detail-row {
+  display: flex;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 16rpx;
+  padding: 20rpx 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.vip-detail-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.vip-detail-label {
+  font-size: 22rpx;
+  opacity: 0.75;
+  margin-bottom: 6rpx;
+}
+
+.vip-detail-val {
+  font-size: 28rpx;
+  font-weight: 600;
+
+  &.accent {
+    color: #ffe082;
+  }
+}
+
+.level-progress-row {
+  margin-top: 4rpx;
+}
+
+.level-progress-text {
+  font-size: 22rpx;
+  opacity: 0.8;
+  margin-bottom: 8rpx;
+  display: block;
+}
+
+.progress-bar-bg {
+  height: 12rpx;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 6rpx;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: #ffe082;
+  border-radius: 6rpx;
+  transition: width 0.5s;
 }
 
 .vip-badge {
@@ -368,21 +550,13 @@ onShow(() => {
   margin-bottom: 10rpx;
 }
 
-.vip-expiry {
-  font-size: 26rpx;
-  opacity: 0.9;
-}
-
-.remaining {
-  font-size: 24rpx;
-}
-
 .vip-hint {
   font-size: 26rpx;
   opacity: 0.85;
   margin-top: 4rpx;
 }
 
+/* Card */
 .card {
   background: #fff;
   border-radius: 16rpx;
@@ -399,6 +573,7 @@ onShow(() => {
   justify-content: space-between;
 }
 
+/* Sign-In */
 .sign-card .calendar-week {
   display: flex;
   justify-content: space-between;
@@ -452,6 +627,7 @@ onShow(() => {
   }
 }
 
+/* Plans */
 .plan-list {
   display: flex;
   flex-wrap: wrap;
@@ -543,6 +719,54 @@ onShow(() => {
   font-weight: 700;
 }
 
+/* Growth Chart */
+.growth-chart {
+  margin-bottom: 24rpx;
+  padding-bottom: 16rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.chart-bars {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  height: 180rpx;
+  padding: 0 8rpx;
+}
+
+.chart-bar-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  gap: 6rpx;
+}
+
+.chart-bar-val {
+  font-size: 20rpx;
+  color: #07c160;
+  font-weight: 600;
+}
+
+.chart-bar {
+  width: 40rpx;
+  min-height: 8rpx;
+  background: linear-gradient(180deg, #07c160, #06ad56);
+  border-radius: 6rpx 6rpx 0 0;
+  transition: height 0.3s;
+
+  &.negative {
+    background: linear-gradient(180deg, #ee0a24, #d32f2f);
+  }
+}
+
+.chart-bar-label {
+  font-size: 20rpx;
+  color: #999;
+  white-space: nowrap;
+}
+
+/* Growth List */
 .growth-list {
   max-height: 500rpx;
   overflow-y: auto;
@@ -573,6 +797,7 @@ onShow(() => {
   font-weight: 700;
 }
 
+/* Invitation */
 .invite-code-box {
   background: #f7f8fa;
   border-radius: 12rpx;
@@ -616,6 +841,7 @@ onShow(() => {
   margin-bottom: 10rpx;
 }
 
+/* Benefits */
 .benefits-list {
   margin-top: 10rpx;
 }
@@ -650,6 +876,22 @@ onShow(() => {
 .benefit-desc {
   display: block;
   margin-top: 4rpx;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40rpx 0;
+}
+
+.empty-icon {
+  font-size: 60rpx;
+  display: block;
+  margin-bottom: 12rpx;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999;
 }
 
 .safe-bottom {

@@ -135,7 +135,15 @@ let heartbeatTimer: ReturnType<typeof setInterval> | null = null
 onLoad(() => {
   if (!checkLogin()) return
   const sysInfo = uni.getSystemInfoSync()
+  // #ifdef APP-PLUS
   statusBarHeight.value = sysInfo.statusBarHeight || 44
+  // #endif
+  // #ifdef H5
+  statusBarHeight.value = 0
+  // #endif
+  // #ifdef MP
+  statusBarHeight.value = sysInfo.statusBarHeight || 20
+  // #endif
   navHeight.value = statusBarHeight.value + 44
   // Account for tabBar height (windowBottom) + safe area
   const tabBarHeight = sysInfo.windowBottom || 50
