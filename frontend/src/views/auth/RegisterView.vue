@@ -153,9 +153,9 @@
         <el-form-item prop="agree">
           <el-checkbox v-model="registerForm.agree">
             我已阅读并同意
-            <el-link type="primary" :underline="false"> 《用户协议》 </el-link>
+            <router-link to="/legal/terms" target="_blank" style="color:#409eff;text-decoration:none">《用户协议》</router-link>
             和
-            <el-link type="primary" :underline="false"> 《隐私政策》 </el-link>
+            <router-link to="/legal/privacy" target="_blank" style="color:#409eff;text-decoration:none">《隐私政策》</router-link>
           </el-checkbox>
         </el-form-item>
 

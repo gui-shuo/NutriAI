@@ -5,6 +5,11 @@
       <text class="page-desc text-secondary">拍照或输入食物名称，获取营养信息</text>
     </view>
 
+    <view class="disclaimer-tip" v-if="showDisclaimer">
+      <text>📋 食物识别及营养数据由AI算法生成，结果仅供参考，可能存在误差。</text>
+      <text class="dismiss" @tap="showDisclaimer = false">✕</text>
+    </view>
+
     <!-- Mode Tabs -->
     <view class="mode-tabs flex">
       <view
@@ -156,6 +161,7 @@ interface RecognitionResult {
 }
 
 const mode = ref<'photo' | 'text'>('photo')
+const showDisclaimer = ref(true)
 const photoPath = ref('')
 const foodName = ref('')
 const recognizing = ref(false)
@@ -545,5 +551,22 @@ function goToRecord(item: RecognitionResult) {
 .error-hint {
   display: block;
   font-size: 24rpx;
+}
+.disclaimer-tip {
+  background: #fff3cd;
+  color: #856404;
+  border-radius: 12rpx;
+  padding: 14rpx 48rpx 14rpx 20rpx;
+  font-size: 22rpx;
+  margin-bottom: 20rpx;
+  position: relative;
+}
+.disclaimer-tip .dismiss {
+  position: absolute;
+  right: 16rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 28rpx;
+  color: #999;
 }
 </style>

@@ -10,6 +10,10 @@
 
     <!-- Main Content -->
     <view v-if="isVip">
+      <view class="disclaimer-tip" v-if="showDisclaimer">
+        <text>⚕️ AI饮食计划仅供参考，不能替代专业营养师或医生的建议。患有疾病者请遵医嘱。</text>
+        <text class="dismiss" @tap="showDisclaimer = false">✕</text>
+      </view>
       <!-- Toggle: Form / Result / History -->
       <view class="tab-bar flex">
         <view
@@ -242,6 +246,7 @@ interface PlanResult {
 
 const isVip = ref(false)
 const loading = ref(true)
+const showDisclaimer = ref(true)
 const generating = ref(false)
 const currentTab = ref('form')
 const showActivityPicker = ref(false)
@@ -662,5 +667,22 @@ function goVip() {
   color: #07c160;
   font-weight: 500;
   background: rgba(7,193,96,0.04);
+}
+.disclaimer-tip {
+  background: #fff3cd;
+  color: #856404;
+  border-radius: 12rpx;
+  padding: 14rpx 48rpx 14rpx 20rpx;
+  font-size: 22rpx;
+  margin-bottom: 20rpx;
+  position: relative;
+}
+.disclaimer-tip .dismiss {
+  position: absolute;
+  right: 16rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 28rpx;
+  color: #999;
 }
 </style>

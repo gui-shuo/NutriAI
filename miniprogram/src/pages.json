@@ -18,7 +18,8 @@
     { "path": "pages/announcements/index", "style": { "navigationBarTitleText": "系统公告" } },
     { "path": "pages/community/detail", "style": { "navigationBarTitleText": "帖子详情" } },
     { "path": "pages/community/create", "style": { "navigationBarTitleText": "发布动态" } },
-    { "path": "pages/address/index", "style": { "navigationBarTitleText": "收货地址" } }
+    { "path": "pages/address/index", "style": { "navigationBarTitleText": "收货地址" } },
+    { "path": "pages/legal/index", "style": { "navigationBarTitleText": "法律声明" } }
   ],
   "globalStyle": {
     "navigationBarTextStyle": "black",

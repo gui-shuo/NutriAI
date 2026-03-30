@@ -11,13 +11,19 @@
       </view>
     </view>
 
+    <!-- Disclaimer -->
+    <view class="disclaimer-bar" v-if="showDisclaimer" :style="{ top: navHeight + 'px' }">
+      <text>⚕️ AI建议仅供参考，不构成医疗建议。如有健康问题请咨询专业医生。</text>
+      <text class="dismiss" @tap="showDisclaimer = false">✕</text>
+    </view>
+
     <!-- Message List -->
     <scroll-view
       class="message-list"
       scroll-y
       :scroll-top="scrollTop"
       :scroll-into-view="scrollIntoView"
-      :style="{ top: navHeight + 'px', bottom: inputAreaHeight + 'px' }"
+      :style="{ top: (navHeight + (showDisclaimer ? 32 : 0)) + 'px', bottom: inputAreaHeight + 'px' }"
       @scrolltoupper="onScrollToUpper"
     >
       <view class="message-wrapper" v-for="(msg, idx) in messages" :key="idx" :id="'msg-' + idx">
@@ -102,6 +108,7 @@ const scrollIntoView = ref('')
 const statusBarHeight = ref(0)
 const navHeight = ref(0)
 const inputAreaHeight = ref(100)
+const showDisclaimer = ref(true)
 
 let socketTask: UniApp.SocketTask | null = null
 let connected = ref(false)
@@ -526,5 +533,24 @@ function goBack() {
 }
 .send-btn-active {
   background: linear-gradient(135deg, #07c160, #06ad56);
+}
+.disclaimer-bar {
+  position: fixed;
+  left: 0; right: 0;
+  z-index: 90;
+  background: #fff3cd;
+  color: #856404;
+  font-size: 22rpx;
+  text-align: center;
+  padding: 8rpx 48rpx 8rpx 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.disclaimer-bar .dismiss {
+  position: absolute;
+  right: 16rpx;
+  font-size: 28rpx;
+  color: #999;
 }
 </style>

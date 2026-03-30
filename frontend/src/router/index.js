@@ -94,6 +94,24 @@ const routes = [
     meta: { title: '系统公告' }
   },
   {
+    path: '/legal/terms',
+    name: 'Terms',
+    component: () => import('@/views/legal/TermsView.vue'),
+    meta: { title: '用户协议' }
+  },
+  {
+    path: '/legal/privacy',
+    name: 'Privacy',
+    component: () => import('@/views/legal/PrivacyView.vue'),
+    meta: { title: '隐私政策' }
+  },
+  {
+    path: '/legal/disclaimer',
+    name: 'Disclaimer',
+    component: () => import('@/views/legal/DisclaimerView.vue'),
+    meta: { title: '免责声明' }
+  },
+  {
     path: '/admin',
     component: () => import('@/views/admin/AdminLayout.vue'),
     meta: { requiresAuth: true, requiresAdmin: true },

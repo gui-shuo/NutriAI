@@ -1,5 +1,11 @@
 <template>
   <view class="community-page">
+    <!-- Disclaimer -->
+    <view class="disclaimer-tip" v-if="showDisclaimer">
+      <text>💬 社区内容为用户个人观点，不代表平台立场，请自行甄别信息的准确性。</text>
+      <text class="dismiss" @tap="showDisclaimer = false">✕</text>
+    </view>
+
     <!-- Category Filter Bar -->
     <scroll-view class="category-bar" scroll-x :show-scrollbar="false">
       <view
@@ -101,6 +107,7 @@ const noMore = ref(false)
 const page = ref(0)
 const pageSize = 10
 const currentCategory = ref('')
+const showDisclaimer = ref(true)
 
 const categoryList = computed(() => [
   { value: '', label: '全部' },
@@ -410,5 +417,22 @@ onReachBottom(() => {
   font-size: 52rpx;
   color: #fff;
   line-height: 1;
+}
+.disclaimer-tip {
+  background: #fff3cd;
+  color: #856404;
+  border-radius: 12rpx;
+  padding: 14rpx 48rpx 14rpx 20rpx;
+  font-size: 22rpx;
+  margin: 0 20rpx 20rpx;
+  position: relative;
+}
+.disclaimer-tip .dismiss {
+  position: absolute;
+  right: 16rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 28rpx;
+  color: #999;
 }
 </style>

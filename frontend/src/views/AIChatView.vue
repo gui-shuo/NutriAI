@@ -24,6 +24,10 @@
 
     <!-- 主体内容 -->
     <div class="chat-body">
+      <div class="disclaimer-bar">
+        ⚕️ AI营养师提供的建议仅供参考，不构成医疗建议。如有健康问题请咨询专业医生。
+        <router-link to="/legal/disclaimer">详细声明</router-link>
+      </div>
       <!-- 消息列表 -->
       <MessageList
         ref="messageListRef"
@@ -803,6 +807,16 @@ onUnmounted(() => {
   align-items: center;
   flex-shrink: 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.disclaimer-bar {
+  background: #fff3cd;
+  color: #856404;
+  font-size: 12px;
+  text-align: center;
+  padding: 6px 16px;
+  flex-shrink: 0;
+  a { color: #409eff; margin-left: 4px; }
 }
 
 .header-left {

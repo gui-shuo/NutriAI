@@ -26,6 +26,12 @@
     </nav>
 
     <main class="main-area">
+      <el-alert type="info" :closable="true" show-icon style="margin-bottom: 12px">
+        <template #title>
+          商城产品信息来源于第三方，仅供参考。营养补充剂不能替代正常饮食和药物治疗。
+          <router-link to="/legal/disclaimer" style="color:#409eff">详细声明</router-link>
+        </template>
+      </el-alert>
       <!-- 搜索栏 -->
       <div class="search-bar">
         <el-input

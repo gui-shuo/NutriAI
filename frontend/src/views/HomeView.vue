@@ -158,6 +158,13 @@
               意见反馈
             </p>
           </div>
+          <div class="footer-legal">
+            <router-link to="/legal/terms">用户协议</router-link>
+            <span class="sep">|</span>
+            <router-link to="/legal/privacy">隐私政策</router-link>
+            <span class="sep">|</span>
+            <router-link to="/legal/disclaimer">免责声明</router-link>
+          </div>
         </div>
       </div>
     </footer>
@@ -434,6 +441,7 @@ const goToFeature = feature => {
   align-items: center;
   max-width: 1200px;
   margin: 0 auto;
+  flex-wrap: wrap;
 }
 
 .footer-info {
@@ -467,6 +475,17 @@ const goToFeature = feature => {
   transition: color .2s;
 }
 .feedback-link:hover { color: #16a34a; text-decoration: underline; }
+
+.footer-legal {
+  width: 100%;
+  text-align: center;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #e2e8f0;
+  font-size: 13px;
+  a { color: #64748b; text-decoration: none; &:hover { color: #409eff; } }
+  .sep { margin: 0 8px; color: #cbd5e1; }
+}
 
 /* 响应式 */
 @media (max-width: 768px) {

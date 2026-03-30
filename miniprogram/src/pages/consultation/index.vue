@@ -1,5 +1,11 @@
 <template>
   <view class="consultation-page">
+    <!-- Disclaimer -->
+    <view class="disclaimer-tip" v-if="showDisclaimer">
+      <text>🩺 咨询服务仅供健康参考，不构成医疗诊断或治疗方案。如有疾病请及时就医。</text>
+      <text class="dismiss" @tap="showDisclaimer = false">✕</text>
+    </view>
+
     <!-- Tab Bar -->
     <view class="tab-bar">
       <view
@@ -208,6 +214,7 @@ import { consultationApi } from '@/services/api'
 import { checkLogin, formatTime, defaultAvatar } from '@/utils/common'
 
 const activeTab = ref('list')
+const showDisclaimer = ref(true)
 const onlineFilter = ref('all')
 const nutritionists = ref<any[]>([])
 const listLoading = ref(false)
@@ -881,6 +888,23 @@ onShow(() => {
 .loading-state {
   text-align: center;
   padding: 60rpx;
+  font-size: 28rpx;
+  color: #999;
+}
+.disclaimer-tip {
+  background: #fff3cd;
+  color: #856404;
+  border-radius: 12rpx;
+  padding: 14rpx 48rpx 14rpx 20rpx;
+  font-size: 22rpx;
+  margin: 0 20rpx 20rpx;
+  position: relative;
+}
+.disclaimer-tip .dismiss {
+  position: absolute;
+  right: 16rpx;
+  top: 50%;
+  transform: translateY(-50%);
   font-size: 28rpx;
   color: #999;
 }

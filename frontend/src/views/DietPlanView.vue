@@ -23,6 +23,12 @@
     </div>
 
     <!-- 主体内容 -->
+    <el-alert type="warning" :closable="true" show-icon style="margin: 0 24px 16px">
+      <template #title>
+        AI生成的饮食计划仅供参考，不能替代专业营养师或医生的建议。患有疾病者请遵医嘱。
+        <router-link to="/legal/disclaimer" style="color:#e6a23c">详细声明</router-link>
+      </template>
+    </el-alert>
     <div class="plan-body">
       <!-- 左侧：参数设置表单 -->
       <el-card v-if="!generatedPlan" class="param-card">

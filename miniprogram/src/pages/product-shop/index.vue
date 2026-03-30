@@ -1,5 +1,11 @@
 <template>
   <view class="shop-page">
+    <!-- Disclaimer -->
+    <view class="disclaimer-tip" v-if="showDisclaimer">
+      <text>📋 商品信息来源于第三方，仅供参考。营养补充剂不能替代正常饮食和药物治疗。</text>
+      <text class="dismiss" @tap="showDisclaimer = false">✕</text>
+    </view>
+
     <!-- Search Bar -->
     <view class="search-bar">
       <view class="search-inner">
@@ -96,6 +102,7 @@ import { onPullDownRefresh, onReachBottom, onShow } from '@dcloudio/uni-app'
 import { productApi } from '@/services/api'
 
 const keyword = ref('')
+const showDisclaimer = ref(true)
 const currentCategory = ref('')
 const categories = ref<any[]>([])
 const products = ref<any[]>([])
@@ -411,6 +418,23 @@ onReachBottom(() => {
   text-align: center;
   padding: 30rpx;
   font-size: 24rpx;
+  color: #999;
+}
+.disclaimer-tip {
+  background: #fff3cd;
+  color: #856404;
+  border-radius: 12rpx;
+  padding: 14rpx 48rpx 14rpx 20rpx;
+  font-size: 22rpx;
+  margin: 0 20rpx 20rpx;
+  position: relative;
+}
+.disclaimer-tip .dismiss {
+  position: absolute;
+  right: 16rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 28rpx;
   color: #999;
 }
 </style>

@@ -20,6 +20,12 @@
     </nav>
 
     <main class="main-area">
+      <el-alert type="info" :closable="true" show-icon style="margin-bottom: 12px">
+        <template #title>
+          社区内容为用户个人观点，不代表平台立场，请自行甄别信息的准确性。
+          <router-link to="/legal/disclaimer" style="color:#409eff">详细声明</router-link>
+        </template>
+      </el-alert>
       <!-- 分类标签 -->
       <div class="category-bar">
         <div

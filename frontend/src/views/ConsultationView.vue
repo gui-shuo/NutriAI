@@ -18,6 +18,12 @@
     </nav>
 
     <main class="main-area">
+      <el-alert type="info" :closable="true" show-icon style="margin-bottom: 16px">
+        <template #title>
+          本平台咨询服务仅供健康参考，不构成医疗诊断或治疗方案。如有疾病请及时就医。
+          <router-link to="/legal/disclaimer" style="color:#409eff">详细声明</router-link>
+        </template>
+      </el-alert>
       <!-- 当前进行中的咨询 -->
       <section v-if="activeConsultation" class="active-consultation-section">
         <el-card class="chat-room-card">

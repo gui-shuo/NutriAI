@@ -8,6 +8,12 @@
       </el-button>
     </div>
 
+    <el-alert type="info" :closable="true" show-icon style="margin-bottom: 16px">
+      <template #title>
+        健康档案数据仅供个人记录参考，不具有医学诊断价值。您的数据已加密保护，不会泄露给第三方。
+      </template>
+    </el-alert>
+
     <el-skeleton :loading="loading" animated :rows="8">
       <el-form
         ref="formRef"

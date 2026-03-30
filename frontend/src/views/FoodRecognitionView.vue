@@ -9,6 +9,12 @@
     </div>
 
     <div class="recognition-body">
+      <el-alert type="info" :closable="true" show-icon style="margin-bottom: 16px">
+        <template #title>
+          食物识别及营养数据由AI算法生成，结果仅供参考，可能存在误差。
+          <router-link to="/legal/disclaimer" style="color:#409eff">详细声明</router-link>
+        </template>
+      </el-alert>
       <!-- 左侧：输入区域 -->
       <el-card class="input-card">
         <template #header>

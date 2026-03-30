@@ -77,6 +77,14 @@
         <text class="link" @tap="goTo('/pages/auth/forgot-password')">忘记密码?</text>
         <text class="link" @tap="goTo('/pages/auth/register')">注册账号</text>
       </view>
+
+      <!-- Legal -->
+      <view class="legal-links">
+        <text>登录即表示同意</text>
+        <text class="legal-link" @tap="goTo('/pages/legal/index?type=terms')">《用户协议》</text>
+        <text>和</text>
+        <text class="legal-link" @tap="goTo('/pages/legal/index?type=privacy')">《隐私政策》</text>
+      </view>
     </view>
   </view>
 </template>
@@ -332,6 +340,16 @@ function goTo(url: string) {
 
 .link {
   font-size: 26rpx;
+  color: #07c160;
+}
+
+.legal-links {
+  text-align: center;
+  margin-top: 40rpx;
+  font-size: 22rpx;
+  color: #999;
+}
+.legal-link {
   color: #07c160;
 }
 </style>
