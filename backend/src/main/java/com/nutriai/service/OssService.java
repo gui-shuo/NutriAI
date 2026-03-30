@@ -86,7 +86,7 @@ public class OssService {
     }
 
     /**
-     * 上传APK安装包（保存到本地文件系统，绕过COS对APK的下载限制）
+     * 上传APK安装包到COS（通过自定义域名提供下载，绕过默认域名APK限制）
      */
     public String uploadApk(MultipartFile file) {
         if (file == null || file.isEmpty()) {
@@ -99,18 +99,23 @@ public class OssService {
         if (filename == null || !filename.toLowerCase().endsWith(".apk")) {
             throw new BusinessException("仅支持APK文件");
         }
-        String savedName = UUID.randomUUID() + ".apk";
-        java.io.File dir = new java.io.File(LOCAL_APK_DIR);
-        if (!dir.exists()) dir.mkdirs();
-        java.io.File target = new java.io.File(dir, savedName);
+        String key = "releases/apk/" + UUID.randomUUID() + ".apk";
         try {
-            file.transferTo(target);
-            // 返回本地路径标识（以 local: 前缀区分COS URL）
-            String localPath = "local:" + savedName;
-            log.info("APK文件保存到本地: {}, size={}", target.getAbsolutePath(), file.getSize());
-            return localPath;
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(file.getSize());
+            metadata.setContentType("application/vnd.android.package-archive");
+            PutObjectRequest putRequest = new PutObjectRequest(
+                cosConfig.getBucket(), key, file.getInputStream(), metadata
+            );
+            putRequest.setCannedAcl(CannedAccessControlList.PublicRead);
+            cosClient.putObject(putRequest);
+
+            // 使用自定义域名URL，绕过COS默认域名的APK下载限制
+            String downloadUrl = cosConfig.getDownloadBaseUrl() + "/" + key;
+            log.info("APK上传COS成功: key={}, downloadUrl={}, size={}", key, downloadUrl, file.getSize());
+            return downloadUrl;
         } catch (Exception e) {
-            log.error("APK本地保存失败: {}", target.getAbsolutePath(), e);
+            log.error("APK上传COS失败: key={}", key, e);
             throw BusinessException.User.fileUploadFailed();
         }
     }
@@ -140,7 +145,7 @@ public class OssService {
     }
 
     /**
-     * 删除文件（支持本地和COS）
+     * 删除文件（支持本地文件、COS默认域名URL和自定义域名URL）
      */
     public void deleteFile(String fileUrl) {
         if (fileUrl == null || fileUrl.isEmpty()) {
@@ -148,16 +153,14 @@ public class OssService {
         }
         try {
             if (fileUrl.startsWith("local:")) {
-                // 删除本地APK文件
                 String fileName = fileUrl.substring("local:".length());
                 java.io.File file = new java.io.File(LOCAL_APK_DIR, fileName);
                 if (file.exists() && file.delete()) {
                     log.info("本地文件删除成功: {}", file.getAbsolutePath());
                 }
             } else {
-                String cosBaseUrl = cosConfig.getCosBaseUrl();
-                if (fileUrl.startsWith(cosBaseUrl)) {
-                    String key = fileUrl.substring(cosBaseUrl.length() + 1);
+                String key = extractCosKey(fileUrl);
+                if (key != null) {
                     cosClient.deleteObject(cosConfig.getBucket(), key);
                     log.info("COS文件删除成功: key={}", key);
                 }
@@ -168,13 +171,27 @@ public class OssService {
     }
 
     /**
-     * 流式下载文件（支持本地文件和COS文件）
+     * 从URL中提取COS对象key（支持默认域名和自定义域名）
+     */
+    private String extractCosKey(String fileUrl) {
+        String cosBaseUrl = cosConfig.getCosBaseUrl();
+        String downloadBaseUrl = cosConfig.getDownloadBaseUrl();
+        if (fileUrl.startsWith(cosBaseUrl + "/")) {
+            return fileUrl.substring(cosBaseUrl.length() + 1);
+        }
+        if (!downloadBaseUrl.equals(cosBaseUrl) && fileUrl.startsWith(downloadBaseUrl + "/")) {
+            return fileUrl.substring(downloadBaseUrl.length() + 1);
+        }
+        return null;
+    }
+
+    /**
+     * 流式下载文件（支持本地文件、COS默认域名URL和自定义域名URL）
      */
     public void streamFile(String fileUrl, java.io.OutputStream outputStream) {
         try {
             java.io.InputStream inputStream;
             if (fileUrl != null && fileUrl.startsWith("local:")) {
-                // 本地APK文件
                 String fileName = fileUrl.substring("local:".length());
                 java.io.File file = new java.io.File(LOCAL_APK_DIR, fileName);
                 if (!file.exists()) {
@@ -183,12 +200,10 @@ public class OssService {
                 inputStream = new java.io.FileInputStream(file);
                 log.info("本地文件流式下载: {}", file.getAbsolutePath());
             } else {
-                // COS文件
-                String cosBaseUrl = cosConfig.getCosBaseUrl();
-                if (fileUrl == null || !fileUrl.startsWith(cosBaseUrl)) {
+                String key = extractCosKey(fileUrl);
+                if (key == null) {
                     throw new BusinessException("无效的文件地址");
                 }
-                String key = fileUrl.substring(cosBaseUrl.length() + 1);
                 com.qcloud.cos.model.COSObject cosObject = cosClient.getObject(cosConfig.getBucket(), key);
                 inputStream = cosObject.getObjectContent();
                 log.info("COS文件流式下载: key={}", key);

@@ -3,14 +3,11 @@ package com.nutriai.controller;
 import com.nutriai.common.ApiResponse;
 import com.nutriai.entity.AppVersion;
 import com.nutriai.service.AppVersionService;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 
 @Slf4j
 @RestController
@@ -42,11 +39,12 @@ public class AppVersionController {
     }
 
     /**
-     * 下载APK（通过后端流式传输，绕过COS默认域名APK限制）
+     * 下载APK（返回自定义域名下载URL，记录下载次数）
      */
     @GetMapping("/download/{id}")
-    public void download(@PathVariable Long id, HttpServletResponse response) throws IOException {
-        appVersionService.streamDownload(id, response);
+    public ApiResponse<String> download(@PathVariable Long id) {
+        String url = appVersionService.download(id);
+        return ApiResponse.success("获取下载链接成功", url);
     }
 
     // ========== 管理员接口 ==========

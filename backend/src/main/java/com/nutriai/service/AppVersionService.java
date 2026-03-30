@@ -1,6 +1,5 @@
 package com.nutriai.service;
 
-import com.nutriai.common.ApiResponse;
 import com.nutriai.entity.AppVersion;
 import com.nutriai.exception.BusinessException;
 import com.nutriai.repository.AppVersionRepository;
@@ -66,25 +65,6 @@ public class AppVersionService {
      */
     public List<AppVersion> getAllVersions(String platform) {
         return appVersionRepository.findByPlatformOrderByVersionCodeDesc(platform);
-    }
-
-    /**
-     * 流式下载APK文件（通过COS SDK绕过默认域名APK下载限制）
-     */
-    @Transactional
-    public void streamDownload(Long id, jakarta.servlet.http.HttpServletResponse response) throws java.io.IOException {
-        AppVersion version = appVersionRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("版本不存在"));
-        appVersionRepository.incrementDownloadCount(id);
-
-        String filename = "NutriAI_v" + version.getVersionName() + ".apk";
-        response.setContentType("application/vnd.android.package-archive");
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
-        if (version.getFileSize() != null && version.getFileSize() > 0) {
-            response.setContentLengthLong(version.getFileSize());
-        }
-
-        ossService.streamFile(version.getDownloadUrl(), response.getOutputStream());
     }
 
     /**

@@ -5,7 +5,7 @@
       <div class="hero-content">
         <div class="app-icon">🥗</div>
         <h1>NutriAI 智膳</h1>
-        <p class="subtitle">AI驱动的智能营养健康管理平台</p>
+        <p class="subtitle">AI驱动的智能营养饮食规划平台</p>
         <div v-if="latestVersion" class="latest-info">
           <el-button type="success" size="large" @click="downloadVersion(latestVersion)" :loading="downloading">
             <el-icon><Download /></el-icon>
@@ -94,11 +94,12 @@ const loadData = async () => {
 const downloadVersion = async (version) => {
   downloading.value = true
   try {
-    // 直接打开流式下载端点（后端通过COS SDK流式传输APK文件）
-    const baseUrl = import.meta.env.VITE_API_BASE_URL || '/api'
-    window.open(`${baseUrl}/app-versions/download/${version.id}`, '_blank')
-    // Refresh counts
-    setTimeout(loadData, 1000)
+    const res = await appVersionApi.getDownloadUrl(version.id)
+    const url = res.data?.data
+    if (url) {
+      window.open(url, '_blank')
+      setTimeout(loadData, 1000)
+    }
   } catch (e) {
     ElMessage.error('下载失败')
   } finally {

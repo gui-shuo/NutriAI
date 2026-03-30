@@ -68,7 +68,7 @@ spring:
     port: ${MAIL_PORT:465}
     username: ${MAIL_USERNAME:}
     password: ${MAIL_PASSWORD:}
-    nickname: ${MAIL_NICKNAME:NutriAI健康饮食助手}
+    nickname: ${MAIL_NICKNAME:NutriAI饮食规划助手}
     properties:
       mail:
         smtp:
@@ -113,6 +113,7 @@ tencent:
     secret-key: ${COS_SECRET_KEY:}
     region: ${COS_REGION:ap-beijing}
     bucket: ${COS_BUCKET:nutriai-assets}
+    custom-domain: ${COS_CUSTOM_DOMAIN:}
 
 # 腾讯云短信配置（未配置时使用Mock模式，验证码仅输出到日志）
 sms:

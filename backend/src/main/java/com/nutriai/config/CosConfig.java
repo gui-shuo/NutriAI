@@ -34,6 +34,9 @@ public class CosConfig {
     @Value("${tencent.cos.bucket:nutriai-assets}")
     private String bucket;
 
+    @Value("${tencent.cos.custom-domain:}")
+    private String customDomain;
+
     @Value("${cors.allowed-origins:*}")
     private String allowedOrigins;
 
@@ -75,5 +78,15 @@ public class CosConfig {
      */
     public String getCosBaseUrl() {
         return "https://" + bucket + ".cos." + region + ".myqcloud.com";
+    }
+
+    /**
+     * 获取COS下载域名（优先使用自定义域名，用于APK等受限文件）
+     */
+    public String getDownloadBaseUrl() {
+        if (customDomain != null && !customDomain.isBlank()) {
+            return "https://" + customDomain;
+        }
+        return getCosBaseUrl();
     }
 }
