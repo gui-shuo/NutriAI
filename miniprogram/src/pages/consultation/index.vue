@@ -209,7 +209,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { onShow } from '@dcloudio/uni-app'
+import { onLoad, onShow } from '@dcloudio/uni-app'
 import { consultationApi } from '@/services/api'
 import { checkLogin, formatTime, defaultAvatar } from '@/utils/common'
 
@@ -355,8 +355,16 @@ async function sendMessage(orderNo: string) {
   }
 }
 
+onLoad((options: any) => {
+  if (options?.tab === 'orders') {
+    activeTab.value = 'orders'
+    loadOrders()
+  }
+})
+
 onShow(() => {
   loadNutritionists()
+  if (activeTab.value === 'orders') loadOrders()
 })
 </script>
 

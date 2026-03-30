@@ -373,7 +373,7 @@ function getMealLabel(type: string): string {
 }
 
 function goVip() {
-  uni.navigateTo({ url: '/pages/member/index' })
+  uni.switchTab({ url: '/pages/member/index' })
 }
 </script>
 

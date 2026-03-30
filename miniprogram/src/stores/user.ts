@@ -32,7 +32,8 @@ export const useUserStore = defineStore('user', () => {
     const res = await request<any>({
       url: '/auth/login',
       method: 'POST',
-      data: { username, password, captchaKey, captchaCode }
+      data: { username, password, captchaKey, captchaCode },
+      showError: false
     })
     if (res.code === 200) _saveLogin(res.data)
     return res

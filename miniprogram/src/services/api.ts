@@ -18,7 +18,9 @@ export const userApi = {
   getProfile: () => request({ url: '/user/profile' }),
   updateProfile: (data: any) => request({ url: '/user/profile', method: 'PUT', data }),
   uploadAvatar: (filePath: string) => uploadFile({ url: '/user/avatar', filePath, name: 'file' }),
-  changePassword: (data: any) => request({ url: '/user/password', method: 'PUT', data })
+  changePassword: (data: any) => request({ url: '/user/password', method: 'PUT', data }),
+  sendEmailCode: () => request({ url: '/user/email-code/send', method: 'POST' }),
+  changePhone: (data: any) => request({ url: '/user/phone', method: 'PUT', data })
 }
 
 // ============ Food Records ============

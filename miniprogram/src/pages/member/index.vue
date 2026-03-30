@@ -165,7 +165,10 @@ const showBenefits = ref(false)
 const vipLevelMap: Record<string, string> = {
   MONTHLY: '月度VIP',
   QUARTERLY: '季度VIP',
-  YEARLY: '年度VIP'
+  HALF_YEARLY: '半年VIP',
+  YEARLY: '年度VIP',
+  BIANNUAL: '双年VIP',
+  LIFETIME: '终身VIP'
 }
 
 const isVip = computed(() => {
@@ -451,11 +454,14 @@ onShow(() => {
 
 .plan-list {
   display: flex;
+  flex-wrap: wrap;
   gap: 16rpx;
 }
 
 .plan-card {
-  flex: 1;
+  flex: 1 1 calc(33.33% - 16rpx);
+  min-width: 180rpx;
+  max-width: calc(50% - 8rpx);
   border: 2rpx solid #eee;
   border-radius: 16rpx;
   padding: 24rpx 16rpx;

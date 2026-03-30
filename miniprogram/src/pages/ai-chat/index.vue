@@ -33,7 +33,6 @@
       :scroll-top="scrollTop"
       :scroll-into-view="scrollIntoView"
       :style="{ top: (navHeight + (showDisclaimer ? 32 : 0) + (!connected ? 32 : 0)) + 'px', bottom: inputAreaHeight + 'px' }"
-      @scrolltoupper=""
     >
       <view class="message-wrapper" v-for="(msg, idx) in messages" :key="idx" :id="'msg-' + idx">
         <!-- AI Message -->
@@ -120,11 +119,11 @@ const inputAreaHeight = ref(100)
 const showDisclaimer = ref(true)
 
 let socketTask: UniApp.SocketTask | null = null
-let connected = ref(false)
+const connected = ref(false)
 let reconnectTimer: ReturnType<typeof setTimeout> | null = null
 let reconnectAttempts = 0
 const MAX_RECONNECT = 5
-let isConnecting = ref(false)
+const isConnecting = ref(false)
 let pageVisible = true
 let heartbeatTimer: ReturnType<typeof setInterval> | null = null
 

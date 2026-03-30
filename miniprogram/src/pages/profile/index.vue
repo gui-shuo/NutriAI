@@ -25,6 +25,10 @@
         <input v-model="profileForm.nickname" placeholder="请输入昵称" maxlength="20" />
       </view>
       <view class="input-group">
+        <text class="label">邮箱</text>
+        <input v-model="profileForm.email" type="text" placeholder="请输入邮箱" />
+      </view>
+      <view class="input-group">
         <text class="label">性别</text>
         <picker :range="genderOptions" :value="genderIndex" @change="onGenderChange">
           <view class="picker-value">{{ genderOptions[genderIndex] || '请选择' }}</view>
@@ -61,24 +65,34 @@
         <text class="menu-text">我的饮食计划</text>
         <text class="menu-arrow">›</text>
       </view>
-      <view class="menu-item" @tap="goToCommunity">
+      <view class="menu-item" @tap="navigateTo('/pages/profile/my-posts')">
         <text class="menu-icon">📝</text>
         <text class="menu-text">我的帖子</text>
         <text class="menu-arrow">›</text>
       </view>
-      <view class="menu-item" @tap="navigateTo('/pages/consultation/index')">
+      <view class="menu-item" @tap="navigateTo('/pages/consultation/index?tab=orders')">
         <text class="menu-icon">👩‍⚕️</text>
         <text class="menu-text">我的咨询</text>
         <text class="menu-arrow">›</text>
       </view>
-      <view class="menu-item" @tap="navigateTo('/pages/product-shop/index')">
+      <view class="menu-item" @tap="navigateTo('/pages/profile/my-orders')">
         <text class="menu-icon">📦</text>
         <text class="menu-text">我的订单</text>
+        <text class="menu-arrow">›</text>
+      </view>
+      <view class="menu-item" @tap="navigateTo('/pages/address/index')">
+        <text class="menu-icon">📍</text>
+        <text class="menu-text">我的地址</text>
         <text class="menu-arrow">›</text>
       </view>
     </view>
 
     <view class="card menu-card">
+      <view class="menu-item" @tap="navigateTo('/pages/profile/account-binding')">
+        <text class="menu-icon">🔗</text>
+        <text class="menu-text">账号绑定</text>
+        <text class="menu-arrow">›</text>
+      </view>
       <view class="menu-item" @tap="showPasswordDialog = true">
         <text class="menu-icon">🔒</text>
         <text class="menu-text">修改密码</text>
@@ -130,10 +144,10 @@
         <view class="dialog-title">关于我们</view>
         <view class="about-content">
           <view class="about-logo">🥗</view>
-          <text class="about-name">NutriAI 智能营养助手</text>
+          <text class="about-name">NutriAI 饮食规划助手</text>
           <text class="about-version text-sm text-secondary">Version 1.0.0</text>
           <text class="about-desc text-sm text-secondary mt-20">
-            NutriAI 是一款基于人工智能的智能饮食管理小程序，为您提供个性化的饮食计划、
+            NutriAI 是一款基于人工智能的饮食管理应用，为您提供个性化的饮食计划、
             智能食物识别、营养师咨询等专业服务，助您实现生活目标。
           </text>
         </view>
@@ -168,6 +182,7 @@ const genderIndex = ref(0)
 
 const profileForm = reactive({
   nickname: '',
+  email: '',
   gender: 'SECRET',
   age: '',
   height: '',
@@ -190,6 +205,7 @@ function initProfileForm() {
   const u = userStore.userInfo as any
   if (!u) return
   profileForm.nickname = u.nickname || ''
+  profileForm.email = u.email || ''
   profileForm.gender = u.gender || 'SECRET'
   profileForm.age = u.age ? String(u.age) : ''
   profileForm.height = u.height ? String(u.height) : ''
@@ -239,6 +255,7 @@ async function saveProfile() {
     const data: any = {
       nickname: profileForm.nickname.trim(),
       gender: profileForm.gender,
+      email: profileForm.email?.trim() || undefined,
       phone: profileForm.phone || undefined
     }
     if (profileForm.age) data.age = Number(profileForm.age)
@@ -295,10 +312,6 @@ async function changePassword() {
 
 function navigateTo(url: string) {
   uni.navigateTo({ url })
-}
-
-function goToCommunity() {
-  uni.switchTab({ url: '/pages/community/index' })
 }
 
 function handleLogout() {

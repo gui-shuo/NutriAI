@@ -160,8 +160,8 @@ async function handleLogin() {
       uni.showToast({ title: res.message || '登录失败', icon: 'none' })
       loadCaptcha()
     }
-  } catch {
-    uni.showToast({ title: '网络错误', icon: 'none' })
+  } catch (e: any) {
+    uni.showToast({ title: e?.message || '登录失败，请重试', icon: 'none' })
     loadCaptcha()
   } finally {
     loginLoading.value = false
@@ -193,7 +193,7 @@ async function handleSocialLogin(provider: 'wechat' | 'qq') {
     }
   } catch (e: any) {
     uni.hideLoading()
-    uni.showToast({ title: '网络错误，请稍后重试', icon: 'none' })
+    uni.showToast({ title: e?.message || '登录失败，请稍后重试', icon: 'none' })
   }
 }
 
