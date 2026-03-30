@@ -63,6 +63,9 @@
             <view class="dot" />
             <view class="dot" />
           </view>
+          <text v-if="waitingSeconds >= 5" class="waiting-hint">
+            {{ waitingSeconds >= 15 ? 'AI正在深度思考，请耐心等待...' : '网络响应中，请稍候...' }}
+          </text>
         </view>
       </view>
 
@@ -123,6 +126,9 @@ const showDisclaimer = ref(true)
 const showConnected = ref(false)
 let connectedTimer: ReturnType<typeof setTimeout> | null = null
 
+const waitingSeconds = ref(0)
+let waitingTimer: ReturnType<typeof setInterval> | null = null
+
 let socketTask: UniApp.SocketTask | null = null
 const connected = ref(false)
 let reconnectTimer: ReturnType<typeof setTimeout> | null = null
@@ -131,6 +137,17 @@ const MAX_RECONNECT = 5
 const isConnecting = ref(false)
 let pageVisible = true
 let heartbeatTimer: ReturnType<typeof setInterval> | null = null
+
+function startWaitingTimer() {
+  stopWaitingTimer()
+  waitingSeconds.value = 0
+  waitingTimer = setInterval(() => { waitingSeconds.value++ }, 1000)
+}
+
+function stopWaitingTimer() {
+  if (waitingTimer) { clearInterval(waitingTimer); waitingTimer = null }
+  waitingSeconds.value = 0
+}
 
 onLoad(() => {
   if (!checkLogin()) return
@@ -173,6 +190,7 @@ onUnmounted(() => {
   pageVisible = false
   closeWebSocket()
   clearReconnectTimer()
+  stopWaitingTimer()
 })
 
 function retryConnect() {
@@ -252,13 +270,11 @@ function connectWebSocket() {
 
 function handleMessage(data: { type: string; content?: string; message?: string; status?: string }) {
   if (data.type === 'connection') {
-    // Backend confirms connection established — ignore
     return
   } else if (data.type === 'start') {
-    // Backend says "AI正在思考中" — ensure typing indicator shows
     if (!isTyping.value) isTyping.value = true
   } else if (data.type === 'token' || data.type === 'chunk') {
-    // Streaming token/chunk
+    stopWaitingTimer()
     const lastMsg = messages.value[messages.value.length - 1]
     if (lastMsg && lastMsg.role === 'assistant' && isTyping.value) {
       lastMsg.content += data.content || ''
@@ -267,15 +283,17 @@ function handleMessage(data: { type: string; content?: string; message?: string;
     }
     scrollToBottom()
   } else if (data.type === 'done' || data.type === 'complete') {
+    stopWaitingTimer()
     isTyping.value = false
     isSending.value = false
     scrollToBottom()
   } else if (data.type === 'error') {
+    stopWaitingTimer()
     isTyping.value = false
     isSending.value = false
     uni.showToast({ title: data.message || 'AI响应出错', icon: 'none' })
   } else if (data.type === 'pong') {
-    // Heartbeat response — ignore
+    // Heartbeat response
   }
 }
 
@@ -289,6 +307,7 @@ function sendMessage() {
   inputText.value = ''
   isSending.value = true
   isTyping.value = true
+  startWaitingTimer()
   scrollToBottom()
 
   if (!connected.value) {
@@ -305,6 +324,7 @@ function doSend(text: string) {
     data: JSON.stringify({ type: 'chat', message: text }),
     success: () => {},
     fail: () => {
+      stopWaitingTimer()
       isSending.value = false
       isTyping.value = false
       uni.showToast({ title: '发送失败，请重试', icon: 'none' })
@@ -496,6 +516,17 @@ function goBack() {
 /* Typing Indicator */
 .typing-bubble {
   padding: 24rpx 32rpx;
+}
+.waiting-hint {
+  display: block;
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 12rpx;
+  animation: fadeIn 0.3s;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 .typing-dots {
   display: flex;
