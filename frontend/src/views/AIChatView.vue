@@ -12,6 +12,14 @@
           AI营养师
         </h1>
         <el-tag size="small" effect="plain"> 智能对话 </el-tag>
+        <el-tag
+          :type="wsConnected ? 'success' : 'danger'"
+          size="small"
+          effect="light"
+          style="margin-left: 6px"
+        >
+          {{ wsConnected ? '● 已连接' : '○ 未连接' }}
+        </el-tag>
       </div>
       <div class="header-right">
         <el-button :icon="FolderOpened" circle title="历史记录" @click.stop="handleShowHistory" />

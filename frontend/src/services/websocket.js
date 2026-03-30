@@ -12,7 +12,10 @@ import { ElMessage } from 'element-plus'
 // WebSocket URL配置——动态构建，支持 http/https 自动切换 ws/wss
 function getWsBaseUrl() {
   const env = import.meta.env.VITE_WS_BASE_URL || import.meta.env.VITE_WS_URL
-  if (env) return env
+  if (env && (env.startsWith('ws://') || env.startsWith('wss://'))) {
+    return env
+  }
+  // 根据当前页面协议自动构建WebSocket URL
   const loc = window.location
   const protocol = loc.protocol === 'https:' ? 'wss:' : 'ws:'
   return `${protocol}//${loc.host}/api/ws/ai/chat`
