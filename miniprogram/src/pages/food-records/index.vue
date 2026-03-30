@@ -275,7 +275,7 @@ async function loadData() {
         totalCalories: statsRes.data.totalCalories || 0,
         totalProtein: statsRes.data.totalProtein || 0,
         totalFat: statsRes.data.totalFat || 0,
-        totalCarbs: statsRes.data.totalCarbs || 0
+        totalCarbs: statsRes.data.totalCarbohydrates || statsRes.data.totalCarbs || 0
       }
       // Update daily goals if server provides them
       if (statsRes.data.dailyGoal) {
@@ -350,12 +350,12 @@ async function saveRecord() {
     const res = await foodApi.createRecord({
       mealType: addForm.value.mealType,
       foodName: addForm.value.foodName.trim(),
-      amount: Number(addForm.value.amount),
+      portion: Number(addForm.value.amount),
       calories: Number(addForm.value.calories),
       protein: Number(addForm.value.protein) || 0,
       fat: Number(addForm.value.fat) || 0,
-      carbs: Number(addForm.value.carbs) || 0,
-      date: currentDate.value
+      carbohydrates: Number(addForm.value.carbs) || 0,
+      recordTime: currentDate.value + 'T' + new Date().toTimeString().slice(0, 8)
     })
     if (res.code === 200) {
       uni.showToast({ title: '记录成功', icon: 'success' })

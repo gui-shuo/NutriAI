@@ -62,11 +62,18 @@ public class FoodRecordController {
     public ApiResponse<Page<FoodRecordResponse>> getFoodRecords(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(required = false) FoodRecord.MealType mealType,
             HttpServletRequest httpRequest) {
         try {
+            // Support single date param (used by miniprogram): maps to startDate=endDate=date
+            if (date != null && startDate == null && endDate == null) {
+                startDate = date;
+                endDate = date;
+            }
+            
             log.info("获取饮食记录: page={}, size={}, startDate={}, endDate={}, mealType={}", 
                      page, size, startDate, endDate, mealType);
             

@@ -106,9 +106,20 @@ const pageSize = ref(10)
 const total = ref(0)
 const statsKey = ref(0)
 
-// 筛选
+// 格式化日期
+const formatDate = date => {
+  if (!date) return ''
+  const d = new Date(date)
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+// 筛选 — 默认过滤为今天（与统计组件保持同步）
+const today = formatDate(new Date())
 const selectedDate = ref(new Date())
-const dateRange = ref([])
+const dateRange = ref([today, today])
 const filterMealType = ref('')
 const mealTypeList = getMealTypeList()
 
@@ -173,6 +184,11 @@ const handleDateChange = date => {
   } else {
     selectedDate.value = date
   }
+  // Sync records list filter with the selected stats date
+  const dateStr = typeof date === 'string' ? date : formatDate(date)
+  dateRange.value = [dateStr, dateStr]
+  currentPage.value = 1
+  fetchRecords()
 }
 
 // 筛选变化
