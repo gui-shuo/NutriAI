@@ -123,7 +123,9 @@ const handleLogin = async () => {
         message.error('该账号不是营养师账号，请使用普通登录')
         return
       }
-      authStore.setAuth(data)
+      authStore.setToken(data.accessToken)
+      authStore.setRefreshToken(data.refreshToken)
+      authStore.setUser(data.userInfo)
       message.success('登录成功')
       router.push('/nutritionist/dashboard')
     } else {

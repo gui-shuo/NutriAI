@@ -96,6 +96,8 @@
           <router-link to="/register" class="link"> 立即注册 </router-link>
           <span style="margin: 0 8px; color: #d1d5db;">|</span>
           <router-link to="/nutritionist/register" class="link"> 营养师入驻 </router-link>
+          <span style="margin: 0 8px; color: #d1d5db;">|</span>
+          <router-link to="/nutritionist/login" class="link"> 营养师登录 </router-link>
         </div>
       </el-form>
 
