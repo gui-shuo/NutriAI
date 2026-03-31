@@ -120,8 +120,13 @@ import {
   getConsultationDetail,
   sendConsultationMessage,
   simulateNutritionistReply,
-  completeConsultation
+  completeConsultation,
+  getConsultationImConfig
 } from '@/services/consultation'
+import {
+  initTim, loginTim, logoutTim, onMessageReceived, offMessageReceived,
+  getOrderNoFromMessage, getTextFromMessage
+} from '@/services/tim'
 import message from '@/utils/message'
 
 const route = useRoute()
@@ -134,6 +139,7 @@ const nutritionistAvatar = ref('')
 const chatInput = ref('')
 const sendLoading = ref(false)
 const chatBodyRef = ref(null)
+const imReady = ref(false)
 let pollTimer = null
 
 const completeDialogVisible = ref(false)
@@ -142,11 +148,17 @@ const completeLoading = ref(false)
 
 onMounted(async () => {
   await fetchOrder()
-  startPolling()
+  await initImConnection()
+  // 降级：IM连接失败时使用轮询
+  if (!imReady.value) {
+    startPolling()
+  }
 })
 
 onUnmounted(() => {
   stopPolling()
+  offMessageReceived()
+  logoutTim().catch(() => {})
 })
 
 async function fetchOrder() {
@@ -168,7 +180,51 @@ async function fetchOrder() {
   }
 }
 
+/**
+ * 初始化IM实时消息连接
+ */
+async function initImConnection() {
+  try {
+    const res = await getConsultationImConfig(orderNo)
+    if (res.data.code !== 200 || !res.data.data) {
+      console.warn('[IM] 获取IM配置失败，使用轮询降级')
+      return
+    }
+
+    const { sdkAppId, userId, userSig, peerUserId } = res.data.data
+
+    initTim(sdkAppId)
+    await loginTim(userId, userSig)
+
+    // 监听来自对方的实时消息
+    onMessageReceived(msg => {
+      const msgOrderNo = getOrderNoFromMessage(msg)
+      // 只处理当前订单的消息
+      if (msgOrderNo === orderNo && msg.from === peerUserId) {
+        const text = getTextFromMessage(msg)
+        if (text && order.value) {
+          // 添加到消息列表
+          if (!order.value.messages) order.value.messages = []
+          order.value.messages.push({
+            role: 'nutritionist',
+            content: text,
+            timestamp: new Date().toISOString()
+          })
+          nextTick(() => scrollToBottom())
+        }
+      }
+    })
+
+    imReady.value = true
+    console.log('[IM] 实时消息连接就绪')
+  } catch (e) {
+    console.warn('[IM] 初始化失败，降级为轮询模式:', e.message || e)
+    startPolling()
+  }
+}
+
 function startPolling() {
+  if (pollTimer) return
   pollTimer = setInterval(async () => {
     if (!order.value || order.value.status === 'COMPLETED' || order.value.status === 'CANCELLED') {
       stopPolling()
@@ -212,16 +268,18 @@ async function sendMessage() {
       await nextTick()
       scrollToBottom()
 
-      // Trigger simulated reply (fallback when no real nutritionist)
-      try {
-        const replyRes = await simulateNutritionistReply(order.value.orderNo)
-        if (replyRes.data.code === 200) {
-          order.value = replyRes.data.data
-          await nextTick()
-          scrollToBottom()
+      // IM未就绪时才触发模拟回复（有IM时等待营养师真实回复）
+      if (!imReady.value) {
+        try {
+          const replyRes = await simulateNutritionistReply(order.value.orderNo)
+          if (replyRes.data.code === 200) {
+            order.value = replyRes.data.data
+            await nextTick()
+            scrollToBottom()
+          }
+        } catch (e) {
+          // Nutritionist may reply manually
         }
-      } catch (e) {
-        // Nutritionist may reply manually, ignore simulated reply failure
       }
     }
   } catch (e) {

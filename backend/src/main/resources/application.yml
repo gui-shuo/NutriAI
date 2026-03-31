@@ -114,6 +114,11 @@ tencent:
     region: ${COS_REGION:ap-beijing}
     bucket: ${COS_BUCKET:nutriai-assets}
     custom-domain: ${COS_CUSTOM_DOMAIN:}
+  # 腾讯云即时通信IM配置
+  im:
+    sdk-app-id: ${SDKAppID:0}
+    secret-key: ${SecretKey:}
+    expire: 604800  # UserSig有效期7天（秒）
 
 # 腾讯云短信配置（未配置时使用Mock模式，验证码仅输出到日志）
 sms:

@@ -13,6 +13,7 @@
     { "path": "pages/food-recognition/index", "style": { "navigationBarTitleText": "AI食物识别" } },
     { "path": "pages/food-records/index", "style": { "navigationBarTitleText": "饮食记录" } },
     { "path": "pages/consultation/index", "style": { "navigationBarTitleText": "营养师咨询" } },
+    { "path": "pages/consultation/chat", "style": { "navigationBarTitleText": "咨询聊天", "navigationStyle": "custom" } },
     { "path": "pages/product-shop/index", "style": { "navigationBarTitleText": "营养商城" } },
     { "path": "pages/product-shop/detail", "style": { "navigationBarTitleText": "商品详情" } },
     { "path": "pages/feedback/index", "style": { "navigationBarTitleText": "意见反馈" } },

@@ -48,11 +48,13 @@ export const consultationApi = {
   getNutritionist: (id: number) => request({ url: `/consultation/nutritionists/${id}` }),
   createOrder: (data: any) => request({ url: '/consultation/orders', method: 'POST', data }),
   getOrders: (params?: any) => request({ url: '/consultation/orders', data: params }),
+  getOrderDetail: (orderNo: string) => request({ url: `/consultation/orders/${orderNo}` }),
   getActiveOrders: () => request({ url: '/consultation/orders/active' }),
   sendMessage: (orderNo: string, data: any) => request({ url: `/consultation/orders/${orderNo}/messages`, method: 'POST', data }),
   completeOrder: (orderNo: string, data: any) => request({ url: `/consultation/orders/${orderNo}/complete`, method: 'POST', data }),
   simulatePay: (orderNo: string) => request({ url: `/consultation/orders/${orderNo}/simulate-pay`, method: 'POST' }),
-  simulateRefund: (orderNo: string) => request({ url: `/consultation/orders/${orderNo}/simulate-refund`, method: 'POST' })
+  simulateRefund: (orderNo: string) => request({ url: `/consultation/orders/${orderNo}/simulate-refund`, method: 'POST' }),
+  getImConfig: (orderNo: string) => request({ url: `/im/config/consultation/${orderNo}` })
 }
 
 // ============ Product Shop ============

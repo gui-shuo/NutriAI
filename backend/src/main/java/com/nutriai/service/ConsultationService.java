@@ -28,6 +28,7 @@ public class ConsultationService {
     private final NutritionistRepository nutritionistRepository;
     private final ConsultationOrderRepository consultationOrderRepository;
     private final MemberService memberService;
+    private final TencentImService tencentImService;
 
     /**
      * 获取所有启用的营养师列表
@@ -153,6 +154,10 @@ public class ConsultationService {
 
         order.setMessages(messages);
         consultationOrderRepository.save(order);
+
+        // 通过IM推送消息给营养师（异步，不影响主流程）
+        pushImMessage(userId, order.getNutritionistId(), content, orderNo);
+
         return order;
     }
 
@@ -334,6 +339,19 @@ public class ConsultationService {
 
         order.setMessages(messages);
         consultationOrderRepository.save(order);
+
+        // 通过IM推送消息给用户
+        Nutritionist nutritionist = nutritionistRepository.findById(nutritionistId).orElse(null);
+        if (nutritionist != null && nutritionist.getUserId() != null) {
+            String fromImId = tencentImService.toImUserId(nutritionist.getUserId());
+            String toImId = tencentImService.toImUserId(order.getUserId());
+            try {
+                tencentImService.sendC2CMessage(fromImId, toImId, content, orderNo);
+            } catch (Exception e) {
+                log.warn("IM推送营养师回复失败，不影响主流程", e);
+            }
+        }
+
         return order;
     }
 
@@ -380,6 +398,22 @@ public class ConsultationService {
     }
 
     // === 私有方法 ===
+
+    /**
+     * 通过IM推送用户消息给营养师（异步，失败不影响主流程）
+     */
+    private void pushImMessage(Long userId, Long nutritionistId, String content, String orderNo) {
+        try {
+            Nutritionist nutritionist = nutritionistRepository.findById(nutritionistId).orElse(null);
+            if (nutritionist != null && nutritionist.getUserId() != null) {
+                String fromImId = tencentImService.toImUserId(userId);
+                String toImId = tencentImService.toImUserId(nutritionist.getUserId());
+                tencentImService.sendC2CMessage(fromImId, toImId, content, orderNo);
+            }
+        } catch (Exception e) {
+            log.warn("IM推送用户消息失败，不影响主流程", e);
+        }
+    }
 
     private String generateOrderNo(String prefix) {
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));

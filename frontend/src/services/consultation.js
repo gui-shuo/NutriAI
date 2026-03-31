@@ -79,3 +79,11 @@ export const getNutritionistActiveConsultations = () => api.get('/nutritionist/c
 /** 营养师回复咨询 */
 export const nutritionistReply = (orderNo, content) =>
   api.post(`/nutritionist/consultations/${orderNo}/reply`, { content })
+
+// === 即时通信IM ===
+
+/** 获取IM基础配置（SDKAppID + UserSig） */
+export const getImConfig = () => api.get('/im/config')
+
+/** 获取咨询会话IM配置（含对方IM用户ID） */
+export const getConsultationImConfig = orderNo => api.get(`/im/config/consultation/${orderNo}`)

@@ -111,7 +111,7 @@
 
           <!-- Active Order: Chat -->
           <view class="order-actions" v-if="order.status === 'PAID' || order.status === 'IN_PROGRESS'">
-            <view class="chat-btn" @tap="openChat(order)">💬 发送消息</view>
+            <view class="chat-btn" @tap="openChat(order)">💬 进入聊天室</view>
           </view>
 
           <!-- Chat Area -->
@@ -330,12 +330,7 @@ async function handleCreateOrder() {
 }
 
 async function openChat(order: any) {
-  if (activeChatOrder.value === order.orderNo) {
-    activeChatOrder.value = ''
-    return
-  }
-  activeChatOrder.value = order.orderNo
-  chatMessages.value = order.messages || []
+  uni.navigateTo({ url: `/pages/consultation/chat?orderNo=${order.orderNo}` })
 }
 
 async function sendMessage(orderNo: string) {

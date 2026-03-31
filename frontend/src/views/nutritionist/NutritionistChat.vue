@@ -64,7 +64,11 @@
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import { ArrowLeft } from '@element-plus/icons-vue'
-import { getNutritionistConsultations, nutritionistReply } from '@/services/consultation'
+import { getNutritionistConsultations, nutritionistReply, getConsultationImConfig } from '@/services/consultation'
+import {
+  initTim, loginTim, logoutTim, onMessageReceived, offMessageReceived,
+  getOrderNoFromMessage, getTextFromMessage
+} from '@/services/tim'
 import message from '@/utils/message'
 
 const route = useRoute()
@@ -75,14 +79,22 @@ const order = ref(null)
 const chatInput = ref('')
 const sendLoading = ref(false)
 const chatBodyRef = ref(null)
+const imReady = ref(false)
 let pollTimer = null
 
 onMounted(async () => {
   await fetchOrder()
-  startPolling()
+  await initImConnection()
+  if (!imReady.value) {
+    startPolling()
+  }
 })
 
-onUnmounted(() => stopPolling())
+onUnmounted(() => {
+  stopPolling()
+  offMessageReceived()
+  logoutTim().catch(() => {})
+})
 
 async function fetchOrder() {
   loading.value = true
@@ -101,7 +113,45 @@ async function fetchOrder() {
   }
 }
 
+async function initImConnection() {
+  try {
+    const res = await getConsultationImConfig(orderNo)
+    if (res.data.code !== 200 || !res.data.data) {
+      console.warn('[IM] 获取IM配置失败，使用轮询降级')
+      return
+    }
+
+    const { sdkAppId, userId, userSig, peerUserId } = res.data.data
+
+    initTim(sdkAppId)
+    await loginTim(userId, userSig)
+
+    onMessageReceived(msg => {
+      const msgOrderNo = getOrderNoFromMessage(msg)
+      if (msgOrderNo === orderNo && msg.from === peerUserId) {
+        const text = getTextFromMessage(msg)
+        if (text && order.value) {
+          if (!order.value.messages) order.value.messages = []
+          order.value.messages.push({
+            role: 'user',
+            content: text,
+            timestamp: new Date().toISOString()
+          })
+          nextTick(() => scrollToBottom())
+        }
+      }
+    })
+
+    imReady.value = true
+    console.log('[IM] 营养师端实时消息连接就绪')
+  } catch (e) {
+    console.warn('[IM] 初始化失败，降级为轮询模式:', e.message || e)
+    startPolling()
+  }
+}
+
 function startPolling() {
+  if (pollTimer) return
   pollTimer = setInterval(async () => {
     if (!order.value || order.value.status === 'COMPLETED') {
       stopPolling()
