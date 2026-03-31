@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * 食物识别服务 V2 - 使用百度AI
@@ -124,19 +125,22 @@ public class FoodRecognitionServiceV2 {
                     "图片识别功能需要配置百度AI，请联系管理员配置 BAIDU_APP_ID / BAIDU_API_KEY / BAIDU_SECRET_KEY");
         }
 
-        // Upload image to COS for history display
-        String uploadedImageUrl = null;
-        try {
-            uploadedImageUrl = ossService.uploadFoodPhoto(image);
-            log.info("识别图片已上传至COS: {}", uploadedImageUrl);
-        } catch (Exception e) {
-            log.warn("识别图片上传COS失败，将不保存图片URL: {}", e.getMessage());
-        }
-
         long startTime = System.currentTimeMillis();
 
         try {
             byte[] imageBytes = image.getBytes();
+
+            // COS上传和百度AI识别并行执行，节省10-20秒
+            CompletableFuture<String> cosUploadFuture = CompletableFuture.supplyAsync(() -> {
+                try {
+                    String url = ossService.uploadFoodPhoto(image);
+                    log.info("识别图片已上传至COS: {}", url);
+                    return url;
+                } catch (Exception e) {
+                    log.warn("识别图片上传COS失败，将不保存图片URL: {}", e.getMessage());
+                    return null;
+                }
+            });
 
             // 调用百度AI菜品识别；filter_threshold 0.6 兼顾精度与召回
             HashMap<String, String> options = new HashMap<>();
@@ -197,6 +201,9 @@ public class FoodRecognitionServiceV2 {
             }
 
             long endTime = System.currentTimeMillis();
+
+            // 等待COS上传完成并获取URL
+            String uploadedImageUrl = cosUploadFuture.join();
 
             FoodRecognitionResult result = FoodRecognitionResult.builder()
                     .foods(foods)
