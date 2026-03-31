@@ -147,7 +147,7 @@
       </el-form>
 
       <div class="login-link">
-        已有营养师账号？<router-link to="/login">立即登录</router-link>
+        已有营养师账号？<router-link to="/nutritionist/login">立即登录</router-link>
       </div>
     </div>
   </div>

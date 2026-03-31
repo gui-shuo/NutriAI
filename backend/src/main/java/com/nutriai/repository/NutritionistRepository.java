@@ -18,6 +18,8 @@ public interface NutritionistRepository extends JpaRepository<Nutritionist, Long
 
     List<Nutritionist> findByIsActiveTrueOrderBySortOrderAsc();
 
+    List<Nutritionist> findByIsActiveTrueAndApprovalStatusOrderBySortOrderAsc(String approvalStatus);
+
     List<Nutritionist> findByIsActiveTrueAndStatusOrderBySortOrderAsc(String status);
 
     @Query(value = "SELECT * FROM nutritionists WHERE is_active = true AND JSON_SEARCH(specialties, 'one', :specialty) IS NOT NULL ORDER BY sort_order ASC", nativeQuery = true)

@@ -68,7 +68,7 @@ public class Nutritionist {
     /** 评分（5分制） */
     @Column(name = "rating", precision = 3, scale = 1)
     @Builder.Default
-    private BigDecimal rating = BigDecimal.valueOf(5.0);
+    private BigDecimal rating = BigDecimal.ZERO;
 
     /** 咨询次数 */
     @Column(name = "consultation_count")
@@ -97,7 +97,7 @@ public class Nutritionist {
     /** 审核状态: PENDING(待审核)/APPROVED(已通过)/REJECTED(已拒绝) */
     @Column(name = "approval_status", length = 20)
     @Builder.Default
-    private String approvalStatus = "APPROVED";
+    private String approvalStatus = "PENDING";
 
     /** 排序权重 */
     @Column(name = "sort_order")

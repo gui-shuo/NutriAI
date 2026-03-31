@@ -26,7 +26,7 @@
               type="primary"
               size="small"
               text
-              @click="$router.push(`/nutritionist/chat/${row.orderNo}`)"
+              @click="$router.push(`/nutritionist/chat?order=${row.orderNo}`)"
             >
               聊天
             </el-button>

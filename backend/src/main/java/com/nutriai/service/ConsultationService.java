@@ -34,7 +34,7 @@ public class ConsultationService {
      * 获取所有启用的营养师列表
      */
     public List<Nutritionist> getActiveNutritionists() {
-        return nutritionistRepository.findByIsActiveTrueOrderBySortOrderAsc();
+        return nutritionistRepository.findByIsActiveTrueAndApprovalStatusOrderBySortOrderAsc("APPROVED");
     }
 
     /**
@@ -363,6 +363,35 @@ public class ConsultationService {
     }
 
     /**
+     * 营养师结束咨询
+     */
+    @Transactional
+    public ConsultationOrder nutritionistCompleteConsultation(Long nutritionistId, String orderNo, String summary) {
+        ConsultationOrder order = consultationOrderRepository.findByOrderNo(orderNo)
+                .orElseThrow(() -> new BusinessException("订单不存在"));
+
+        if (!order.getNutritionistId().equals(nutritionistId)) {
+            throw new BusinessException("无权操作该咨询");
+        }
+
+        if (!"IN_PROGRESS".equals(order.getStatus())) {
+            throw new BusinessException("咨询未在进行中");
+        }
+
+        order.setStatus("COMPLETED");
+        order.setCompletedAt(LocalDateTime.now());
+        if (summary != null && !summary.isBlank()) {
+            order.setSummary(summary);
+        } else {
+            order.setSummary("营养师" + order.getNutritionistName() + "已结束本次咨询。");
+        }
+
+        consultationOrderRepository.save(order);
+        log.info("营养师结束咨询, nutritionistId={}, orderNo={}", nutritionistId, orderNo);
+        return order;
+    }
+
+    /**
      * 根据用户ID获取关联的营养师信息
      */
     public Nutritionist getNutritionistByUserId(Long userId) {
@@ -422,10 +451,12 @@ public class ConsultationService {
     }
 
     private void updateNutritionistRating(Long nutritionistId) {
-        // 简化评分更新逻辑
         Nutritionist nutritionist = nutritionistRepository.findById(nutritionistId).orElse(null);
         if (nutritionist == null) return;
-        // 保持高评分模拟
+        Double avgRating = consultationOrderRepository.findAverageRatingByNutritionistId(nutritionistId);
+        if (avgRating != null) {
+            nutritionist.setRating(java.math.BigDecimal.valueOf(avgRating).setScale(1, java.math.RoundingMode.HALF_UP));
+        }
         nutritionistRepository.save(nutritionist);
     }
 

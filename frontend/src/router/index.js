@@ -136,6 +136,12 @@ const routes = [
     meta: { title: '营养师入驻' }
   },
   {
+    path: '/nutritionist/login',
+    name: 'NutritionistLogin',
+    component: () => import('@/views/nutritionist/NutritionistLogin.vue'),
+    meta: { title: '营养师登录' }
+  },
+  {
     path: '/nutritionist',
     component: () => import('@/views/nutritionist/NutritionistLayout.vue'),
     meta: { requiresAuth: true, requiresNutritionist: true },
@@ -154,13 +160,13 @@ const routes = [
         path: 'consultations',
         name: 'NutritionistConsultations',
         component: () => import('@/views/nutritionist/NutritionistConsultations.vue'),
-        meta: { title: '我的咨询' }
+        meta: { title: '咨询记录' }
       },
       {
-        path: 'chat/:orderNo',
+        path: 'chat',
         name: 'NutritionistChat',
         component: () => import('@/views/nutritionist/NutritionistChat.vue'),
-        meta: { title: '咨询回复' }
+        meta: { title: '消息中心' }
       }
     ]
   },

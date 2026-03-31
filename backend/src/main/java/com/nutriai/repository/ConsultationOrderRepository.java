@@ -33,4 +33,10 @@ public interface ConsultationOrderRepository extends JpaRepository<ConsultationO
     List<ConsultationOrder> findActiveConsultationsByNutritionistId(@Param("nutritionistId") Long nutritionistId);
 
     Optional<ConsultationOrder> findByOrderNoAndNutritionistId(String orderNo, Long nutritionistId);
+
+    @Query("SELECT AVG(o.userRating) FROM ConsultationOrder o WHERE o.nutritionistId = :nutritionistId AND o.userRating IS NOT NULL AND o.status = 'COMPLETED'")
+    Double findAverageRatingByNutritionistId(@Param("nutritionistId") Long nutritionistId);
+
+    @Query("SELECT COUNT(o) FROM ConsultationOrder o WHERE o.nutritionistId = :nutritionistId AND o.status = 'COMPLETED'")
+    Long countCompletedByNutritionistId(@Param("nutritionistId") Long nutritionistId);
 }

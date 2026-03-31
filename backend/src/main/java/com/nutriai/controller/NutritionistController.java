@@ -86,6 +86,20 @@ public class NutritionistController {
         return ApiResponse.success(consultationService.nutritionistReply(nutritionist.getId(), orderNo, content));
     }
 
+    /**
+     * 营养师完成咨询
+     */
+    @PostMapping("/consultations/{orderNo}/complete")
+    public ApiResponse<ConsultationOrder> completeConsultation(
+            @PathVariable String orderNo,
+            @RequestBody(required = false) Map<String, String> body,
+            HttpServletRequest request) {
+        Long userId = getUserId(request);
+        Nutritionist nutritionist = consultationService.getNutritionistByUserId(userId);
+        String summary = body != null ? body.get("summary") : null;
+        return ApiResponse.success(consultationService.nutritionistCompleteConsultation(nutritionist.getId(), orderNo, summary));
+    }
+
     private Long getUserId(HttpServletRequest request) {
         return (Long) request.getAttribute("userId");
     }
