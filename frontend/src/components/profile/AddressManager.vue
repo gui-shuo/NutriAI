@@ -67,14 +67,16 @@
         <el-form-item label="手机号" prop="receiverPhone">
           <el-input v-model="form.receiverPhone" placeholder="请输入手机号" maxlength="11" />
         </el-form-item>
-        <el-form-item label="省份" prop="province">
-          <el-input v-model="form.province" placeholder="省/直辖市" maxlength="20" />
-        </el-form-item>
-        <el-form-item label="城市" prop="city">
-          <el-input v-model="form.city" placeholder="市" maxlength="20" />
-        </el-form-item>
-        <el-form-item label="区县">
-          <el-input v-model="form.district" placeholder="区/县（选填）" maxlength="20" />
+        <el-form-item label="所在地区" prop="region">
+          <el-cascader
+            v-model="form.region"
+            :options="regionOptions"
+            :props="{ expandTrigger: 'hover' }"
+            placeholder="请选择省/市/区"
+            clearable
+            filterable
+            style="width: 100%"
+          />
         </el-form-item>
         <el-form-item label="详细地址" prop="detailAddress">
           <el-input
@@ -108,8 +110,11 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { Plus, Edit, Delete, Star } from '@element-plus/icons-vue'
+import { regionData } from 'element-china-area-data'
 import { getAddresses, addAddress, updateAddress, deleteAddress, setDefaultAddress } from '@/services/address'
 import message from '@/utils/message'
+
+const regionOptions = regionData
 
 const loading = ref(false)
 const addresses = ref([])
@@ -121,9 +126,7 @@ const formRef = ref(null)
 const emptyForm = () => ({
   receiverName: '',
   receiverPhone: '',
-  province: '',
-  city: '',
-  district: '',
+  region: [],
   detailAddress: '',
   label: '',
   isDefault: false
@@ -137,9 +140,49 @@ const rules = {
     { required: true, message: '请输入手机号', trigger: 'blur' },
     { pattern: /^1\d{10}$/, message: '请输入正确的手机号', trigger: 'blur' }
   ],
-  province: [{ required: true, message: '请输入省份', trigger: 'blur' }],
-  city: [{ required: true, message: '请输入城市', trigger: 'blur' }],
+  region: [{ required: true, message: '请选择所在地区', trigger: 'change', type: 'array' }],
   detailAddress: [{ required: true, message: '请输入详细地址', trigger: 'blur' }]
+}
+
+// 根据行政代码查找对应的label名称
+function findRegionLabels(codes) {
+  if (!codes || codes.length === 0) return { province: '', city: '', district: '' }
+  const result = { province: '', city: '', district: '' }
+  const provinceNode = regionOptions.find(p => p.value === codes[0])
+  if (provinceNode) {
+    result.province = provinceNode.label
+    if (codes[1] && provinceNode.children) {
+      const cityNode = provinceNode.children.find(c => c.value === codes[1])
+      if (cityNode) {
+        result.city = cityNode.label
+        if (codes[2] && cityNode.children) {
+          const districtNode = cityNode.children.find(d => d.value === codes[2])
+          if (districtNode) result.district = districtNode.label
+        }
+      }
+    }
+  }
+  return result
+}
+
+// 根据省市区名称反查行政代码
+function findRegionCodes(province, city, district) {
+  for (const p of regionOptions) {
+    if (p.label === province) {
+      if (!p.children) return [p.value]
+      for (const c of p.children) {
+        if (c.label === city) {
+          if (!district || !c.children) return [p.value, c.value]
+          for (const d of c.children) {
+            if (d.label === district) return [p.value, c.value, d.value]
+          }
+          return [p.value, c.value]
+        }
+      }
+      return [p.value]
+    }
+  }
+  return []
 }
 
 async function fetchAddresses() {
@@ -159,7 +202,14 @@ async function fetchAddresses() {
 function openForm(addr) {
   if (addr) {
     editingId.value = addr.id
-    form.value = { ...addr }
+    form.value = {
+      receiverName: addr.receiverName,
+      receiverPhone: addr.receiverPhone,
+      region: findRegionCodes(addr.province, addr.city, addr.district),
+      detailAddress: addr.detailAddress,
+      label: addr.label || '',
+      isDefault: addr.isDefault
+    }
   } else {
     editingId.value = null
     form.value = emptyForm()
@@ -173,7 +223,17 @@ async function handleSave() {
 
   saving.value = true
   try {
-    const data = { ...form.value }
+    const labels = findRegionLabels(form.value.region)
+    const data = {
+      receiverName: form.value.receiverName,
+      receiverPhone: form.value.receiverPhone,
+      province: labels.province,
+      city: labels.city,
+      district: labels.district,
+      detailAddress: form.value.detailAddress,
+      label: form.value.label,
+      isDefault: form.value.isDefault
+    }
     if (editingId.value) {
       await updateAddress(editingId.value, data)
       message.success('地址已更新')

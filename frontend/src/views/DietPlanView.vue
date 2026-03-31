@@ -500,6 +500,7 @@ const startPolling = () => {
 
   const estimatedSeconds = formData.days * 40
   const progressStep = 100 / estimatedSeconds
+  let pollErrorCount = 0
 
   // 模拟进度条
   progressTimer.value = setInterval(() => {
@@ -508,10 +509,11 @@ const startPolling = () => {
     }
   }, 1000)
 
-  // 轮询任务状态（每2秒查询一次）
+  // 轮询任务状态（每3秒查询一次）
   pollInterval.value = setInterval(async () => {
     try {
       const { data } = await api.get(`/diet-plan/task/${currentTaskId.value}/status`)
+      pollErrorCount = 0
 
       if (data.code === 200) {
         const status = data.data
@@ -544,9 +546,16 @@ const startPolling = () => {
         }
       }
     } catch (error) {
-      // 静默处理轮询错误，避免刷屏
+      pollErrorCount++
+      if (pollErrorCount >= 10) {
+        clearTimers()
+        isGenerating.value = false
+        currentTaskId.value = null
+        localStorage.removeItem('currentTaskId')
+        ElMessage.error('网络异常，请稍后重试或查看历史记录')
+      }
     }
-  }, 2000)
+  }, 3000)
 }
 
 // 加载计划详情

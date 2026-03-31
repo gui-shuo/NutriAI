@@ -31,6 +31,10 @@ public class Nutritionist {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /** 关联的用户账号ID（可为空，兼容未绑定账号的营养师） */
+    @Column(name = "user_id", unique = true)
+    private Long userId;
+
     /** 营养师姓名 */
     @Column(name = "name", nullable = false, length = 50)
     private String name;
