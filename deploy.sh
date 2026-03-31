@@ -102,9 +102,30 @@ do_build() {
     docker build -t "${BACKEND_IMAGE}:latest" ./backend
     log_ok "后端镜像构建完成"
 
-    log_info "构建前端镜像..."
+    # 构建 H5 (UniApp) 并放入前端构建上下文
+    log_info "构建 H5 (UniApp)..."
+    (
+        cd miniprogram
+        npm install --prefer-offline 2>&1 | tail -3
+        npm run build:h5
+    )
+    # 注入 PWA 支持
+    H5_OUT="miniprogram/dist/build/h5"
+    cp miniprogram/h5-pwa/manifest.webmanifest "$H5_OUT/"
+    cp miniprogram/h5-pwa/sw.js "$H5_OUT/"
+    sed -i 's|</head>|<link rel="manifest" href="/h5/manifest.webmanifest"><meta name="theme-color" content="#4CAF50"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="NutriAI"><link rel="apple-touch-icon" href="/h5/static/icons/icon-192.png"><meta name="description" content="AI驱动的智能健康饮食平台"></head>|' "$H5_OUT/index.html"
+    sed -i 's|</body>|<script>if("serviceWorker"in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("/h5/sw.js").catch(function(){})})}</script></body>|' "$H5_OUT/index.html"
+    # 复制到前端构建上下文
+    rm -rf frontend/h5-dist
+    cp -r "$H5_OUT" frontend/h5-dist
+    log_ok "H5 构建完成"
+
+    log_info "构建前端镜像 (含 H5)..."
     docker build -t "${FRONTEND_IMAGE}:latest" ./frontend
     log_ok "前端镜像构建完成"
+
+    # 清理临时文件
+    rm -rf frontend/h5-dist
 
     log_ok "所有镜像构建完成"
     docker images | grep -E "(nutriai-backend|nutriai-frontend)" | head -5

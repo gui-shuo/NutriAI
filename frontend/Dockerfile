@@ -20,4 +20,8 @@ FROM nginx:1.25-alpine
 COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /app/dist /usr/share/nginx/html
 
+# H5 (UniApp) 构建产物由外部预构建后放入 h5-dist/
+# 如果目录不存在则跳过（兼容无 H5 的场景）
+COPY h5-dis[t] /usr/share/nginx/h5
+
 EXPOSE 80
