@@ -404,7 +404,8 @@ const recognizeByImage = async () => {
     formData.append('image', selectedFile.value)
 
     const response = await api.post('/food-recognition/recognize-by-image', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+      headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 90000
     })
     const data = response.data
 
@@ -443,7 +444,8 @@ const recognizeByName = async () => {
 
   try {
     const response = await api.post('/food-recognition/recognize-by-name', null, {
-      params: { foodName: name }
+      params: { foodName: name },
+      timeout: 30000
     })
     const data = response.data
 

@@ -95,7 +95,7 @@ export const uploadAndRecognize = (file, onProgress) => {
     headers: {
       'Content-Type': 'multipart/form-data'
     },
-    timeout: 30000,
+    timeout: 90000,
     onUploadProgress: onProgress
       ? progressEvent => {
           const percent = Math.round(
@@ -115,7 +115,7 @@ export const uploadAndRecognize = (file, onProgress) => {
 export const recognizeByName = foodName => {
   return api.post('/food/recognize-by-name', null, {
     params: { foodName },
-    timeout: 15000
+    timeout: 30000
   })
 }
 
