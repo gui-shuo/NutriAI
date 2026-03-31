@@ -26,71 +26,19 @@
       </el-alert>
       <!-- 当前进行中的咨询 -->
       <section v-if="activeConsultation" class="active-consultation-section">
-        <el-card class="chat-room-card">
-          <template #header>
-            <div class="chat-header">
-              <div class="chat-info">
-                <el-avatar :size="40" :src="activeNutritionist?.avatar" class="n-avatar">
-                  {{ activeConsultation.nutritionistName?.charAt(0) }}
-                </el-avatar>
-                <div>
-                  <h3>{{ activeConsultation.nutritionistName }}</h3>
-                  <el-tag type="success" size="small">咨询中</el-tag>
-                </div>
-              </div>
-              <div class="chat-actions">
-                <el-button type="danger" size="small" @click="handleComplete">结束咨询</el-button>
-              </div>
+        <el-card class="active-card">
+          <div class="active-info">
+            <el-avatar :size="48" :src="activeNutritionist?.avatar" class="n-avatar">
+              {{ activeConsultation.nutritionistName?.charAt(0) }}
+            </el-avatar>
+            <div class="active-detail">
+              <h3>{{ activeConsultation.nutritionistName }}</h3>
+              <el-tag type="success" size="small">咨询进行中</el-tag>
+              <p class="active-desc">{{ activeConsultation.description || '营养咨询' }}</p>
             </div>
-          </template>
-
-          <!-- 聊天消息区 -->
-          <div class="chat-messages" ref="chatMessagesRef">
-            <div class="system-msg">
-              <el-tag type="info" size="small">咨询已开始，请描述您的营养需求</el-tag>
-            </div>
-            <div
-              v-for="(msg, idx) in activeConsultation.messages || []"
-              :key="idx"
-              class="message-item"
-              :class="msg.role === 'user' ? 'msg-user' : 'msg-nutritionist'"
-            >
-              <div class="msg-bubble">
-                <div class="msg-content">{{ msg.content }}</div>
-                <div class="msg-time">{{ formatMsgTime(msg.timestamp) }}</div>
-              </div>
-            </div>
-            <div v-if="replyLoading" class="message-item msg-nutritionist">
-              <div class="msg-bubble">
-                <div class="msg-content typing-indicator">
-                  <span></span><span></span><span></span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 输入区 -->
-          <div class="chat-input-area">
-            <el-input
-              v-model="chatInput"
-              type="textarea"
-              :rows="2"
-              placeholder="请输入您的营养问题..."
-              @keydown.enter.ctrl="sendChatMessage"
-              maxlength="500"
-              show-word-limit
-            />
-            <div class="input-actions">
-              <span class="input-tip">Ctrl+Enter 发送</span>
-              <el-button
-                type="primary"
-                :loading="sendLoading"
-                :disabled="!chatInput.trim()"
-                @click="sendChatMessage"
-              >
-                发送
-              </el-button>
-            </div>
+            <el-button type="primary" size="large" @click="enterChatRoom(activeConsultation.orderNo)">
+              进入聊天室
+            </el-button>
           </div>
         </el-card>
       </section>
@@ -212,34 +160,6 @@
       </template>
     </el-dialog>
 
-    <!-- 完成咨询 Dialog -->
-    <el-dialog v-model="completeDialogVisible" title="结束咨询 & 评价" width="480px">
-      <el-form label-position="top">
-        <el-form-item label="服务评分">
-          <el-rate
-            v-model="completeForm.rating"
-            :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-            show-text
-            :texts="['很差', '较差', '一般', '满意', '非常满意']"
-          />
-        </el-form-item>
-        <el-form-item label="评价内容">
-          <el-input
-            v-model="completeForm.review"
-            type="textarea"
-            :rows="3"
-            placeholder="请对本次咨询进行评价..."
-          />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="completeDialogVisible = false">取消</el-button>
-        <el-button type="primary" :loading="completeLoading" @click="submitComplete"
-          >提交评价</el-button
-        >
-      </template>
-    </el-dialog>
-
     <!-- 我的咨询订单 Dialog -->
     <el-dialog v-model="ordersDialogVisible" title="我的咨询记录" width="780px">
       <el-skeleton :loading="ordersLoading" animated :rows="4">
@@ -267,8 +187,17 @@
           <el-table-column label="时间" min-width="140">
             <template #default="{ row }">{{ formatDate(row.createdAt) }}</template>
           </el-table-column>
-          <el-table-column label="操作" width="100" align="center">
+          <el-table-column label="操作" width="140" align="center">
             <template #default="{ row }">
+              <el-button
+                v-if="row.status === 'IN_PROGRESS'"
+                type="primary"
+                size="small"
+                text
+                @click="enterChatRoom(row.orderNo)"
+              >
+                聊天室
+              </el-button>
               <el-button
                 v-if="row.paymentStatus === 'PAID' && row.status !== 'COMPLETED'"
                 type="danger"
@@ -290,20 +219,20 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { ArrowLeft, Document, Star } from '@element-plus/icons-vue'
 import {
   getNutritionists,
   createConsultation,
   simulatePayConsultation,
-  sendConsultationMessage,
-  simulateNutritionistReply,
-  completeConsultation,
   simulateRefundConsultation,
   getConsultationHistory,
   getActiveConsultations
 } from '@/services/consultation'
 import message from '@/utils/message'
+
+const router = useRouter()
 
 // --- 状态 ---
 const loading = ref(false)
@@ -315,15 +244,6 @@ const consultDialogVisible = ref(false)
 const selectedNutritionist = ref(null)
 const consultForm = ref({ description: '' })
 const createLoading = ref(false)
-
-const chatInput = ref('')
-const sendLoading = ref(false)
-const replyLoading = ref(false)
-const chatMessagesRef = ref(null)
-
-const completeDialogVisible = ref(false)
-const completeForm = ref({ rating: 5, review: '' })
-const completeLoading = ref(false)
 
 const ordersDialogVisible = ref(false)
 const ordersLoading = ref(false)
@@ -356,8 +276,6 @@ async function fetchActiveConsultation() {
       if (actives.length > 0) {
         activeConsultation.value = actives[0]
         activeNutritionist.value = nutritionists.value.find(n => n.id === actives[0].nutritionistId)
-        await nextTick()
-        scrollToBottom()
       }
     }
   } catch (e) {
@@ -404,73 +322,8 @@ async function handleCreateConsultation() {
   }
 }
 
-async function sendChatMessage() {
-  if (!chatInput.value.trim() || !activeConsultation.value) return
-  const content = chatInput.value.trim()
-  chatInput.value = ''
-  sendLoading.value = true
-
-  try {
-    const res = await sendConsultationMessage(activeConsultation.value.orderNo, content)
-    if (res.data.code === 200) {
-      activeConsultation.value = res.data.data
-      await nextTick()
-      scrollToBottom()
-
-      // 模拟营养师回复（延迟1-2秒）
-      replyLoading.value = true
-      await nextTick()
-      scrollToBottom()
-
-      setTimeout(async () => {
-        try {
-          const replyRes = await simulateNutritionistReply(activeConsultation.value.orderNo)
-          if (replyRes.data.code === 200) {
-            activeConsultation.value = replyRes.data.data
-            await nextTick()
-            scrollToBottom()
-          }
-        } catch (e) {
-          console.error('营养师回复失败', e)
-        } finally {
-          replyLoading.value = false
-        }
-      }, 1500)
-    }
-  } catch (e) {
-    message.error('发送失败')
-    chatInput.value = content
-  } finally {
-    sendLoading.value = false
-  }
-}
-
-function handleComplete() {
-  completeForm.value = { rating: 5, review: '' }
-  completeDialogVisible.value = true
-}
-
-async function submitComplete() {
-  if (!activeConsultation.value) return
-  completeLoading.value = true
-  try {
-    const res = await completeConsultation(
-      activeConsultation.value.orderNo,
-      completeForm.value.rating,
-      completeForm.value.review
-    )
-    if (res.data.code === 200) {
-      message.success('咨询已结束，感谢您的评价！')
-      activeConsultation.value = null
-      activeNutritionist.value = null
-      completeDialogVisible.value = false
-      fetchNutritionists()
-    }
-  } catch (e) {
-    message.error('操作失败')
-  } finally {
-    completeLoading.value = false
-  }
+function enterChatRoom(orderNo) {
+  router.push(`/consultation/chat/${orderNo}`)
 }
 
 async function showMyOrders() {
@@ -499,12 +352,6 @@ async function handleRefund(row) {
     }
   } catch (e) {
     message.error('退款操作失败')
-  }
-}
-
-function scrollToBottom() {
-  if (chatMessagesRef.value) {
-    chatMessagesRef.value.scrollTop = chatMessagesRef.value.scrollHeight
   }
 }
 
@@ -555,11 +402,6 @@ function formatDate(dt) {
     hour: '2-digit',
     minute: '2-digit'
   })
-}
-
-function formatMsgTime(ts) {
-  if (!ts) return ''
-  return new Date(ts).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
 }
 </script>
 
@@ -732,133 +574,39 @@ function formatMsgTime(ts) {
   }
 }
 
-// === 咨询室 ===
-.chat-room-card {
+// === 活跃咨询卡片 ===
+.active-consultation-section {
+  margin-bottom: 24px;
+}
+
+.active-card {
   border-radius: 12px;
 
-  .chat-header {
+  .active-info {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: 16px;
 
-    .chat-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+    .n-avatar {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .active-detail {
+      flex: 1;
 
       h3 {
-        margin: 0;
-        font-size: 16px;
+        margin: 0 0 4px;
+        font-size: 18px;
+        font-weight: 600;
       }
-    }
-  }
-}
 
-.chat-messages {
-  height: 420px;
-  overflow-y: auto;
-  padding: 16px;
-  background: #f9fafb;
-  border-radius: 8px;
-  margin-bottom: 16px;
-
-  .system-msg {
-    text-align: center;
-    margin-bottom: 16px;
-  }
-
-  .message-item {
-    margin-bottom: 14px;
-    display: flex;
-
-    &.msg-user {
-      justify-content: flex-end;
-      .msg-bubble {
-        background: #667eea;
-        color: #fff;
-        border-radius: 16px 16px 4px 16px;
-        .msg-time {
-          color: rgba(255, 255, 255, 0.7);
-        }
+      .active-desc {
+        margin: 8px 0 0;
+        color: #6b7280;
+        font-size: 13px;
       }
-    }
-
-    &.msg-nutritionist {
-      justify-content: flex-start;
-      .msg-bubble {
-        background: #fff;
-        color: #1f2937;
-        border-radius: 16px 16px 16px 4px;
-        border: 1px solid #e5e7eb;
-        .msg-time {
-          color: #9ca3af;
-        }
-      }
-    }
-
-    .msg-bubble {
-      max-width: 70%;
-      padding: 12px 16px;
-
-      .msg-content {
-        font-size: 14px;
-        line-height: 1.6;
-        white-space: pre-wrap;
-        word-break: break-word;
-      }
-      .msg-time {
-        font-size: 11px;
-        text-align: right;
-        margin-top: 4px;
-      }
-    }
-  }
-}
-
-.typing-indicator {
-  display: flex;
-  gap: 4px;
-  padding: 4px 0;
-
-  span {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #9ca3af;
-    animation: typing 1.2s infinite;
-
-    &:nth-child(2) {
-      animation-delay: 0.2s;
-    }
-    &:nth-child(3) {
-      animation-delay: 0.4s;
-    }
-  }
-}
-
-@keyframes typing {
-  0%,
-  60%,
-  100% {
-    opacity: 0.3;
-    transform: translateY(0);
-  }
-  30% {
-    opacity: 1;
-    transform: translateY(-4px);
-  }
-}
-
-.chat-input-area {
-  .input-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 8px;
-
-    .input-tip {
-      font-size: 12px;
-      color: #9ca3af;
     }
   }
 }

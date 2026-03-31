@@ -57,3 +57,25 @@ export const getConsultationHistory = (page = 0, size = 10) =>
 
 /** 获取活跃咨询 */
 export const getActiveConsultations = () => api.get('/consultation/orders/active')
+
+/** 获取单个咨询订单详情 */
+export const getConsultationDetail = orderNo => api.get(`/consultation/orders/${orderNo}`)
+
+// === 营养师端 API ===
+
+/** 获取营养师个人信息 */
+export const getNutritionistProfile = () => api.get('/nutritionist/profile')
+
+/** 更新营养师在线状态 */
+export const updateNutritionistStatus = status => api.put('/nutritionist/status', { status })
+
+/** 获取营养师的咨询列表 */
+export const getNutritionistConsultations = (page = 0, size = 20) =>
+  api.get('/nutritionist/consultations', { params: { page, size } })
+
+/** 获取营养师的活跃咨询 */
+export const getNutritionistActiveConsultations = () => api.get('/nutritionist/consultations/active')
+
+/** 营养师回复咨询 */
+export const nutritionistReply = (orderNo, content) =>
+  api.post(`/nutritionist/consultations/${orderNo}/reply`, { content })

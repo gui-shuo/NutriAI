@@ -76,6 +76,12 @@ const routes = [
     meta: { requiresAuth: true, title: '营养师咨询' }
   },
   {
+    path: '/consultation/chat/:orderNo',
+    name: 'ConsultationChat',
+    component: () => import('@/views/ConsultationChatView.vue'),
+    meta: { requiresAuth: true, title: '咨询聊天室' }
+  },
+  {
     path: '/product-shop',
     name: 'ProductShop',
     component: () => import('@/views/ProductShopView.vue'),
@@ -122,6 +128,35 @@ const routes = [
     name: 'Download',
     component: () => import('@/views/DownloadView.vue'),
     meta: { title: 'APP下载' }
+  },
+  {
+    path: '/nutritionist',
+    component: () => import('@/views/nutritionist/NutritionistLayout.vue'),
+    meta: { requiresAuth: true, requiresNutritionist: true },
+    children: [
+      {
+        path: '',
+        redirect: '/nutritionist/dashboard'
+      },
+      {
+        path: 'dashboard',
+        name: 'NutritionistDashboard',
+        component: () => import('@/views/nutritionist/NutritionistDashboard.vue'),
+        meta: { title: '营养师工作台' }
+      },
+      {
+        path: 'consultations',
+        name: 'NutritionistConsultations',
+        component: () => import('@/views/nutritionist/NutritionistConsultations.vue'),
+        meta: { title: '我的咨询' }
+      },
+      {
+        path: 'chat/:orderNo',
+        name: 'NutritionistChat',
+        component: () => import('@/views/nutritionist/NutritionistChat.vue'),
+        meta: { title: '咨询回复' }
+      }
+    ]
   },
   {
     path: '/admin',
@@ -272,6 +307,13 @@ router.beforeEach(async (to, from, next) => {
     // 检查是否需要管理员权限
     if (to.meta.requiresAdmin && !authStore.isAdmin) {
       ElMessage.error('您没有访问权限')
+      next({ name: 'Home' })
+      return
+    }
+
+    // 检查是否需要营养师权限
+    if (to.meta.requiresNutritionist && !['NUTRITIONIST', 'ADMIN', 'SUPER_ADMIN'].includes(authStore.userRole)) {
+      ElMessage.error('需要营养师权限')
       next({ name: 'Home' })
       return
     }
