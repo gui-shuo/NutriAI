@@ -14,14 +14,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * 食物识别服务 V2 - 使用百度AI
@@ -39,6 +43,14 @@ public class FoodRecognitionServiceV2 {
     
     @Autowired(required = false)
     private AipImageClassify aipImageClassify;
+
+    @Value("${baidu.ai.api-key:}")
+    private String baiduApiKey;
+    @Value("${baidu.ai.secret-key:}")
+    private String baiduSecretKey;
+
+    private final AtomicReference<String> cachedAccessToken = new AtomicReference<>();
+    private volatile long tokenExpireTime = 0;
     
     /**
      * 通过食物名称识别（文本输入）
@@ -115,7 +127,7 @@ public class FoodRecognitionServiceV2 {
     }
     
     /**
-     * 通过图片识别 - 使用百度AI菜品识别API
+     * 通过图片识别 - 使用百度AI菜品识别 + 果蔬识别
      */
     public FoodRecognitionResult recognizeByImage(Long userId, MultipartFile image) {
         log.info("收到图片识别请求，文件大小: {} bytes", image.getSize());
@@ -130,79 +142,140 @@ public class FoodRecognitionServiceV2 {
         try {
             byte[] imageBytes = image.getBytes();
 
-            // COS上传和百度AI识别并行执行，节省10-20秒
+            // COS上传和百度AI识别并行执行
             CompletableFuture<String> cosUploadFuture = CompletableFuture.supplyAsync(() -> {
                 try {
                     String url = ossService.uploadFoodPhoto(image);
                     log.info("识别图片已上传至COS: {}", url);
                     return url;
                 } catch (Exception e) {
-                    log.warn("识别图片上传COS失败，将不保存图片URL: {}", e.getMessage());
+                    log.warn("识别图片上传COS失败: {}", e.getMessage());
                     return null;
                 }
             });
 
-            // 调用百度AI菜品识别；filter_threshold 0.6 兼顾精度与召回
-            HashMap<String, String> options = new HashMap<>();
-            options.put("top_num", "5");
-            options.put("filter_threshold", "0.6");
-            options.put("baike_num", "0");
-
-            JSONObject response = aipImageClassify.dishDetect(imageBytes, options);
-            log.info("百度AI原始响应: {}", response.toString());
-
-            // ① 检查百度平台级错误
-            if (response.has("error_code")) {
-                int errorCode = response.getInt("error_code");
-                String errorMsg = response.optString("error_msg", "服务暂时不可用");
-                log.error("百度AI识别接口返回错误: error_code={}, error_msg={}", errorCode, errorMsg);
-                // 凭证类错误直接抛出，其他重试提示
-                if (errorCode == 110 || errorCode == 111) {
-                    throw new RuntimeException("百度AI授权异常（" + errorCode + "），请联系管理员");
+            // 菜品识别和果蔬识别并行调用
+            CompletableFuture<JSONObject> dishFuture = CompletableFuture.supplyAsync(() -> {
+                try {
+                    HashMap<String, String> options = new HashMap<>();
+                    options.put("top_num", "5");
+                    options.put("filter_threshold", "0.6");
+                    options.put("baike_num", "0");
+                    JSONObject resp = aipImageClassify.dishDetect(imageBytes, options);
+                    log.info("百度菜品识别响应: {}", resp.toString());
+                    return resp;
+                } catch (Exception e) {
+                    log.warn("菜品识别调用失败: {}", e.getMessage());
+                    return null;
                 }
-                throw new RuntimeException("百度AI识别服务出错（" + errorCode + "），请稍后重试");
+            });
+
+            CompletableFuture<JSONObject> ingredientFuture = CompletableFuture.supplyAsync(() -> {
+                try {
+                    JSONObject resp = callIngredientApi(imageBytes);
+                    log.info("百度果蔬识别响应: {}", resp != null ? resp.toString() : "null");
+                    return resp;
+                } catch (Exception e) {
+                    log.warn("果蔬识别调用失败: {}", e.getMessage());
+                    return null;
+                }
+            });
+
+            JSONObject dishResponse = dishFuture.join();
+            JSONObject ingredientResponse = ingredientFuture.join();
+
+            // 检查百度平台级错误（仅在两个都出错时报错）
+            boolean dishError = dishResponse == null || dishResponse.has("error_code");
+            boolean ingredientError = ingredientResponse == null || ingredientResponse.has("error_code");
+
+            if (dishError && ingredientError) {
+                if (dishResponse != null && dishResponse.has("error_code")) {
+                    int errorCode = dishResponse.getInt("error_code");
+                    if (errorCode == 110 || errorCode == 111) {
+                        throw new RuntimeException("百度AI授权异常（" + errorCode + "），请联系管理员");
+                    }
+                    throw new RuntimeException("百度AI识别服务出错（" + errorCode + "），请稍后重试");
+                }
+                throw new RuntimeException("百度AI识别服务暂时不可用，请稍后重试");
             }
 
-            // ② 解析识别结果
             List<FoodItem> foods = new ArrayList<>();
+            Set<String> addedNames = new HashSet<>();
 
-            if (response.has("result")) {
-                JSONArray resultArray = response.getJSONArray("result");
+            // 解析菜品识别结果
+            if (!dishError && dishResponse.has("result")) {
+                JSONArray resultArray = dishResponse.getJSONArray("result");
                 for (int i = 0; i < resultArray.length(); i++) {
                     JSONObject item = resultArray.getJSONObject(i);
                     String foodName = item.getString("name");
                     double probability = item.getDouble("probability");
 
-                    // 百度API卡路里（唯一可信数据来源）
+                    // 跳过"非菜"结果
+                    if ("非菜".equals(foodName)) continue;
+
                     Double baiduCalorie = null;
                     if (item.has("calorie")) {
-                        try {
-                            baiduCalorie = Double.parseDouble(item.getString("calorie"));
-                        } catch (NumberFormatException nfe) {
-                            log.warn("解析卡路里失败: {}", item.optString("calorie"));
-                        }
+                        try { baiduCalorie = Double.parseDouble(item.getString("calorie")); }
+                        catch (NumberFormatException nfe) { log.warn("解析卡路里失败: {}", item.optString("calorie")); }
                     }
 
-                    // 其他营养成分仅从数据库获取，不使用AI估算或虚假数据
                     FoodItem.NutritionInfo nutrition = getImageRecognitionNutrition(foodName, baiduCalorie);
-
                     foods.add(FoodItem.builder()
                             .name(foodName)
                             .confidence(probability)
                             .nutrition(nutrition)
+                            .category("菜品")
                             .build());
+                    addedNames.add(foodName);
                 }
             }
 
-            // ③ 无识别结果时给出明确业务提示
+            // 解析果蔬识别结果
+            if (!ingredientError && ingredientResponse.has("result")) {
+                JSONArray resultArray = ingredientResponse.getJSONArray("result");
+                for (int i = 0; i < resultArray.length(); i++) {
+                    JSONObject item = resultArray.getJSONObject(i);
+                    String foodName = item.getString("name");
+                    double score = item.getDouble("score");
+
+                    // 跳过"非果蔬食材"结果
+                    if ("非果蔬食材".equals(foodName)) continue;
+                    // 跳过已添加的
+                    if (addedNames.contains(foodName)) continue;
+
+                    FoodItem.NutritionInfo nutrition = getImageRecognitionNutrition(foodName, null);
+                    foods.add(FoodItem.builder()
+                            .name(foodName)
+                            .confidence(score)
+                            .nutrition(nutrition)
+                            .category("果蔬")
+                            .build());
+                    addedNames.add(foodName);
+                }
+            }
+
+            // 两个API都没有识别出有效结果
             if (foods.isEmpty()) {
-                log.info("百度AI未从图片中识别到食物");
-                throw new IllegalStateException("未能从图片中识别到食物，请确保图片清晰且包含可识别的食物");
+                log.info("百度AI未从图片中识别到菜品或果蔬");
+                // 构建提示信息
+                String hint = "未能识别到菜品或果蔬";
+                boolean dishNonFood = !dishError && dishResponse.has("result") &&
+                        dishResponse.getJSONArray("result").length() > 0 &&
+                        "非菜".equals(dishResponse.getJSONArray("result").getJSONObject(0).getString("name"));
+                boolean ingredientNonFood = !ingredientError && ingredientResponse.has("result") &&
+                        ingredientResponse.getJSONArray("result").length() > 0 &&
+                        "非果蔬食材".equals(ingredientResponse.getJSONArray("result").getJSONObject(0).getString("name"));
+                if (dishNonFood && ingredientNonFood) {
+                    hint = "图片中的内容非菜品、非果蔬，暂不支持识别";
+                } else if (dishNonFood) {
+                    hint = "图片中的内容非菜品，也未识别到果蔬";
+                } else if (ingredientNonFood) {
+                    hint = "图片中的内容非果蔬，也未识别到菜品";
+                }
+                throw new IllegalStateException(hint + "。本功能仅支持识别菜品和果蔬，请上传清晰的食物图片。");
             }
 
             long endTime = System.currentTimeMillis();
-
-            // 等待COS上传完成并获取URL
             String uploadedImageUrl = cosUploadFuture.join();
 
             FoodRecognitionResult result = FoodRecognitionResult.builder()
@@ -213,15 +286,74 @@ public class FoodRecognitionServiceV2 {
                     .build();
 
             saveRecognitionHistory(userId, "IMAGE", null, result);
-
             log.info("图片识别完成，识别到 {} 个食物，耗时: {}ms", foods.size(), result.getRecognitionTime());
             return result;
 
         } catch (IllegalStateException | UnsupportedOperationException e) {
-            throw e; // 业务异常直接上抛
+            throw e;
         } catch (Exception e) {
             log.error("图片识别处理异常", e);
             throw new RuntimeException("图片识别失败，请稍后重试");
+        }
+    }
+
+    /**
+     * 调用百度果蔬识别API (ingredient)
+     * SDK没有内置此方法，通过REST API直接调用
+     */
+    private JSONObject callIngredientApi(byte[] imageBytes) {
+        try {
+            String accessToken = getBaiduAccessToken();
+            if (accessToken == null) {
+                log.warn("获取百度access_token失败，跳过果蔬识别");
+                return null;
+            }
+
+            String url = "https://aip.baidubce.com/rest/2.0/image-classify/v1/classify/ingredient?access_token=" + accessToken;
+            String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("image", base64Image);
+            params.add("top_num", "5");
+
+            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
+
+            return new JSONObject(response.getBody());
+        } catch (Exception e) {
+            log.error("调用百度果蔬识别API异常: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * 获取百度API access_token（带缓存）
+     */
+    private String getBaiduAccessToken() {
+        if (cachedAccessToken.get() != null && System.currentTimeMillis() < tokenExpireTime) {
+            return cachedAccessToken.get();
+        }
+        try {
+            String url = String.format(
+                    "https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=%s&client_secret=%s",
+                    baiduApiKey, baiduSecretKey);
+            RestTemplate restTemplate = new RestTemplate();
+            String body = restTemplate.getForObject(url, String.class);
+            JSONObject json = new JSONObject(body);
+            String token = json.getString("access_token");
+            long expiresIn = json.getLong("expires_in");
+            cachedAccessToken.set(token);
+            // 提前1小时过期
+            tokenExpireTime = System.currentTimeMillis() + (expiresIn - 3600) * 1000;
+            log.info("百度access_token刷新成功，有效期: {}秒", expiresIn);
+            return token;
+        } catch (Exception e) {
+            log.error("获取百度access_token失败: {}", e.getMessage());
+            return null;
         }
     }
     

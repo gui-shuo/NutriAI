@@ -277,6 +277,135 @@ public class ConfigOptionsService {
                 .defaultValue("false")
                 .required(true)
                 .build());
+
+        // 食物识别配置
+        options.add(ConfigOptionDTO.builder()
+                .key("recognition.image_max_size_mb")
+                .name("图片最大上传大小")
+                .description("食物识别图片最大上传大小（MB）")
+                .category("食物识别")
+                .valueType("number")
+                .defaultValue("5")
+                .required(true)
+                .build());
+
+        options.add(ConfigOptionDTO.builder()
+                .key("recognition.dish_enabled")
+                .name("菜品识别")
+                .description("是否启用百度菜品识别功能")
+                .category("食物识别")
+                .valueType("select")
+                .options(Arrays.asList(
+                        ConfigOptionDTO.OptionValue.builder().label("启用").value("true").build(),
+                        ConfigOptionDTO.OptionValue.builder().label("禁用").value("false").build()
+                ))
+                .defaultValue("true")
+                .required(true)
+                .build());
+
+        options.add(ConfigOptionDTO.builder()
+                .key("recognition.ingredient_enabled")
+                .name("果蔬识别")
+                .description("是否启用百度果蔬识别功能")
+                .category("食物识别")
+                .valueType("select")
+                .options(Arrays.asList(
+                        ConfigOptionDTO.OptionValue.builder().label("启用").value("true").build(),
+                        ConfigOptionDTO.OptionValue.builder().label("禁用").value("false").build()
+                ))
+                .defaultValue("true")
+                .required(true)
+                .build());
+
+        options.add(ConfigOptionDTO.builder()
+                .key("recognition.confidence_threshold")
+                .name("识别置信度阈值")
+                .description("低于此阈值的识别结果将被过滤（0-1）")
+                .category("食物识别")
+                .valueType("number")
+                .defaultValue("0.6")
+                .required(true)
+                .build());
+
+        // 营养师咨询配置
+        options.add(ConfigOptionDTO.builder()
+                .key("consultation.auto_approve_nutritionist")
+                .name("营养师自动审核")
+                .description("营养师注册后是否自动通过审核")
+                .category("营养师")
+                .valueType("select")
+                .options(Arrays.asList(
+                        ConfigOptionDTO.OptionValue.builder().label("自动通过").value("true").build(),
+                        ConfigOptionDTO.OptionValue.builder().label("需人工审核").value("false").build()
+                ))
+                .defaultValue("false")
+                .required(true)
+                .build());
+
+        options.add(ConfigOptionDTO.builder()
+                .key("consultation.default_fee")
+                .name("默认咨询费用")
+                .description("营养师咨询默认费用（元）")
+                .category("营养师")
+                .valueType("number")
+                .defaultValue("98")
+                .required(true)
+                .build());
+
+        options.add(ConfigOptionDTO.builder()
+                .key("consultation.order_expire_minutes")
+                .name("订单超时时间")
+                .description("咨询订单未支付超时时间（分钟）")
+                .category("营养师")
+                .valueType("number")
+                .defaultValue("30")
+                .required(true)
+                .build());
+
+        options.add(ConfigOptionDTO.builder()
+                .key("consultation.im_enabled")
+                .name("即时通信")
+                .description("是否启用腾讯云IM即时通信")
+                .category("营养师")
+                .valueType("select")
+                .options(Arrays.asList(
+                        ConfigOptionDTO.OptionValue.builder().label("启用").value("true").build(),
+                        ConfigOptionDTO.OptionValue.builder().label("禁用（使用轮询）").value("false").build()
+                ))
+                .defaultValue("true")
+                .required(true)
+                .build());
+
+        // 饮食计划配置
+        options.add(ConfigOptionDTO.builder()
+                .key("diet.plan_max_days")
+                .name("计划最大天数")
+                .description("饮食计划最大可生成天数")
+                .category("饮食计划")
+                .valueType("number")
+                .defaultValue("7")
+                .required(true)
+                .build());
+
+        options.add(ConfigOptionDTO.builder()
+                .key("diet.daily_calorie_min")
+                .name("每日最低热量")
+                .description("饮食计划每日最低热量建议（kcal）")
+                .category("饮食计划")
+                .valueType("number")
+                .defaultValue("1200")
+                .required(true)
+                .build());
+
+        options.add(ConfigOptionDTO.builder()
+                .key("diet.daily_calorie_max")
+                .name("每日最高热量")
+                .description("饮食计划每日最高热量建议（kcal）")
+                .category("饮食计划")
+                .valueType("number")
+                .defaultValue("3000")
+                .required(true)
+                .build());
         
         return options;
     }

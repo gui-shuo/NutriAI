@@ -6,7 +6,7 @@
     </view>
 
     <view class="disclaimer-tip" v-if="showDisclaimer">
-      <text>📋 食物识别及营养数据由AI算法生成，结果仅供参考，可能存在误差。</text>
+      <text>📋 仅支持识别菜品和果蔬，其他物品将显示"非菜品/非果蔬"。识别及营养数据由AI生成，仅供参考。</text>
       <text class="dismiss" @tap="showDisclaimer = false">✕</text>
     </view>
 
@@ -87,7 +87,12 @@
       >
         <view class="result-header">
           <view class="result-title-row">
-            <text class="result-name">{{ item.name }}</text>
+            <view class="result-name-wrap">
+              <text class="result-name">{{ item.name }}</text>
+              <view v-if="item.category" class="category-badge" :class="item.category === '果蔬' ? 'category-fruit' : 'category-dish'">
+                {{ item.category }}
+              </view>
+            </view>
             <view class="confidence-badge" :class="confidenceClass(item.confidence)">
               {{ formatConfidence(item.confidence) }}
             </view>
@@ -153,6 +158,7 @@ import { checkLogin } from '@/utils/common'
 interface RecognitionResult {
   name: string
   confidence: number
+  category?: string
   calories?: number
   protein?: number
   fat?: number
@@ -182,8 +188,7 @@ function takePhoto() {
     sourceType: ['camera'],
     sizeType: ['compressed'],
     success: (res) => {
-      photoPath.value = res.tempFilePaths[0]
-      recognizePhoto(res.tempFilePaths[0])
+      compressAndRecognize(res.tempFilePaths[0])
     },
     fail: () => {}
   })
@@ -195,10 +200,26 @@ function chooseFromAlbum() {
     sourceType: ['album'],
     sizeType: ['compressed'],
     success: (res) => {
-      photoPath.value = res.tempFilePaths[0]
-      recognizePhoto(res.tempFilePaths[0])
+      compressAndRecognize(res.tempFilePaths[0])
     },
     fail: () => {}
+  })
+}
+
+function compressAndRecognize(filePath: string) {
+  // 先压缩图片再上传，减少超时风险
+  uni.compressImage({
+    src: filePath,
+    quality: 60,
+    success: (compressed) => {
+      photoPath.value = compressed.tempFilePath
+      recognizePhoto(compressed.tempFilePath)
+    },
+    fail: () => {
+      // 压缩失败则用原图
+      photoPath.value = filePath
+      recognizePhoto(filePath)
+    }
   })
 }
 
@@ -259,6 +280,7 @@ function parseFoodResults(data: any): RecognitionResult[] {
       return {
         name: item.name || '未知食物',
         confidence: item.confidence || 0,
+        category: item.category || '',
         calories: n.energy || n.calories || 0,
         protein: n.protein || 0,
         fat: n.fat || 0,
@@ -446,6 +468,25 @@ function goToRecord(item: RecognitionResult) {
   font-size: 36rpx;
   font-weight: 700;
   color: #333;
+}
+.result-name-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+.category-badge {
+  font-size: 20rpx;
+  padding: 2rpx 12rpx;
+  border-radius: 8rpx;
+  font-weight: 500;
+}
+.category-dish {
+  background: #fff3e0;
+  color: #e65100;
+}
+.category-fruit {
+  background: #e8f5e9;
+  color: #2e7d32;
 }
 .result-portion {
   display: block;

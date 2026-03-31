@@ -11,6 +11,9 @@
         <el-tab-pane label="用户配置" name="用户" />
         <el-tab-pane label="安全配置" name="安全" />
         <el-tab-pane label="通知配置" name="通知" />
+        <el-tab-pane label="食物识别" name="食物识别" />
+        <el-tab-pane label="营养师" name="营养师" />
+        <el-tab-pane label="饮食计划" name="饮食计划" />
       </el-tabs>
     </el-card>
 
@@ -168,6 +171,9 @@
             <el-option label="用户配置" value="用户" />
             <el-option label="安全配置" value="安全" />
             <el-option label="通知配置" value="通知" />
+            <el-option label="食物识别" value="食物识别" />
+            <el-option label="营养师" value="营养师" />
+            <el-option label="饮食计划" value="饮食计划" />
           </el-select>
         </el-form-item>
 

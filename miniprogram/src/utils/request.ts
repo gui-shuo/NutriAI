@@ -123,16 +123,30 @@ function request<T = any>(options: RequestOptions): Promise<ApiResponse<T>> {
 }
 
 // Upload file helper
-function uploadFile(options: { url: string, filePath: string, name?: string, formData?: Record<string, any> }): Promise<ApiResponse> {
+function uploadFile(options: { url: string, filePath: string, name?: string, formData?: Record<string, any>, timeout?: number }): Promise<ApiResponse> {
   const token = getToken()
   return new Promise((resolve, reject) => {
-    uni.uploadFile({
+    // 设置超时定时器（uni.uploadFile不原生支持timeout）
+    const timeoutMs = options.timeout || 120000 // 默认120秒
+    let completed = false
+    const timer = setTimeout(() => {
+      if (!completed) {
+        completed = true
+        uploadTask?.abort()
+        reject(new Error('上传超时，请检查网络后重试'))
+      }
+    }, timeoutMs)
+
+    const uploadTask = uni.uploadFile({
       url: options.url.startsWith('http') ? options.url : `${BASE_URL}${options.url}`,
       filePath: options.filePath,
       name: options.name || 'file',
       formData: options.formData || {},
       header: token ? { 'Authorization': `Bearer ${token}` } : {},
       success: (res) => {
+        if (completed) return
+        completed = true
+        clearTimeout(timer)
         if (res.statusCode === 200) {
           try {
             resolve(JSON.parse(res.data))
@@ -153,7 +167,12 @@ function uploadFile(options: { url: string, filePath: string, name?: string, for
           reject(new Error(msg))
         }
       },
-      fail: (err) => reject(new Error(err?.errMsg || '网络连接失败'))
+      fail: (err) => {
+        if (completed) return
+        completed = true
+        clearTimeout(timer)
+        reject(new Error(err?.errMsg || '网络连接失败'))
+      }
     })
   })
 }

@@ -11,7 +11,7 @@
     <div class="recognition-body">
       <el-alert type="info" :closable="true" show-icon style="margin-bottom: 16px">
         <template #title>
-          食物识别及营养数据由AI算法生成，结果仅供参考，可能存在误差。
+          本功能仅支持识别<strong>菜品</strong>和<strong>果蔬</strong>，其他物品将提示"非菜品/非果蔬"。营养数据由AI生成，仅供参考。
           <router-link to="/legal/disclaimer" style="color:#409eff">详细声明</router-link>
         </template>
       </el-alert>
@@ -124,7 +124,12 @@
             class="food-result-item"
           >
             <div class="food-header">
-              <h4>{{ food.name }}</h4>
+              <div class="food-name-wrap">
+                <h4>{{ food.name }}</h4>
+                <el-tag v-if="food.category" :type="food.category === '果蔬' ? 'success' : 'warning'" size="small" effect="plain">
+                  {{ food.category }}
+                </el-tag>
+              </div>
               <el-tag :type="getConfidenceType(food.confidence)" size="small">
                 置信度: {{ (food.confidence * 100).toFixed(0) }}%
               </el-tag>
@@ -405,7 +410,7 @@ const recognizeByImage = async () => {
 
     const response = await api.post('/food-recognition/recognize-by-image', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
-      timeout: 90000
+      timeout: 120000 // 菜品+果蔬并行识别需要更多时间
     })
     const data = response.data
 
@@ -703,6 +708,12 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
+}
+
+.food-name-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .food-header h4 {

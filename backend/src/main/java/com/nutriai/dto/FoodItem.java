@@ -25,6 +25,11 @@ public class FoodItem {
     private Double confidence;
     
     /**
+     * 识别分类：菜品/果蔬
+     */
+    private String category;
+    
+    /**
      * 营养信息
      */
     private NutritionInfo nutrition;
