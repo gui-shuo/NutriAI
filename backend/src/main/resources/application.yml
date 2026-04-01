@@ -189,12 +189,16 @@ nutriai:
 #    endpoint: imagerecog.cn-shanghai.aliyuncs.com
 #    region: cn-shanghai
 
-# 百度AI配置
+# 百度AI配置（保留用于其他功能）
 baidu:
   ai:
     app-id: ${BAIDU_APP_ID:}
     api-key: ${BAIDU_API_KEY:}
     secret-key: ${BAIDU_SECRET_KEY:}
+
+# 天聚数行API配置（食物营养识别）
+tianapi:
+  api-key: ${TIANAPI_API_KEY:}
 
 # API限流配置
 rate-limit:

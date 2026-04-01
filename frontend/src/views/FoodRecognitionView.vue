@@ -11,7 +11,7 @@
     <div class="recognition-body">
       <el-alert type="info" :closable="true" show-icon style="margin-bottom: 16px">
         <template #title>
-          本功能仅支持识别<strong>菜品</strong>和<strong>果蔬</strong>，其他物品将提示"非菜品/非果蔬"。营养数据由AI生成，仅供参考。
+          上传食物图片即可自动识别并获取完整营养成分数据，支持各类常见食物。营养数据仅供参考。
           <router-link to="/legal/disclaimer" style="color:#409eff">详细声明</router-link>
         </template>
       </el-alert>
@@ -135,37 +135,137 @@
               </el-tag>
             </div>
 
-            <div class="nutrition-grid">
-              <div class="nutrition-item">
-                <div class="nutrition-label">热量</div>
-                <div class="nutrition-value">
-                  {{ food.nutrition.energy != null ? food.nutrition.energy.toFixed(1) : '—' }}
-                  <span class="unit">kcal</span>
+            <!-- 基础营养（每100g） -->
+            <div class="nutrition-section">
+              <div class="section-label">🔥 基础营养 (每100g)</div>
+              <div class="nutrition-grid basic-grid">
+                <div class="nutrition-item energy-item">
+                  <div class="nutrition-label">热量</div>
+                  <div class="nutrition-value">
+                    {{ safeFixed(food.nutrition.energy) }}
+                    <span class="unit">kcal</span>
+                  </div>
+                </div>
+                <div class="nutrition-item">
+                  <div class="nutrition-label">蛋白质</div>
+                  <div class="nutrition-value">
+                    {{ safeFixed(food.nutrition.protein) }}
+                    <span class="unit">g</span>
+                  </div>
+                </div>
+                <div class="nutrition-item">
+                  <div class="nutrition-label">碳水化合物</div>
+                  <div class="nutrition-value">
+                    {{ safeFixed(food.nutrition.carbohydrate) }}
+                    <span class="unit">g</span>
+                  </div>
+                </div>
+                <div class="nutrition-item">
+                  <div class="nutrition-label">脂肪</div>
+                  <div class="nutrition-value">
+                    {{ safeFixed(food.nutrition.fat) }}
+                    <span class="unit">g</span>
+                  </div>
+                </div>
+                <div class="nutrition-item">
+                  <div class="nutrition-label">膳食纤维</div>
+                  <div class="nutrition-value">
+                    {{ safeFixed(food.nutrition.fiber) }}
+                    <span class="unit">g</span>
+                  </div>
+                </div>
+                <div class="nutrition-item">
+                  <div class="nutrition-label">胆固醇</div>
+                  <div class="nutrition-value">
+                    {{ safeFixed(food.nutrition.cholesterol) }}
+                    <span class="unit">mg</span>
+                  </div>
                 </div>
               </div>
-              <div class="nutrition-item">
-                <div class="nutrition-label">蛋白质</div>
-                <div class="nutrition-value">
-                  {{ food.nutrition.protein != null ? food.nutrition.protein.toFixed(1) : '—' }}
-                  <span class="unit">g</span>
+            </div>
+
+            <!-- 矿物质 -->
+            <div v-if="hasMineral(food.nutrition)" class="nutrition-section">
+              <div class="section-label">💎 矿物质</div>
+              <div class="nutrition-grid mineral-grid">
+                <div v-if="food.nutrition.calcium != null" class="nutrition-item-sm">
+                  <span class="label-sm">钙</span>
+                  <span class="value-sm">{{ safeFixed(food.nutrition.calcium) }} <em>mg</em></span>
+                </div>
+                <div v-if="food.nutrition.iron != null" class="nutrition-item-sm">
+                  <span class="label-sm">铁</span>
+                  <span class="value-sm">{{ safeFixed(food.nutrition.iron) }} <em>mg</em></span>
+                </div>
+                <div v-if="food.nutrition.zinc != null" class="nutrition-item-sm">
+                  <span class="label-sm">锌</span>
+                  <span class="value-sm">{{ safeFixed(food.nutrition.zinc) }} <em>mg</em></span>
+                </div>
+                <div v-if="food.nutrition.sodium != null" class="nutrition-item-sm">
+                  <span class="label-sm">钠</span>
+                  <span class="value-sm">{{ safeFixed(food.nutrition.sodium) }} <em>mg</em></span>
+                </div>
+                <div v-if="food.nutrition.potassium != null" class="nutrition-item-sm">
+                  <span class="label-sm">钾</span>
+                  <span class="value-sm">{{ safeFixed(food.nutrition.potassium) }} <em>mg</em></span>
+                </div>
+                <div v-if="food.nutrition.magnesium != null" class="nutrition-item-sm">
+                  <span class="label-sm">镁</span>
+                  <span class="value-sm">{{ safeFixed(food.nutrition.magnesium) }} <em>mg</em></span>
+                </div>
+                <div v-if="food.nutrition.phosphorus != null" class="nutrition-item-sm">
+                  <span class="label-sm">磷</span>
+                  <span class="value-sm">{{ safeFixed(food.nutrition.phosphorus) }} <em>mg</em></span>
+                </div>
+                <div v-if="food.nutrition.selenium != null" class="nutrition-item-sm">
+                  <span class="label-sm">硒</span>
+                  <span class="value-sm">{{ safeFixed(food.nutrition.selenium) }} <em>μg</em></span>
+                </div>
+                <div v-if="food.nutrition.copper != null" class="nutrition-item-sm">
+                  <span class="label-sm">铜</span>
+                  <span class="value-sm">{{ safeFixed(food.nutrition.copper, 2) }} <em>mg</em></span>
+                </div>
+                <div v-if="food.nutrition.manganese != null" class="nutrition-item-sm">
+                  <span class="label-sm">锰</span>
+                  <span class="value-sm">{{ safeFixed(food.nutrition.manganese, 2) }} <em>mg</em></span>
                 </div>
               </div>
-              <div class="nutrition-item">
-                <div class="nutrition-label">碳水</div>
-                <div class="nutrition-value">
-                  {{
-                    food.nutrition.carbohydrate != null
-                      ? food.nutrition.carbohydrate.toFixed(1)
-                      : '—'
-                  }}
-                  <span class="unit">g</span>
+            </div>
+
+            <!-- 维生素 -->
+            <div v-if="hasVitamin(food.nutrition)" class="nutrition-section">
+              <div class="section-label">🧪 维生素</div>
+              <div class="nutrition-grid mineral-grid">
+                <div v-if="food.nutrition.vitaminA != null" class="nutrition-item-sm">
+                  <span class="label-sm">维生素A</span>
+                  <span class="value-sm">{{ safeFixed(food.nutrition.vitaminA) }} <em>μg</em></span>
                 </div>
-              </div>
-              <div class="nutrition-item">
-                <div class="nutrition-label">脂肪</div>
-                <div class="nutrition-value">
-                  {{ food.nutrition.fat != null ? food.nutrition.fat.toFixed(1) : '—' }}
-                  <span class="unit">g</span>
+                <div v-if="food.nutrition.vitaminC != null" class="nutrition-item-sm">
+                  <span class="label-sm">维生素C</span>
+                  <span class="value-sm">{{ safeFixed(food.nutrition.vitaminC) }} <em>mg</em></span>
+                </div>
+                <div v-if="food.nutrition.vitaminE != null" class="nutrition-item-sm">
+                  <span class="label-sm">维生素E</span>
+                  <span class="value-sm">{{ safeFixed(food.nutrition.vitaminE, 2) }} <em>mg</em></span>
+                </div>
+                <div v-if="food.nutrition.carotene != null" class="nutrition-item-sm">
+                  <span class="label-sm">胡萝卜素</span>
+                  <span class="value-sm">{{ safeFixed(food.nutrition.carotene) }} <em>μg</em></span>
+                </div>
+                <div v-if="food.nutrition.thiamine != null" class="nutrition-item-sm">
+                  <span class="label-sm">硫胺素(B1)</span>
+                  <span class="value-sm">{{ safeFixed(food.nutrition.thiamine, 2) }} <em>mg</em></span>
+                </div>
+                <div v-if="food.nutrition.riboflavin != null" class="nutrition-item-sm">
+                  <span class="label-sm">核黄素(B2)</span>
+                  <span class="value-sm">{{ safeFixed(food.nutrition.riboflavin, 2) }} <em>mg</em></span>
+                </div>
+                <div v-if="food.nutrition.niacin != null" class="nutrition-item-sm">
+                  <span class="label-sm">烟酸(B3)</span>
+                  <span class="value-sm">{{ safeFixed(food.nutrition.niacin) }} <em>mg</em></span>
+                </div>
+                <div v-if="food.nutrition.retinolEquivalent != null" class="nutrition-item-sm">
+                  <span class="label-sm">视黄醇当量</span>
+                  <span class="value-sm">{{ safeFixed(food.nutrition.retinolEquivalent) }} <em>μg</em></span>
                 </div>
               </div>
             </div>
@@ -532,12 +632,25 @@ const getConfidenceType = confidence => {
 
 const getSourceText = source => {
   const map = {
+    tianapi: '天聚数行API',
     database: '数据库（准确）',
     estimated: 'AI估算',
     default: '默认值',
-    'baidu-calorie-only': '百度识别（仅卡路里）'
+    'baidu-calorie-only': '识别（仅卡路里）'
   }
   return map[source] || source
+}
+
+const hasMineral = n => {
+  if (!n) return false
+  return [n.calcium, n.iron, n.zinc, n.sodium, n.potassium, n.magnesium, n.phosphorus, n.selenium, n.copper, n.manganese]
+    .some(v => v != null && v !== 0)
+}
+
+const hasVitamin = n => {
+  if (!n) return false
+  return [n.vitaminA, n.vitaminC, n.vitaminE, n.carotene, n.thiamine, n.riboflavin, n.niacin, n.retinolEquivalent]
+    .some(v => v != null && v !== 0)
 }
 
 const safeFixed = (val, digits = 1) => {
@@ -722,18 +835,67 @@ onBeforeUnmount(() => {
   color: #303133;
 }
 
+.nutrition-section {
+  margin-bottom: 14px;
+}
+
+.section-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #606266;
+  margin-bottom: 8px;
+}
+
 .nutrition-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: 10px;
+}
+
+.basic-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.mineral-grid {
+  grid-template-columns: repeat(5, 1fr);
 }
 
 .nutrition-item {
   text-align: center;
-  padding: 12px;
-  background: white;
+  padding: 12px 8px;
+  background: #f5f7fa;
   border-radius: 8px;
+}
+
+.energy-item {
+  background: linear-gradient(135deg, #fff7ed, #ffedd5);
+}
+
+.nutrition-item-sm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 4px;
+  background: #f5f7fa;
+  border-radius: 6px;
+}
+
+.label-sm {
+  font-size: 11px;
+  color: #909399;
+  margin-bottom: 2px;
+}
+
+.value-sm {
+  font-size: 13px;
+  font-weight: 600;
+  color: #303133;
+}
+
+.value-sm em {
+  font-style: normal;
+  font-size: 10px;
+  font-weight: normal;
+  color: #909399;
 }
 
 .nutrition-label {
@@ -866,8 +1028,12 @@ onBeforeUnmount(() => {
     font-size: 24px;
   }
 
-  .nutrition-grid {
+  .basic-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .mineral-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 
   .empty-card {

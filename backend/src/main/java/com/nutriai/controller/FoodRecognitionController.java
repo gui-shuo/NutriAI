@@ -64,7 +64,7 @@ public class FoodRecognitionController {
     }
 
     /**
-     * 通过图片识别 - 对接百度AI菜品识别API
+     * 通过图片识别 - 对接天聚数行食物营养识别API
      */
     @PostMapping("/recognize-by-image")
     public ResponseEntity<ApiResponse<FoodRecognitionResult>> recognizeByImage(

@@ -6,7 +6,7 @@
     </view>
 
     <view class="disclaimer-tip" v-if="showDisclaimer">
-      <text>📋 仅支持识别菜品和果蔬，其他物品将显示"非菜品/非果蔬"。识别及营养数据由AI生成，仅供参考。</text>
+      <text>📋 上传食物图片即可识别营养成分，支持识别各类常见食物。营养数据由AI生成，仅供参考。</text>
       <text class="dismiss" @tap="showDisclaimer = false">✕</text>
     </view>
 
@@ -102,6 +102,7 @@
 
         <view class="divider" />
 
+        <!-- 基础营养 -->
         <view class="nutrition-grid">
           <view class="nutrition-card calories-card">
             <text class="n-icon">🔥</text>
@@ -111,24 +112,120 @@
           </view>
           <view class="nutrition-card">
             <text class="n-icon">🥩</text>
-            <text class="n-value">{{ item.protein || 0 }}g</text>
+            <text class="n-value">{{ nf(item.protein) }}g</text>
             <text class="n-label">蛋白质</text>
           </view>
           <view class="nutrition-card">
             <text class="n-icon">🧈</text>
-            <text class="n-value">{{ item.fat || 0 }}g</text>
+            <text class="n-value">{{ nf(item.fat) }}g</text>
             <text class="n-label">脂肪</text>
           </view>
           <view class="nutrition-card">
             <text class="n-icon">🍚</text>
-            <text class="n-value">{{ item.carbs || 0 }}g</text>
+            <text class="n-value">{{ nf(item.carbs) }}g</text>
             <text class="n-label">碳水</text>
           </view>
           <view class="nutrition-card" v-if="item.fiber">
             <text class="n-icon">🌾</text>
-            <text class="n-value">{{ item.fiber }}g</text>
+            <text class="n-value">{{ nf(item.fiber) }}g</text>
             <text class="n-label">膳食纤维</text>
           </view>
+          <view class="nutrition-card" v-if="item.cholesterol">
+            <text class="n-icon">💧</text>
+            <text class="n-value">{{ nf(item.cholesterol) }}mg</text>
+            <text class="n-label">胆固醇</text>
+          </view>
+        </view>
+
+        <!-- 矿物质 -->
+        <view v-if="hasMinerals(item)" class="nutrition-sub-section">
+          <text class="sub-section-title">💎 矿物质</text>
+          <view class="nutrition-grid-sm">
+            <view v-if="item.calcium" class="n-item-sm">
+              <text class="n-sm-label">钙</text>
+              <text class="n-sm-value">{{ nf(item.calcium) }}<text class="n-sm-unit">mg</text></text>
+            </view>
+            <view v-if="item.iron" class="n-item-sm">
+              <text class="n-sm-label">铁</text>
+              <text class="n-sm-value">{{ nf(item.iron) }}<text class="n-sm-unit">mg</text></text>
+            </view>
+            <view v-if="item.zinc" class="n-item-sm">
+              <text class="n-sm-label">锌</text>
+              <text class="n-sm-value">{{ nf(item.zinc) }}<text class="n-sm-unit">mg</text></text>
+            </view>
+            <view v-if="item.sodium" class="n-item-sm">
+              <text class="n-sm-label">钠</text>
+              <text class="n-sm-value">{{ nf(item.sodium) }}<text class="n-sm-unit">mg</text></text>
+            </view>
+            <view v-if="item.potassium" class="n-item-sm">
+              <text class="n-sm-label">钾</text>
+              <text class="n-sm-value">{{ nf(item.potassium) }}<text class="n-sm-unit">mg</text></text>
+            </view>
+            <view v-if="item.magnesium" class="n-item-sm">
+              <text class="n-sm-label">镁</text>
+              <text class="n-sm-value">{{ nf(item.magnesium) }}<text class="n-sm-unit">mg</text></text>
+            </view>
+            <view v-if="item.phosphorus" class="n-item-sm">
+              <text class="n-sm-label">磷</text>
+              <text class="n-sm-value">{{ nf(item.phosphorus) }}<text class="n-sm-unit">mg</text></text>
+            </view>
+            <view v-if="item.selenium" class="n-item-sm">
+              <text class="n-sm-label">硒</text>
+              <text class="n-sm-value">{{ nf(item.selenium) }}<text class="n-sm-unit">μg</text></text>
+            </view>
+            <view v-if="item.copper" class="n-item-sm">
+              <text class="n-sm-label">铜</text>
+              <text class="n-sm-value">{{ nf(item.copper, 2) }}<text class="n-sm-unit">mg</text></text>
+            </view>
+            <view v-if="item.manganese" class="n-item-sm">
+              <text class="n-sm-label">锰</text>
+              <text class="n-sm-value">{{ nf(item.manganese, 2) }}<text class="n-sm-unit">mg</text></text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 维生素 -->
+        <view v-if="hasVitamins(item)" class="nutrition-sub-section">
+          <text class="sub-section-title">🧪 维生素</text>
+          <view class="nutrition-grid-sm">
+            <view v-if="item.vitaminA" class="n-item-sm">
+              <text class="n-sm-label">维A</text>
+              <text class="n-sm-value">{{ nf(item.vitaminA) }}<text class="n-sm-unit">μg</text></text>
+            </view>
+            <view v-if="item.vitaminC" class="n-item-sm">
+              <text class="n-sm-label">维C</text>
+              <text class="n-sm-value">{{ nf(item.vitaminC) }}<text class="n-sm-unit">mg</text></text>
+            </view>
+            <view v-if="item.vitaminE" class="n-item-sm">
+              <text class="n-sm-label">维E</text>
+              <text class="n-sm-value">{{ nf(item.vitaminE, 2) }}<text class="n-sm-unit">mg</text></text>
+            </view>
+            <view v-if="item.carotene" class="n-item-sm">
+              <text class="n-sm-label">胡萝卜素</text>
+              <text class="n-sm-value">{{ nf(item.carotene) }}<text class="n-sm-unit">μg</text></text>
+            </view>
+            <view v-if="item.thiamine" class="n-item-sm">
+              <text class="n-sm-label">B1</text>
+              <text class="n-sm-value">{{ nf(item.thiamine, 2) }}<text class="n-sm-unit">mg</text></text>
+            </view>
+            <view v-if="item.riboflavin" class="n-item-sm">
+              <text class="n-sm-label">B2</text>
+              <text class="n-sm-value">{{ nf(item.riboflavin, 2) }}<text class="n-sm-unit">mg</text></text>
+            </view>
+            <view v-if="item.niacin" class="n-item-sm">
+              <text class="n-sm-label">B3</text>
+              <text class="n-sm-value">{{ nf(item.niacin) }}<text class="n-sm-unit">mg</text></text>
+            </view>
+            <view v-if="item.retinolEquivalent" class="n-item-sm">
+              <text class="n-sm-label">视黄醇当量</text>
+              <text class="n-sm-value">{{ nf(item.retinolEquivalent) }}<text class="n-sm-unit">μg</text></text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 数据来源 -->
+        <view v-if="item.source" class="data-source-row">
+          <text class="data-source-text">📋 数据来源: {{ sourceText(item.source) }}</text>
         </view>
 
         <button
@@ -164,6 +261,29 @@ interface RecognitionResult {
   fat?: number
   carbs?: number
   fiber?: number
+  // 矿物质
+  sodium?: number
+  calcium?: number
+  potassium?: number
+  magnesium?: number
+  iron?: number
+  zinc?: number
+  phosphorus?: number
+  selenium?: number
+  copper?: number
+  manganese?: number
+  // 维生素
+  vitaminA?: number
+  vitaminC?: number
+  vitaminE?: number
+  carotene?: number
+  thiamine?: number
+  riboflavin?: number
+  niacin?: number
+  retinolEquivalent?: number
+  // 其他
+  cholesterol?: number
+  source?: string
 }
 
 const mode = ref<'photo' | 'text'>('photo')
@@ -273,7 +393,6 @@ async function searchByName() {
 }
 
 function parseFoodResults(data: any): RecognitionResult[] {
-  // Backend: { foods: [{ name, confidence, nutrition: { energy, protein, carbohydrate, fat, fiber } }] }
   if (data.foods && Array.isArray(data.foods)) {
     return data.foods.map((item: any) => {
       const n = item.nutrition || {}
@@ -285,11 +404,19 @@ function parseFoodResults(data: any): RecognitionResult[] {
         protein: n.protein || 0,
         fat: n.fat || 0,
         carbs: n.carbohydrate || n.carbs || 0,
-        fiber: n.fiber || 0
+        fiber: n.fiber || 0,
+        sodium: n.sodium, calcium: n.calcium, potassium: n.potassium,
+        magnesium: n.magnesium, iron: n.iron, zinc: n.zinc,
+        phosphorus: n.phosphorus, selenium: n.selenium,
+        copper: n.copper, manganese: n.manganese,
+        vitaminA: n.vitaminA, vitaminC: n.vitaminC, vitaminE: n.vitaminE,
+        carotene: n.carotene, thiamine: n.thiamine, riboflavin: n.riboflavin,
+        niacin: n.niacin, retinolEquivalent: n.retinolEquivalent,
+        cholesterol: n.cholesterol,
+        source: n.source || ''
       }
     })
   }
-  // Fallback: single flat result
   if (data.name) {
     return [{
       name: data.name,
@@ -325,6 +452,31 @@ function goToRecord(item: RecognitionResult) {
     portion: '每100g'
   }))
   uni.navigateTo({ url: `/pages/food-records/index?prefill=${data}` })
+}
+
+function nf(val: number | undefined | null, digits = 1): string {
+  if (val == null || isNaN(val)) return '0'
+  return Number(val).toFixed(digits)
+}
+
+function hasMinerals(item: RecognitionResult): boolean {
+  return !!(item.calcium || item.iron || item.zinc || item.sodium || item.potassium ||
+    item.magnesium || item.phosphorus || item.selenium || item.copper || item.manganese)
+}
+
+function hasVitamins(item: RecognitionResult): boolean {
+  return !!(item.vitaminA || item.vitaminC || item.vitaminE || item.carotene ||
+    item.thiamine || item.riboflavin || item.niacin || item.retinolEquivalent)
+}
+
+function sourceText(source: string): string {
+  const map: Record<string, string> = {
+    tianapi: '天聚数行API',
+    database: '数据库',
+    estimated: 'AI估算',
+    default: '默认值'
+  }
+  return map[source] || source
 }
 </script>
 
@@ -565,6 +717,55 @@ function goToRecord(item: RecognitionResult) {
   font-size: 22rpx;
   color: #999;
   margin-top: 4rpx;
+}
+
+/* 营养子板块 */
+.nutrition-sub-section {
+  margin-top: 16rpx;
+}
+.sub-section-title {
+  display: block;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 10rpx;
+}
+.nutrition-grid-sm {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10rpx;
+}
+.n-item-sm {
+  background: #f8f9fa;
+  border-radius: 10rpx;
+  padding: 12rpx 6rpx;
+  text-align: center;
+}
+.n-sm-label {
+  display: block;
+  font-size: 20rpx;
+  color: #999;
+  margin-bottom: 4rpx;
+}
+.n-sm-value {
+  display: block;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #333;
+}
+.n-sm-unit {
+  font-size: 18rpx;
+  font-weight: normal;
+  color: #999;
+}
+.data-source-row {
+  margin-top: 14rpx;
+  padding-top: 10rpx;
+  border-top: 1rpx solid #eee;
+}
+.data-source-text {
+  font-size: 22rpx;
+  color: #999;
 }
 
 .record-btn-inline {
