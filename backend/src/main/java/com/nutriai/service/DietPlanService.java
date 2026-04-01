@@ -67,29 +67,25 @@ public class DietPlanService {
             // 1. 计算每日热量需求
             log.info("步骤1: 计算每日热量需求...");
             int dailyCalories = calculateDailyCalories(request);
-            log.info("✓ 计算得出每日热量需求: {} kcal", dailyCalories);
+            log.info("✓ 每日热量需求: {} kcal", dailyCalories);
             
-            // 2. 从数据库获取营养数据
-            log.info("步骤2: 从数据库加载食物数据...");
-            List<FoodNutrition> allFoods = foodNutritionRepository.findAll();
-            log.info("✓ 从数据库加载了 {} 种食物数据", allFoods.size());
+            // 2. 从数据库获取食物参考（只取前15种，用于提示AI）
+            log.info("步骤2: 加载食物参考数据...");
+            List<FoodNutrition> sampleFoods = foodNutritionRepository.findAll()
+                    .stream().limit(15).collect(Collectors.toList());
+            log.info("✓ 加载了 {} 种食物参考", sampleFoods.size());
             
-            if (allFoods.isEmpty()) {
+            if (sampleFoods.isEmpty()) {
                 log.error("❌ 数据库中没有食物数据！");
                 throw new RuntimeException("数据库中没有食物数据");
             }
             
-            // 3. 构建Prompt
-            log.info("步骤3: 构建AI Prompt...");
-            String prompt = buildDietPlanPrompt(request, dailyCalories, allFoods);
-            log.info("✓ Prompt构建完成，长度: {} 字符", prompt.length());
-            
-            // 4. 调用AI生成计划（分批生成策略）
-            log.info("步骤4: 调用AI生成饮食计划（分批生成，每批2-3天）...");
-            String aiResponse = generateDietPlanInBatches(request, dailyCalories, allFoods, taskId, taskService);
+            // 3. 调用AI生成计划
+            log.info("步骤3: 调用AI生成饮食计划...");
+            String aiResponse = generateDietPlanInBatches(request, dailyCalories, sampleFoods, taskId, taskService);
             log.info("✓ AI响应成功，总长度: {} 字符", aiResponse.length());
             
-            // 5. 生成采购清单（如果需要）
+            // 4. 生成采购清单（如果需要）
             String fullMarkdownContent = aiResponse;
             if (request.getIncludeShoppingList() != null && request.getIncludeShoppingList()) {
                 log.info("步骤5: 生成采购清单...");
@@ -178,131 +174,6 @@ public class DietPlanService {
     }
     
     /**
-     * 构建饮食计划生成Prompt
-     */
-    private String buildDietPlanPrompt(DietPlanRequest request, int dailyCalories, List<FoodNutrition> allFoods) {
-        StringBuilder prompt = new StringBuilder();
-        
-        prompt.append("# 任务：生成个性化饮食计划\n\n");
-        
-        prompt.append("## 用户信息\n");
-        if (request.getHeight() != null) {
-            prompt.append("- 身高：").append(request.getHeight()).append(" cm\n");
-        }
-        if (request.getWeight() != null) {
-            prompt.append("- 体重：").append(request.getWeight()).append(" kg\n");
-        }
-        if (request.getAge() != null) {
-            prompt.append("- 年龄：").append(request.getAge()).append(" 岁\n");
-        }
-        if (request.getGender() != null) {
-            prompt.append("- 性别：").append("male".equals(request.getGender()) ? "男" : "女").append("\n");
-        }
-        prompt.append("- 目标：").append(getGoalDescription(request.getGoal())).append("\n");
-        prompt.append("- 运动强度：").append(getExerciseLevelDescription(request.getExerciseLevel())).append("\n");
-        prompt.append("- 每日热量目标：").append(dailyCalories).append(" kcal\n");
-        
-        if (request.getPreferences() != null && !request.getPreferences().isEmpty()) {
-            prompt.append("- 饮食偏好：").append(request.getPreferences()).append("\n");
-        }
-        if (request.getAllergies() != null && !request.getAllergies().isEmpty()) {
-            prompt.append("- 过敏/忌口：").append(request.getAllergies()).append("\n");
-        }
-        
-        prompt.append("\n## 计划要求\n");
-        prompt.append("- 计划天数：").append(request.getDays()).append(" 天\n");
-        prompt.append("- 每天包含：早餐、午餐、晚餐、加餐（可选）\n");
-        prompt.append("- 营养均衡：蛋白质、碳水化合物、脂肪比例合理\n");
-        prompt.append("- 食材多样化：避免重复\n");
-        prompt.append("- 简单易做：适合家庭制作\n\n");
-        
-        prompt.append("## 可用食材数据库（部分示例）\n");
-        prompt.append("以下是营养数据库中的部分食材，生成计划时可以参考这些食材的营养成分：\n\n");
-        
-        // 随机选择50个食材作为示例
-        List<FoodNutrition> sampleFoods = allFoods.stream()
-                .limit(50)
-                .collect(Collectors.toList());
-        
-        for (FoodNutrition food : sampleFoods) {
-            prompt.append("- **").append(food.getFoodName()).append("**：");
-            prompt.append(food.getEnergy()).append("kcal/100g，");
-            prompt.append("蛋白质").append(food.getProtein()).append("g，");
-            prompt.append("碳水").append(food.getCarbohydrate()).append("g，");
-            prompt.append("脂肪").append(food.getFat()).append("g\n");
-        }
-        
-        prompt.append("\n提示：你可以使用数据库中的任何食材，不限于以上示例。\n\n");
-        
-        prompt.append("## 输出格式要求（必须严格遵守）\n");
-        prompt.append("请使用Markdown格式输出，**必须包含**以下所有内容：\n\n");
-        prompt.append("### 1. 计划概述\n");
-        prompt.append("简要说明这个饮食计划的特点、预期效果、适合人群\n\n");
-        
-        prompt.append("### 2. 营养目标\n");
-        prompt.append("**必须包含具体数字**：\n");
-        prompt.append("- 每日总热量：").append(dailyCalories).append(" kcal\n");
-        prompt.append("- 蛋白质：XXXg (XX%)\n");
-        prompt.append("- 碳水化合物：XXXg (XX%)\n");
-        prompt.append("- 脂肪：XXXg (XX%)\n\n");
-        
-        prompt.append("### 3. 每日详细计划\n");
-        prompt.append("**必须生成").append(request.getDays()).append("天完整计划，每天格式如下：**\n\n");
-        
-        prompt.append("## 第X天 - YYYY-MM-DD\n\n");
-        
-        prompt.append("### 早餐 (7:00-8:00)\n");
-        prompt.append("- **食材1**：数量");
-        if (request.getIncludeNutrition() != null && request.getIncludeNutrition()) {
-            prompt.append(" - 营养数据");
-        }
-        prompt.append("\n- **食材2**：数量\n- **食材3**：数量\n");
-        if (request.getIncludeNutrition() != null && request.getIncludeNutrition()) {
-            prompt.append("- **小计**：XXX kcal\n");
-        }
-        if (request.getIncludeCookingTips() != null && request.getIncludeCookingTips()) {
-            prompt.append("- **烹饪提示**：简要说明\n");
-        }
-        prompt.append("\n### 午餐、晚餐、加餐：同样格式\n");
-        if (request.getIncludeNutrition() != null && request.getIncludeNutrition()) {
-            prompt.append("### 每日营养总计\n- 总热量、蛋白质、碳水、脂肪\n");
-        }
-        prompt.append("\n");
-        
-        prompt.append("### 4. 饮食建议\n");
-        prompt.append("给出5-8条实用的饮食建议\n\n");
-        
-        prompt.append("**重要提示**：\n");
-        prompt.append("1. 必须使用数据库中的真实食材及其营养数据\n");
-        prompt.append("2. 每个食材必须标注具体数量");
-        
-        if (request.getIncludeNutrition() != null && request.getIncludeNutrition()) {
-            prompt.append("和完整营养成分\n");
-            prompt.append("3. 每餐必须计算小计热量\n");
-            prompt.append("4. 每天必须计算营养总计\n");
-        } else {
-            prompt.append("\n");
-            prompt.append("3. 食材描述要清晰易懂\n");
-        }
-        
-        if (request.getIncludeCookingTips() != null && request.getIncludeCookingTips()) {
-            prompt.append("5. 烹饪提示要简单实用\n");
-        }
-        
-        prompt.append("6. 所有").append(request.getDays()).append("天的计划都必须详细列出\n\n");
-        
-        LocalDate startDate = LocalDate.now();
-        prompt.append("\n**关键要求**：\n");
-        prompt.append("1. 必须生成").append(request.getDays()).append("天完整计划（从").append(startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))).append("开始）\n");
-        prompt.append("2. 每天包含早餐、午餐、晚餐、加餐，每餐至少3种食材\n");
-        prompt.append("3. 每天详细程度一致，不能简化\n");
-        prompt.append("4. 每天食材要有变化\n\n");
-        prompt.append("现在开始生成").append(request.getDays()).append("天计划：\n");
-        
-        return prompt.toString();
-    }
-    
-    /**
      * 构建采购清单生成Prompt
      */
     private String buildShoppingListPrompt(String dietPlanContent, int days) {
@@ -370,157 +241,115 @@ public class DietPlanService {
      * 分批生成饮食计划（短计划一次生成，长计划分批）
      */
     private String generateDietPlanInBatches(DietPlanRequest request, int dailyCalories, 
-                                            List<FoodNutrition> allFoods, String taskId, 
+                                            List<FoodNutrition> sampleFoods, String taskId, 
                                             DietPlanTaskService taskService) {
         int totalDays = request.getDays();
         StringBuilder fullPlan = new StringBuilder();
         
-        // 先生成标题和营养目标（只生成一次）
+        // 标题和概述
         fullPlan.append("# ").append(generatePlanTitle(request)).append("\n\n");
-        fullPlan.append("## 1. 计划概述\n");
-        fullPlan.append(getGoalDescription(request.getGoal())).append("计划\n\n");
-        fullPlan.append("## 2. 营养目标\n");
-        fullPlan.append("- 每日总热量：").append(dailyCalories).append(" kcal\n");
-        fullPlan.append("- 蛋白质、碳水、脂肪比例合理分配\n\n");
-        fullPlan.append("## 3. 每日详细计划\n\n");
+        fullPlan.append("## 计划概述\n");
+        fullPlan.append(getGoalDescription(request.getGoal())).append("计划，每日目标 ")
+                .append(dailyCalories).append(" kcal\n\n");
         
         LocalDate startDate = LocalDate.now();
         
-        // 确定批次大小：1-3天一次生成，4-7天每2-3天一批，>7天每3天一批
-        int batchSize;
-        if (totalDays <= 3) {
-            batchSize = totalDays; // 1-3天：一次性生成
-        } else if (totalDays <= 7) {
-            batchSize = 3; // 4-7天：每批3天
-        } else {
-            batchSize = 3; // >7天：每批3天
-        }
+        // 批次策略：1-3天一批，4+天每3天一批
+        int batchSize = totalDays <= 3 ? totalDays : 3;
         
         int day = 1;
         while (day <= totalDays) {
-            // 检查任务是否已被取消
             if (taskId != null && taskService != null && taskService.isTaskCancelled(taskId)) {
-                log.info("任务已取消，停止生成: taskId={}, 已生成{}天", taskId, day - 1);
                 throw new RuntimeException("任务已取消");
             }
             
             int batchEnd = Math.min(day + batchSize - 1, totalDays);
+            int batchDays = batchEnd - day + 1;
             log.info("正在生成第{}-{}天的计划（共{}天）...", day, batchEnd, totalDays);
             
-            // 更新进度
             if (taskId != null && taskService != null) {
                 int progress = (int) ((day - 1) * 100.0 / totalDays);
                 taskService.updateTaskStatus(taskId, "running", progress, day, null, null);
-                log.info("更新任务进度: {}%, 当前第{}天", progress, day);
             }
             
-            // 构建这一批的Prompt
-            String batchPrompt = buildBatchDayPrompt(request, dailyCalories, allFoods, day, batchEnd, startDate);
+            // 构建精简prompt
+            String batchPrompt = buildCompactPrompt(request, dailyCalories, sampleFoods, day, batchEnd, startDate);
             
-            // 调用AI生成这一批（带重试和取消支持）
-            String batchResponse = generateWithRetry(batchPrompt, day, 3, taskId, taskService);
+            // 根据批次天数动态设置maxTokens：每天约500-700 tokens
+            int maxTokens = Math.min(batchDays * 800 + 200, 3000);
+            
+            String batchResponse = generateWithRetry(batchPrompt, maxTokens, day, 2, taskId, taskService);
             log.info("✓ 第{}-{}天生成成功，长度: {} 字符", day, batchEnd, batchResponse.length());
             
-            // 合并结果
             fullPlan.append(batchResponse).append("\n\n");
             
-            // 更新进度：这一批生成完成
             if (taskId != null && taskService != null) {
                 int progress = (int) (batchEnd * 100.0 / totalDays);
                 taskService.updateTaskStatus(taskId, "running", progress, batchEnd, null, null);
-                log.info("第{}-{}天完成，进度: {}%", day, batchEnd, progress);
             }
             
             day = batchEnd + 1;
         }
         
-        // 添加饮食建议
-        fullPlan.append("## 4. 饮食建议\n");
-        fullPlan.append("1. 保持规律的用餐时间\n");
-        fullPlan.append("2. 多喝水，每天至少8杯\n");
-        fullPlan.append("3. 控制油盐糖的摄入\n");
-        fullPlan.append("4. 适量运动，配合饮食计划\n");
+        fullPlan.append("## 饮食建议\n");
+        fullPlan.append("1. 保持规律用餐时间\n");
+        fullPlan.append("2. 每天至少8杯水\n");
+        fullPlan.append("3. 控制油盐糖摄入\n");
+        fullPlan.append("4. 适量运动配合饮食\n");
         fullPlan.append("5. 保证充足睡眠\n");
         
         return fullPlan.toString();
     }
     
     /**
-     * 使用流式API生成（无socket超时问题，支持取消）
+     * 使用流式API生成（支持取消和重试，动态maxTokens）
      */
-    private String generateWithRetry(String prompt, int day, int maxRetries, 
+    private String generateWithRetry(String prompt, int maxTokens, int day, int maxRetries, 
                                      String taskId, DietPlanTaskService taskService) {
-        int attempt = 0;
         Exception lastException = null;
         
-        while (attempt < maxRetries) {
+        for (int attempt = 1; attempt <= maxRetries; attempt++) {
             if (taskId != null && taskService != null && taskService.isTaskCancelled(taskId)) {
-                log.info("任务已取消，停止生成: day={}", day);
                 throw new RuntimeException("任务已取消");
             }
             
             try {
-                attempt++;
                 if (attempt > 1) {
-                    log.warn("第{}天生成失败，正在重试（第{}/{}次）...", day, attempt, maxRetries);
+                    log.warn("第{}天重试（第{}/{}次）...", day, attempt, maxRetries);
+                    Thread.sleep(2000);
                 }
                 
-                log.info("开始调用AI流式生成第{}天...", day);
                 long startTime = System.currentTimeMillis();
-                
-                String response = callStreamingAI(prompt, taskId, taskService);
-                
+                String response = callStreamingAI(prompt, maxTokens, taskId, taskService);
                 long elapsed = (System.currentTimeMillis() - startTime) / 1000;
-                log.info("AI流式调用完成，第{}天，耗时{}秒", day, elapsed);
-                
-                if (taskId != null && taskService != null && taskService.isTaskCancelled(taskId)) {
-                    log.info("任务在AI调用完成后被取消，丢弃结果: day={}", day);
-                    throw new RuntimeException("任务已取消");
-                }
+                log.info("AI流式调用完成，第{}天，耗时{}秒，maxTokens={}", day, elapsed, maxTokens);
                 
                 if (response == null || response.trim().isEmpty()) {
                     throw new RuntimeException("AI返回空响应");
                 }
-                
                 return response;
                 
             } catch (Exception e) {
-                if (taskId != null && taskService != null && taskService.isTaskCancelled(taskId)) {
+                if (e.getMessage() != null && e.getMessage().contains("任务已取消")) {
                     throw new RuntimeException("任务已取消");
                 }
-                
                 lastException = e;
                 log.error("第{}天生成失败（第{}/{}次）: {}", day, attempt, maxRetries, e.getMessage());
-                
-                if (attempt < maxRetries) {
-                    try {
-                        for (int i = 0; i < 30; i++) {
-                            if (taskId != null && taskService != null && taskService.isTaskCancelled(taskId)) {
-                                throw new RuntimeException("任务已取消");
-                            }
-                            Thread.sleep(100);
-                        }
-                    } catch (InterruptedException ie) {
-                        Thread.currentThread().interrupt();
-                        throw new RuntimeException("任务被中断");
-                    }
-                }
             }
         }
         
-        log.error("第{}天生成失败，所有重试都失败，使用简化版本", day);
+        log.error("第{}天所有重试失败，使用简化版本", day);
         return generateSimplifiedDay(day, LocalDate.now().plusDays(day - 1));
     }
     
     /**
      * 流式AI调用 — token逐个到达，不会socket超时
      */
-    private String callStreamingAI(String prompt, String taskId, DietPlanTaskService taskService) {
+    private String callStreamingAI(String prompt, int maxTokens, String taskId, DietPlanTaskService taskService) {
         CompletableFuture<String> future = new CompletableFuture<>();
         StringBuilder sb = new StringBuilder();
         
-        // 获取专用于饮食计划的流式模型（maxTokens=4096）
-        StreamingChatLanguageModel model = aiConfig.getStreamingChatModel(null, 0.7, 4096);
+        StreamingChatLanguageModel model = aiConfig.getStreamingChatModel(null, 0.7, maxTokens);
         
         model.generate(prompt, new StreamingResponseHandler<AiMessage>() {
             @Override
@@ -540,11 +369,17 @@ public class DietPlanService {
         });
         
         try {
-            // 10分钟绝对上限（流式一般不会触发）
-            return future.get(600, TimeUnit.SECONDS);
+            return future.get(300, TimeUnit.SECONDS);
         } catch (Exception e) {
             throw new RuntimeException("AI流式调用失败: " + e.getMessage(), e);
         }
+    }
+    
+    /**
+     * 流式AI调用（使用默认maxTokens，用于采购清单等）
+     */
+    private String callStreamingAI(String prompt, String taskId, DietPlanTaskService taskService) {
+        return callStreamingAI(prompt, 2000, taskId, taskService);
     }
     
     /**
@@ -573,136 +408,53 @@ public class DietPlanService {
     }
     
     /**
-     * 构建多天批量Prompt
+     * 构建精简prompt — 减少输入token提升速度
      */
-    private String buildBatchDayPrompt(DietPlanRequest request, int dailyCalories,
-                                       List<FoodNutrition> allFoods, int dayStart, int dayEnd, LocalDate startDate) {
-        // 单天直接用原方法
-        if (dayStart == dayEnd) {
-            return buildSingleDayPrompt(request, dailyCalories, allFoods, dayStart, startDate);
-        }
+    private String buildCompactPrompt(DietPlanRequest request, int dailyCalories,
+                                       List<FoodNutrition> sampleFoods, int dayStart, int dayEnd, LocalDate startDate) {
+        StringBuilder p = new StringBuilder();
+        int days = dayEnd - dayStart + 1;
         
-        StringBuilder prompt = new StringBuilder();
+        // 系统指令：简洁直接
+        p.append("直接输出Markdown格式饮食计划，不要多余解释。\n\n");
         
-        prompt.append("为第").append(dayStart).append("天到第").append(dayEnd).append("天（共")
-              .append(dayEnd - dayStart + 1).append("天）生成饮食计划。\n\n");
-        
-        prompt.append("要求：\n");
-        prompt.append("- 热量：").append(dailyCalories).append("kcal/天\n");
-        prompt.append("- 目标：").append(getGoalDescription(request.getGoal())).append("\n");
-        
-        if (request.getExerciseLevel() != null && !request.getExerciseLevel().isEmpty()) {
-            String exerciseDesc = switch (request.getExerciseLevel()) {
-                case "low" -> "轻度运动";
-                case "medium" -> "中度运动";
-                case "high" -> "高强度运动";
-                default -> "中度运动";
-            };
-            prompt.append("- 运动强度：").append(exerciseDesc).append("\n");
-        }
+        // 需求（一行式）
+        p.append("需求：").append(dailyCalories).append("kcal/天，")
+         .append(getGoalDescription(request.getGoal()));
         if (request.getPreferences() != null && !request.getPreferences().isEmpty()) {
-            prompt.append("- 饮食偏好：").append(request.getPreferences()).append("\n");
+            p.append("，偏好：").append(request.getPreferences());
         }
         if (request.getAllergies() != null && !request.getAllergies().isEmpty()) {
-            prompt.append("- 过敏/忌口：").append(request.getAllergies()).append("（避免使用）\n");
+            p.append("，忌口：").append(request.getAllergies());
         }
+        p.append("\n\n");
         
-        prompt.append("- 每天包含：早餐、午餐、晚餐、加餐，每餐至少3种食材+具体数量");
+        // 食材参考（紧凑）
+        p.append("食材参考：");
+        for (int i = 0; i < Math.min(sampleFoods.size(), 10); i++) {
+            if (i > 0) p.append("、");
+            p.append(sampleFoods.get(i).getFoodName());
+        }
+        p.append("等\n\n");
+        
+        // 格式要求
+        p.append("请生成第").append(dayStart).append("-").append(dayEnd).append("天计划，每天含早餐、午餐、晚餐、加餐，每餐3种食材+数量");
         if (request.getIncludeNutrition() != null && request.getIncludeNutrition()) {
-            prompt.append("+营养数据+每餐小计+每日总计");
+            p.append("+热量");
         }
         if (request.getIncludeCookingTips() != null && request.getIncludeCookingTips()) {
-            prompt.append("+烹饪提示");
+            p.append("+烹饪提示");
         }
-        prompt.append("\n- 每天食材要有变化，避免重复\n\n");
+        p.append("。食材每天要有变化。\n\n");
         
-        // 简化食材列表
-        prompt.append("可用食材参考：");
-        List<FoodNutrition> sampleFoods = allFoods.stream().limit(15).toList();
-        for (int i = 0; i < sampleFoods.size(); i++) {
-            if (i > 0) prompt.append("、");
-            prompt.append(sampleFoods.get(i).getFoodName());
-        }
-        prompt.append("等。\n\n");
-        
-        prompt.append("格式（每天都要详细列出）：\n");
+        // 格式模板
         for (int d = dayStart; d <= dayEnd; d++) {
             LocalDate date = startDate.plusDays(d - 1);
-            prompt.append("## 第").append(d).append("天 - ")
-                  .append(date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))).append("\n");
-            prompt.append("### 早餐 / 午餐 / 晚餐 / 加餐\n");
-        }
-        prompt.append("\n请生成以上所有天数的完整详细计划：\n");
-        
-        return prompt.toString();
-    }
-    
-    /**
-     * 构建单天的Prompt
-     */
-    private String buildSingleDayPrompt(DietPlanRequest request, int dailyCalories, 
-                                        List<FoodNutrition> allFoods, int day, LocalDate startDate) {
-        StringBuilder prompt = new StringBuilder();
-        
-        LocalDate currentDate = startDate.plusDays(day - 1);
-        
-        prompt.append("为第").append(day).append("天（")
-              .append(currentDate.format(DateTimeFormatter.ofPattern("MM-dd")))
-              .append("）生成饮食计划。\n\n");
-        
-        prompt.append("要求：\n");
-        prompt.append("- 热量：").append(dailyCalories).append("kcal\n");
-        prompt.append("- 目标：").append(getGoalDescription(request.getGoal())).append("\n");
-        
-        // 添加运动强度
-        if (request.getExerciseLevel() != null && !request.getExerciseLevel().isEmpty()) {
-            String exerciseDesc = switch (request.getExerciseLevel()) {
-                case "low" -> "轻度运动";
-                case "medium" -> "中度运动";
-                case "high" -> "高强度运动";
-                default -> "中度运动";
-            };
-            prompt.append("- 运动强度：").append(exerciseDesc).append("\n");
+            p.append("## 第").append(d).append("天 - ")
+             .append(date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))).append("\n");
         }
         
-        // 添加饮食偏好
-        if (request.getPreferences() != null && !request.getPreferences().isEmpty()) {
-            prompt.append("- 饮食偏好：").append(request.getPreferences()).append("\n");
-        }
-        
-        // 添加过敏食物
-        if (request.getAllergies() != null && !request.getAllergies().isEmpty()) {
-            prompt.append("- 过敏/忌口：").append(request.getAllergies()).append("（避免使用）\n");
-        }
-        
-        prompt.append("- 包含：早餐、午餐、晚餐、加餐，每餐3种食材+数量");
-        if (request.getIncludeNutrition() != null && request.getIncludeNutrition()) {
-            prompt.append("+营养数据");
-        }
-        if (request.getIncludeCookingTips() != null && request.getIncludeCookingTips()) {
-            prompt.append("+烹饪提示");
-        }
-        prompt.append("\n\n");
-        
-        // 简化食材列表（只列出10种）
-        prompt.append("可用食材：");
-        List<FoodNutrition> sampleFoods = allFoods.stream().limit(10).toList();
-        for (int i = 0; i < sampleFoods.size(); i++) {
-            if (i > 0) prompt.append("、");
-            prompt.append(sampleFoods.get(i).getFoodName());
-        }
-        prompt.append("等。\n\n");
-        
-        prompt.append("格式：\n");
-        prompt.append("## 第").append(day).append("天 - ")
-              .append(currentDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))).append("\n");
-        prompt.append("### 早餐\n- 食材：数量\n");
-        prompt.append("### 午餐\n### 晚餐\n### 加餐\n");
-        if (request.getIncludeNutrition() != null && request.getIncludeNutrition()) {
-            prompt.append("### 营养总计\n");
-        }
-        
-        return prompt.toString();
+        return p.toString();
     }
     
     /**

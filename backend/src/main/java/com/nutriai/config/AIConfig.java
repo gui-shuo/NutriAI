@@ -113,6 +113,7 @@ public class AIConfig {
                 .modelName(model)
                 .temperature(temp)
                 .topP(topP)
+                .maxTokens(tokens)
                 .timeout(Duration.ofSeconds(timeout))
                 .tokenizer(new SimpleEstimateTokenizer())
                 .build();
