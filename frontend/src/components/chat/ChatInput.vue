@@ -207,8 +207,8 @@ defineExpose({
 <style scoped>
 .chat-input-container {
   padding: 16px 20px;
-  background: white;
-  border-top: 1px solid #e4e7ed;
+  background: #fdfbf7;
+  border-top: 2px dashed #2d2d2d;
   position: relative;
 }
 
@@ -224,20 +224,22 @@ defineExpose({
 
 .message-input :deep(.el-textarea__inner) {
   padding: 12px 16px;
-  border-radius: 20px;
-  border: 1px solid #dcdfe6;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  border: 2px solid #2d2d2d;
   transition: all 0.3s;
   font-size: 14px;
   line-height: 1.5;
+  font-family: 'Patrick Hand', cursive;
+  background: #fdfbf7;
 }
 
 .message-input :deep(.el-textarea__inner):focus {
-  border-color: #409eff;
-  box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.1);
+  border-color: #2d5da1;
+  box-shadow: 4px 4px 0px 0px #2d2d2d;
 }
 
 .message-input :deep(.el-textarea__inner):disabled {
-  background-color: #f5f7fa;
+  background-color: #fdfbf7;
   cursor: not-allowed;
 }
 
@@ -245,8 +247,9 @@ defineExpose({
 .selected-file {
   margin-top: 12px;
   padding: 12px 16px;
-  background: #f5f7fa;
-  border-radius: 8px;
+  background: #e5e0d8;
+  border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
+  border: 1px dashed #2d2d2d;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -261,19 +264,21 @@ defineExpose({
 }
 
 .file-icon {
-  color: #409eff;
+  color: #2d5da1;
   font-size: 20px;
 }
 
 .file-name {
   font-size: 14px;
-  color: #303133;
+  color: #2d2d2d;
   font-weight: 500;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .file-size {
   font-size: 12px;
-  color: #909399;
+  color: #2d2d2d;
+  font-family: 'Patrick Hand', cursive;
 }
 
 /* 字数统计 */
@@ -282,14 +287,15 @@ defineExpose({
   bottom: 24px;
   right: 80px;
   font-size: 12px;
-  color: #909399;
-  background: white;
+  color: #2d2d2d;
+  background: #fdfbf7;
   padding: 2px 8px;
-  border-radius: 4px;
+  border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .char-count.warning {
-  color: #f56c6c;
+  color: #ff4d4d;
 }
 
 /* 动画 */

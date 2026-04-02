@@ -130,7 +130,8 @@ const handleClose = () => {
   .detail-photo {
     width: 100%;
     height: 300px;
-    border-radius: 8px;
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+    border: 2px solid #2d2d2d;
     overflow: hidden;
     margin-bottom: 24px;
 
@@ -145,8 +146,8 @@ const handleClose = () => {
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #f5f7fa;
-      color: #909399;
+      background: #fdfbf7;
+      color: #e5e0d8;
 
       .el-icon {
         font-size: 48px;
@@ -160,15 +161,17 @@ const handleClose = () => {
     .section-title {
       font-size: 16px;
       font-weight: 600;
-      color: #303133;
+      color: #2d2d2d;
+      font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
       margin: 0 0 12px 0;
     }
 
     .notes-content {
       padding: 12px;
-      background: #f5f7fa;
-      border-radius: 6px;
-      color: #606266;
+      background: #fdfbf7;
+      border: 1px dashed #2d2d2d;
+      border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px;
+      color: #2d2d2d;
       line-height: 1.6;
       margin: 0;
     }

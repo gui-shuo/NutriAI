@@ -287,7 +287,7 @@ defineExpose({
   flex: 1;
   overflow-y: auto;
   padding: 20px;
-  background: linear-gradient(to bottom, #f8f9fa, #ffffff);
+  background: #fdfbf7;
   position: relative;
 }
 
@@ -300,20 +300,22 @@ defineExpose({
 }
 
 .welcome-icon {
-  color: #409eff;
+  color: #2d5da1;
   margin-bottom: 20px;
 }
 
 .welcome-message h2 {
   font-size: 24px;
-  color: #303133;
+  color: #2d2d2d;
   margin-bottom: 16px;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
 }
 
 .welcome-message > p {
-  color: #606266;
+  color: #2d2d2d;
   margin-bottom: 16px;
   font-size: 16px;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .feature-list {
@@ -327,13 +329,15 @@ defineExpose({
 .feature-list li {
   padding: 10px 0;
   font-size: 15px;
-  color: #606266;
+  color: #2d2d2d;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .start-tip {
   margin-top: 30px;
-  color: #909399;
+  color: #e5e0d8;
   font-size: 14px;
+  font-family: 'Patrick Hand', cursive;
 }
 
 /* 消息列表 */
@@ -362,34 +366,35 @@ defineExpose({
 }
 
 .ai-avatar {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #2d5da1;
 }
 
 /* 消息气泡 */
 .message-bubble {
   max-width: 70%;
   padding: 12px 16px;
-  border-radius: 12px;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
   position: relative;
 }
 
 .user-bubble {
-  background: #409eff;
+  background: #2d5da1;
   color: white;
-  border-bottom-right-radius: 4px;
+  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px;
 }
 
 .ai-bubble {
-  background: white;
-  border: 1px solid #e4e7ed;
-  border-bottom-left-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  background: #fdfbf7;
+  border: 2px solid #2d2d2d;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  box-shadow: 4px 4px 0px 0px #2d2d2d;
 }
 
 /* 消息文本 */
 .message-text {
   line-height: 1.6;
   word-wrap: break-word;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .user-bubble .message-text {
@@ -397,7 +402,7 @@ defineExpose({
 }
 
 .ai-bubble .message-text {
-  color: #303133;
+  color: #2d2d2d;
 }
 
 /* Markdown样式 */
@@ -410,6 +415,7 @@ defineExpose({
 .ai-bubble .message-text :deep(h3) {
   margin: 16px 0 8px 0;
   font-weight: 600;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
 }
 
 .ai-bubble .message-text :deep(ul),
@@ -419,26 +425,29 @@ defineExpose({
 }
 
 .ai-bubble .message-text :deep(code) {
-  background: #f5f7fa;
+  background: #fdfbf7;
   padding: 2px 6px;
-  border-radius: 4px;
+  border: 1px solid #2d2d2d;
+  border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
   font-family: 'Consolas', 'Monaco', monospace;
   font-size: 0.9em;
 }
 
 .ai-bubble .message-text :deep(pre) {
-  background: #f5f7fa;
+  background: #fdfbf7;
   padding: 12px;
-  border-radius: 6px;
+  border: 2px solid #2d2d2d;
+  border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
   overflow-x: auto;
   margin: 8px 0;
+  box-shadow: 3px 3px 0px 0px rgba(45, 45, 45, 0.1);
 }
 
 .ai-bubble .message-text :deep(blockquote) {
-  border-left: 4px solid #409eff;
+  border-left: 4px solid #2d5da1;
   padding-left: 12px;
   margin: 8px 0;
-  color: #606266;
+  color: #2d2d2d;
 }
 
 /* 流式显示光标 */
@@ -446,7 +455,7 @@ defineExpose({
   display: inline-block;
   width: 2px;
   height: 1em;
-  background-color: #409eff;
+  background-color: #2d5da1;
   margin-left: 2px;
   animation: blink 1s step-end infinite;
   vertical-align: text-bottom;
@@ -474,9 +483,10 @@ defineExpose({
 .waiting-hint {
   width: 100%;
   font-size: 12px;
-  color: #909399;
+  color: #e5e0d8;
   margin-top: 6px;
   animation: fadeInHint 0.3s ease;
+  font-family: 'Patrick Hand', cursive;
 }
 
 @keyframes fadeInHint {
@@ -487,7 +497,7 @@ defineExpose({
 .typing-indicator span {
   width: 8px;
   height: 8px;
-  background: #409eff;
+  background: #2d5da1;
   border-radius: 50%;
   animation: typing 1.4s infinite;
 }
@@ -520,12 +530,13 @@ defineExpose({
   align-items: center;
   margin-top: 8px;
   padding-top: 8px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px dashed #e5e0d8;
 }
 
 .message-time {
   font-size: 12px;
-  color: #909399;
+  color: #e5e0d8;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .user-bubble .message-time {
@@ -541,11 +552,11 @@ defineExpose({
 }
 
 .action-buttons .el-button {
-  color: #909399;
+  color: #e5e0d8;
 }
 
 .action-buttons .el-button:hover {
-  color: #409eff;
+  color: #2d5da1;
 }
 
 /* 滚动到底部按钮 */
@@ -557,7 +568,7 @@ defineExpose({
 }
 
 .scroll-bottom-btn .el-button {
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 4px 4px 0px 0px #2d2d2d;
 }
 
 /* 动画 */
@@ -606,11 +617,11 @@ defineExpose({
 }
 
 .message-list-container::-webkit-scrollbar-thumb {
-  background: #dcdfe6;
+  background: #e5e0d8;
   border-radius: 3px;
 }
 
 .message-list-container::-webkit-scrollbar-thumb:hover {
-  background: #c0c4cc;
+  background: #2d2d2d;
 }
 </style>

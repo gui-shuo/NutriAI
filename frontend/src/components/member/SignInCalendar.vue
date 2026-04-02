@@ -151,8 +151,9 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .sign-in-calendar {
-  border-radius: 10px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  border: 2px solid #2d2d2d;
+  box-shadow: 4px 4px 0px 0px #2d2d2d;
 
   :deep(.el-card__header) {
     padding: 10px 14px;
@@ -170,12 +171,13 @@ onMounted(() => {
     .title {
       font-size: 14px;
       font-weight: 600;
-      color: #1f2937;
+      color: #2d2d2d;
+      font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
     }
 
     .month-label {
       font-size: 11px;
-      color: #6b7280;
+      color: #e5e0d8;
     }
   }
 
@@ -185,7 +187,7 @@ onMounted(() => {
       align-items: center;
       justify-content: space-around;
       padding: 6px 0 8px;
-      border-bottom: 1px solid #f3f4f6;
+      border-bottom: 1px dashed #2d2d2d;
       margin-bottom: 8px;
 
       .stat-item {
@@ -197,19 +199,19 @@ onMounted(() => {
         .stat-num {
           font-size: 16px;
           font-weight: 700;
-          color: #f59e0b;
+          color: #ff4d4d;
         }
 
         .stat-label {
           font-size: 10px;
-          color: #9ca3af;
+          color: #e5e0d8;
         }
       }
 
       .stat-divider {
         width: 1px;
         height: 20px;
-        background: #e5e7eb;
+        background: #e5e0d8;
       }
     }
 
@@ -222,7 +224,7 @@ onMounted(() => {
       .week-label {
         text-align: center;
         font-size: 10px;
-        color: #9ca3af;
+        color: #e5e0d8;
         padding: 1px 0;
         font-weight: 500;
       }
@@ -236,16 +238,19 @@ onMounted(() => {
         border-radius: 4px;
         font-size: 11px;
         color: #374151;
-        background: #f9fafb;
+        background: #fdfbf7;
+        border: 1px dashed #2d2d2d;
         transition: all 0.2s;
 
         &.empty {
           background: transparent;
+          border-color: transparent;
         }
 
         &.signed {
-          background: linear-gradient(135deg, #f59e0b, #fbbf24);
+          background: #2d5da1;
           color: white;
+          border-color: #2d2d2d;
 
           .check-icon {
             position: absolute;
@@ -257,15 +262,15 @@ onMounted(() => {
         }
 
         &.today:not(.signed) {
-          border: 1.5px solid #f59e0b;
-          color: #f59e0b;
+          border: 1.5px solid #ff4d4d;
+          color: #ff4d4d;
           font-weight: 700;
-          background: #fffbeb;
+          background: #fdfbf7;
         }
 
         &.future {
           color: #d1d5db;
-          background: #f9fafb;
+          background: #fdfbf7;
         }
 
         .day-num {
@@ -283,6 +288,10 @@ onMounted(() => {
         width: 70%;
         font-size: 12px;
         font-weight: 600;
+        background: #2d5da1;
+        border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+        border: 2px solid #2d2d2d;
+        box-shadow: 4px 4px 0px 0px #2d2d2d;
       }
     }
 
@@ -292,7 +301,8 @@ onMounted(() => {
       justify-content: center;
       gap: 4px;
       font-size: 10px;
-      color: #9ca3af;
+      color: #e5e0d8;
+      font-family: 'Patrick Hand', cursive;
     }
   }
 }

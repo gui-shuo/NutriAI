@@ -133,9 +133,11 @@ const progressColors = [
 
 <style scoped lang="scss">
 .member-info-card {
-  border-radius: 12px;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
   overflow: hidden;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 2px solid #2d2d2d;
+  box-shadow: 4px 4px 0px 0px #2d2d2d;
+  background: #fdfbf7;
 
   .card-content {
     .card-header {
@@ -145,17 +147,7 @@ const progressColors = [
       display: flex;
       align-items: center;
       gap: 20px;
-
-      &::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -15%;
-        width: 200px;
-        height: 200px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.1);
-      }
+      background: #e5e0d8;
 
       .level-badge {
         display: flex;
@@ -171,7 +163,8 @@ const progressColors = [
           align-items: center;
           justify-content: center;
           color: white;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+          background: #2d5da1;
+          box-shadow: 4px 4px 0px 0px #2d2d2d;
         }
 
         .badge-text {
@@ -182,12 +175,13 @@ const progressColors = [
           .level-name {
             font-size: 18px;
             font-weight: 600;
-            color: #1f2937;
+            color: #2d2d2d;
+            font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
           }
 
           .member-days {
             font-size: 12px;
-            color: #6b7280;
+            color: #e5e0d8;
           }
         }
       }
@@ -199,13 +193,14 @@ const progressColors = [
         h2 {
           font-size: 18px;
           font-weight: 600;
-          color: #1f2937;
+          color: #2d2d2d;
           margin: 0 0 2px 0;
+          font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
         }
 
         p {
           font-size: 12px;
-          color: #6b7280;
+          color: #e5e0d8;
           margin: 0;
         }
       }
@@ -213,9 +208,9 @@ const progressColors = [
 
     .growth-section {
       padding: 14px 24px;
-      background: #f9fafb;
-      border-top: 1px solid #e5e7eb;
-      border-bottom: 1px solid #e5e7eb;
+      background: #fdfbf7;
+      border-top: 2px dashed #2d2d2d;
+      border-bottom: 2px dashed #2d2d2d;
 
       .growth-header {
         display: flex;
@@ -225,13 +220,13 @@ const progressColors = [
         .growth-title {
           font-size: 13px;
           font-weight: 600;
-          color: #1f2937;
+          color: #2d2d2d;
         }
 
         .growth-value {
           font-size: 12px;
           font-weight: 500;
-          color: #6b7280;
+          color: #e5e0d8;
         }
       }
 
@@ -240,7 +235,7 @@ const progressColors = [
         justify-content: space-between;
         margin-top: 8px;
         font-size: 12px;
-        color: #6b7280;
+        color: #e5e0d8;
       }
     }
 
@@ -266,6 +261,16 @@ const progressColors = [
           font-size: 18px;
         }
 
+        &:nth-child(1) .stat-icon {
+          background: #2d5da1;
+        }
+        &:nth-child(2) .stat-icon {
+          background: #ff4d4d;
+        }
+        &:nth-child(3) .stat-icon {
+          background: #2d5da1;
+        }
+
         .stat-content {
           display: flex;
           flex-direction: column;
@@ -274,12 +279,13 @@ const progressColors = [
           .stat-value {
             font-size: 18px;
             font-weight: 600;
-            color: #1f2937;
+            color: #2d2d2d;
+            font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
           }
 
           .stat-label {
             font-size: 11px;
-            color: #6b7280;
+            color: #e5e0d8;
           }
         }
       }

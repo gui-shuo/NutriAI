@@ -222,8 +222,9 @@ const getTagType = limit => {
 
 <style scoped lang="scss">
 .level-comparison-table {
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
+  border: 2px solid #2d2d2d;
+  box-shadow: 4px 4px 0px 0px #2d2d2d;
 
   .card-header {
     display: flex;
@@ -233,12 +234,22 @@ const getTagType = limit => {
     .title {
       font-size: 18px;
       font-weight: 600;
-      color: #1f2937;
+      color: #2d2d2d;
+      font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
     }
   }
 
   .table-wrapper {
     margin-bottom: 16px;
+
+    :deep(.el-table) {
+      tr {
+        border-bottom: 1px dashed #2d2d2d;
+      }
+      td {
+        border-bottom: 1px dashed #2d2d2d;
+      }
+    }
 
     .level-cell {
       display: flex;
@@ -248,7 +259,8 @@ const getTagType = limit => {
       .level-badge {
         width: 36px;
         height: 36px;
-        border-radius: 8px;
+        border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+        border: 2px solid #2d2d2d;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -264,7 +276,7 @@ const getTagType = limit => {
         .level-name {
           font-size: 14px;
           font-weight: 600;
-          color: #1f2937;
+          color: #2d2d2d;
         }
       }
     }
@@ -272,7 +284,7 @@ const getTagType = limit => {
     .growth-value {
       font-size: 16px;
       font-weight: 600;
-      color: #667eea;
+      color: #2d5da1;
     }
 
     .benefits-preview {
@@ -289,13 +301,17 @@ const getTagType = limit => {
   }
 
   .upgrade-hint {
+    :deep(.el-alert) {
+      border: 1px dashed #2d2d2d;
+    }
+
     .alert-content {
       display: flex;
       justify-content: space-between;
       align-items: center;
 
       strong {
-        color: #667eea;
+        color: #2d5da1;
         font-size: 18px;
         margin: 0 4px;
       }

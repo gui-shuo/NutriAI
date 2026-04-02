@@ -274,8 +274,9 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .invitation-panel {
-  border-radius: 10px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px;
+  border: 2px solid #2d2d2d;
+  box-shadow: 4px 4px 0px 0px #2d2d2d;
 
   :deep(.el-card__header) {
     padding: 10px 14px;
@@ -293,7 +294,8 @@ onMounted(() => {
     .title {
       font-size: 14px;
       font-weight: 600;
-      color: #1f2937;
+      color: #2d2d2d;
+      font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
     }
   }
 
@@ -303,7 +305,7 @@ onMounted(() => {
 
       .code-label {
         font-size: 11px;
-        color: #6b7280;
+        color: #e5e0d8;
         margin-bottom: 4px;
       }
 
@@ -312,17 +314,17 @@ onMounted(() => {
         align-items: center;
         gap: 6px;
         padding: 8px;
-        background: linear-gradient(135deg, #667eea20 0%, #764ba220 100%);
-        border-radius: 6px;
-        border: 1.5px dashed #667eea;
+        background: #fdfbf7;
+        border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+        border: 1.5px dashed #2d5da1;
 
         .code {
           flex: 1;
           font-size: 14px;
           font-weight: 600;
-          color: #667eea;
+          color: #2d5da1;
           letter-spacing: 1.5px;
-          font-family: 'Courier New', monospace;
+          font-family: 'Patrick Hand', cursive;
         }
       }
     }
@@ -332,7 +334,7 @@ onMounted(() => {
 
       .link-label {
         font-size: 11px;
-        color: #6b7280;
+        color: #e5e0d8;
         margin-bottom: 4px;
       }
     }
@@ -348,8 +350,9 @@ onMounted(() => {
         align-items: center;
         gap: 8px;
         padding: 8px;
-        background: #f9fafb;
-        border-radius: 6px;
+        background: #fdfbf7;
+        border: 1px dashed #2d2d2d;
+        border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
 
         .stat-icon {
           width: 30px;
@@ -363,6 +366,13 @@ onMounted(() => {
           flex-shrink: 0;
         }
 
+        &:nth-child(1) .stat-icon {
+          background: #2d5da1;
+        }
+        &:nth-child(2) .stat-icon {
+          background: #ff4d4d;
+        }
+
         .stat-info {
           display: flex;
           flex-direction: column;
@@ -371,12 +381,12 @@ onMounted(() => {
           .stat-value {
             font-size: 16px;
             font-weight: 600;
-            color: #1f2937;
+            color: #2d2d2d;
           }
 
           .stat-label {
             font-size: 10px;
-            color: #6b7280;
+            color: #e5e0d8;
           }
         }
       }
@@ -390,7 +400,7 @@ onMounted(() => {
         margin-bottom: 6px;
         font-size: 13px;
         font-weight: 600;
-        color: #1f2937;
+        color: #2d2d2d;
       }
 
       .records-list {
@@ -403,11 +413,11 @@ onMounted(() => {
           transition: all 0.3s;
 
           &:hover {
-            background: #f9fafb;
+            background: #fff9c4;
           }
 
           &:not(:last-child) {
-            border-bottom: 1px solid #f3f4f6;
+            border-bottom: 1px dashed #2d2d2d;
           }
 
           .record-avatar {
@@ -429,7 +439,8 @@ onMounted(() => {
             .record-name {
               font-size: 12px;
               font-weight: 500;
-              color: #1f2937;
+              color: #2d2d2d;
+              font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
             }
 
             .record-time {
@@ -460,11 +471,11 @@ onMounted(() => {
     transition: all 0.3s;
 
     &:hover {
-      background: #f9fafb;
+      background: #fff9c4;
     }
 
     &:not(:last-child) {
-      border-bottom: 1px solid #f3f4f6;
+      border-bottom: 1px dashed #2d2d2d;
     }
 
     .record-avatar {
@@ -485,7 +496,8 @@ onMounted(() => {
         .record-name {
           font-size: 14px;
           font-weight: 600;
-          color: #1f2937;
+          color: #2d2d2d;
+          font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
         }
       }
 
@@ -499,7 +511,7 @@ onMounted(() => {
           align-items: center;
           gap: 4px;
           font-size: 12px;
-          color: #6b7280;
+          color: #e5e0d8;
 
           .el-icon {
             font-size: 13px;
@@ -514,20 +526,24 @@ onMounted(() => {
           border-radius: 4px;
           font-size: 11px;
           font-weight: 500;
+          border: 1px dashed;
 
           &.pending {
             background: #fef3c7;
             color: #92400e;
+            border-color: #92400e;
           }
 
           &.accepted {
             background: #d1fae5;
             color: #065f46;
+            border-color: #065f46;
           }
 
           &.expired {
             background: #fee2e2;
             color: #991b1b;
+            border-color: #991b1b;
           }
         }
       }

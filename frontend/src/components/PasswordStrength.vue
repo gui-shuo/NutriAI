@@ -108,30 +108,31 @@ const strengthTips = computed(() => {
   margin-top: 8px;
 
   .strength-bar {
-    height: 4px;
-    background-color: #e5e7eb;
-    border-radius: 2px;
+    height: 6px;
+    background-color: #e5e0d8;
+    border: 1px solid #2d2d2d;
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
     overflow: hidden;
 
     .strength-fill {
       height: 100%;
       transition: all 0.3s ease;
-      border-radius: 2px;
+      border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
 
       &.strength-weak {
-        background-color: #ef4444;
+        background-color: #ff4d4d;
       }
 
       &.strength-medium {
-        background-color: #f59e0b;
+        background-color: #e6a23c;
       }
 
       &.strength-strong {
-        background-color: #10b981;
+        background-color: #67c23a;
       }
 
       &.strength-very-strong {
-        background-color: #059669;
+        background-color: #2d5da1;
       }
     }
   }
@@ -141,28 +142,30 @@ const strengthTips = computed(() => {
     justify-content: space-between;
     align-items: center;
     margin-top: 4px;
+    font-family: 'Patrick Hand', cursive;
     font-size: 12px;
 
     span {
       &.strength-weak {
-        color: #ef4444;
+        color: #ff4d4d;
       }
 
       &.strength-medium {
-        color: #f59e0b;
+        color: #e6a23c;
       }
 
       &.strength-strong {
-        color: #10b981;
+        color: #67c23a;
       }
 
       &.strength-very-strong {
-        color: #059669;
+        color: #2d5da1;
       }
     }
 
     .strength-tips {
-      color: #6b7280;
+      color: #2d2d2d;
+      opacity: 0.6;
     }
   }
 }

@@ -104,14 +104,16 @@ const formatTime = timeStr => {
   }
 
   .record-card {
-    border-radius: 12px;
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+    border: 2px solid #2d2d2d;
+    background: #fdfbf7;
     overflow: hidden;
     cursor: pointer;
     transition: all 0.3s;
 
     &:hover {
       transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.18);
+      box-shadow: 4px 4px 0px 0px #2d2d2d;
     }
 
     :deep(.el-card__body) {
@@ -123,7 +125,7 @@ const formatTime = timeStr => {
     position: relative;
     width: 100%;
     height: 140px;
-    background: #f5f7fa;
+    background: #fdfbf7;
 
     .photo-img {
       width: 100%;
@@ -137,7 +139,7 @@ const formatTime = timeStr => {
       align-items: center;
       justify-content: center;
       color: #c0c4cc;
-      background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+      background: #e5e0d8;
     }
 
     .meal-badge {
@@ -155,7 +157,8 @@ const formatTime = timeStr => {
     margin: 0 0 8px 0;
     font-size: 16px;
     font-weight: 600;
-    color: #303133;
+    color: #2d2d2d;
+    font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -169,16 +172,17 @@ const formatTime = timeStr => {
 
   .stat-item {
     font-size: 13px;
-    color: #606266;
+    color: #2d2d2d;
     padding: 3px 8px;
-    background: #f5f7fa;
+    background: #fdfbf7;
+    border: 1px dashed #2d2d2d;
     border-radius: 4px;
   }
 
   .stat-cal {
     font-weight: 600;
-    color: #e6a23c;
-    background: #fdf6ec;
+    color: #ff4d4d;
+    background: #fff9c4;
   }
 
   .card-meta {
@@ -192,16 +196,18 @@ const formatTime = timeStr => {
     align-items: center;
     gap: 4px;
     font-size: 12px;
-    color: #909399;
+    color: #a8a29e;
+    font-family: 'Patrick Hand', cursive;
   }
 
   .card-notes {
     margin-top: 8px;
     padding: 8px 10px;
-    background: #f5f7fa;
-    border-radius: 6px;
+    background: #fdfbf7;
+    border: 1px dashed #2d2d2d;
+    border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
     font-size: 12px;
-    color: #606266;
+    color: #2d2d2d;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

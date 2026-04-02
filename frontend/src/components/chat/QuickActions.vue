@@ -185,8 +185,8 @@ defineExpose({
 <style scoped>
 .quick-actions-container {
   padding: 16px 20px;
-  background: white;
-  border-top: 1px solid #e4e7ed;
+  background: #fdfbf7;
+  border-top: 2px dashed #2d2d2d;
 }
 
 .actions-header {
@@ -198,8 +198,9 @@ defineExpose({
 
 .actions-header h3 {
   font-size: 16px;
-  color: #303133;
+  color: #2d2d2d;
   margin: 0;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
 }
 
 .actions-content {
@@ -216,16 +217,17 @@ defineExpose({
 
 .section-title {
   font-size: 14px;
-  color: #606266;
+  color: #2d2d2d;
   margin: 0 0 12px 0;
   display: flex;
   align-items: center;
   gap: 6px;
   font-weight: 500;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .section-title .el-icon {
-  color: #409eff;
+  color: #2d5da1;
 }
 
 .action-buttons {
@@ -238,9 +240,9 @@ defineExpose({
   width: 100%;
   height: auto;
   padding: 12px 16px;
-  border: 1px solid #dcdfe6;
-  border-radius: 8px;
-  background: #f8f9fa;
+  border: 2px solid #2d2d2d;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  background: #fdfbf7;
   transition: all 0.3s;
   display: flex;
   align-items: center;
@@ -250,14 +252,15 @@ defineExpose({
 }
 
 .action-btn:hover:not(:disabled) {
-  border-color: #409eff;
-  background: #ecf5ff;
-  transform: translateY(-2px);
-  box-shadow: 0 2px 8px rgba(64, 158, 255, 0.2);
+  border-color: #2d2d2d;
+  background: #fff9c4;
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0px 0px #2d2d2d;
 }
 
 .action-btn:active:not(:disabled) {
-  transform: translateY(0);
+  transform: translate(0, 0);
+  box-shadow: none;
 }
 
 .action-btn:disabled {
@@ -272,15 +275,16 @@ defineExpose({
 
 .btn-text {
   font-size: 13px;
-  color: #606266;
+  color: #2d2d2d;
   flex: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .action-btn:hover:not(:disabled) .btn-text {
-  color: #409eff;
+  color: #2d5da1;
 }
 
 /* 展开/收起动画 */

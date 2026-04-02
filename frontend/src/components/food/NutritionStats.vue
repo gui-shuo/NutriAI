@@ -343,7 +343,9 @@ onBeforeUnmount(() => {
 .calorie-card,
 .nutrients-card,
 .charts-card {
-  border-radius: 12px;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  border: 2px solid #2d2d2d;
+  box-shadow: 4px 4px 0px 0px #2d2d2d;
   :deep(.el-card__body) {
     padding: 16px;
   }
@@ -360,12 +362,13 @@ onBeforeUnmount(() => {
   margin: 0;
   font-size: 16px;
   font-weight: 600;
-  color: #303133;
+  color: #2d2d2d;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
 }
 
 /* 卡路里卡片 */
 .calorie-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #2d5da1;
   color: white;
   :deep(.el-card__body) { padding: 20px; }
   :deep(.el-tag) { color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.2); border: none; }
@@ -431,8 +434,9 @@ onBeforeUnmount(() => {
 
 .nutrient-item {
   padding: 10px 4px;
-  background: #f5f7fa;
-  border-radius: 8px;
+  background: #fdfbf7;
+  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px;
+  border: 1px dashed #2d2d2d;
 }
 
 .nutrient-val {
@@ -443,13 +447,13 @@ onBeforeUnmount(() => {
 
 .nutrient-label {
   font-size: 11px;
-  color: #909399;
+  color: #a8a29e;
 }
 
-.protein-color { color: #ff6384; }
-.carbs-color { color: #36a2eb; }
-.fat-color { color: #ffce56; }
-.fiber-color { color: #4bc0c0; }
+.protein-color { color: #ff4d4d; }
+.carbs-color { color: #2d5da1; }
+.fat-color { color: #e6a23c; }
+.fiber-color { color: #67c23a; }
 
 /* 图表 */
 .charts-card {
@@ -457,6 +461,7 @@ onBeforeUnmount(() => {
   :deep(.el-collapse-item__header) {
     font-size: 14px;
     font-weight: 600;
+    font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
     height: 40px;
     line-height: 40px;
     border: none;
@@ -467,6 +472,9 @@ onBeforeUnmount(() => {
 .sidebar-chart {
   width: 100%;
   height: 220px;
+  border: 1px dashed #2d2d2d;
+  border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
+  padding: 8px;
 }
 
 @media (max-width: 1024px) {

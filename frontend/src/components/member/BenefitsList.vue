@@ -149,8 +149,9 @@ const getBenefitDescription = feature => {
 
 <style scoped lang="scss">
 .benefits-list {
-  border-radius: 10px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px;
+  border: 2px solid #2d2d2d;
+  box-shadow: 4px 4px 0px 0px #2d2d2d;
 
   :deep(.el-card__header) {
     padding: 12px 16px;
@@ -168,7 +169,8 @@ const getBenefitDescription = feature => {
     .title {
       font-size: 15px;
       font-weight: 600;
-      color: #1f2937;
+      color: #2d2d2d;
+      font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
     }
   }
 
@@ -183,12 +185,12 @@ const getBenefitDescription = feature => {
         transition: all 0.3s;
 
         &:hover {
-          background: #f9fafb;
+          background: #fff9c4;
           transform: translateX(4px);
         }
 
         &:not(:last-child) {
-          border-bottom: 1px solid #f3f4f6;
+          border-bottom: 1px dashed #2d2d2d;
         }
 
         .benefit-icon {
@@ -202,19 +204,29 @@ const getBenefitDescription = feature => {
           flex-shrink: 0;
         }
 
+        &:nth-child(3n+1) .benefit-icon {
+          background: #2d5da1;
+        }
+        &:nth-child(3n+2) .benefit-icon {
+          background: #ff4d4d;
+        }
+        &:nth-child(3n+3) .benefit-icon {
+          background: #2d2d2d;
+        }
+
         .benefit-content {
           flex: 1;
 
           .benefit-title {
             font-size: 13px;
             font-weight: 600;
-            color: #1f2937;
+            color: #2d2d2d;
             margin-bottom: 2px;
           }
 
           .benefit-desc {
             font-size: 12px;
-            color: #6b7280;
+            color: #e5e0d8;
           }
         }
 
@@ -228,8 +240,9 @@ const getBenefitDescription = feature => {
     .benefit-stats {
       margin-top: 10px;
       padding: 10px;
-      background: linear-gradient(135deg, #667eea20 0%, #764ba220 100%);
-      border-radius: 6px;
+      background: #fdfbf7;
+      border: 1px dashed #2d2d2d;
+      border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
@@ -241,13 +254,13 @@ const getBenefitDescription = feature => {
 
         .stat-label {
           font-size: 12px;
-          color: #6b7280;
+          color: #e5e0d8;
         }
 
         .stat-value {
           font-size: 16px;
           font-weight: 600;
-          color: #667eea;
+          color: #2d5da1;
         }
       }
     }

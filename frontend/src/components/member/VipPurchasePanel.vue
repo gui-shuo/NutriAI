@@ -428,8 +428,9 @@ function statusTagType(status) {
 
 <style scoped lang="scss">
 .vip-purchase-panel {
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  border: 2px solid #2d2d2d;
+  box-shadow: 4px 4px 0px 0px #2d2d2d;
 
   :deep(.el-card__header) {
     padding: 12px 16px;
@@ -452,7 +453,7 @@ function statusTagType(status) {
       .title {
         font-size: 15px;
         font-weight: 600;
-        color: #1f2937;
+        color: #2d2d2d;
       }
     }
   }
@@ -474,30 +475,30 @@ function statusTagType(status) {
 
 .plan-card {
   position: relative;
-  border: 2px solid #e5e7eb;
-  border-radius: 10px;
+  border: 2px solid #2d2d2d;
+  border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
   padding: 14px 12px;
   cursor: pointer;
   transition: all 0.25s;
-  background: #fff;
+  background: #fdfbf7;
 
   &:hover {
-    border-color: #667eea;
-    box-shadow: 0 2px 10px rgba(102, 126, 234, 0.12);
-    transform: translateY(-1px);
+    border-color: #2d2d2d;
+    box-shadow: 4px 4px 0px 0px #2d2d2d;
+    transform: translate(-2px, -2px);
   }
 
   &.plan-selected {
-    border-color: #667eea;
-    background: linear-gradient(135deg, #f0f4ff 0%, #f8f0ff 100%);
-    box-shadow: 0 2px 12px rgba(102, 126, 234, 0.15);
+    border-color: #2d5da1;
+    background: #fff9c4;
+    box-shadow: 4px 4px 0px 0px #2d2d2d;
   }
 
   &.plan-recommended {
     border-color: #e6a23c;
 
     &.plan-selected {
-      border-color: #667eea;
+      border-color: #2d5da1;
     }
   }
 
@@ -512,20 +513,20 @@ function statusTagType(status) {
     color: #fff;
 
     &.badge-hot {
-      background: linear-gradient(135deg, #f56c6c, #e91e63);
+      background: #ff4d4d;
     }
     &.badge-recommend {
-      background: linear-gradient(135deg, #e6a23c, #f5a623);
+      background: #2d5da1;
     }
     &.badge-value {
-      background: linear-gradient(135deg, #52c41a, #389e0d);
+      background: #67c23a;
     }
   }
 
   .plan-name {
     font-size: 14px;
     font-weight: 700;
-    color: #1f2937;
+    color: #2d2d2d;
     margin-bottom: 2px;
   }
 
@@ -544,7 +545,7 @@ function statusTagType(status) {
     .price-current {
       font-size: 22px;
       font-weight: 700;
-      color: #667eea;
+      color: #2d5da1;
     }
 
     .price-discount {
@@ -593,7 +594,7 @@ function statusTagType(status) {
     }
 
     .more-features {
-      color: #667eea;
+      color: #2d5da1;
       font-size: 11px;
       cursor: pointer;
       &:hover { text-decoration: underline; }
@@ -613,14 +614,15 @@ function statusTagType(status) {
     padding: 8px 0;
     font-size: 14px;
     color: #374151;
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1px dashed #2d2d2d;
     &:last-child { border-bottom: none; }
   }
 }
 .benefits-quota {
   margin-top: 12px;
   padding: 12px;
-  background: #f0f4ff;
+  background: #fdfbf7;
+  border: 1px dashed #2d2d2d;
   border-radius: 8px;
   p { margin: 4px 0; font-size: 13px; color: #4b5563; }
 }
@@ -641,14 +643,14 @@ function statusTagType(status) {
     min-width: 220px;
     height: 40px;
     font-size: 14px;
-    border-radius: 20px;
-    background: linear-gradient(135deg, #1677ff 0%, #0958d9 100%);
-    border: none;
-    box-shadow: 0 3px 10px rgba(22, 119, 255, 0.25);
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+    background: #2d5da1;
+    border: 2px solid #2d2d2d;
+    box-shadow: 4px 4px 0px 0px #2d2d2d;
 
     &:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 14px rgba(22, 119, 255, 0.35);
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0px 0px #2d2d2d;
     }
   }
 
@@ -659,7 +661,7 @@ function statusTagType(status) {
     gap: 4px;
     margin-top: 8px;
     font-size: 11px;
-    color: #9ca3af;
+    color: #2d2d2d;
   }
 }
 
