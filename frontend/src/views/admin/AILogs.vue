@@ -33,6 +33,9 @@
     <!-- 日志列表 -->
     <el-card>
       <el-table v-loading="loading" :data="logList" stripe>
+        <template #empty>
+          <el-empty description="暂无AI调用日志，用户使用AI对话后将自动记录" :image-size="80" />
+        </template>
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column prop="userId" label="用户ID" width="100" />
         <el-table-column prop="username" label="用户名" width="120" />

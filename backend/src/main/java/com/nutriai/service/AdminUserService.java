@@ -118,9 +118,10 @@ public class AdminUserService {
         LocalDateTime todayStart = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
         LocalDateTime now = LocalDateTime.now();
         
-        // 统计用户的对话数（会话数从ai_chat_history，调用数从ai_chat_log）
+        // 统计用户的对话数（会话数从ai_chat_history，调用数取两表较大值）
         long totalChats = chatHistoryRepository.countByUserId(user.getId());
-        long totalCalls = chatLogRepository.countByUserId(user.getId());
+        long logCalls = chatLogRepository.countByUserId(user.getId());
+        long totalCalls = Math.max(logCalls, totalChats);
         
         return UserManagementDTO.builder()
                 .id(user.getId())

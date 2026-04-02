@@ -50,24 +50,33 @@ public class AdminDashboardService {
         long todayChats = chatHistoryRepository.countByCreatedAtAfter(todayStart);
         long yesterdayChats = chatHistoryRepository.countByCreatedAtBetween(yesterdayStart, todayStart);
         
+        // AI统计（ai_chat_log记录详细调用，ai_chat_history记录会话；两者取较大值避免空表问题）
+        long logCalls = chatLogRepository.count();
+        long historyCalls = chatHistoryRepository.count();
+        long totalCalls = Math.max(logCalls, historyCalls);
+        long todayLogCalls = chatLogRepository.countByCreatedAtBetween(todayStart, now);
+        long todayHistoryCalls = chatHistoryRepository.countByCreatedAtBetween(todayStart, now);
+        long todayCalls = Math.max(todayLogCalls, todayHistoryCalls);
+        long logSuccess = chatLogRepository.countByStatus("success");
+        double successRate = logCalls > 0 ? (logSuccess * 100.0 / logCalls) : 100.0;
+        
+        // 平均响应时间和Token：尝试全时间范围，无数据则用0
+        LocalDateTime epochStart = LocalDateTime.of(LocalDate.of(2020, 1, 1), LocalTime.MIN);
+        double avgTokens = getAvgTokensSafe(epochStart, now);
+        double avgResponseTime = getAvgResponseTimeSafe(epochStart, now);
+        
         DashboardStatsDTO.ChatStats chatStats = DashboardStatsDTO.ChatStats.builder()
                 .totalChats(totalChats)
                 .todayChats(todayChats)
                 .yesterdayChats(yesterdayChats)
-                .avgResponseTime(getAvgResponseTimeSafe(todayStart, now))
+                .avgResponseTime(avgResponseTime)
                 .build();
-        
-        // AI统计（从ai_chat_log表获取真实数据）
-        long totalCalls = chatLogRepository.count();
-        long todayCalls = chatLogRepository.countByCreatedAtBetween(todayStart, now);
-        long logSuccess = chatLogRepository.countByStatus("success");
-        double successRate = totalCalls > 0 ? (logSuccess * 100.0 / totalCalls) : 100.0;
         
         DashboardStatsDTO.AIStats aiStats = DashboardStatsDTO.AIStats.builder()
                 .totalCalls(totalCalls)
                 .todayCalls(todayCalls)
                 .successRate(successRate)
-                .avgTokens(getAvgTokensSafe(todayStart, now))
+                .avgTokens(avgTokens)
                 .build();
         
         // 会员统计
@@ -111,7 +120,7 @@ public class AdminDashboardService {
     }
     
     /**
-     * 获取AI使用趋势（从ai_chat_log表）
+     * 获取AI使用趋势（优先ai_chat_log，无数据时回退ai_chat_history）
      */
     public List<TrendDataDTO> getAIUsageTrend(int days) {
         List<TrendDataDTO> trendData = new ArrayList<>();
@@ -123,8 +132,12 @@ public class AdminDashboardService {
             LocalDateTime startOfDay = LocalDateTime.of(date, LocalTime.MIN);
             LocalDateTime endOfDay = LocalDateTime.of(date, LocalTime.MAX);
             
-            long totalCalls = chatLogRepository.countByCreatedAtBetween(startOfDay, endOfDay);
-            long successCalls = chatLogRepository.countByStatusAndCreatedAtBetween("success", startOfDay, endOfDay);
+            long logCalls = chatLogRepository.countByCreatedAtBetween(startOfDay, endOfDay);
+            long historyCalls = chatHistoryRepository.countByCreatedAtBetween(startOfDay, endOfDay);
+            long totalCalls = Math.max(logCalls, historyCalls);
+            long successCalls = logCalls > 0 
+                    ? chatLogRepository.countByStatusAndCreatedAtBetween("success", startOfDay, endOfDay)
+                    : totalCalls; // 无详细日志时视为全部成功
             
             trendData.add(TrendDataDTO.builder()
                     .date(date.format(formatter))
