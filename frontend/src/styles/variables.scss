@@ -50,21 +50,21 @@ $radius-xl: 16px;
 $radius-2xl: 24px;
 $radius-full: 9999px;
 
-// Shadows
+// Shadows — use CSS custom property for accent-tinted shadows
 $shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
 $shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
 $shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.08);
 $shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
-$shadow-accent: 0 4px 14px rgba(16, 185, 129, 0.25);
-$shadow-accent-lg: 0 8px 24px rgba(16, 185, 129, 0.35);
+$shadow-accent: 0 4px 14px rgba(var(--accent-rgb, 16, 185, 129), 0.25);
+$shadow-accent-lg: 0 8px 24px rgba(var(--accent-rgb, 16, 185, 129), 0.35);
 
 // Fonts
 $font-display: 'Calistoga', Georgia, 'PingFang SC', 'Microsoft YaHei', serif;
 $font-body: 'Inter', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
 $font-mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
 
-// Gradient
-$gradient-accent: linear-gradient(135deg, $accent, $accent-secondary);
+// Gradient — uses CSS custom properties for theme switching
+$gradient-accent: linear-gradient(135deg, var(--accent, #10B981), var(--accent-secondary, #34D399));
 
 // Breakpoints
 $breakpoint-mobile: 768px;

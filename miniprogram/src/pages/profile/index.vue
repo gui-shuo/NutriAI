@@ -2,19 +2,45 @@
   <view class="page">
     <!-- User Info Header -->
     <view class="user-header">
-      <view class="avatar-wrap" @tap="changeAvatar">
-        <image class="avatar" :src="defaultAvatar(userStore.userInfo?.avatar)" mode="aspectFill" />
-        <view class="avatar-edit">📷</view>
-      </view>
-      <view class="user-meta">
-        <view class="nickname-row">
-          <text class="nickname">{{ userStore.userInfo?.nickname || '未设置昵称' }}</text>
-          <view v-if="isVip" class="vip-badge-tag">VIP</view>
+      <view class="header-bg" />
+      <view class="header-inner">
+        <view class="avatar-wrap" @tap="changeAvatar">
+          <image class="avatar" :src="defaultAvatar(userStore.userInfo?.avatar)" mode="aspectFill" />
+          <view class="avatar-edit">📷</view>
         </view>
-        <text class="username text-sm text-secondary">@{{ userStore.userInfo?.username }}</text>
+        <view class="user-meta">
+          <view class="nickname-row">
+            <text class="nickname">{{ userStore.userInfo?.nickname || '未设置昵称' }}</text>
+            <view v-if="isVip" class="vip-badge-tag">VIP</view>
+          </view>
+          <text class="username">@{{ userStore.userInfo?.username }}</text>
+        </view>
+        <view class="edit-btn" @tap="showEditProfile = !showEditProfile">
+          {{ showEditProfile ? '收起' : '编辑' }}
+        </view>
       </view>
-      <view class="edit-btn" @tap="showEditProfile = !showEditProfile">
-        {{ showEditProfile ? '收起' : '编辑资料' }}
+
+      <!-- Quick Stats Row -->
+      <view class="stats-row">
+        <view class="stat-item" @tap="navigateTo('/pages/food-records/index')">
+          <text class="stat-value">{{ userStore.userInfo?.age || '-' }}</text>
+          <text class="stat-label">年龄</text>
+        </view>
+        <view class="stat-divider" />
+        <view class="stat-item">
+          <text class="stat-value">{{ userStore.userInfo?.height ? userStore.userInfo.height + 'cm' : '-' }}</text>
+          <text class="stat-label">身高</text>
+        </view>
+        <view class="stat-divider" />
+        <view class="stat-item">
+          <text class="stat-value">{{ userStore.userInfo?.weight ? userStore.userInfo.weight + 'kg' : '-' }}</text>
+          <text class="stat-label">体重</text>
+        </view>
+        <view class="stat-divider" />
+        <view class="stat-item">
+          <text class="stat-value">{{ isVip ? 'VIP' : '普通' }}</text>
+          <text class="stat-label">等级</text>
+        </view>
       </view>
     </view>
 
@@ -53,58 +79,81 @@
       <button class="btn-primary save-btn" :loading="saving" @tap="saveProfile">保存修改</button>
     </view>
 
-    <!-- Menu List -->
+    <!-- Menu List - Primary -->
+    <view class="section-label">我的服务</view>
     <view class="card menu-card">
       <view class="menu-item" @tap="navigateTo('/pages/food-records/index')">
-        <text class="menu-icon">🍽️</text>
+        <view class="menu-icon-wrap" style="background: rgba(245,158,11,0.1)">
+          <text class="menu-icon">🍽️</text>
+        </view>
         <text class="menu-text">我的饮食记录</text>
         <text class="menu-arrow">›</text>
       </view>
       <view class="menu-item" @tap="navigateTo('/pages/diet-plan/index')">
-        <text class="menu-icon">📋</text>
+        <view class="menu-icon-wrap" style="background: rgba(139,92,246,0.1)">
+          <text class="menu-icon">📋</text>
+        </view>
         <text class="menu-text">我的饮食计划</text>
         <text class="menu-arrow">›</text>
       </view>
       <view class="menu-item" @tap="navigateTo('/pages/profile/my-posts')">
-        <text class="menu-icon">📝</text>
+        <view class="menu-icon-wrap" style="background: rgba(99,102,241,0.1)">
+          <text class="menu-icon">📝</text>
+        </view>
         <text class="menu-text">我的帖子</text>
         <text class="menu-arrow">›</text>
       </view>
       <view class="menu-item" @tap="navigateTo('/pages/consultation/index?tab=orders')">
-        <text class="menu-icon">👩‍⚕️</text>
+        <view class="menu-icon-wrap" style="background: rgba(236,72,153,0.1)">
+          <text class="menu-icon">👩‍⚕️</text>
+        </view>
         <text class="menu-text">我的咨询</text>
         <text class="menu-arrow">›</text>
       </view>
       <view class="menu-item" @tap="navigateTo('/pages/profile/my-orders')">
-        <text class="menu-icon">📦</text>
+        <view class="menu-icon-wrap" style="background: rgba(20,184,166,0.1)">
+          <text class="menu-icon">📦</text>
+        </view>
         <text class="menu-text">我的订单</text>
         <text class="menu-arrow">›</text>
       </view>
       <view class="menu-item" @tap="navigateTo('/pages/address/index')">
-        <text class="menu-icon">📍</text>
+        <view class="menu-icon-wrap" style="background: rgba(59,130,246,0.1)">
+          <text class="menu-icon">📍</text>
+        </view>
         <text class="menu-text">我的地址</text>
         <text class="menu-arrow">›</text>
       </view>
     </view>
 
+    <!-- Menu List - Settings -->
+    <view class="section-label">设置</view>
     <view class="card menu-card">
       <view class="menu-item" @tap="navigateTo('/pages/profile/account-binding')">
-        <text class="menu-icon">🔗</text>
+        <view class="menu-icon-wrap" style="background: rgba(16,185,129,0.1)">
+          <text class="menu-icon">🔗</text>
+        </view>
         <text class="menu-text">账号绑定</text>
         <text class="menu-arrow">›</text>
       </view>
       <view class="menu-item" @tap="showPasswordDialog = true">
-        <text class="menu-icon">🔒</text>
+        <view class="menu-icon-wrap" style="background: rgba(239,68,68,0.1)">
+          <text class="menu-icon">🔒</text>
+        </view>
         <text class="menu-text">修改密码</text>
         <text class="menu-arrow">›</text>
       </view>
       <view class="menu-item" @tap="navigateTo('/pages/feedback/index')">
-        <text class="menu-icon">💬</text>
+        <view class="menu-icon-wrap" style="background: rgba(100,116,139,0.1)">
+          <text class="menu-icon">💬</text>
+        </view>
         <text class="menu-text">意见反馈</text>
         <text class="menu-arrow">›</text>
       </view>
       <view class="menu-item" @tap="showAboutDialog = true">
-        <text class="menu-icon">ℹ️</text>
+        <view class="menu-icon-wrap" style="background: rgba(16,185,129,0.1)">
+          <text class="menu-icon">ℹ️</text>
+        </view>
         <text class="menu-text">关于我们</text>
         <text class="menu-arrow">›</text>
       </view>
@@ -423,10 +472,65 @@ onShow(() => {
 }
 
 .user-header {
+  position: relative;
+  overflow: hidden;
+}
+.header-bg {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 100%;
   background: $gradient-accent;
-  padding: 50rpx 30rpx 40rpx;
+  border-radius: 0 0 40rpx 40rpx;
+}
+.header-inner {
+  position: relative;
+  padding: 48rpx 32rpx 24rpx;
   display: flex;
   align-items: center;
+}
+
+/* Stats Row */
+.stats-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: rgba(255,255,255,0.15);
+  margin: 0 24rpx 24rpx;
+  padding: 24rpx 16rpx;
+  border-radius: $radius-xl;
+  backdrop-filter: blur(8px);
+}
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+.stat-value {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #fff;
+  font-family: 'JetBrains Mono', monospace;
+}
+.stat-label {
+  font-size: 22rpx;
+  color: rgba(255,255,255,0.75);
+  margin-top: 4rpx;
+}
+.stat-divider {
+  width: 1rpx;
+  height: 40rpx;
+  background: rgba(255,255,255,0.25);
+}
+
+/* Section Label */
+.section-label {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: $muted-foreground;
+  padding: 24rpx 32rpx 8rpx;
+  font-family: 'Inter', sans-serif;
 }
 
 .avatar-wrap {
@@ -457,6 +561,7 @@ onShow(() => {
 
 .user-meta {
   flex: 1;
+  min-width: 0;
 }
 
 .nickname-row {
@@ -470,6 +575,9 @@ onShow(() => {
   font-weight: 700;
   color: #fff;
   font-family: 'Calistoga', cursive;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .vip-badge-tag {
@@ -481,29 +589,31 @@ onShow(() => {
   font-weight: 700;
   letter-spacing: 2rpx;
   font-family: 'JetBrains Mono', monospace;
+  flex-shrink: 0;
 }
 
 .username {
   color: rgba(255, 255, 255, 0.8);
   margin-top: 4rpx;
   display: block;
+  font-size: 24rpx;
 }
 
 .edit-btn {
   color: #fff;
-  font-size: 26rpx;
+  font-size: 24rpx;
   background: rgba(255, 255, 255, 0.15);
-  padding: 10rpx 24rpx;
+  padding: 8rpx 20rpx;
   border-radius: $radius-full;
   border: 2rpx solid rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(4px);
   font-family: 'Inter', sans-serif;
+  flex-shrink: 0;
 }
 
 .card {
   background: $card;
   border-radius: $radius-xl;
-  margin: 20rpx 24rpx;
+  margin: 8rpx 24rpx 0;
   padding: 10rpx 0;
   border: 1rpx solid $border;
   box-shadow: $shadow-sm;
@@ -561,8 +671,8 @@ onShow(() => {
 .menu-item {
   display: flex;
   align-items: center;
-  padding: 30rpx;
-  border-bottom: 1rpx solid $border;
+  padding: 26rpx 28rpx;
+  border-bottom: 1rpx solid rgba(226,232,240,0.6);
   position: relative;
 
   &:last-child {
@@ -574,9 +684,19 @@ onShow(() => {
   }
 }
 
-.menu-icon {
-  font-size: 36rpx;
+.menu-icon-wrap {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: $radius-lg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-right: 20rpx;
+  flex-shrink: 0;
+}
+
+.menu-icon {
+  font-size: 32rpx;
 }
 
 .menu-text {

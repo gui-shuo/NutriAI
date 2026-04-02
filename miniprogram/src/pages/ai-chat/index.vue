@@ -108,7 +108,12 @@ interface ChatMessage {
   content: string
 }
 
+// #ifdef H5
+const WS_URL = `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/api/ws/ai/chat`
+// #endif
+// #ifndef H5
 const WS_URL = 'wss://nutriai.itshuo.me/api/ws/ai/chat'
+// #endif
 
 const userStore = useUserStore()
 const userAvatar = computed(() => defaultAvatar(userStore.userInfo?.avatar))

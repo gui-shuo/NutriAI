@@ -154,7 +154,12 @@ a {
 
 /* --- CSS Variables --- */
 :root {
-  --el-color-primary: #{$accent};
+  /* Theme-switchable accent (overridden by JS at runtime) */
+  --accent: #{$accent};
+  --accent-secondary: #{$accent-secondary};
+  --accent-rgb: 16, 185, 129;
+
+  --el-color-primary: var(--accent);
   --el-color-primary-light-3: #{lighten($accent, 15%)};
   --el-color-primary-light-5: #{lighten($accent, 25%)};
   --el-color-primary-light-7: #{lighten($accent, 35%)};
