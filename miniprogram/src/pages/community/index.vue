@@ -186,36 +186,41 @@ onReachBottom(() => {
 })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .community-page {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: $paper;
   padding-bottom: 120rpx;
 }
 
 .category-bar {
   white-space: nowrap;
-  background: #fff;
+  background: $paper;
   padding: 20rpx 16rpx;
   position: sticky;
   top: 0;
   z-index: 10;
+  border-bottom: 2rpx dashed $muted;
 }
 
 .category-item {
   display: inline-block;
   padding: 12rpx 28rpx;
   margin: 0 10rpx;
-  border-radius: 30rpx;
+  border-radius: $wobbly-sm;
   font-size: 26rpx;
-  color: #666;
-  background: #f0f0f0;
+  color: $pencil;
+  background: #fff;
+  border: 2rpx solid $muted;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
   transition: all 0.2s;
 }
 
 .category-item.active {
-  background: #07c160;
+  background: $accent;
   color: #fff;
+  border-color: $pencil;
+  box-shadow: $shadow-hard-hover;
 }
 
 .feed-list {
@@ -224,10 +229,12 @@ onReachBottom(() => {
 
 .post-card {
   background: #fff;
-  border-radius: 16rpx;
+  border: 2rpx solid $pencil;
+  border-radius: $wobbly-md;
   padding: 28rpx;
-  margin-bottom: 16rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  margin-bottom: 20rpx;
+  box-shadow: $shadow-hard-sm;
+  position: relative;
 }
 
 .post-header {
@@ -240,6 +247,7 @@ onReachBottom(() => {
   width: 72rpx;
   height: 72rpx;
   border-radius: 50%;
+  border: 2rpx solid $pencil;
   margin-right: 16rpx;
   flex-shrink: 0;
 }
@@ -252,22 +260,25 @@ onReachBottom(() => {
 
 .nickname {
   font-size: 28rpx;
-  font-weight: 600;
-  color: #333;
+  font-weight: 700;
+  color: $pencil;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
 }
 
 .time {
   font-size: 22rpx;
-  color: #999;
+  color: rgba(45, 45, 45, 0.4);
   margin-top: 4rpx;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 
 .category-tag {
   font-size: 22rpx;
-  color: #07c160;
-  background: rgba(7, 193, 96, 0.1);
+  color: $accent;
+  background: rgba(255, 77, 77, 0.1);
   padding: 6rpx 16rpx;
-  border-radius: 20rpx;
+  border-radius: $wobbly-sm;
+  border: 1rpx solid $accent;
   flex-shrink: 0;
 }
 
@@ -277,8 +288,9 @@ onReachBottom(() => {
 
 .content-text {
   font-size: 28rpx;
-  color: #333;
+  color: $pencil;
   line-height: 1.6;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
@@ -296,8 +308,9 @@ onReachBottom(() => {
   position: relative;
   width: calc(33.33% - 6rpx);
   aspect-ratio: 1;
-  border-radius: 8rpx;
+  border-radius: $wobbly-sm;
   overflow: hidden;
+  border: 2rpx solid $pencil;
 }
 
 .grid-img {
@@ -311,22 +324,24 @@ onReachBottom(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(45, 45, 45, 0.55);
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
   font-size: 36rpx;
   font-weight: bold;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 
 .video-thumb {
   position: relative;
   width: 100%;
   height: 360rpx;
-  border-radius: 12rpx;
+  border-radius: $wobbly-sm;
   overflow: hidden;
   margin-bottom: 20rpx;
+  border: 2rpx solid $pencil;
 }
 
 .video-cover {
@@ -342,7 +357,8 @@ onReachBottom(() => {
   width: 80rpx;
   height: 80rpx;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(45, 45, 45, 0.7);
+  border: 2rpx solid #fff;
   color: #fff;
   font-size: 36rpx;
   display: flex;
@@ -354,7 +370,7 @@ onReachBottom(() => {
   display: flex;
   gap: 40rpx;
   padding-top: 16rpx;
-  border-top: 1rpx solid #f0f0f0;
+  border-top: 2rpx dashed $muted;
 }
 
 .footer-item {
@@ -369,7 +385,8 @@ onReachBottom(() => {
 
 .footer-item .count {
   font-size: 24rpx;
-  color: #999;
+  color: rgba(45, 45, 45, 0.5);
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 
 .empty-state {
@@ -387,7 +404,8 @@ onReachBottom(() => {
 
 .empty-text {
   font-size: 28rpx;
-  color: #999;
+  color: rgba(45, 45, 45, 0.6);
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 
 .loading-more,
@@ -395,7 +413,8 @@ onReachBottom(() => {
   text-align: center;
   padding: 30rpx;
   font-size: 24rpx;
-  color: #999;
+  color: rgba(45, 45, 45, 0.5);
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 
 .fab-btn {
@@ -404,35 +423,46 @@ onReachBottom(() => {
   bottom: 160rpx;
   width: 100rpx;
   height: 100rpx;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #07c160, #06ad56);
+  border-radius: $wobbly;
+  background: $accent;
+  border: 3rpx solid $pencil;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 6rpx 20rpx rgba(7, 193, 96, 0.4);
+  box-shadow: $shadow-hard;
   z-index: 100;
+}
+.fab-btn:active {
+  box-shadow: none;
+  transform: translate(4rpx, 4rpx);
 }
 
 .fab-icon {
   font-size: 52rpx;
   color: #fff;
   line-height: 1;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
+
 .disclaimer-tip {
-  background: #fff3cd;
-  color: #856404;
-  border-radius: 12rpx;
+  background: $sticky;
+  color: $pencil;
+  border: 2rpx solid $pencil;
+  border-radius: $wobbly-sm;
   padding: 14rpx 48rpx 14rpx 20rpx;
   font-size: 22rpx;
-  margin: 0 20rpx 20rpx;
+  margin: 16rpx 20rpx;
   position: relative;
+  box-shadow: $shadow-hard-sm;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
+
 .disclaimer-tip .dismiss {
   position: absolute;
   right: 16rpx;
   top: 50%;
   transform: translateY(-50%);
   font-size: 28rpx;
-  color: #999;
+  color: $pencil;
 }
 </style>

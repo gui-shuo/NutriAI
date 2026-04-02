@@ -275,12 +275,12 @@ function goBack() {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .chat-page {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: #f5f5f5;
+  background: $paper;
 }
 
 .chat-header {
@@ -290,14 +290,15 @@ function goBack() {
   padding: 0 24rpx;
   height: 88rpx;
   background: #fff;
-  border-bottom: 1rpx solid #eee;
+  border-bottom: 2rpx solid $pencil;
   flex-shrink: 0;
 }
 
 .header-back {
   font-size: 28rpx;
-  color: #07c160;
+  color: $ink;
   padding: 10rpx;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 
 .header-title {
@@ -308,24 +309,28 @@ function goBack() {
 
 .title-text {
   font-size: 30rpx;
-  font-weight: 600;
-  color: #333;
+  font-weight: 700;
+  color: $pencil;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
 }
 
 .status-tag {
   font-size: 20rpx;
   padding: 4rpx 12rpx;
-  border-radius: 16rpx;
+  border-radius: $wobbly-sm;
+  border: 1rpx solid;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
-.status-tag.active { background: #e8f5e9; color: #07c160; }
-.status-tag.pending { background: #fff3e0; color: #ff976a; }
-.status-tag.done { background: #f0f0f0; color: #666; }
-.status-tag.cancelled { background: #fce4ec; color: #ee0a24; }
+.status-tag.active { background: rgba(76, 175, 80, 0.1); color: #4caf50; border-color: #4caf50; }
+.status-tag.pending { background: $sticky; color: #ff9800; border-color: #ff9800; }
+.status-tag.done { background: $muted; color: rgba(45, 45, 45, 0.5); border-color: $muted; }
+.status-tag.cancelled { background: rgba(255, 77, 77, 0.1); color: $accent; border-color: $accent; }
 
 .header-action {
   font-size: 26rpx;
-  color: #ee0a24;
+  color: $accent;
   padding: 10rpx;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 
 .chat-body {
@@ -334,24 +339,29 @@ function goBack() {
 }
 
 .desc-card {
-  background: #fff;
-  border-radius: 16rpx;
+  background: $sticky;
+  border: 2rpx solid $pencil;
+  border-radius: $wobbly-sm;
   padding: 20rpx;
   margin-bottom: 20rpx;
-  border: 1rpx solid #eee;
+  box-shadow: $shadow-hard-sm;
+  transform: rotate(-0.5deg);
 }
 
 .desc-label {
   font-size: 22rpx;
-  color: #999;
+  color: rgba(45, 45, 45, 0.5);
   display: block;
   margin-bottom: 8rpx;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
+  font-weight: 700;
 }
 
 .desc-content {
   font-size: 26rpx;
-  color: #333;
+  color: $pencil;
   line-height: 1.6;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 
 .message-item {
@@ -370,26 +380,28 @@ function goBack() {
 .msg-bubble {
   max-width: 70%;
   padding: 16rpx 24rpx;
-  border-radius: 20rpx;
+  border: 2rpx solid $pencil;
 }
 
 .msg-right .msg-bubble {
-  background: #07c160;
+  background: $ink;
   color: #fff;
-  border-radius: 20rpx 20rpx 6rpx 20rpx;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  box-shadow: $shadow-hard-hover;
 }
 
 .msg-left .msg-bubble {
   background: #fff;
-  color: #333;
-  border: 1rpx solid #eee;
-  border-radius: 20rpx 20rpx 20rpx 6rpx;
+  color: $pencil;
+  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px;
+  box-shadow: $shadow-hard-sm;
 }
 
 .msg-text {
   font-size: 28rpx;
   line-height: 1.6;
   word-break: break-word;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 
 .msg-time {
@@ -397,10 +409,11 @@ function goBack() {
   font-size: 20rpx;
   margin-top: 6rpx;
   text-align: right;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 
-.msg-right .msg-time { color: rgba(255,255,255,0.7); }
-.msg-left .msg-time { color: #999; }
+.msg-right .msg-time { color: rgba(255, 255, 255, 0.7); }
+.msg-left .msg-time { color: rgba(45, 45, 45, 0.4); }
 
 .im-status {
   display: flex;
@@ -412,12 +425,13 @@ function goBack() {
 
 .im-dot {
   font-size: 16rpx;
-  color: #07c160;
+  color: #4caf50;
 }
 
 .im-text {
   font-size: 20rpx;
-  color: #999;
+  color: rgba(45, 45, 45, 0.4);
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 
 .chat-input-area {
@@ -427,32 +441,43 @@ function goBack() {
   padding: 16rpx 20rpx;
   padding-bottom: calc(16rpx + env(safe-area-inset-bottom));
   background: #fff;
-  border-top: 1rpx solid #eee;
+  border-top: 2rpx solid $pencil;
   flex-shrink: 0;
 }
 
 .chat-input {
   flex: 1;
   height: 72rpx;
-  background: #f5f5f5;
-  border-radius: 36rpx;
+  background: $paper;
+  border: 2rpx solid $pencil;
+  border-radius: $wobbly-sm;
   padding: 0 24rpx;
   font-size: 28rpx;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  color: $pencil;
 }
 
 .send-btn {
   padding: 0 32rpx;
   height: 72rpx;
   line-height: 72rpx;
-  border-radius: 36rpx;
+  border-radius: $wobbly-sm;
   font-size: 28rpx;
-  background: #07c160;
+  background: $accent;
   color: #fff;
+  border: 2rpx solid $pencil;
+  box-shadow: $shadow-hard-hover;
   flex-shrink: 0;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+}
+.send-btn:active {
+  box-shadow: none;
+  transform: translate(2rpx, 2rpx);
 }
 
 .send-btn.disabled {
-  opacity: 0.5;
+  opacity: 0.4;
+  box-shadow: none;
 }
 
 .completed-footer {
@@ -461,14 +486,16 @@ function goBack() {
   padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
   background: #fff;
   font-size: 28rpx;
-  color: #999;
+  color: rgba(45, 45, 45, 0.5);
+  border-top: 2rpx dashed $muted;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 
 /* Rating Modal */
 .modal-mask {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(45, 45, 45, 0.5);
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -477,16 +504,20 @@ function goBack() {
 
 .modal-content {
   width: 80%;
-  background: #fff;
-  border-radius: 20rpx;
+  background: $paper;
+  border: 3rpx solid $pencil;
+  border-radius: $wobbly;
   padding: 32rpx;
+  box-shadow: $shadow-hard;
 }
 
 .modal-title {
   font-size: 32rpx;
-  font-weight: 600;
+  font-weight: 700;
   text-align: center;
   margin-bottom: 24rpx;
+  color: $pencil;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
 }
 
 .rating-row {
@@ -498,21 +529,24 @@ function goBack() {
 
 .star {
   font-size: 48rpx;
-  color: #ddd;
+  color: $muted;
 }
 
 .star.active {
-  color: #ff976a;
+  color: #ff9800;
 }
 
 .review-input {
   width: 100%;
   height: 80rpx;
-  background: #f5f5f5;
-  border-radius: 12rpx;
+  background: #fff;
+  border: 2rpx solid $pencil;
+  border-radius: $wobbly-sm;
   padding: 0 20rpx;
   font-size: 26rpx;
   margin-bottom: 24rpx;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  color: $pencil;
 }
 
 .modal-actions {
@@ -524,17 +558,24 @@ function goBack() {
   flex: 1;
   text-align: center;
   padding: 20rpx;
-  border-radius: 12rpx;
+  border-radius: $wobbly-sm;
   font-size: 28rpx;
+  border: 2rpx solid $pencil;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 
 .modal-btn.cancel {
-  background: #f5f5f5;
-  color: #666;
+  background: #fff;
+  color: $pencil;
 }
 
 .modal-btn.confirm {
-  background: #07c160;
+  background: $accent;
   color: #fff;
+  box-shadow: $shadow-hard-hover;
+}
+.modal-btn.confirm:active {
+  box-shadow: none;
+  transform: translate(2rpx, 2rpx);
 }
 </style>

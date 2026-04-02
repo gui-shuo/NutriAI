@@ -317,10 +317,10 @@ onLoad((query) => {
 })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .detail-page {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: $paper;
 }
 
 .loading-page {
@@ -329,7 +329,8 @@ onLoad((query) => {
   justify-content: center;
   min-height: 100vh;
   font-size: 28rpx;
-  color: #999;
+  color: rgba(45, 45, 45, 0.5);
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 
 .author-bar {
@@ -337,12 +338,14 @@ onLoad((query) => {
   align-items: center;
   background: #fff;
   padding: 28rpx;
+  border-bottom: 2rpx dashed $muted;
 }
 
 .avatar {
   width: 80rpx;
   height: 80rpx;
   border-radius: 50%;
+  border: 2rpx solid $pencil;
   margin-right: 20rpx;
   flex-shrink: 0;
 }
@@ -355,35 +358,53 @@ onLoad((query) => {
 
 .nickname {
   font-size: 30rpx;
-  font-weight: 600;
-  color: #333;
+  font-weight: 700;
+  color: $pencil;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
 }
 
 .time {
   font-size: 24rpx;
-  color: #999;
+  color: rgba(45, 45, 45, 0.4);
   margin-top: 4rpx;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 
 .follow-btn {
   padding: 10rpx 28rpx;
-  border-radius: 30rpx;
+  border-radius: $wobbly-sm;
   font-size: 24rpx;
-  background: #07c160;
+  background: $accent;
   color: #fff;
+  border: 2rpx solid $pencil;
+  box-shadow: $shadow-hard-hover;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+}
+.follow-btn:active {
+  box-shadow: none;
+  transform: translate(2rpx, 2rpx);
 }
 
 .follow-btn.followed {
-  background: #f0f0f0;
-  color: #999;
+  background: $muted;
+  color: rgba(45, 45, 45, 0.5);
+  border-color: $muted;
+  box-shadow: none;
 }
 
 .delete-btn {
   padding: 10rpx 28rpx;
-  border-radius: 30rpx;
+  border-radius: $wobbly-sm;
   font-size: 24rpx;
-  background: #ff4d4f;
+  background: $accent;
   color: #fff;
+  border: 2rpx solid $pencil;
+  box-shadow: $shadow-hard-hover;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+}
+.delete-btn:active {
+  box-shadow: none;
+  transform: translate(2rpx, 2rpx);
 }
 
 .post-body {
@@ -394,18 +415,20 @@ onLoad((query) => {
 .category-tag {
   display: inline-block;
   font-size: 22rpx;
-  color: #07c160;
-  background: rgba(7, 193, 96, 0.1);
+  color: $accent;
+  background: rgba(255, 77, 77, 0.1);
   padding: 6rpx 16rpx;
-  border-radius: 20rpx;
+  border-radius: $wobbly-sm;
+  border: 1rpx solid $accent;
   margin-bottom: 16rpx;
 }
 
 .content-text {
   font-size: 30rpx;
-  color: #333;
+  color: $pencil;
   line-height: 1.8;
   word-break: break-all;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 
 .image-gallery {
@@ -419,7 +442,8 @@ onLoad((query) => {
 .gallery-img {
   width: calc(33.33% - 6rpx);
   aspect-ratio: 1;
-  border-radius: 8rpx;
+  border-radius: $wobbly-sm;
+  border: 2rpx solid $pencil;
 }
 
 .gallery-img.single-img {
@@ -436,7 +460,8 @@ onLoad((query) => {
 .post-video {
   width: 100%;
   height: 400rpx;
-  border-radius: 12rpx;
+  border-radius: $wobbly-sm;
+  border: 2rpx solid $pencil;
 }
 
 .stats-bar {
@@ -444,13 +469,20 @@ onLoad((query) => {
   display: flex;
   padding: 24rpx 28rpx;
   gap: 60rpx;
-  border-top: 1rpx solid #f0f0f0;
+  border-top: 2rpx dashed $muted;
 }
 
 .stat-item {
   display: flex;
   align-items: center;
   gap: 8rpx;
+  padding: 8rpx 16rpx;
+  border-radius: $wobbly-sm;
+  transition: all 0.2s;
+}
+
+.stat-item.liked {
+  background: rgba(255, 77, 77, 0.08);
 }
 
 .stat-icon {
@@ -459,32 +491,49 @@ onLoad((query) => {
 
 .stat-count {
   font-size: 26rpx;
-  color: #666;
+  color: rgba(45, 45, 45, 0.6);
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 
 .comments-section {
   background: #fff;
   margin-top: 16rpx;
   padding: 28rpx;
+  border-top: 2rpx solid $pencil;
 }
 
 .section-title {
   font-size: 30rpx;
-  font-weight: 600;
-  color: #333;
+  font-weight: 700;
+  color: $pencil;
   margin-bottom: 24rpx;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
+  position: relative;
+  display: inline-block;
+}
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -4rpx;
+  left: 0;
+  width: 100%;
+  height: 3rpx;
+  background: $accent;
+  border-radius: 2rpx;
+  transform: rotate(-0.5deg);
 }
 
 .comment-item {
   display: flex;
   padding: 20rpx 0;
-  border-bottom: 1rpx solid #f5f5f5;
+  border-bottom: 2rpx dashed $muted;
 }
 
 .comment-avatar {
   width: 64rpx;
   height: 64rpx;
   border-radius: 50%;
+  border: 2rpx solid $pencil;
   margin-right: 16rpx;
   flex-shrink: 0;
 }
@@ -492,6 +541,34 @@ onLoad((query) => {
 .comment-body {
   flex: 1;
   min-width: 0;
+  background: $paper;
+  border: 2rpx solid $muted;
+  border-radius: $wobbly-sm;
+  padding: 16rpx;
+  position: relative;
+}
+/* Speech bubble tail */
+.comment-body::before {
+  content: '';
+  position: absolute;
+  left: -16rpx;
+  top: 20rpx;
+  width: 0;
+  height: 0;
+  border-top: 10rpx solid transparent;
+  border-bottom: 10rpx solid transparent;
+  border-right: 16rpx solid $muted;
+}
+.comment-body::after {
+  content: '';
+  position: absolute;
+  left: -12rpx;
+  top: 22rpx;
+  width: 0;
+  height: 0;
+  border-top: 8rpx solid transparent;
+  border-bottom: 8rpx solid transparent;
+  border-right: 12rpx solid $paper;
 }
 
 .comment-header {
@@ -503,29 +580,33 @@ onLoad((query) => {
 
 .comment-nick {
   font-size: 26rpx;
-  font-weight: 600;
-  color: #333;
+  font-weight: 700;
+  color: $pencil;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
 }
 
 .comment-time {
   font-size: 22rpx;
-  color: #999;
+  color: rgba(45, 45, 45, 0.4);
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 
 .reply-tag {
   font-size: 22rpx;
-  color: #999;
+  color: rgba(45, 45, 45, 0.5);
   margin-bottom: 8rpx;
 }
 
 .reply-nick {
-  color: #07c160;
+  color: $ink;
+  font-weight: 600;
 }
 
 .comment-content {
   font-size: 28rpx;
-  color: #333;
+  color: $pencil;
   line-height: 1.6;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 
 .comment-actions {
@@ -536,32 +617,39 @@ onLoad((query) => {
 
 .action-btn {
   font-size: 22rpx;
-  color: #999;
+  color: $ink;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 
 .action-btn.delete {
-  color: #ff4d4f;
+  color: $accent;
 }
 
 .empty-comments {
   text-align: center;
   padding: 60rpx 0;
   font-size: 26rpx;
-  color: #999;
+  color: rgba(45, 45, 45, 0.5);
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 
 .loading-more {
   text-align: center;
   padding: 20rpx;
   font-size: 24rpx;
-  color: #999;
+  color: rgba(45, 45, 45, 0.5);
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 
 .load-more-btn {
   text-align: center;
   padding: 20rpx;
   font-size: 26rpx;
-  color: #07c160;
+  color: $ink;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  border: 2rpx dashed $ink;
+  border-radius: $wobbly-sm;
+  margin-top: 16rpx;
 }
 
 .bottom-bar {
@@ -570,7 +658,7 @@ onLoad((query) => {
   left: 0;
   right: 0;
   background: #fff;
-  border-top: 1rpx solid #eee;
+  border-top: 2rpx solid $pencil;
   padding: 16rpx 28rpx;
   padding-bottom: calc(16rpx + env(safe-area-inset-bottom));
   z-index: 100;
@@ -582,14 +670,16 @@ onLoad((query) => {
   justify-content: space-between;
   padding: 8rpx 16rpx;
   margin-bottom: 8rpx;
-  background: #f5f5f5;
-  border-radius: 8rpx;
+  background: $sticky;
+  border-radius: $wobbly-sm;
+  border: 1rpx solid $muted;
   font-size: 22rpx;
-  color: #666;
+  color: $pencil;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 
 .cancel-reply {
-  color: #999;
+  color: $pencil;
   padding: 4rpx 8rpx;
 }
 
@@ -602,23 +692,34 @@ onLoad((query) => {
 .comment-input {
   flex: 1;
   height: 72rpx;
-  background: #f5f5f5;
-  border-radius: 36rpx;
+  background: $paper;
+  border: 2rpx solid $pencil;
+  border-radius: $wobbly-sm;
   padding: 0 28rpx;
   font-size: 28rpx;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  color: $pencil;
 }
 
 .send-btn {
   padding: 16rpx 32rpx;
-  border-radius: 36rpx;
+  border-radius: $wobbly-sm;
   font-size: 28rpx;
-  background: #ddd;
-  color: #999;
+  background: $muted;
+  color: rgba(45, 45, 45, 0.4);
+  border: 2rpx solid $muted;
   flex-shrink: 0;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 
 .send-btn.active {
-  background: #07c160;
+  background: $accent;
   color: #fff;
+  border-color: $pencil;
+  box-shadow: $shadow-hard-hover;
+}
+.send-btn.active:active {
+  box-shadow: none;
+  transform: translate(2rpx, 2rpx);
 }
 </style>

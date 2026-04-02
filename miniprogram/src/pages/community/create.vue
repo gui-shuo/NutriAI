@@ -238,10 +238,10 @@ async function handlePublish() {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .create-page {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: $paper;
 }
 
 .page-header {
@@ -253,44 +253,58 @@ async function handlePublish() {
   position: sticky;
   top: 0;
   z-index: 10;
-  border-bottom: 1rpx solid #eee;
+  border-bottom: 2rpx solid $pencil;
 }
 
 .cancel-btn {
   font-size: 28rpx;
-  color: #666;
+  color: $pencil;
   padding: 8rpx 16rpx;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 
 .page-title {
   font-size: 32rpx;
-  font-weight: 600;
-  color: #333;
+  font-weight: 700;
+  color: $pencil;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
 }
 
 .publish-btn {
   font-size: 28rpx;
   color: #fff;
-  background: #07c160;
+  background: $accent;
   padding: 12rpx 32rpx;
-  border-radius: 30rpx;
+  border-radius: $wobbly-sm;
+  border: 2rpx solid $pencil;
+  box-shadow: $shadow-hard-hover;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+}
+.publish-btn:active {
+  box-shadow: none;
+  transform: translate(2rpx, 2rpx);
 }
 
 .publish-btn.disabled {
-  background: #ccc;
+  background: $muted;
+  color: rgba(45, 45, 45, 0.4);
+  border-color: $muted;
+  box-shadow: none;
 }
 
 .section {
   background: #fff;
   margin-top: 16rpx;
   padding: 28rpx;
+  border-top: 2rpx dashed $muted;
 }
 
 .section-label {
   font-size: 28rpx;
-  font-weight: 600;
-  color: #333;
+  font-weight: 700;
+  color: $pencil;
   margin-bottom: 20rpx;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
 }
 
 .category-grid {
@@ -301,38 +315,48 @@ async function handlePublish() {
 
 .category-chip {
   padding: 14rpx 24rpx;
-  border-radius: 30rpx;
+  border-radius: $wobbly-sm;
   font-size: 26rpx;
-  color: #666;
-  background: #f0f0f0;
+  color: $pencil;
+  background: #fff;
+  border: 2rpx solid $muted;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
   transition: all 0.2s;
 }
 
 .category-chip.active {
-  background: #07c160;
+  background: $accent;
   color: #fff;
+  border-color: $pencil;
+  box-shadow: $shadow-hard-hover;
 }
 
 .textarea-wrapper {
   position: relative;
+  border: 2rpx solid $pencil;
+  border-radius: $wobbly-sm;
+  padding: 20rpx;
+  background: $paper;
 }
 
 .content-textarea {
   width: 100%;
   font-size: 30rpx;
-  color: #333;
+  color: $pencil;
   line-height: 1.6;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 
 .char-count {
   text-align: right;
   font-size: 22rpx;
-  color: #999;
+  color: rgba(45, 45, 45, 0.4);
   margin-top: 12rpx;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 
 .char-count.warn {
-  color: #ff4d4f;
+  color: $accent;
 }
 
 .media-toggle {
@@ -344,16 +368,19 @@ async function handlePublish() {
   flex: 1;
   text-align: center;
   padding: 20rpx;
-  border-radius: 12rpx;
+  border-radius: $wobbly-sm;
   font-size: 28rpx;
-  color: #666;
-  background: #f5f5f5;
+  color: $pencil;
+  background: $paper;
+  border: 2rpx solid $muted;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 
 .toggle-btn.active {
-  background: rgba(7, 193, 96, 0.1);
-  color: #07c160;
-  border: 2rpx solid #07c160;
+  background: rgba(255, 77, 77, 0.08);
+  color: $accent;
+  border: 2rpx solid $accent;
+  box-shadow: $shadow-hard-hover;
 }
 
 .image-upload-grid {
@@ -366,8 +393,9 @@ async function handlePublish() {
   position: relative;
   width: calc(33.33% - 8rpx);
   aspect-ratio: 1;
-  border-radius: 12rpx;
+  border-radius: $wobbly-sm;
   overflow: hidden;
+  border: 2rpx solid $pencil;
 }
 
 .upload-img {
@@ -381,7 +409,7 @@ async function handlePublish() {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(45, 45, 45, 0.55);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -390,6 +418,7 @@ async function handlePublish() {
 .uploading-text {
   color: #fff;
   font-size: 24rpx;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 
 .remove-btn {
@@ -399,7 +428,8 @@ async function handlePublish() {
   width: 40rpx;
   height: 40rpx;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.6);
+  background: $accent;
+  border: 2rpx solid $pencil;
   color: #fff;
   font-size: 24rpx;
   display: flex;
@@ -410,23 +440,25 @@ async function handlePublish() {
 .add-btn {
   width: calc(33.33% - 8rpx);
   aspect-ratio: 1;
-  border: 2rpx dashed #ccc;
-  border-radius: 12rpx;
+  border: 3rpx dashed $pencil;
+  border-radius: $wobbly-sm;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 8rpx;
+  background: $paper;
 }
 
 .add-icon {
   font-size: 48rpx;
-  color: #ccc;
+  color: $pencil;
 }
 
 .add-text {
   font-size: 22rpx;
-  color: #999;
+  color: rgba(45, 45, 45, 0.5);
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 
 .video-upload-area {
@@ -436,13 +468,14 @@ async function handlePublish() {
 .add-video-btn {
   width: 200rpx;
   height: 200rpx;
-  border: 2rpx dashed #ccc;
-  border-radius: 12rpx;
+  border: 3rpx dashed $pencil;
+  border-radius: $wobbly-sm;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 12rpx;
+  background: $paper;
 }
 
 .video-preview {
@@ -452,13 +485,15 @@ async function handlePublish() {
 .preview-video {
   width: 100%;
   height: 400rpx;
-  border-radius: 12rpx;
+  border-radius: $wobbly-sm;
+  border: 2rpx solid $pencil;
 }
 
 .remove-video {
   text-align: center;
   margin-top: 16rpx;
   font-size: 26rpx;
-  color: #ff4d4f;
+  color: $accent;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 </style>
