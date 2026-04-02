@@ -315,13 +315,14 @@ onUnmounted(() => {
   .edit-header {
     margin-bottom: 32px;
     padding-bottom: 20px;
-    border-bottom: 2px solid #f0f0f0;
+    border-bottom: 2px dashed #2d2d2d;
 
     .title {
       font-size: 24px;
       font-weight: 600;
-      color: #333;
+      color: #2d2d2d;
       margin: 0;
+      font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
     }
   }
 
@@ -335,6 +336,8 @@ onUnmounted(() => {
     :deep(.el-input) {
       .el-input__inner {
         height: 44px;
+        border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
+        border-color: #2d2d2d;
       }
     }
 
@@ -356,8 +359,9 @@ onUnmounted(() => {
 
     .current-phone {
       font-size: 15px;
-      color: #333;
+      color: #2d2d2d;
       font-weight: 500;
+      font-family: 'Patrick Hand', cursive;
     }
   }
 
@@ -365,6 +369,7 @@ onUnmounted(() => {
     display: flex;
     gap: 12px;
     width: 100%;
+    font-family: 'Patrick Hand', cursive;
 
     .el-input {
       flex: 1;

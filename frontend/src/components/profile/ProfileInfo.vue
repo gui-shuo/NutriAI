@@ -211,13 +211,14 @@ onMounted(() => {
     align-items: center;
     margin-bottom: 32px;
     padding-bottom: 20px;
-    border-bottom: 2px solid #f0f0f0;
+    border-bottom: 2px dashed #2d2d2d;
 
     .title {
       font-size: 24px;
       font-weight: 600;
-      color: #333;
+      color: #2d2d2d;
       margin: 0;
+      font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
     }
 
     .el-button {
@@ -238,10 +239,11 @@ onMounted(() => {
       .section-title {
         font-size: 18px;
         font-weight: 600;
-        color: #333;
+        color: #2d2d2d;
         margin: 0 0 20px 0;
         padding-bottom: 12px;
-        border-bottom: 1px solid #f0f0f0;
+        border-bottom: 1px dashed #2d2d2d;
+        font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
       }
 
       .info-grid {
@@ -259,8 +261,9 @@ onMounted(() => {
             align-items: center;
             gap: 8px;
             font-size: 14px;
-            color: #909399;
+            color: #e5e0d8;
             margin-bottom: 8px;
+            font-family: 'Patrick Hand', cursive;
 
             .el-icon {
               font-size: 16px;
@@ -269,8 +272,9 @@ onMounted(() => {
 
           .item-value {
             font-size: 15px;
-            color: #333;
+            color: #2d2d2d;
             font-weight: 500;
+            font-family: 'Patrick Hand', cursive;
           }
         }
       }

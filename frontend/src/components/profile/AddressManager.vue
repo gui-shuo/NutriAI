@@ -285,11 +285,13 @@ onMounted(fetchAddresses)
       font-size: 22px;
       font-weight: 700;
       margin: 0;
+      font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+      color: #2d2d2d;
     }
   }
 
   .section-desc {
-    color: #999;
+    color: #e5e0d8;
     font-size: 14px;
     margin: 0 0 20px;
   }
@@ -300,21 +302,21 @@ onMounted(fetchAddresses)
 }
 
 .address-card {
-  background: #fafafa;
-  border: 1px solid #eee;
-  border-radius: 12px;
+  background: #fdfbf7;
+  border: 2px solid #2d2d2d;
+  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px;
   padding: 16px 20px;
   margin-bottom: 12px;
   transition: all 0.3s;
 
   &:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-    border-color: #ddd;
+    box-shadow: 4px 4px 0px 0px #2d2d2d;
+    border-color: #2d2d2d;
   }
 
   &.default {
-    border-color: #67c23a;
-    background: #f0f9eb;
+    border-color: #2d5da1;
+    background: #fff9c4;
   }
 
   .card-main {
@@ -327,16 +329,17 @@ onMounted(fetchAddresses)
       .receiver-name {
         font-weight: 600;
         font-size: 16px;
+        font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
       }
 
       .receiver-phone {
-        color: #666;
+        color: #2d2d2d;
         font-size: 14px;
       }
     }
 
     .card-address {
-      color: #555;
+      color: #2d2d2d;
       font-size: 14px;
       line-height: 1.5;
     }
@@ -346,7 +349,7 @@ onMounted(fetchAddresses)
     margin-top: 12px;
     display: flex;
     gap: 4px;
-    border-top: 1px solid #eee;
+    border-top: 1px dashed #2d2d2d;
     padding-top: 10px;
   }
 }

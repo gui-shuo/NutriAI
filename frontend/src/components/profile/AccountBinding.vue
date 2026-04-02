@@ -160,12 +160,13 @@ onMounted(loadBindInfo)
 .section-title {
   font-size: 22px;
   font-weight: 600;
-  color: #1e293b;
+  color: #2d2d2d;
   margin: 0 0 8px;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
 }
 
 .section-desc {
-  color: #64748b;
+  color: #e5e0d8;
   font-size: 14px;
   margin: 0 0 24px;
   line-height: 1.6;
@@ -183,14 +184,14 @@ onMounted(loadBindInfo)
   align-items: center;
   justify-content: space-between;
   padding: 16px 20px;
-  background: #f8fafc;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
+  background: #fdfbf7;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  border: 2px solid #2d2d2d;
   transition: all 0.2s;
 
   &:hover {
-    border-color: #667eea;
-    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+    border-color: #2d2d2d;
+    box-shadow: 4px 4px 0px 0px #2d2d2d;
   }
 }
 
@@ -208,16 +209,18 @@ onMounted(loadBindInfo)
   align-items: center;
   justify-content: center;
   font-size: 24px;
+  border: 1px dashed #2d2d2d;
 }
 
-.email-icon { background: #fef3c7; }
-.wechat-icon { background: #d1fae5; }
-.qq-icon { background: #dbeafe; }
+.email-icon { background: #fdfbf7; }
+.wechat-icon { background: #fdfbf7; }
+.qq-icon { background: #fdfbf7; }
 
 .bind-name {
   font-weight: 600;
   font-size: 15px;
-  color: #1e293b;
+  color: #2d2d2d;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
 }
 
 .bind-status {

@@ -132,28 +132,35 @@ const handleDelete = async () => {
     h2 {
       margin: 0;
       font-size: 22px;
-      color: #f56c6c;
+      color: #ff4d4d;
+      font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
     }
   }
 }
 
 .data-list {
   margin: 20px 0;
-  padding-left: 20px;
-  color: #606266;
+  padding-left: 0;
+  list-style: none;
+  color: #2d2d2d;
   line-height: 2;
+  font-family: 'Patrick Hand', cursive;
 
   li {
     font-size: 14px;
+    padding-left: 16px;
+    border-left: 2px dashed #ff4d4d;
+    margin-bottom: 4px;
   }
 }
 
 .confirm-section {
   .confirm-tip {
     font-size: 15px;
-    color: #303133;
+    color: #2d2d2d;
     font-weight: 600;
     margin-bottom: 16px;
+    font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
   }
 }
 
@@ -162,7 +169,7 @@ const handleDelete = async () => {
 }
 
 :deep(.el-checkbox__label) {
-  color: #909399;
+  color: #e5e0d8;
   font-size: 13px;
 }
 </style>
