@@ -15,33 +15,39 @@
       <view
         class="mode-tab flex-1 flex-center"
         :class="{ active: mode === 'photo' }"
-        @tap="mode = 'photo'"
+        @tap="switchMode('photo')"
       >📷 拍照识别</view>
       <view
         class="mode-tab flex-1 flex-center"
         :class="{ active: mode === 'text' }"
-        @tap="mode = 'text'"
-      >✏️ 文字识别</view>
+        @tap="switchMode('text')"
+      >✏️ 文字搜索</view>
     </view>
 
     <!-- Photo Mode -->
     <view v-show="mode === 'photo'" class="photo-section">
-      <view class="card photo-area flex-center" @tap="takePhoto">
+      <view class="card photo-area" @tap="!photoPath && chooseFromAlbum()">
         <image v-if="photoPath" :src="photoPath" class="preview-image" mode="aspectFit" />
         <view v-else class="photo-placeholder flex-center">
           <text class="photo-icon">📷</text>
-          <text class="photo-hint">点击拍照识别食物</text>
+          <text class="photo-hint">点击上传或拍照识别食物</text>
+          <text class="photo-sub-hint">支持 JPG / PNG / WebP，大图自动压缩</text>
         </view>
+        <view v-if="photoPath" class="remove-image-btn" @tap.stop="clearImage">✕</view>
       </view>
+
       <view class="photo-actions flex">
-        <button class="btn-primary flex-1" @tap="takePhoto">
-          {{ photoPath ? '重新拍照' : '拍照识别' }}
-        </button>
-        <button class="btn-outline flex-1" @tap="chooseFromAlbum" style="margin-left: 20rpx;">
-          从相册选择
-        </button>
+        <button class="btn-primary flex-1" @tap="takePhoto">📷 拍照</button>
+        <button class="btn-outline flex-1" @tap="chooseFromAlbum">🖼️ 相册</button>
       </view>
-      <view class="photo-tip" style="padding: 12rpx 20rpx; font-size: 24rpx; color: #e6a23c;">
+
+      <button
+        v-if="photoPath && !recognizing"
+        class="btn-primary recognize-btn"
+        @tap="recognizeCurrentPhoto"
+      >🔍 开始识别</button>
+
+      <view class="photo-tip">
         💡 识别结果请以置信度为准，置信度越高结果越可靠。大图将自动压缩以加速识别。
       </view>
     </view>
@@ -55,186 +61,230 @@
             <input
               class="flex-1"
               v-model="foodName"
-              placeholder="请输入食物名称，如：鸡胸肉"
+              placeholder="请输入食物名称，如：鸡胸肉、燕麦"
               confirm-type="search"
               @confirm="searchByName"
             />
           </view>
         </view>
       </view>
-      <button class="btn-primary search-btn" :disabled="!foodName.trim() || recognizing" @tap="searchByName">
-        {{ recognizing ? '识别中...' : '🔍 识别食物' }}
-      </button>
+      <button
+        class="btn-primary search-btn"
+        :disabled="!foodName.trim() || recognizing"
+        @tap="searchByName"
+      >{{ recognizing ? '识别中...' : '🔍 识别食物' }}</button>
+    </view>
+
+    <!-- Quick Food Chips -->
+    <view class="card quick-section">
+      <text class="quick-title">⚡ 快捷识别</text>
+      <view class="quick-chips">
+        <view
+          v-for="food in quickFoods"
+          :key="food"
+          class="quick-chip"
+          :class="{ 'quick-chip-disabled': recognizing }"
+          @tap="quickRecognize(food)"
+        >{{ food }}</view>
+      </view>
     </view>
 
     <!-- Loading State -->
     <view v-if="recognizing" class="loading-section card flex-center">
       <view class="loading-content">
         <view class="loading-spinner" />
+        <text class="loading-title">AI正在识别食物...</text>
         <text class="loading-text">正在分析食物营养成分，通常需要几秒钟</text>
       </view>
     </view>
 
-    <!-- Recognition Results (multiple) -->
+    <!-- Empty State -->
+    <view
+      v-if="!recognizing && results.length === 0 && !errorMsg"
+      class="empty-section card flex-center"
+    >
+      <view class="empty-content">
+        <text class="empty-icon">🍽️</text>
+        <text class="empty-title">开始识别食物</text>
+        <text class="empty-desc text-secondary">在上方输入食物名称或上传图片，AI将分析完整营养成分</text>
+      </view>
+    </view>
+
+    <!-- Recognition Results -->
     <view v-if="results.length > 0 && !recognizing" class="result-section">
-      <view class="result-count">
-        <text class="result-count-text">共识别出 {{ results.length }} 种食物</text>
+      <view class="result-bar flex-between">
+        <text class="result-bar-title">🔬 识别结果</text>
+        <view class="result-bar-count">共 {{ results.length }} 种食物</view>
       </view>
 
-      <view
-        v-for="(item, index) in results"
-        :key="index"
-        class="card result-card"
-        :class="{ 'result-card-selected': selectedIndex === index }"
-        @tap="selectedIndex = index"
-      >
-        <view class="result-header">
-          <view class="result-title-row">
-            <view class="result-name-wrap">
-              <text class="result-name">{{ item.name }}</text>
-              <view v-if="item.category" class="category-badge" :class="item.category === '果蔬' ? 'category-fruit' : 'category-dish'">
-                {{ item.category }}
+      <view class="result-grid" :class="{ 'result-grid-multi': results.length > 1 }">
+        <view
+          v-for="(item, index) in results"
+          :key="index"
+          class="card result-card"
+        >
+          <!-- Header -->
+          <view class="result-header">
+            <view class="result-title-row">
+              <view class="result-name-wrap">
+                <text class="result-name">{{ item.name }}</text>
+                <view
+                  v-if="item.category"
+                  class="category-badge"
+                  :class="item.category === '果蔬' ? 'category-fruit' : 'category-dish'"
+                >{{ item.category }}</view>
+              </view>
+              <view class="confidence-badge" :class="confidenceClass(item.confidence)">
+                置信度 {{ formatConfidence(item.confidence) }}
               </view>
             </view>
-            <view class="confidence-badge" :class="confidenceClass(item.confidence)">
-              {{ formatConfidence(item.confidence) }}
+            <text class="result-portion text-secondary">每100g</text>
+          </view>
+
+          <view class="divider" />
+
+          <!-- Core Nutrition -->
+          <view class="nutrition-grid">
+            <view class="nutrition-card calories-card">
+              <text class="n-icon">🔥</text>
+              <text class="n-value">{{ item.calories || 0 }}</text>
+              <text class="n-unit">千卡</text>
+              <text class="n-label">热量</text>
+            </view>
+            <view class="nutrition-card">
+              <text class="n-icon">🥩</text>
+              <text class="n-value">{{ nf(item.protein) }}g</text>
+              <text class="n-label">蛋白质</text>
+            </view>
+            <view class="nutrition-card">
+              <text class="n-icon">🧈</text>
+              <text class="n-value">{{ nf(item.fat) }}g</text>
+              <text class="n-label">脂肪</text>
+            </view>
+            <view class="nutrition-card">
+              <text class="n-icon">🍚</text>
+              <text class="n-value">{{ nf(item.carbs) }}g</text>
+              <text class="n-label">碳水</text>
+            </view>
+            <view class="nutrition-card" v-if="item.fiber">
+              <text class="n-icon">🌾</text>
+              <text class="n-value">{{ nf(item.fiber) }}g</text>
+              <text class="n-label">膳食纤维</text>
+            </view>
+            <view class="nutrition-card" v-if="item.cholesterol">
+              <text class="n-icon">��</text>
+              <text class="n-value">{{ nf(item.cholesterol) }}mg</text>
+              <text class="n-label">胆固醇</text>
             </view>
           </view>
-          <text class="result-portion text-secondary">每100g</text>
+
+          <!-- Minerals -->
+          <view v-if="hasMinerals(item)" class="nutrition-sub-section">
+            <view class="sub-section-header" @tap="toggleSection(index, 'mineral')">
+              <text class="sub-section-title">💎 矿物质</text>
+              <text class="sub-section-arrow">{{ isSectionOpen(index, 'mineral') ? '▲' : '▼' }}</text>
+            </view>
+            <view v-show="isSectionOpen(index, 'mineral')" class="nutrition-grid-sm">
+              <view v-if="item.calcium" class="n-item-sm">
+                <text class="n-sm-label">钙</text>
+                <text class="n-sm-value">{{ nf(item.calcium) }}<text class="n-sm-unit">mg</text></text>
+              </view>
+              <view v-if="item.iron" class="n-item-sm">
+                <text class="n-sm-label">铁</text>
+                <text class="n-sm-value">{{ nf(item.iron) }}<text class="n-sm-unit">mg</text></text>
+              </view>
+              <view v-if="item.zinc" class="n-item-sm">
+                <text class="n-sm-label">锌</text>
+                <text class="n-sm-value">{{ nf(item.zinc) }}<text class="n-sm-unit">mg</text></text>
+              </view>
+              <view v-if="item.sodium" class="n-item-sm">
+                <text class="n-sm-label">钠</text>
+                <text class="n-sm-value">{{ nf(item.sodium) }}<text class="n-sm-unit">mg</text></text>
+              </view>
+              <view v-if="item.potassium" class="n-item-sm">
+                <text class="n-sm-label">钾</text>
+                <text class="n-sm-value">{{ nf(item.potassium) }}<text class="n-sm-unit">mg</text></text>
+              </view>
+              <view v-if="item.magnesium" class="n-item-sm">
+                <text class="n-sm-label">镁</text>
+                <text class="n-sm-value">{{ nf(item.magnesium) }}<text class="n-sm-unit">mg</text></text>
+              </view>
+              <view v-if="item.phosphorus" class="n-item-sm">
+                <text class="n-sm-label">磷</text>
+                <text class="n-sm-value">{{ nf(item.phosphorus) }}<text class="n-sm-unit">mg</text></text>
+              </view>
+              <view v-if="item.selenium" class="n-item-sm">
+                <text class="n-sm-label">硒</text>
+                <text class="n-sm-value">{{ nf(item.selenium) }}<text class="n-sm-unit">μg</text></text>
+              </view>
+              <view v-if="item.copper" class="n-item-sm">
+                <text class="n-sm-label">铜</text>
+                <text class="n-sm-value">{{ nf(item.copper, 2) }}<text class="n-sm-unit">mg</text></text>
+              </view>
+              <view v-if="item.manganese" class="n-item-sm">
+                <text class="n-sm-label">锰</text>
+                <text class="n-sm-value">{{ nf(item.manganese, 2) }}<text class="n-sm-unit">mg</text></text>
+              </view>
+            </view>
+          </view>
+
+          <!-- Vitamins -->
+          <view v-if="hasVitamins(item)" class="nutrition-sub-section">
+            <view class="sub-section-header" @tap="toggleSection(index, 'vitamin')">
+              <text class="sub-section-title">🧪 维生素</text>
+              <text class="sub-section-arrow">{{ isSectionOpen(index, 'vitamin') ? '▲' : '▼' }}</text>
+            </view>
+            <view v-show="isSectionOpen(index, 'vitamin')" class="nutrition-grid-sm">
+              <view v-if="item.vitaminA" class="n-item-sm">
+                <text class="n-sm-label">维A</text>
+                <text class="n-sm-value">{{ nf(item.vitaminA) }}<text class="n-sm-unit">μg</text></text>
+              </view>
+              <view v-if="item.vitaminC" class="n-item-sm">
+                <text class="n-sm-label">维C</text>
+                <text class="n-sm-value">{{ nf(item.vitaminC) }}<text class="n-sm-unit">mg</text></text>
+              </view>
+              <view v-if="item.vitaminE" class="n-item-sm">
+                <text class="n-sm-label">维E</text>
+                <text class="n-sm-value">{{ nf(item.vitaminE, 2) }}<text class="n-sm-unit">mg</text></text>
+              </view>
+              <view v-if="item.carotene" class="n-item-sm">
+                <text class="n-sm-label">胡萝卜素</text>
+                <text class="n-sm-value">{{ nf(item.carotene) }}<text class="n-sm-unit">μg</text></text>
+              </view>
+              <view v-if="item.thiamine" class="n-item-sm">
+                <text class="n-sm-label">B1</text>
+                <text class="n-sm-value">{{ nf(item.thiamine, 2) }}<text class="n-sm-unit">mg</text></text>
+              </view>
+              <view v-if="item.riboflavin" class="n-item-sm">
+                <text class="n-sm-label">B2</text>
+                <text class="n-sm-value">{{ nf(item.riboflavin, 2) }}<text class="n-sm-unit">mg</text></text>
+              </view>
+              <view v-if="item.niacin" class="n-item-sm">
+                <text class="n-sm-label">B3</text>
+                <text class="n-sm-value">{{ nf(item.niacin) }}<text class="n-sm-unit">mg</text></text>
+              </view>
+              <view v-if="item.retinolEquivalent" class="n-item-sm">
+                <text class="n-sm-label">视黄醇当量</text>
+                <text class="n-sm-value">{{ nf(item.retinolEquivalent) }}<text class="n-sm-unit">μg</text></text>
+              </view>
+            </view>
+          </view>
+
+          <!-- Data Source -->
+          <view v-if="item.source" class="data-source-row">
+            <text class="data-source-text">📋 数据来源: {{ sourceText(item.source) }}</text>
+          </view>
+
+          <!-- Save to Record -->
+          <view class="result-actions flex">
+            <button class="btn-primary flex-1 record-btn" @tap.stop="openMealPicker(index)">
+              📝 记录到饮食
+            </button>
+            <button class="btn-outline flex-1 record-btn" @tap.stop="goToRecord(item)">
+              📋 详细记录
+            </button>
+          </view>
         </view>
-
-        <view class="divider" />
-
-        <!-- 基础营养 -->
-        <view class="nutrition-grid">
-          <view class="nutrition-card calories-card">
-            <text class="n-icon">🔥</text>
-            <text class="n-value">{{ item.calories || 0 }}</text>
-            <text class="n-unit">千卡</text>
-            <text class="n-label">热量</text>
-          </view>
-          <view class="nutrition-card">
-            <text class="n-icon">🥩</text>
-            <text class="n-value">{{ nf(item.protein) }}g</text>
-            <text class="n-label">蛋白质</text>
-          </view>
-          <view class="nutrition-card">
-            <text class="n-icon">🧈</text>
-            <text class="n-value">{{ nf(item.fat) }}g</text>
-            <text class="n-label">脂肪</text>
-          </view>
-          <view class="nutrition-card">
-            <text class="n-icon">🍚</text>
-            <text class="n-value">{{ nf(item.carbs) }}g</text>
-            <text class="n-label">碳水</text>
-          </view>
-          <view class="nutrition-card" v-if="item.fiber">
-            <text class="n-icon">🌾</text>
-            <text class="n-value">{{ nf(item.fiber) }}g</text>
-            <text class="n-label">膳食纤维</text>
-          </view>
-          <view class="nutrition-card" v-if="item.cholesterol">
-            <text class="n-icon">💧</text>
-            <text class="n-value">{{ nf(item.cholesterol) }}mg</text>
-            <text class="n-label">胆固醇</text>
-          </view>
-        </view>
-
-        <!-- 矿物质 -->
-        <view v-if="hasMinerals(item)" class="nutrition-sub-section">
-          <text class="sub-section-title">💎 矿物质</text>
-          <view class="nutrition-grid-sm">
-            <view v-if="item.calcium" class="n-item-sm">
-              <text class="n-sm-label">钙</text>
-              <text class="n-sm-value">{{ nf(item.calcium) }}<text class="n-sm-unit">mg</text></text>
-            </view>
-            <view v-if="item.iron" class="n-item-sm">
-              <text class="n-sm-label">铁</text>
-              <text class="n-sm-value">{{ nf(item.iron) }}<text class="n-sm-unit">mg</text></text>
-            </view>
-            <view v-if="item.zinc" class="n-item-sm">
-              <text class="n-sm-label">锌</text>
-              <text class="n-sm-value">{{ nf(item.zinc) }}<text class="n-sm-unit">mg</text></text>
-            </view>
-            <view v-if="item.sodium" class="n-item-sm">
-              <text class="n-sm-label">钠</text>
-              <text class="n-sm-value">{{ nf(item.sodium) }}<text class="n-sm-unit">mg</text></text>
-            </view>
-            <view v-if="item.potassium" class="n-item-sm">
-              <text class="n-sm-label">钾</text>
-              <text class="n-sm-value">{{ nf(item.potassium) }}<text class="n-sm-unit">mg</text></text>
-            </view>
-            <view v-if="item.magnesium" class="n-item-sm">
-              <text class="n-sm-label">镁</text>
-              <text class="n-sm-value">{{ nf(item.magnesium) }}<text class="n-sm-unit">mg</text></text>
-            </view>
-            <view v-if="item.phosphorus" class="n-item-sm">
-              <text class="n-sm-label">磷</text>
-              <text class="n-sm-value">{{ nf(item.phosphorus) }}<text class="n-sm-unit">mg</text></text>
-            </view>
-            <view v-if="item.selenium" class="n-item-sm">
-              <text class="n-sm-label">硒</text>
-              <text class="n-sm-value">{{ nf(item.selenium) }}<text class="n-sm-unit">μg</text></text>
-            </view>
-            <view v-if="item.copper" class="n-item-sm">
-              <text class="n-sm-label">铜</text>
-              <text class="n-sm-value">{{ nf(item.copper, 2) }}<text class="n-sm-unit">mg</text></text>
-            </view>
-            <view v-if="item.manganese" class="n-item-sm">
-              <text class="n-sm-label">锰</text>
-              <text class="n-sm-value">{{ nf(item.manganese, 2) }}<text class="n-sm-unit">mg</text></text>
-            </view>
-          </view>
-        </view>
-
-        <!-- 维生素 -->
-        <view v-if="hasVitamins(item)" class="nutrition-sub-section">
-          <text class="sub-section-title">🧪 维生素</text>
-          <view class="nutrition-grid-sm">
-            <view v-if="item.vitaminA" class="n-item-sm">
-              <text class="n-sm-label">维A</text>
-              <text class="n-sm-value">{{ nf(item.vitaminA) }}<text class="n-sm-unit">μg</text></text>
-            </view>
-            <view v-if="item.vitaminC" class="n-item-sm">
-              <text class="n-sm-label">维C</text>
-              <text class="n-sm-value">{{ nf(item.vitaminC) }}<text class="n-sm-unit">mg</text></text>
-            </view>
-            <view v-if="item.vitaminE" class="n-item-sm">
-              <text class="n-sm-label">维E</text>
-              <text class="n-sm-value">{{ nf(item.vitaminE, 2) }}<text class="n-sm-unit">mg</text></text>
-            </view>
-            <view v-if="item.carotene" class="n-item-sm">
-              <text class="n-sm-label">胡萝卜素</text>
-              <text class="n-sm-value">{{ nf(item.carotene) }}<text class="n-sm-unit">μg</text></text>
-            </view>
-            <view v-if="item.thiamine" class="n-item-sm">
-              <text class="n-sm-label">B1</text>
-              <text class="n-sm-value">{{ nf(item.thiamine, 2) }}<text class="n-sm-unit">mg</text></text>
-            </view>
-            <view v-if="item.riboflavin" class="n-item-sm">
-              <text class="n-sm-label">B2</text>
-              <text class="n-sm-value">{{ nf(item.riboflavin, 2) }}<text class="n-sm-unit">mg</text></text>
-            </view>
-            <view v-if="item.niacin" class="n-item-sm">
-              <text class="n-sm-label">B3</text>
-              <text class="n-sm-value">{{ nf(item.niacin) }}<text class="n-sm-unit">mg</text></text>
-            </view>
-            <view v-if="item.retinolEquivalent" class="n-item-sm">
-              <text class="n-sm-label">视黄醇当量</text>
-              <text class="n-sm-value">{{ nf(item.retinolEquivalent) }}<text class="n-sm-unit">μg</text></text>
-            </view>
-          </view>
-        </view>
-
-        <!-- 数据来源 -->
-        <view v-if="item.source" class="data-source-row">
-          <text class="data-source-text">📋 数据来源: {{ sourceText(item.source) }}</text>
-        </view>
-
-        <button
-          class="btn-primary record-btn-inline"
-          @tap.stop="goToRecord(item)"
-        >📝 记录到饮食</button>
       </view>
     </view>
 
@@ -246,15 +296,84 @@
         <text class="error-hint text-secondary">请尝试重新拍照或换个角度</text>
       </view>
     </view>
+
+    <!-- Recognition History -->
+    <view v-if="history.length > 0" class="history-section">
+      <view class="history-bar flex-between">
+        <text class="history-bar-title">📜 识别历史</text>
+        <view class="history-bar-right flex">
+          <text class="history-count">{{ history.length }} 条记录</text>
+          <text class="history-clear" @tap="clearHistory">清空</text>
+        </view>
+      </view>
+
+      <view
+        v-for="(item, hIdx) in history"
+        :key="item.id"
+        class="card history-card"
+      >
+        <view class="history-summary" @tap="toggleHistory(item.id)">
+          <view class="history-left flex">
+            <view
+              class="history-type-badge"
+              :class="item.type === 'text' ? 'badge-text' : 'badge-photo'"
+            >{{ item.type === 'text' ? '📝' : '📷' }}</view>
+            <view class="history-info">
+              <text class="history-query">{{ item.query }}</text>
+              <text class="history-time text-secondary">{{ formatTime(item.timestamp) }}</text>
+            </view>
+          </view>
+          <view class="history-right flex">
+            <text class="history-food-count">{{ item.foodNames.length }}种</text>
+            <text class="history-arrow">{{ expandedHistory[item.id] ? '▲' : '▼' }}</text>
+          </view>
+        </view>
+
+        <view v-show="expandedHistory[item.id]" class="history-detail">
+          <view
+            v-for="(food, fIdx) in item.foodNames"
+            :key="fIdx"
+            class="history-food-row"
+          >
+            <text class="history-food-name">{{ food }}</text>
+            <text class="history-food-cal text-secondary">
+              {{ item.foodCalories[fIdx] || 0 }}kcal
+            </text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- Meal Type Picker Modal -->
+    <view v-if="showMealPicker" class="modal-overlay" @tap="showMealPicker = false">
+      <view class="modal-content" @tap.stop>
+        <text class="modal-title">选择餐次</text>
+        <view class="meal-options">
+          <view
+            v-for="meal in mealTypes"
+            :key="meal.value"
+            class="meal-option"
+            @tap="saveToRecord(meal.value)"
+          >
+            <text class="meal-icon">{{ meal.icon }}</text>
+            <text class="meal-label">{{ meal.label }}</text>
+          </view>
+        </view>
+        <view class="modal-cancel" @tap="showMealPicker = false">
+          <text class="modal-cancel-text">取消</text>
+        </view>
+      </view>
+    </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { onLoad } from '@dcloudio/uni-app'
+import { ref, reactive } from 'vue'
+import { onLoad, onPullDownRefresh } from '@dcloudio/uni-app'
 import { foodApi } from '@/services/api'
 import { checkLogin } from '@/utils/common'
 
+// ─── Types ───────────────────────────────────────────────────────
 interface RecognitionResult {
   name: string
   confidence: number
@@ -264,7 +383,6 @@ interface RecognitionResult {
   fat?: number
   carbs?: number
   fiber?: number
-  // 矿物质
   sodium?: number
   calcium?: number
   potassium?: number
@@ -275,7 +393,6 @@ interface RecognitionResult {
   selenium?: number
   copper?: number
   manganese?: number
-  // 维生素
   vitaminA?: number
   vitaminC?: number
   vitaminE?: number
@@ -284,35 +401,73 @@ interface RecognitionResult {
   riboflavin?: number
   niacin?: number
   retinolEquivalent?: number
-  // 其他
   cholesterol?: number
   source?: string
 }
 
+interface HistoryItem {
+  id: string
+  type: 'photo' | 'text'
+  query: string
+  foodNames: string[]
+  foodCalories: number[]
+  timestamp: number
+}
+
+// ─── Constants ───────────────────────────────────────────────────
+const HISTORY_KEY = 'food_recognition_history'
+const MAX_HISTORY = 20
+
+const quickFoods = ['苹果', '香蕉', '鸡胸肉', '鸡蛋', '牛奶', '燕麦', '西兰花', '三文鱼', '米饭', '红薯']
+
+const mealTypes = [
+  { value: 'BREAKFAST', label: '早餐', icon: '🌅' },
+  { value: 'LUNCH', label: '午餐', icon: '☀️' },
+  { value: 'DINNER', label: '晚餐', icon: '🌙' },
+  { value: 'SNACK', label: '加餐', icon: '🍪' }
+]
+
+// ─── State ───────────────────────────────────────────────────────
 const mode = ref<'photo' | 'text'>('photo')
 const showDisclaimer = ref(true)
 const photoPath = ref('')
+const compressedPath = ref('')
 const foodName = ref('')
 const recognizing = ref(false)
 const results = ref<RecognitionResult[]>([])
-const selectedIndex = ref(0)
 const errorMsg = ref('')
+const history = ref<HistoryItem[]>([])
+const expandedHistory = reactive<Record<string, boolean>>({})
+const expandedSections = reactive<Record<string, boolean>>({})
+const showMealPicker = ref(false)
+const savingIndex = ref(-1)
 
+// ─── Lifecycle ───────────────────────────────────────────────────
 onLoad((options) => {
   if (!checkLogin()) return
-  if (options?.mode === 'text') {
-    mode.value = 'text'
-  }
+  if (options?.mode === 'text') mode.value = 'text'
+  loadHistory()
 })
 
+onPullDownRefresh(() => {
+  results.value = []
+  errorMsg.value = ''
+  loadHistory()
+  uni.stopPullDownRefresh()
+})
+
+// ─── Mode ────────────────────────────────────────────────────────
+function switchMode(m: 'photo' | 'text') {
+  mode.value = m
+}
+
+// ─── Image Handling ──────────────────────────────────────────────
 function takePhoto() {
   uni.chooseImage({
     count: 1,
     sourceType: ['camera'],
     sizeType: ['compressed'],
-    success: (res) => {
-      compressAndRecognize(res.tempFilePaths[0])
-    },
+    success: (res) => handleImageChosen(res.tempFilePaths[0]),
     fail: () => {}
   })
 }
@@ -322,34 +477,85 @@ function chooseFromAlbum() {
     count: 1,
     sourceType: ['album'],
     sizeType: ['compressed'],
-    success: (res) => {
-      compressAndRecognize(res.tempFilePaths[0])
-    },
+    success: (res) => handleImageChosen(res.tempFilePaths[0]),
     fail: () => {}
   })
 }
 
-function compressAndRecognize(filePath: string) {
-  // 先压缩图片再上传，减少超时风险
+function handleImageChosen(filePath: string) {
+  photoPath.value = filePath
+  compressedPath.value = ''
+  results.value = []
+  errorMsg.value = ''
+  compressImage(filePath)
+}
+
+function compressImage(filePath: string) {
+  // #ifdef H5
+  compressImageCanvas(filePath)
+  // #endif
+  // #ifndef H5
   uni.compressImage({
     src: filePath,
     quality: 60,
-    success: (compressed) => {
-      photoPath.value = compressed.tempFilePath
-      recognizePhoto(compressed.tempFilePath)
-    },
-    fail: () => {
-      // 压缩失败则用原图
-      photoPath.value = filePath
-      recognizePhoto(filePath)
-    }
+    success: (res) => { compressedPath.value = res.tempFilePath },
+    fail: () => { compressedPath.value = filePath }
   })
+  // #endif
+}
+
+function compressImageCanvas(filePath: string) {
+  try {
+    const img = new Image()
+    img.onload = () => {
+      let { width, height } = img
+      const maxWidth = 1280
+      if (width > maxWidth) {
+        height = Math.round(height * maxWidth / width)
+        width = maxWidth
+      }
+      const canvas = document.createElement('canvas')
+      canvas.width = width
+      canvas.height = height
+      const ctx = canvas.getContext('2d')
+      if (!ctx) { compressedPath.value = filePath; return }
+      ctx.drawImage(img, 0, 0, width, height)
+      canvas.toBlob(
+        (blob) => {
+          if (blob) {
+            compressedPath.value = URL.createObjectURL(blob)
+          } else {
+            compressedPath.value = filePath
+          }
+        },
+        'image/jpeg',
+        0.7
+      )
+    }
+    img.onerror = () => { compressedPath.value = filePath }
+    img.src = filePath
+  } catch {
+    compressedPath.value = filePath
+  }
+}
+
+function clearImage() {
+  photoPath.value = ''
+  compressedPath.value = ''
+  results.value = []
+  errorMsg.value = ''
+}
+
+// ─── Recognition ─────────────────────────────────────────────────
+function recognizeCurrentPhoto() {
+  const path = compressedPath.value || photoPath.value
+  if (!path) return
+  recognizePhoto(path)
 }
 
 async function recognizePhoto(filePath: string) {
   recognizing.value = true
   results.value = []
-  selectedIndex.value = 0
   errorMsg.value = ''
   try {
     const res = await foodApi.photoRecognize(filePath)
@@ -357,7 +563,11 @@ async function recognizePhoto(filePath: string) {
       results.value = parseFoodResults(res.data)
       if (results.value.length === 0) {
         errorMsg.value = '无法识别该食物，请重试'
+      } else {
+        addHistory('photo', '图片识别', results.value)
       }
+    } else if (res.code === 4001) {
+      errorMsg.value = res.message || '未能从图片中识别到食物，请换一张更清晰的照片'
     } else {
       errorMsg.value = res.message || '无法识别该食物，请重试'
     }
@@ -374,9 +584,9 @@ async function searchByName() {
     uni.showToast({ title: '请输入食物名称', icon: 'none' })
     return
   }
+  if (recognizing.value) return
   recognizing.value = true
   results.value = []
-  selectedIndex.value = 0
   errorMsg.value = ''
   try {
     const res = await foodApi.recognizeByName(name)
@@ -384,6 +594,8 @@ async function searchByName() {
       results.value = parseFoodResults(res.data)
       if (results.value.length === 0) {
         errorMsg.value = `未找到"${name}"的营养信息`
+      } else {
+        addHistory('text', name, results.value)
       }
     } else {
       errorMsg.value = res.message || `未找到"${name}"的营养信息`
@@ -395,6 +607,14 @@ async function searchByName() {
   }
 }
 
+function quickRecognize(food: string) {
+  if (recognizing.value) return
+  mode.value = 'text'
+  foodName.value = food
+  searchByName()
+}
+
+// ─── Result Parsing ──────────────────────────────────────────────
 function parseFoodResults(data: any): RecognitionResult[] {
   if (data.foods && Array.isArray(data.foods)) {
     return data.foods.map((item: any) => {
@@ -434,15 +654,51 @@ function parseFoodResults(data: any): RecognitionResult[] {
   return []
 }
 
-function formatConfidence(val: number): string {
-  if (!val) return '—'
-  return (val * 100).toFixed(1) + '%'
+// ─── Collapsible Sections ────────────────────────────────────────
+function toggleSection(index: number, type: string) {
+  const key = `${index}_${type}`
+  expandedSections[key] = !expandedSections[key]
 }
 
-function confidenceClass(val: number): string {
-  if (val >= 0.8) return 'confidence-high'
-  if (val >= 0.5) return 'confidence-mid'
-  return 'confidence-low'
+function isSectionOpen(index: number, type: string): boolean {
+  return !!expandedSections[`${index}_${type}`]
+}
+
+// ─── Save to Record ──────────────────────────────────────────────
+function openMealPicker(index: number) {
+  savingIndex.value = index
+  showMealPicker.value = true
+}
+
+async function saveToRecord(mealType: string) {
+  showMealPicker.value = false
+  const item = results.value[savingIndex.value]
+  if (!item) return
+
+  try {
+    const now = new Date()
+    const pad = (n: number) => String(n).padStart(2, '0')
+    const recordTime = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`
+
+    const res = await foodApi.createRecord({
+      mealType,
+      foodName: item.name,
+      portion: 100,
+      calories: item.calories || 0,
+      protein: item.protein || 0,
+      fat: item.fat || 0,
+      carbohydrates: item.carbs || 0,
+      recordTime
+    })
+
+    if (res.code === 200) {
+      uni.showToast({ title: `已记录「${item.name}」`, icon: 'success' })
+    } else {
+      uni.showToast({ title: res.message || '记录失败', icon: 'none' })
+    }
+  } catch (e: any) {
+    uni.showToast({ title: '记录失败，请重试', icon: 'none' })
+  }
 }
 
 function goToRecord(item: RecognitionResult) {
@@ -455,6 +711,67 @@ function goToRecord(item: RecognitionResult) {
     portion: '每100g'
   }))
   uni.navigateTo({ url: `/pages/food-records/index?prefill=${data}` })
+}
+
+// ─── History ─────────────────────────────────────────────────────
+function loadHistory() {
+  try {
+    const raw = uni.getStorageSync(HISTORY_KEY)
+    if (raw) history.value = JSON.parse(raw)
+  } catch { history.value = [] }
+}
+
+function addHistory(type: 'photo' | 'text', query: string, items: RecognitionResult[]) {
+  const entry: HistoryItem = {
+    id: Date.now().toString(),
+    type,
+    query,
+    foodNames: items.map(i => i.name),
+    foodCalories: items.map(i => i.calories || 0),
+    timestamp: Date.now()
+  }
+  history.value.unshift(entry)
+  if (history.value.length > MAX_HISTORY) {
+    history.value = history.value.slice(0, MAX_HISTORY)
+  }
+  saveHistory()
+}
+
+function saveHistory() {
+  try {
+    uni.setStorageSync(HISTORY_KEY, JSON.stringify(history.value))
+  } catch {}
+}
+
+function toggleHistory(id: string) {
+  expandedHistory[id] = !expandedHistory[id]
+}
+
+function clearHistory() {
+  uni.showModal({
+    title: '清空历史',
+    content: '确定清空所有识别历史记录？',
+    success: (res) => {
+      if (res.confirm) {
+        history.value = []
+        Object.keys(expandedHistory).forEach(k => delete expandedHistory[k])
+        saveHistory()
+        uni.showToast({ title: '已清空', icon: 'success' })
+      }
+    }
+  })
+}
+
+// ─── Utilities ───────────────────────────────────────────────────
+function formatConfidence(val: number): string {
+  if (!val) return '—'
+  return (val * 100).toFixed(0) + '%'
+}
+
+function confidenceClass(val: number): string {
+  if (val >= 0.8) return 'confidence-high'
+  if (val >= 0.5) return 'confidence-mid'
+  return 'confidence-low'
 }
 
 function nf(val: number | undefined | null, digits = 1): string {
@@ -475,22 +792,33 @@ function hasVitamins(item: RecognitionResult): boolean {
 function sourceText(source: string): string {
   const map: Record<string, string> = {
     tianapi: '天聚数行API',
-    database: '数据库',
+    database: '数据库（准确）',
     estimated: 'AI估算',
-    default: '默认值'
+    default: '默认值',
+    'baidu-calorie-only': '识别（仅卡路里）'
   }
   return map[source] || source
+}
+
+function formatTime(ts: number): string {
+  try {
+    return new Date(ts).toLocaleString('zh-CN', {
+      month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit'
+    })
+  } catch { return '' }
 }
 </script>
 
 <style lang="scss" scoped>
 .container {
   padding: 20rpx 30rpx;
-  padding-bottom: 60rpx;
+  padding-bottom: 80rpx;
   min-height: 100vh;
   background: $background;
 }
 
+/* ─── Header ──────────────────────────────────── */
 .page-header {
   padding: 20rpx 0 10rpx;
 }
@@ -507,7 +835,27 @@ function sourceText(source: string): string {
   margin-top: 8rpx;
 }
 
-/* Mode Tabs */
+.disclaimer-tip {
+  background: rgba(16, 185, 129, 0.06);
+  color: $foreground;
+  border: 1rpx solid rgba(16, 185, 129, 0.15);
+  border-radius: $radius-lg;
+  padding: 14rpx 48rpx 14rpx 20rpx;
+  font-size: 22rpx;
+  margin-bottom: 20rpx;
+  position: relative;
+}
+.disclaimer-tip .dismiss {
+  position: absolute;
+  right: 16rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 28rpx;
+  color: $muted-foreground;
+  cursor: pointer;
+}
+
+/* ─── Mode Tabs ───────────────────────────────── */
 .mode-tabs {
   background: $card;
   border: 1rpx solid $border;
@@ -524,6 +872,7 @@ function sourceText(source: string): string {
   border-radius: $radius-full;
   transition: all 0.2s;
   font-family: 'Inter', 'PingFang SC', sans-serif;
+  cursor: pointer;
 }
 .mode-tab.active {
   background: $gradient-accent;
@@ -532,7 +881,7 @@ function sourceText(source: string): string {
   box-shadow: $shadow-accent;
 }
 
-/* Photo Section */
+/* ─── Photo Section ───────────────────────────── */
 .photo-area {
   height: 400rpx;
   overflow: hidden;
@@ -540,6 +889,13 @@ function sourceText(source: string): string {
   cursor: pointer;
   border: 2rpx dashed $border;
   border-radius: $radius-2xl;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.photo-area:active {
+  border-color: $accent;
 }
 .preview-image {
   width: 100%;
@@ -547,7 +903,7 @@ function sourceText(source: string): string {
 }
 .photo-placeholder {
   flex-direction: column;
-  gap: 16rpx;
+  gap: 12rpx;
 }
 .photo-icon {
   font-size: 80rpx;
@@ -557,8 +913,34 @@ function sourceText(source: string): string {
   color: $muted-foreground;
   font-family: 'Inter', 'PingFang SC', sans-serif;
 }
+.photo-sub-hint {
+  font-size: 22rpx;
+  color: $muted-foreground;
+  opacity: 0.7;
+}
+
+.remove-image-btn {
+  position: absolute;
+  top: 16rpx;
+  right: 16rpx;
+  width: 52rpx;
+  height: 52rpx;
+  background: rgba(239, 68, 68, 0.9);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: 700;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.2);
+  z-index: 5;
+  cursor: pointer;
+}
+
 .photo-actions {
   gap: 20rpx;
+  margin-bottom: 16rpx;
 }
 .photo-actions .btn-primary,
 .photo-actions .btn-outline {
@@ -567,24 +949,78 @@ function sourceText(source: string): string {
   font-size: 28rpx;
 }
 
-/* Text Section */
+.recognize-btn {
+  margin-bottom: 16rpx;
+  height: 84rpx;
+  line-height: 84rpx;
+  font-size: 30rpx;
+}
+
+.photo-tip {
+  padding: 12rpx 20rpx;
+  font-size: 22rpx;
+  color: #e6a23c;
+}
+
+/* ─── Text Section ────────────────────────────── */
 .search-btn {
   margin-top: 20rpx;
 }
 
-/* Loading */
+/* ─── Quick Food Chips ────────────────────────── */
+.quick-section {
+  margin-top: 20rpx;
+  padding: 24rpx;
+}
+.quick-title {
+  display: block;
+  font-size: 26rpx;
+  font-weight: 700;
+  color: $foreground;
+  margin-bottom: 16rpx;
+  font-family: 'Calistoga', Georgia, 'PingFang SC', serif;
+}
+.quick-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+.quick-chip {
+  padding: 10rpx 28rpx;
+  background: rgba(16, 185, 129, 0.08);
+  color: $accent;
+  border: 1rpx solid rgba(16, 185, 129, 0.2);
+  border-radius: $radius-full;
+  font-size: 24rpx;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
+}
+.quick-chip:active {
+  background: $accent;
+  color: #fff;
+  transform: scale(0.95);
+}
+.quick-chip-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ─── Loading State ───────────────────────────── */
 .loading-section {
   padding: 60rpx 0;
+  margin-top: 20rpx;
 }
 .loading-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20rpx;
+  gap: 16rpx;
 }
 .loading-spinner {
-  width: 60rpx;
-  height: 60rpx;
+  width: 64rpx;
+  height: 64rpx;
   border: 6rpx solid $border;
   border-top-color: $accent;
   border-radius: 50%;
@@ -593,31 +1029,90 @@ function sourceText(source: string): string {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+.loading-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: $foreground;
+  font-family: 'Calistoga', Georgia, 'PingFang SC', serif;
+}
 .loading-text {
-  font-size: 28rpx;
-  color: $muted-foreground;
-  font-family: 'Inter', 'PingFang SC', sans-serif;
-}
-
-/* Result Count */
-.result-count {
-  padding: 16rpx 0;
-}
-.result-count-text {
   font-size: 26rpx;
   color: $muted-foreground;
-  font-weight: 500;
   font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
-/* Result Card */
-.result-card {
-  padding: 30rpx;
-  margin-bottom: 20rpx;
-  border: 2rpx solid transparent;
-  transition: border-color 0.2s;
+/* ─── Empty State ─────────────────────────────── */
+.empty-section {
+  margin-top: 20rpx;
+  padding: 60rpx 0;
 }
-.result-card-selected {
+.empty-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12rpx;
+}
+.empty-icon {
+  font-size: 80rpx;
+}
+.empty-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: $muted-foreground;
+  font-family: 'Calistoga', Georgia, 'PingFang SC', serif;
+}
+.empty-desc {
+  font-size: 24rpx;
+  text-align: center;
+  padding: 0 40rpx;
+}
+
+/* ─── Result Bar ──────────────────────────────── */
+.result-section {
+  margin-top: 24rpx;
+}
+.result-bar {
+  margin-bottom: 16rpx;
+  align-items: center;
+}
+.result-bar-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: $foreground;
+  font-family: 'Calistoga', Georgia, 'PingFang SC', serif;
+}
+.result-bar-count {
+  font-size: 22rpx;
+  color: $accent;
+  background: rgba(16, 185, 129, 0.1);
+  padding: 4rpx 16rpx;
+  border-radius: $radius-full;
+  font-weight: 500;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ─── Result Grid ─────────────────────────────── */
+.result-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+/* Two-column layout on wider screens */
+@media (min-width: 640px) {
+  .result-grid-multi {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20rpx;
+  }
+}
+
+/* ─── Result Card ─────────────────────────────── */
+.result-card {
+  padding: 28rpx;
+  border: 2rpx solid transparent;
+  transition: all 0.15s;
+}
+.result-card:active {
   border-color: $accent;
   box-shadow: $shadow-accent;
 }
@@ -629,9 +1124,10 @@ function sourceText(source: string): string {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12rpx;
 }
 .result-name {
-  font-size: 36rpx;
+  font-size: 34rpx;
   font-weight: 700;
   color: $foreground;
   font-family: 'Calistoga', Georgia, 'PingFang SC', serif;
@@ -640,6 +1136,8 @@ function sourceText(source: string): string {
   display: flex;
   align-items: center;
   gap: 12rpx;
+  flex: 1;
+  min-width: 0;
 }
 .category-badge {
   font-size: 20rpx;
@@ -647,6 +1145,7 @@ function sourceText(source: string): string {
   border-radius: $radius-full;
   font-weight: 500;
   font-family: 'JetBrains Mono', monospace;
+  flex-shrink: 0;
 }
 .category-dish {
   background: rgba(245, 158, 11, 0.1);
@@ -662,28 +1161,30 @@ function sourceText(source: string): string {
   margin-top: 6rpx;
 }
 
-/* Confidence Badge */
+/* ─── Confidence Badge ────────────────────────── */
 .confidence-badge {
-  font-size: 22rpx;
+  font-size: 20rpx;
   font-weight: 600;
   padding: 6rpx 16rpx;
   border-radius: $radius-full;
   flex-shrink: 0;
+  white-space: nowrap;
   font-family: 'JetBrains Mono', monospace;
 }
 .confidence-high {
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(16, 185, 129, 0.12);
   color: #10B981;
 }
 .confidence-mid {
-  background: rgba(245, 158, 11, 0.1);
+  background: rgba(245, 158, 11, 0.12);
   color: #F59E0B;
 }
 .confidence-low {
-  background: rgba(239, 68, 68, 0.1);
+  background: rgba(239, 68, 68, 0.12);
   color: #EF4444;
 }
 
+/* ─── Nutrition Grid ──────────────────────────── */
 .nutrition-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -736,6 +1237,10 @@ function sourceText(source: string): string {
   color: $foreground;
   font-family: 'Calistoga', Georgia, 'PingFang SC', serif;
 }
+.n-unit {
+  font-size: 22rpx;
+  color: $muted-foreground;
+}
 .n-label {
   display: block;
   font-size: 22rpx;
@@ -743,22 +1248,32 @@ function sourceText(source: string): string {
   margin-top: 4rpx;
 }
 
-/* Nutrition sub-sections */
+/* ─── Nutrition Sub-sections ──────────────────── */
 .nutrition-sub-section {
   margin-top: 16rpx;
 }
+.sub-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8rpx 0;
+  cursor: pointer;
+}
 .sub-section-title {
-  display: block;
   font-size: 24rpx;
   font-weight: 700;
   color: $foreground;
-  margin-bottom: 10rpx;
   font-family: 'Inter', 'PingFang SC', sans-serif;
+}
+.sub-section-arrow {
+  font-size: 20rpx;
+  color: $muted-foreground;
 }
 .nutrition-grid-sm {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 10rpx;
+  margin-top: 8rpx;
 }
 .n-item-sm {
   background: $muted;
@@ -784,6 +1299,7 @@ function sourceText(source: string): string {
   font-weight: normal;
   color: $muted-foreground;
 }
+
 .data-source-row {
   margin-top: 14rpx;
   padding-top: 10rpx;
@@ -794,14 +1310,21 @@ function sourceText(source: string): string {
   color: $muted-foreground;
 }
 
-.record-btn-inline {
+/* ─── Result Actions ──────────────────────────── */
+.result-actions {
   margin-top: 20rpx;
+  gap: 16rpx;
+}
+.record-btn {
   height: 72rpx;
   line-height: 72rpx;
-  font-size: 26rpx;
+  font-size: 24rpx;
 }
 
-/* Error */
+/* ─── Error ───────────────────────────────────── */
+.error-section {
+  margin-top: 20rpx;
+}
 .error-icon {
   font-size: 80rpx;
   margin-bottom: 16rpx;
@@ -816,21 +1339,197 @@ function sourceText(source: string): string {
   display: block;
   font-size: 24rpx;
 }
-.disclaimer-tip {
-  background: rgba(16, 185, 129, 0.06);
-  color: $foreground;
-  border: 1rpx solid rgba(16, 185, 129, 0.15);
-  border-radius: $radius-lg;
-  padding: 14rpx 48rpx 14rpx 20rpx;
-  font-size: 22rpx;
-  margin-bottom: 20rpx;
-  position: relative;
+
+/* ─── History Section ─────────────────────────── */
+.history-section {
+  margin-top: 32rpx;
 }
-.disclaimer-tip .dismiss {
-  position: absolute;
-  right: 16rpx;
-  top: 50%;
-  transform: translateY(-50%);
+.history-bar {
+  margin-bottom: 16rpx;
+  align-items: center;
+}
+.history-bar-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: $foreground;
+  font-family: 'Calistoga', Georgia, 'PingFang SC', serif;
+}
+.history-bar-right {
+  gap: 16rpx;
+  align-items: center;
+}
+.history-count {
+  font-size: 22rpx;
+  color: $muted-foreground;
+  background: $muted;
+  padding: 4rpx 14rpx;
+  border-radius: $radius-full;
+  font-family: 'JetBrains Mono', monospace;
+}
+.history-clear {
+  font-size: 22rpx;
+  color: #EF4444;
+  cursor: pointer;
+}
+
+.history-card {
+  padding: 20rpx 24rpx;
+  margin-bottom: 12rpx;
+}
+.history-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+.history-left {
+  gap: 16rpx;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+.history-type-badge {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  flex-shrink: 0;
+}
+.badge-text {
+  background: rgba(16, 185, 129, 0.1);
+}
+.badge-photo {
+  background: rgba(59, 130, 246, 0.1);
+}
+.history-info {
+  flex: 1;
+  min-width: 0;
+}
+.history-query {
+  display: block;
+  font-size: 26rpx;
+  font-weight: 500;
+  color: $foreground;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.history-time {
+  display: block;
+  font-size: 20rpx;
+  margin-top: 4rpx;
+}
+.history-right {
+  gap: 12rpx;
+  align-items: center;
+  flex-shrink: 0;
+}
+.history-food-count {
+  font-size: 22rpx;
+  color: $accent;
+  font-weight: 500;
+}
+.history-arrow {
+  font-size: 20rpx;
+  color: $muted-foreground;
+}
+
+.history-detail {
+  margin-top: 16rpx;
+  padding: 16rpx;
+  background: $muted;
+  border-radius: $radius-md;
+  border-left: 4rpx solid $accent;
+}
+.history-food-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8rpx 0;
+}
+.history-food-row + .history-food-row {
+  border-top: 1rpx solid $border;
+}
+.history-food-name {
+  font-size: 24rpx;
+  font-weight: 500;
+  color: $foreground;
+}
+.history-food-cal {
+  font-size: 22rpx;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ─── Meal Type Picker Modal ──────────────────── */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.modal-content {
+  width: 100%;
+  max-width: 750rpx;
+  background: $card;
+  border-radius: $radius-2xl $radius-2xl 0 0;
+  padding: 40rpx 30rpx;
+  padding-bottom: 60rpx;
+}
+.modal-title {
+  display: block;
+  text-align: center;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: $foreground;
+  margin-bottom: 32rpx;
+  font-family: 'Calistoga', Georgia, 'PingFang SC', serif;
+}
+.meal-options {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20rpx;
+}
+.meal-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10rpx;
+  padding: 28rpx 12rpx;
+  background: $muted;
+  border: 1rpx solid $border;
+  border-radius: $radius-xl;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.meal-option:active {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: $accent;
+  transform: scale(0.95);
+}
+.meal-icon {
+  font-size: 40rpx;
+}
+.meal-label {
+  font-size: 24rpx;
+  font-weight: 500;
+  color: $foreground;
+}
+.modal-cancel {
+  margin-top: 24rpx;
+  text-align: center;
+  padding: 20rpx;
+  cursor: pointer;
+}
+.modal-cancel-text {
   font-size: 28rpx;
   color: $muted-foreground;
 }
