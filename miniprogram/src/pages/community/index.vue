@@ -189,38 +189,38 @@ onReachBottom(() => {
 <style lang="scss" scoped>
 .community-page {
   min-height: 100vh;
-  background: $paper;
+  background: $background;
   padding-bottom: 120rpx;
 }
 
 .category-bar {
   white-space: nowrap;
-  background: $paper;
+  background: $card;
   padding: 20rpx 16rpx;
   position: sticky;
   top: 0;
   z-index: 10;
-  border-bottom: 2rpx dashed $muted;
+  border-bottom: 1rpx solid $border;
 }
 
 .category-item {
   display: inline-block;
   padding: 12rpx 28rpx;
   margin: 0 10rpx;
-  border-radius: $wobbly-sm;
+  border-radius: $radius-full;
   font-size: 26rpx;
-  color: $pencil;
-  background: #fff;
-  border: 2rpx solid $muted;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  color: $foreground;
+  background: $card;
+  border: 1rpx solid $border;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
   transition: all 0.2s;
 }
 
 .category-item.active {
   background: $accent;
-  color: #fff;
-  border-color: $pencil;
-  box-shadow: $shadow-hard-hover;
+  color: $accent-foreground;
+  border-color: $accent;
+  box-shadow: $shadow-accent;
 }
 
 .feed-list {
@@ -228,12 +228,12 @@ onReachBottom(() => {
 }
 
 .post-card {
-  background: #fff;
-  border: 2rpx solid $pencil;
-  border-radius: $wobbly-md;
+  background: $card;
+  border: 1rpx solid $border;
+  border-radius: $radius-xl;
   padding: 28rpx;
   margin-bottom: 20rpx;
-  box-shadow: $shadow-hard-sm;
+  box-shadow: $shadow-sm;
   position: relative;
 }
 
@@ -246,8 +246,8 @@ onReachBottom(() => {
 .avatar {
   width: 72rpx;
   height: 72rpx;
-  border-radius: 50%;
-  border: 2rpx solid $pencil;
+  border-radius: $radius-full;
+  border: none;
   margin-right: 16rpx;
   flex-shrink: 0;
 }
@@ -260,26 +260,27 @@ onReachBottom(() => {
 
 .nickname {
   font-size: 28rpx;
-  font-weight: 700;
-  color: $pencil;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
+  font-weight: 600;
+  color: $foreground;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .time {
   font-size: 22rpx;
-  color: rgba(45, 45, 45, 0.4);
+  color: $muted-foreground;
   margin-top: 4rpx;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .category-tag {
   font-size: 22rpx;
   color: $accent;
-  background: rgba(255, 77, 77, 0.1);
+  background: rgba(0, 82, 255, 0.06);
   padding: 6rpx 16rpx;
-  border-radius: $wobbly-sm;
-  border: 1rpx solid $accent;
+  border-radius: $radius-full;
+  border: none;
   flex-shrink: 0;
+  font-family: 'JetBrains Mono', 'PingFang SC', monospace;
 }
 
 .post-content {
@@ -288,9 +289,9 @@ onReachBottom(() => {
 
 .content-text {
   font-size: 28rpx;
-  color: $pencil;
+  color: $foreground;
   line-height: 1.6;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
@@ -308,9 +309,9 @@ onReachBottom(() => {
   position: relative;
   width: calc(33.33% - 6rpx);
   aspect-ratio: 1;
-  border-radius: $wobbly-sm;
+  border-radius: $radius-lg;
   overflow: hidden;
-  border: 2rpx solid $pencil;
+  border: none;
 }
 
 .grid-img {
@@ -324,24 +325,24 @@ onReachBottom(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(45, 45, 45, 0.55);
+  background: rgba(15, 23, 42, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
   font-size: 36rpx;
-  font-weight: bold;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  font-weight: 600;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .video-thumb {
   position: relative;
   width: 100%;
   height: 360rpx;
-  border-radius: $wobbly-sm;
+  border-radius: $radius-lg;
   overflow: hidden;
   margin-bottom: 20rpx;
-  border: 2rpx solid $pencil;
+  border: none;
 }
 
 .video-cover {
@@ -356,9 +357,9 @@ onReachBottom(() => {
   transform: translate(-50%, -50%);
   width: 80rpx;
   height: 80rpx;
-  border-radius: 50%;
-  background: rgba(45, 45, 45, 0.7);
-  border: 2rpx solid #fff;
+  border-radius: $radius-full;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
   color: #fff;
   font-size: 36rpx;
   display: flex;
@@ -370,7 +371,7 @@ onReachBottom(() => {
   display: flex;
   gap: 40rpx;
   padding-top: 16rpx;
-  border-top: 2rpx dashed $muted;
+  border-top: 1rpx solid $border;
 }
 
 .footer-item {
@@ -385,8 +386,8 @@ onReachBottom(() => {
 
 .footer-item .count {
   font-size: 24rpx;
-  color: rgba(45, 45, 45, 0.5);
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  color: $muted-foreground;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .empty-state {
@@ -404,8 +405,8 @@ onReachBottom(() => {
 
 .empty-text {
   font-size: 28rpx;
-  color: rgba(45, 45, 45, 0.6);
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  color: $muted-foreground;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .loading-more,
@@ -413,8 +414,8 @@ onReachBottom(() => {
   text-align: center;
   padding: 30rpx;
   font-size: 24rpx;
-  color: rgba(45, 45, 45, 0.5);
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  color: $muted-foreground;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .fab-btn {
@@ -423,38 +424,36 @@ onReachBottom(() => {
   bottom: 160rpx;
   width: 100rpx;
   height: 100rpx;
-  border-radius: $wobbly;
-  background: $accent;
-  border: 3rpx solid $pencil;
+  border-radius: $radius-full;
+  background: $gradient-accent;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: $shadow-hard;
+  box-shadow: $shadow-accent;
   z-index: 100;
+  transition: transform 0.15s ease;
 }
 .fab-btn:active {
-  box-shadow: none;
-  transform: translate(4rpx, 4rpx);
+  transform: scale(0.95);
 }
 
 .fab-icon {
   font-size: 52rpx;
   color: #fff;
   line-height: 1;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .disclaimer-tip {
-  background: $sticky;
-  color: $pencil;
-  border: 2rpx solid $pencil;
-  border-radius: $wobbly-sm;
+  background: $muted;
+  color: $foreground;
+  border: 1rpx solid $border;
+  border-radius: $radius-lg;
   padding: 14rpx 48rpx 14rpx 20rpx;
   font-size: 22rpx;
   margin: 16rpx 20rpx;
   position: relative;
-  box-shadow: $shadow-hard-sm;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .disclaimer-tip .dismiss {
@@ -463,6 +462,6 @@ onReachBottom(() => {
   top: 50%;
   transform: translateY(-50%);
   font-size: 28rpx;
-  color: $pencil;
+  color: $muted-foreground;
 }
 </style>

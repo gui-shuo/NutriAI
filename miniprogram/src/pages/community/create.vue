@@ -241,70 +241,69 @@ async function handlePublish() {
 <style lang="scss" scoped>
 .create-page {
   min-height: 100vh;
-  background: $paper;
+  background: $background;
 }
 
 .page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #fff;
+  background: $card;
   padding: 24rpx 28rpx;
   position: sticky;
   top: 0;
   z-index: 10;
-  border-bottom: 2rpx solid $pencil;
+  border-bottom: 1rpx solid $border;
 }
 
 .cancel-btn {
   font-size: 28rpx;
-  color: $pencil;
+  color: $muted-foreground;
   padding: 8rpx 16rpx;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .page-title {
   font-size: 32rpx;
-  font-weight: 700;
-  color: $pencil;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
+  font-weight: 600;
+  color: $foreground;
+  font-family: 'Calistoga', 'PingFang SC', sans-serif;
 }
 
 .publish-btn {
   font-size: 28rpx;
-  color: #fff;
+  color: $accent-foreground;
   background: $accent;
   padding: 12rpx 32rpx;
-  border-radius: $wobbly-sm;
-  border: 2rpx solid $pencil;
-  box-shadow: $shadow-hard-hover;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  border-radius: $radius-full;
+  border: none;
+  box-shadow: $shadow-accent;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
+  transition: transform 0.15s ease;
 }
 .publish-btn:active {
-  box-shadow: none;
-  transform: translate(2rpx, 2rpx);
+  transform: scale(0.97);
 }
 
 .publish-btn.disabled {
   background: $muted;
-  color: rgba(45, 45, 45, 0.4);
-  border-color: $muted;
+  color: $muted-foreground;
   box-shadow: none;
 }
 
 .section {
-  background: #fff;
+  background: $card;
   margin-top: 16rpx;
   padding: 28rpx;
-  border-top: 2rpx dashed $muted;
+  border-top: 1rpx solid $border;
 }
 
 .section-label {
   font-size: 28rpx;
-  font-weight: 700;
-  color: $pencil;
+  font-weight: 600;
+  color: $foreground;
   margin-bottom: 20rpx;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
+  font-family: 'Calistoga', 'PingFang SC', sans-serif;
 }
 
 .category-grid {
@@ -315,48 +314,48 @@ async function handlePublish() {
 
 .category-chip {
   padding: 14rpx 24rpx;
-  border-radius: $wobbly-sm;
+  border-radius: $radius-full;
   font-size: 26rpx;
-  color: $pencil;
-  background: #fff;
-  border: 2rpx solid $muted;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  color: $foreground;
+  background: $card;
+  border: 1rpx solid $border;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
   transition: all 0.2s;
 }
 
 .category-chip.active {
   background: $accent;
-  color: #fff;
-  border-color: $pencil;
-  box-shadow: $shadow-hard-hover;
+  color: $accent-foreground;
+  border-color: $accent;
+  box-shadow: $shadow-accent;
 }
 
 .textarea-wrapper {
   position: relative;
-  border: 2rpx solid $pencil;
-  border-radius: $wobbly-sm;
+  border: 1rpx solid $border;
+  border-radius: $radius-lg;
   padding: 20rpx;
-  background: $paper;
+  background: $muted;
 }
 
 .content-textarea {
   width: 100%;
   font-size: 30rpx;
-  color: $pencil;
+  color: $foreground;
   line-height: 1.6;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .char-count {
   text-align: right;
   font-size: 22rpx;
-  color: rgba(45, 45, 45, 0.4);
+  color: $muted-foreground;
   margin-top: 12rpx;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .char-count.warn {
-  color: $accent;
+  color: $uni-error;
 }
 
 .media-toggle {
@@ -368,19 +367,19 @@ async function handlePublish() {
   flex: 1;
   text-align: center;
   padding: 20rpx;
-  border-radius: $wobbly-sm;
+  border-radius: $radius-lg;
   font-size: 28rpx;
-  color: $pencil;
-  background: $paper;
-  border: 2rpx solid $muted;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  color: $foreground;
+  background: $muted;
+  border: 1rpx solid $border;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
+  transition: all 0.2s;
 }
 
 .toggle-btn.active {
-  background: rgba(255, 77, 77, 0.08);
+  background: rgba(0, 82, 255, 0.06);
   color: $accent;
-  border: 2rpx solid $accent;
-  box-shadow: $shadow-hard-hover;
+  border: 1rpx solid $accent;
 }
 
 .image-upload-grid {
@@ -393,9 +392,9 @@ async function handlePublish() {
   position: relative;
   width: calc(33.33% - 8rpx);
   aspect-ratio: 1;
-  border-radius: $wobbly-sm;
+  border-radius: $radius-lg;
   overflow: hidden;
-  border: 2rpx solid $pencil;
+  border: none;
 }
 
 .upload-img {
@@ -409,7 +408,7 @@ async function handlePublish() {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(45, 45, 45, 0.55);
+  background: rgba(15, 23, 42, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -418,7 +417,7 @@ async function handlePublish() {
 .uploading-text {
   color: #fff;
   font-size: 24rpx;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .remove-btn {
@@ -427,9 +426,9 @@ async function handlePublish() {
   right: 6rpx;
   width: 40rpx;
   height: 40rpx;
-  border-radius: 50%;
-  background: $accent;
-  border: 2rpx solid $pencil;
+  border-radius: $radius-full;
+  background: $uni-error;
+  border: none;
   color: #fff;
   font-size: 24rpx;
   display: flex;
@@ -440,25 +439,25 @@ async function handlePublish() {
 .add-btn {
   width: calc(33.33% - 8rpx);
   aspect-ratio: 1;
-  border: 3rpx dashed $pencil;
-  border-radius: $wobbly-sm;
+  border: 2rpx dashed $border;
+  border-radius: $radius-lg;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 8rpx;
-  background: $paper;
+  background: $muted;
 }
 
 .add-icon {
   font-size: 48rpx;
-  color: $pencil;
+  color: $muted-foreground;
 }
 
 .add-text {
   font-size: 22rpx;
-  color: rgba(45, 45, 45, 0.5);
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  color: $muted-foreground;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .video-upload-area {
@@ -468,14 +467,14 @@ async function handlePublish() {
 .add-video-btn {
   width: 200rpx;
   height: 200rpx;
-  border: 3rpx dashed $pencil;
-  border-radius: $wobbly-sm;
+  border: 2rpx dashed $border;
+  border-radius: $radius-lg;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 12rpx;
-  background: $paper;
+  background: $muted;
 }
 
 .video-preview {
@@ -485,15 +484,15 @@ async function handlePublish() {
 .preview-video {
   width: 100%;
   height: 400rpx;
-  border-radius: $wobbly-sm;
-  border: 2rpx solid $pencil;
+  border-radius: $radius-lg;
+  border: none;
 }
 
 .remove-video {
   text-align: center;
   margin-top: 16rpx;
   font-size: 26rpx;
-  color: $accent;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  color: $uni-error;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 </style>

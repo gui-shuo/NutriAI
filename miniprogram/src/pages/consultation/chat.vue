@@ -280,7 +280,7 @@ function goBack() {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: $paper;
+  background: $background;
 }
 
 .chat-header {
@@ -289,16 +289,16 @@ function goBack() {
   justify-content: space-between;
   padding: 0 24rpx;
   height: 88rpx;
-  background: #fff;
-  border-bottom: 2rpx solid $pencil;
+  background: $card;
+  border-bottom: 1rpx solid $border;
   flex-shrink: 0;
 }
 
 .header-back {
   font-size: 28rpx;
-  color: $ink;
+  color: $accent;
   padding: 10rpx;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .header-title {
@@ -309,28 +309,28 @@ function goBack() {
 
 .title-text {
   font-size: 30rpx;
-  font-weight: 700;
-  color: $pencil;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
+  font-weight: 600;
+  color: $foreground;
+  font-family: 'Calistoga', 'PingFang SC', sans-serif;
 }
 
 .status-tag {
   font-size: 20rpx;
   padding: 4rpx 12rpx;
-  border-radius: $wobbly-sm;
-  border: 1rpx solid;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  border-radius: $radius-full;
+  border: none;
+  font-family: 'JetBrains Mono', 'PingFang SC', monospace;
 }
-.status-tag.active { background: rgba(76, 175, 80, 0.1); color: #4caf50; border-color: #4caf50; }
-.status-tag.pending { background: $sticky; color: #ff9800; border-color: #ff9800; }
-.status-tag.done { background: $muted; color: rgba(45, 45, 45, 0.5); border-color: $muted; }
-.status-tag.cancelled { background: rgba(255, 77, 77, 0.1); color: $accent; border-color: $accent; }
+.status-tag.active { background: rgba(16, 185, 129, 0.1); color: $uni-success; }
+.status-tag.pending { background: rgba(245, 158, 11, 0.1); color: $uni-warning; }
+.status-tag.done { background: $muted; color: $muted-foreground; }
+.status-tag.cancelled { background: rgba(239, 68, 68, 0.1); color: $uni-error; }
 
 .header-action {
   font-size: 26rpx;
-  color: $accent;
+  color: $uni-error;
   padding: 10rpx;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .chat-body {
@@ -339,29 +339,27 @@ function goBack() {
 }
 
 .desc-card {
-  background: $sticky;
-  border: 2rpx solid $pencil;
-  border-radius: $wobbly-sm;
+  background: $muted;
+  border: 1rpx solid $border;
+  border-radius: $radius-lg;
   padding: 20rpx;
   margin-bottom: 20rpx;
-  box-shadow: $shadow-hard-sm;
-  transform: rotate(-0.5deg);
 }
 
 .desc-label {
   font-size: 22rpx;
-  color: rgba(45, 45, 45, 0.5);
+  color: $muted-foreground;
   display: block;
   margin-bottom: 8rpx;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
-  font-weight: 700;
+  font-family: 'Calistoga', 'PingFang SC', sans-serif;
+  font-weight: 600;
 }
 
 .desc-content {
   font-size: 26rpx;
-  color: $pencil;
+  color: $foreground;
   line-height: 1.6;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .message-item {
@@ -380,28 +378,29 @@ function goBack() {
 .msg-bubble {
   max-width: 70%;
   padding: 16rpx 24rpx;
-  border: 2rpx solid $pencil;
+  border: none;
 }
 
 .msg-right .msg-bubble {
-  background: $ink;
-  color: #fff;
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-  box-shadow: $shadow-hard-hover;
+  background: $accent;
+  color: $accent-foreground;
+  border-radius: $radius-xl $radius-xl 4rpx $radius-xl;
+  box-shadow: $shadow-accent;
 }
 
 .msg-left .msg-bubble {
-  background: #fff;
-  color: $pencil;
-  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px;
-  box-shadow: $shadow-hard-sm;
+  background: $card;
+  color: $foreground;
+  border-radius: $radius-xl $radius-xl $radius-xl 4rpx;
+  box-shadow: $shadow-sm;
+  border: 1rpx solid $border;
 }
 
 .msg-text {
   font-size: 28rpx;
   line-height: 1.6;
   word-break: break-word;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .msg-time {
@@ -409,11 +408,11 @@ function goBack() {
   font-size: 20rpx;
   margin-top: 6rpx;
   text-align: right;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .msg-right .msg-time { color: rgba(255, 255, 255, 0.7); }
-.msg-left .msg-time { color: rgba(45, 45, 45, 0.4); }
+.msg-left .msg-time { color: $muted-foreground; }
 
 .im-status {
   display: flex;
@@ -425,13 +424,13 @@ function goBack() {
 
 .im-dot {
   font-size: 16rpx;
-  color: #4caf50;
+  color: $uni-success;
 }
 
 .im-text {
   font-size: 20rpx;
-  color: rgba(45, 45, 45, 0.4);
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  color: $muted-foreground;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .chat-input-area {
@@ -440,39 +439,39 @@ function goBack() {
   gap: 12rpx;
   padding: 16rpx 20rpx;
   padding-bottom: calc(16rpx + env(safe-area-inset-bottom));
-  background: #fff;
-  border-top: 2rpx solid $pencil;
+  background: $card;
+  border-top: 1rpx solid $border;
   flex-shrink: 0;
 }
 
 .chat-input {
   flex: 1;
   height: 72rpx;
-  background: $paper;
-  border: 2rpx solid $pencil;
-  border-radius: $wobbly-sm;
+  background: $muted;
+  border: 1rpx solid $border;
+  border-radius: $radius-lg;
   padding: 0 24rpx;
   font-size: 28rpx;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
-  color: $pencil;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
+  color: $foreground;
 }
 
 .send-btn {
   padding: 0 32rpx;
   height: 72rpx;
   line-height: 72rpx;
-  border-radius: $wobbly-sm;
+  border-radius: $radius-lg;
   font-size: 28rpx;
   background: $accent;
-  color: #fff;
-  border: 2rpx solid $pencil;
-  box-shadow: $shadow-hard-hover;
+  color: $accent-foreground;
+  border: none;
+  box-shadow: $shadow-accent;
   flex-shrink: 0;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
+  transition: transform 0.15s ease;
 }
 .send-btn:active {
-  box-shadow: none;
-  transform: translate(2rpx, 2rpx);
+  transform: scale(0.97);
 }
 
 .send-btn.disabled {
@@ -484,18 +483,18 @@ function goBack() {
   text-align: center;
   padding: 24rpx;
   padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
-  background: #fff;
+  background: $card;
   font-size: 28rpx;
-  color: rgba(45, 45, 45, 0.5);
-  border-top: 2rpx dashed $muted;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  color: $muted-foreground;
+  border-top: 1rpx solid $border;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 /* Rating Modal */
 .modal-mask {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(45, 45, 45, 0.5);
+  background: rgba(15, 23, 42, 0.5);
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -504,20 +503,20 @@ function goBack() {
 
 .modal-content {
   width: 80%;
-  background: $paper;
-  border: 3rpx solid $pencil;
-  border-radius: $wobbly;
+  background: $card;
+  border: none;
+  border-radius: $radius-2xl;
   padding: 32rpx;
-  box-shadow: $shadow-hard;
+  box-shadow: $shadow-lg;
 }
 
 .modal-title {
   font-size: 32rpx;
-  font-weight: 700;
+  font-weight: 600;
   text-align: center;
   margin-bottom: 24rpx;
-  color: $pencil;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
+  color: $foreground;
+  font-family: 'Calistoga', 'PingFang SC', sans-serif;
 }
 
 .rating-row {
@@ -529,24 +528,24 @@ function goBack() {
 
 .star {
   font-size: 48rpx;
-  color: $muted;
+  color: $border;
 }
 
 .star.active {
-  color: #ff9800;
+  color: $uni-warning;
 }
 
 .review-input {
   width: 100%;
   height: 80rpx;
-  background: #fff;
-  border: 2rpx solid $pencil;
-  border-radius: $wobbly-sm;
+  background: $muted;
+  border: 1rpx solid $border;
+  border-radius: $radius-lg;
   padding: 0 20rpx;
   font-size: 26rpx;
   margin-bottom: 24rpx;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
-  color: $pencil;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
+  color: $foreground;
 }
 
 .modal-actions {
@@ -558,24 +557,24 @@ function goBack() {
   flex: 1;
   text-align: center;
   padding: 20rpx;
-  border-radius: $wobbly-sm;
+  border-radius: $radius-lg;
   font-size: 28rpx;
-  border: 2rpx solid $pencil;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  border: none;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
+  transition: transform 0.15s ease;
 }
 
 .modal-btn.cancel {
-  background: #fff;
-  color: $pencil;
+  background: $muted;
+  color: $foreground;
 }
 
 .modal-btn.confirm {
   background: $accent;
-  color: #fff;
-  box-shadow: $shadow-hard-hover;
+  color: $accent-foreground;
+  box-shadow: $shadow-accent;
 }
 .modal-btn.confirm:active {
-  box-shadow: none;
-  transform: translate(2rpx, 2rpx);
+  transform: scale(0.97);
 }
 </style>

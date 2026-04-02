@@ -366,16 +366,16 @@ onShow(() => {
 <style lang="scss" scoped>
 .consultation-page {
   min-height: 100vh;
-  background: $paper;
+  background: $background;
 }
 
 .tab-bar {
   display: flex;
-  background: #fff;
+  background: $card;
   position: sticky;
   top: 0;
   z-index: 10;
-  border-bottom: 2rpx solid $pencil;
+  border-bottom: 1rpx solid $border;
 }
 
 .tab-item {
@@ -383,15 +383,15 @@ onShow(() => {
   text-align: center;
   padding: 28rpx 0;
   font-size: 28rpx;
-  color: rgba(45, 45, 45, 0.5);
+  color: $muted-foreground;
   position: relative;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .tab-item.active {
   color: $accent;
-  font-weight: 700;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
+  font-weight: 600;
+  font-family: 'Calistoga', 'PingFang SC', sans-serif;
 }
 
 .tab-item.active::after {
@@ -399,7 +399,7 @@ onShow(() => {
   position: absolute;
   bottom: 0;
   left: 50%;
-  transform: translateX(-50%) rotate(-1deg);
+  transform: translateX(-50%);
   width: 60rpx;
   height: 6rpx;
   background: $accent;
@@ -410,25 +410,25 @@ onShow(() => {
   display: flex;
   gap: 16rpx;
   padding: 20rpx 28rpx;
-  background: #fff;
-  border-top: 2rpx dashed $muted;
+  background: $card;
+  border-top: 1rpx solid $border;
 }
 
 .filter-item {
   padding: 10rpx 28rpx;
-  border-radius: $wobbly-sm;
+  border-radius: $radius-full;
   font-size: 26rpx;
-  color: $pencil;
-  background: #fff;
-  border: 2rpx solid $muted;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  color: $foreground;
+  background: $card;
+  border: 1rpx solid $border;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .filter-item.active {
   background: $accent;
-  color: #fff;
-  border-color: $pencil;
-  box-shadow: $shadow-hard-hover;
+  color: $accent-foreground;
+  border-color: $accent;
+  box-shadow: $shadow-accent;
 }
 
 .nutritionist-list {
@@ -436,12 +436,12 @@ onShow(() => {
 }
 
 .nutritionist-card {
-  background: #fff;
-  border: 2rpx solid $pencil;
-  border-radius: $wobbly-md;
+  background: $card;
+  border: 1rpx solid $border;
+  border-radius: $radius-xl;
   padding: 28rpx;
   margin-bottom: 20rpx;
-  box-shadow: $shadow-hard-sm;
+  box-shadow: $shadow-sm;
   position: relative;
 }
 
@@ -459,8 +459,8 @@ onShow(() => {
 .card-avatar {
   width: 100rpx;
   height: 100rpx;
-  border-radius: 50%;
-  border: 2rpx solid $pencil;
+  border-radius: $radius-full;
+  border: none;
 }
 
 .online-dot {
@@ -469,9 +469,9 @@ onShow(() => {
   right: 4rpx;
   width: 20rpx;
   height: 20rpx;
-  border-radius: 50%;
-  background: #4caf50;
-  border: 3rpx solid #fff;
+  border-radius: $radius-full;
+  background: $uni-success;
+  border: 3rpx solid $card;
 }
 
 .card-info {
@@ -488,29 +488,29 @@ onShow(() => {
 
 .card-name {
   font-size: 30rpx;
-  font-weight: 700;
-  color: $pencil;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
+  font-weight: 600;
+  color: $foreground;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .card-title {
   font-size: 22rpx;
-  color: $ink;
-  background: rgba(45, 93, 161, 0.1);
+  color: $accent;
+  background: rgba(0, 82, 255, 0.06);
   padding: 4rpx 12rpx;
-  border-radius: $wobbly-sm;
-  border: 1rpx solid $ink;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  border-radius: $radius-full;
+  border: none;
+  font-family: 'JetBrains Mono', 'PingFang SC', monospace;
 }
 
 .card-specialty {
   font-size: 24rpx;
-  color: rgba(45, 45, 45, 0.6);
+  color: $muted-foreground;
   margin-bottom: 12rpx;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .card-stats {
@@ -531,15 +531,15 @@ onShow(() => {
 
 .rating-num {
   font-size: 24rpx;
-  color: #ff9800;
+  color: $uni-warning;
   font-weight: 600;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .consult-count {
   font-size: 22rpx;
-  color: rgba(45, 45, 45, 0.5);
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  color: $muted-foreground;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .card-bottom {
@@ -547,29 +547,29 @@ onShow(() => {
   align-items: center;
   justify-content: space-between;
   padding-top: 20rpx;
-  border-top: 2rpx dashed $muted;
+  border-top: 1rpx solid $border;
 }
 
 .price {
   font-size: 30rpx;
   color: $accent;
-  font-weight: 700;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
+  font-weight: 600;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .book-btn {
   padding: 14rpx 36rpx;
-  border-radius: $wobbly-sm;
+  border-radius: $radius-full;
   font-size: 26rpx;
   background: $accent;
-  color: #fff;
-  border: 2rpx solid $pencil;
-  box-shadow: $shadow-hard-hover;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  color: $accent-foreground;
+  border: none;
+  box-shadow: $shadow-accent;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
+  transition: transform 0.15s ease;
 }
 .book-btn:active {
-  box-shadow: none;
-  transform: translate(2rpx, 2rpx);
+  transform: scale(0.97);
 }
 
 /* Orders */
@@ -578,12 +578,12 @@ onShow(() => {
 }
 
 .order-card {
-  background: #fff;
-  border: 2rpx solid $pencil;
-  border-radius: $wobbly-md;
+  background: $card;
+  border: 1rpx solid $border;
+  border-radius: $radius-xl;
   padding: 28rpx;
   margin-bottom: 20rpx;
-  box-shadow: $shadow-hard-sm;
+  box-shadow: $shadow-sm;
 }
 
 .order-header {
@@ -595,22 +595,22 @@ onShow(() => {
 
 .order-no {
   font-size: 24rpx;
-  color: rgba(45, 45, 45, 0.4);
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  color: $muted-foreground;
+  font-family: 'JetBrains Mono', 'PingFang SC', monospace;
 }
 
 .status-badge {
   font-size: 22rpx;
   padding: 6rpx 16rpx;
-  border-radius: $wobbly-sm;
-  border: 1rpx solid;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  border-radius: $radius-full;
+  border: none;
+  font-family: 'JetBrains Mono', 'PingFang SC', monospace;
 }
 
-.status-badge.pending { background: $sticky; color: #ff9800; border-color: #ff9800; }
-.status-badge.active { background: rgba(76, 175, 80, 0.1); color: #4caf50; border-color: #4caf50; }
-.status-badge.completed { background: $muted; color: rgba(45, 45, 45, 0.5); border-color: $muted; }
-.status-badge.cancelled { background: rgba(255, 77, 77, 0.1); color: $accent; border-color: $accent; }
+.status-badge.pending { background: rgba(245, 158, 11, 0.1); color: $uni-warning; }
+.status-badge.active { background: rgba(16, 185, 129, 0.1); color: $uni-success; }
+.status-badge.completed { background: $muted; color: $muted-foreground; }
+.status-badge.cancelled { background: rgba(239, 68, 68, 0.1); color: $uni-error; }
 
 .order-body {
   margin-bottom: 16rpx;
@@ -619,47 +619,47 @@ onShow(() => {
 .order-info-row {
   display: flex;
   font-size: 26rpx;
-  color: $pencil;
+  color: $foreground;
   margin-bottom: 8rpx;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .order-info-row .label {
-  color: rgba(45, 45, 45, 0.5);
+  color: $muted-foreground;
   flex-shrink: 0;
 }
 
 .price-text {
   color: $accent;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .order-actions {
   padding-top: 16rpx;
-  border-top: 2rpx dashed $muted;
+  border-top: 1rpx solid $border;
 }
 
 .chat-btn {
   text-align: center;
   padding: 16rpx;
   font-size: 28rpx;
-  color: $ink;
-  background: rgba(45, 93, 161, 0.08);
-  border: 2rpx solid $ink;
-  border-radius: $wobbly-sm;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
-  box-shadow: $shadow-hard-hover;
+  color: $accent-foreground;
+  background: $gradient-accent;
+  border: none;
+  border-radius: $radius-lg;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
+  box-shadow: $shadow-accent;
+  transition: transform 0.15s ease;
 }
 .chat-btn:active {
-  box-shadow: none;
-  transform: translate(2rpx, 2rpx);
+  transform: scale(0.98);
 }
 
 /* Chat Area */
 .chat-area {
   margin-top: 16rpx;
-  border: 2rpx solid $pencil;
-  border-radius: $wobbly-sm;
+  border: 1rpx solid $border;
+  border-radius: $radius-lg;
   overflow: hidden;
 }
 
@@ -667,7 +667,7 @@ onShow(() => {
   max-height: 500rpx;
   overflow-y: auto;
   padding: 16rpx;
-  background: $paper;
+  background: $background;
 }
 
 .message-item {
@@ -683,97 +683,96 @@ onShow(() => {
 .msg-content {
   display: inline-block;
   padding: 16rpx 24rpx;
-  border-radius: $wobbly-sm;
+  border-radius: $radius-lg;
   font-size: 26rpx;
-  background: #fff;
-  color: $pencil;
-  border: 2rpx solid $muted;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  background: $card;
+  color: $foreground;
+  border: 1rpx solid $border;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .user-msg .msg-content {
-  background: $ink;
-  color: #fff;
-  border-color: $pencil;
+  background: $accent;
+  color: $accent-foreground;
+  border-color: $accent;
 }
 
 .msg-time {
   display: block;
   font-size: 20rpx;
-  color: rgba(45, 45, 45, 0.4);
+  color: $muted-foreground;
   margin-top: 4rpx;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .empty-msg {
   text-align: center;
   padding: 40rpx;
   font-size: 24rpx;
-  color: rgba(45, 45, 45, 0.4);
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  color: $muted-foreground;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .chat-input-row {
   display: flex;
   padding: 12rpx;
   gap: 12rpx;
-  background: #fff;
-  border-top: 2rpx dashed $muted;
+  background: $card;
+  border-top: 1rpx solid $border;
 }
 
 .chat-input {
   flex: 1;
   height: 64rpx;
-  background: $paper;
-  border: 2rpx solid $pencil;
-  border-radius: $wobbly-sm;
+  background: $muted;
+  border: 1rpx solid $border;
+  border-radius: $radius-lg;
   padding: 0 24rpx;
   font-size: 26rpx;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
-  color: $pencil;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
+  color: $foreground;
 }
 
 .chat-send-btn {
   padding: 0 24rpx;
   height: 64rpx;
   line-height: 64rpx;
-  border-radius: $wobbly-sm;
+  border-radius: $radius-lg;
   font-size: 26rpx;
   background: $accent;
-  color: #fff;
-  border: 2rpx solid $pencil;
+  color: $accent-foreground;
+  border: none;
   flex-shrink: 0;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
-  box-shadow: $shadow-hard-hover;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
+  box-shadow: $shadow-accent;
+  transition: transform 0.15s ease;
 }
 .chat-send-btn:active {
-  box-shadow: none;
-  transform: translate(2rpx, 2rpx);
+  transform: scale(0.97);
 }
 
 .order-summary {
   margin-top: 16rpx;
   padding: 16rpx;
-  background: $sticky;
-  border: 2rpx solid $pencil;
-  border-radius: $wobbly-sm;
-  box-shadow: $shadow-hard-sm;
+  background: $muted;
+  border: 1rpx solid $border;
+  border-radius: $radius-lg;
 }
 
 .summary-label {
   font-size: 24rpx;
-  color: rgba(45, 45, 45, 0.5);
+  color: $muted-foreground;
   margin-bottom: 8rpx;
   display: block;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
-  font-weight: 700;
+  font-family: 'Calistoga', 'PingFang SC', sans-serif;
+  font-weight: 600;
 }
 
 .summary-text {
   font-size: 26rpx;
-  color: $pencil;
+  color: $foreground;
   line-height: 1.6;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 /* Modal */
@@ -783,7 +782,7 @@ onShow(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(45, 45, 45, 0.5);
+  background: rgba(15, 23, 42, 0.5);
   z-index: 1000;
   display: flex;
   align-items: flex-end;
@@ -792,9 +791,9 @@ onShow(() => {
 .modal-content {
   width: 100%;
   max-height: 80vh;
-  background: $paper;
-  border-top: 3rpx solid $pencil;
-  border-radius: 24rpx 24rpx 0 0;
+  background: $card;
+  border: none;
+  border-radius: $radius-2xl $radius-2xl 0 0;
   display: flex;
   flex-direction: column;
 }
@@ -804,19 +803,19 @@ onShow(() => {
   align-items: center;
   justify-content: space-between;
   padding: 28rpx;
-  border-bottom: 2rpx dashed $muted;
+  border-bottom: 1rpx solid $border;
 }
 
 .modal-title {
   font-size: 32rpx;
-  font-weight: 700;
-  color: $pencil;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
+  font-weight: 600;
+  color: $foreground;
+  font-family: 'Calistoga', 'PingFang SC', sans-serif;
 }
 
 .modal-close {
   font-size: 36rpx;
-  color: $pencil;
+  color: $muted-foreground;
   padding: 8rpx;
 }
 
@@ -835,8 +834,8 @@ onShow(() => {
 .detail-avatar {
   width: 120rpx;
   height: 120rpx;
-  border-radius: 50%;
-  border: 2rpx solid $pencil;
+  border-radius: $radius-full;
+  border: none;
   margin-right: 24rpx;
 }
 
@@ -846,46 +845,46 @@ onShow(() => {
 
 .detail-name {
   font-size: 32rpx;
-  font-weight: 700;
-  color: $pencil;
+  font-weight: 600;
+  color: $foreground;
   display: block;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .detail-title {
   font-size: 24rpx;
-  color: $ink;
+  color: $accent;
   display: block;
   margin-top: 4rpx;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .detail-rating {
   font-size: 24rpx;
-  color: #ff9800;
+  color: $uni-warning;
   margin-top: 8rpx;
 }
 
 .detail-section {
   margin-bottom: 24rpx;
   padding-bottom: 20rpx;
-  border-bottom: 2rpx dashed $muted;
+  border-bottom: 1rpx solid $border;
 }
 
 .detail-label {
   font-size: 26rpx;
-  font-weight: 700;
-  color: $pencil;
+  font-weight: 600;
+  color: $foreground;
   margin-bottom: 12rpx;
   display: block;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
+  font-family: 'Calistoga', 'PingFang SC', sans-serif;
 }
 
 .detail-text {
   font-size: 26rpx;
-  color: rgba(45, 45, 45, 0.7);
+  color: $muted-foreground;
   line-height: 1.6;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .slot-grid {
@@ -896,55 +895,55 @@ onShow(() => {
 
 .time-slot {
   padding: 12rpx 24rpx;
-  border: 2rpx solid $muted;
-  border-radius: $wobbly-sm;
+  border: 1rpx solid $border;
+  border-radius: $radius-lg;
   font-size: 24rpx;
-  color: $pencil;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  color: $foreground;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
+  transition: all 0.2s;
 }
 
 .time-slot.active {
   border-color: $accent;
   color: $accent;
-  background: rgba(255, 77, 77, 0.05);
-  box-shadow: $shadow-hard-hover;
+  background: rgba(0, 82, 255, 0.06);
 }
 
 .detail-price {
   font-size: 28rpx;
-  color: $pencil;
+  color: $foreground;
   margin-top: 24rpx;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .price-value {
   color: $accent;
   font-size: 36rpx;
-  font-weight: 700;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
+  font-weight: 600;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .modal-footer {
   padding: 20rpx 28rpx;
   padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
-  border-top: 2rpx dashed $muted;
+  border-top: 1rpx solid $border;
 }
 
 .confirm-btn {
   text-align: center;
   padding: 24rpx;
-  background: $accent;
-  color: #fff;
+  background: $gradient-accent;
+  color: $accent-foreground;
   font-size: 30rpx;
-  font-weight: 700;
-  border: 3rpx solid $pencil;
-  border-radius: $wobbly;
-  box-shadow: $shadow-hard;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  font-weight: 600;
+  border: none;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-accent;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
+  transition: transform 0.15s ease;
 }
 .confirm-btn:active {
-  box-shadow: none;
-  transform: translate(4rpx, 4rpx);
+  transform: scale(0.98);
 }
 
 /* Common */
@@ -962,29 +961,28 @@ onShow(() => {
 
 .empty-text {
   font-size: 28rpx;
-  color: rgba(45, 45, 45, 0.6);
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  color: $muted-foreground;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .loading-state {
   text-align: center;
   padding: 60rpx;
   font-size: 28rpx;
-  color: rgba(45, 45, 45, 0.5);
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  color: $muted-foreground;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .disclaimer-tip {
-  background: $sticky;
-  color: $pencil;
-  border: 2rpx solid $pencil;
-  border-radius: $wobbly-sm;
+  background: $muted;
+  color: $foreground;
+  border: 1rpx solid $border;
+  border-radius: $radius-lg;
   padding: 14rpx 48rpx 14rpx 20rpx;
   font-size: 22rpx;
   margin: 16rpx 20rpx;
   position: relative;
-  box-shadow: $shadow-hard-sm;
-  font-family: 'Patrick Hand', 'PingFang SC', cursive;
+  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .disclaimer-tip .dismiss {
@@ -993,6 +991,6 @@ onShow(() => {
   top: 50%;
   transform: translateY(-50%);
   font-size: 28rpx;
-  color: $pencil;
+  color: $muted-foreground;
 }
 </style>
