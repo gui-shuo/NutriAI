@@ -1,10 +1,10 @@
 <template>
   <div class="register-container">
-    <div class="register-card">
+    <div class="register-card decoration-tape">
       <!-- Logo和标题 -->
       <div class="register-header">
-        <h1 class="logo">🥗 NutriAI</h1>
-        <p class="subtitle">创建您的账号，开启智能饮食之旅</p>
+        <h1 class="logo font-heading">🥗 NutriAI</h1>
+        <p class="subtitle font-hand">创建您的账号，开启智能饮食之旅</p>
       </div>
 
       <!-- 注册表单 -->
@@ -153,9 +153,9 @@
         <el-form-item prop="agree">
           <el-checkbox v-model="registerForm.agree">
             我已阅读并同意
-            <router-link to="/legal/terms" target="_blank" style="color:#409eff;text-decoration:none">《用户协议》</router-link>
+            <router-link to="/legal/terms" target="_blank" style="color:#2d5da1;text-decoration:none">《用户协议》</router-link>
             和
-            <router-link to="/legal/privacy" target="_blank" style="color:#409eff;text-decoration:none">《隐私政策》</router-link>
+            <router-link to="/legal/privacy" target="_blank" style="color:#2d5da1;text-decoration:none">《隐私政策》</router-link>
           </el-checkbox>
         </el-form-item>
 
@@ -173,7 +173,7 @@
         </el-form-item>
 
         <!-- 登录链接 -->
-        <div class="login-link">
+        <div class="login-link font-hand">
           已有账号？
           <router-link to="/login" class="link"> 立即登录 </router-link>
         </div>
@@ -467,17 +467,22 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: #fdfbf7;
+  background-image: radial-gradient(#e5e0d8 1px, transparent 1px);
+  background-size: 24px 24px;
   padding: 40px 20px;
 }
 
 .register-card {
   width: 100%;
   max-width: 500px;
-  background: white;
-  border-radius: 16px;
-  padding: 40px 32px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  background: #fff;
+  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px;
+  padding: 48px 32px 40px;
+  border: 3px solid #2d2d2d;
+  box-shadow: 8px 8px 0px 0px #2d2d2d;
+  position: relative;
+  transform: rotate(0.5deg);
 }
 
 .register-header {
@@ -487,21 +492,26 @@ onMounted(() => {
   .logo {
     font-size: 32px;
     font-weight: bold;
-    color: #667eea;
+    color: #ff4d4d;
     margin: 0 0 8px 0;
+    font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
   }
 
   .subtitle {
-    color: #6b7280;
+    color: #5a5a5a;
     font-size: 14px;
     margin: 0;
+    font-family: 'Patrick Hand', cursive;
   }
 }
 
 .register-form {
+  font-family: 'Patrick Hand', cursive;
+
   :deep(.el-form-item__label) {
     font-weight: 500;
-    color: #374151;
+    color: #2d2d2d;
+    font-family: 'Patrick Hand', cursive;
   }
 
   .validation-tip {
@@ -510,11 +520,11 @@ onMounted(() => {
     font-size: 12px;
 
     &.success {
-      color: #10b981;
+      color: #2d5da1;
     }
 
     &.error {
-      color: #ef4444;
+      color: #ff4d4d;
     }
   }
 
@@ -535,13 +545,13 @@ onMounted(() => {
     .captcha-image {
       width: 100%;
       height: 100%;
-      border-radius: 4px;
-      border: 1px solid #dcdfe6;
+      border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
+      border: 2px solid #2d2d2d;
       transition: all 0.3s;
 
       &:hover {
         opacity: 0.8;
-        border-color: #667eea;
+        border-color: #ff4d4d;
       }
     }
 
@@ -552,11 +562,11 @@ onMounted(() => {
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: #f5f5f5;
-      border: 1px solid #dcdfe6;
-      border-radius: 4px;
+      background: #fdfbf7;
+      border: 2px dashed #e5e0d8;
+      border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
       font-size: 12px;
-      color: #909399;
+      color: #5a5a5a;
       gap: 4px;
     }
   }
@@ -580,52 +590,37 @@ onMounted(() => {
     width: 100%;
     height: 44px;
     font-size: 16px;
-    font-weight: 500;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
+    font-weight: 600;
+    font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+    background: #ff4d4d;
+    border: 3px solid #2d2d2d;
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+    box-shadow: 4px 4px 0px 0px #2d2d2d;
+    color: #fff;
+    transition: all 0.2s;
 
     &:hover {
-      opacity: 0.9;
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0px 0px #2d2d2d;
+      background: #e04343;
     }
   }
 
   .login-link {
     text-align: center;
-    color: #6b7280;
+    color: #5a5a5a;
     font-size: 14px;
 
     .link {
-      color: #667eea;
+      color: #2d5da1;
       text-decoration: none;
       font-weight: 500;
 
       &:hover {
+        color: #ff4d4d;
         text-decoration: underline;
       }
     }
-  }
-}
-
-// 深色模式适配
-.dark {
-  .register-card {
-    background: #1f2937;
-  }
-
-  .register-header {
-    .subtitle {
-      color: #9ca3af;
-    }
-  }
-
-  .register-form {
-    :deep(.el-form-item__label) {
-      color: #e5e7eb;
-    }
-  }
-
-  .login-link {
-    color: #9ca3af;
   }
 }
 </style>

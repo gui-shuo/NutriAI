@@ -6,7 +6,7 @@
         <div class="nav-content">
           <div class="logo">
             <img src="/logo.svg" alt="NutriAI" class="logo-img" />
-            <span class="logo-text">{{ siteName }}</span>
+            <span class="logo-text font-heading">{{ siteName }}</span>
           </div>
           <div class="nav-buttons">
             <el-button link @click="goToAnnouncements">
@@ -47,10 +47,10 @@
     <!-- 主要内容区 -->
     <main class="main-content">
       <div class="hero-section">
-        <h1 class="hero-title">
-          {{ siteName }}
+        <h1 class="hero-title font-heading">
+          ✏️ {{ siteName }}
         </h1>
-        <p class="hero-subtitle">
+        <p class="hero-subtitle font-hand">
           {{ getConfig('system.site_description', '智能营养分析 · 个性化饮食方案 · 饮食管理') }}
         </p>
         <div class="hero-buttons">
@@ -69,69 +69,69 @@
       <!-- 功能特色 -->
       <div class="features-section">
         <div class="container">
-          <h2 class="section-title">核心功能</h2>
+          <h2 class="section-title font-heading"><span class="wavy-underline">核心功能</span></h2>
           <div class="features-grid">
             <div class="feature-card" @click="goToFeature('profile')">
-              <el-icon :size="48" color="#22c55e">
+              <div class="sketch-icon"><el-icon :size="32" color="#2d5da1">
                 <user />
-              </el-icon>
-              <h3>个人中心</h3>
+              </el-icon></div>
+              <h3 class="font-heading">个人中心</h3>
               <p>管理个人资料，记录身体数据</p>
             </div>
             <div class="feature-card" @click="goToFeature('ai-chat')">
-              <el-icon :size="48" color="#22c55e">
+              <div class="sketch-icon"><el-icon :size="32" color="#2d5da1">
                 <chatDotRound />
-              </el-icon>
-              <h3>AI营养师</h3>
+              </el-icon></div>
+              <h3 class="font-heading">AI营养师</h3>
               <p>智能对话，获取专业营养建议</p>
             </div>
             <div class="feature-card" @click="goToFeature('diet-plan')">
-              <el-icon :size="48" color="#22c55e">
+              <div class="sketch-icon"><el-icon :size="32" color="#2d5da1">
                 <calendar />
-              </el-icon>
-              <h3>AI饮食计划</h3>
+              </el-icon></div>
+              <h3 class="font-heading">AI饮食计划</h3>
               <p>智能生成个性化饮食计划</p>
             </div>
             <div class="feature-card" @click="goToFeature('food-recognition')">
-              <el-icon :size="48" color="#22c55e">
+              <div class="sketch-icon"><el-icon :size="32" color="#2d5da1">
                 <camera />
-              </el-icon>
-              <h3>AI食物识别</h3>
+              </el-icon></div>
+              <h3 class="font-heading">AI食物识别</h3>
               <p>拍照识别食物，智能分析营养</p>
             </div>
             <div class="feature-card" @click="goToFeature('food-records')">
-              <el-icon :size="48" color="#22c55e">
+              <div class="sketch-icon"><el-icon :size="32" color="#2d5da1">
                 <document />
-              </el-icon>
-              <h3>饮食记录</h3>
+              </el-icon></div>
+              <h3 class="font-heading">饮食记录</h3>
               <p>记录每日饮食，分析营养摄入</p>
             </div>
             <div class="feature-card" @click="goToFeature('consultation')">
-              <el-icon :size="48" color="#22c55e">
+              <div class="sketch-icon"><el-icon :size="32" color="#2d5da1">
                 <service />
-              </el-icon>
-              <h3>营养师咨询</h3>
+              </el-icon></div>
+              <h3 class="font-heading">营养师咨询</h3>
               <p>专业营养师在线咨询，获取个性化指导</p>
             </div>
             <div class="feature-card" @click="goToFeature('product-shop')">
-              <el-icon :size="48" color="#22c55e">
+              <div class="sketch-icon"><el-icon :size="32" color="#2d5da1">
                 <goods />
-              </el-icon>
-              <h3>营养产品商城</h3>
+              </el-icon></div>
+              <h3 class="font-heading">营养产品商城</h3>
               <p>优质营养产品，品质生活从此开始</p>
             </div>
             <div class="feature-card" @click="goToFeature('membership')">
-              <el-icon :size="48" color="#22c55e">
+              <div class="sketch-icon"><el-icon :size="32" color="#2d5da1">
                 <trophy />
-              </el-icon>
-              <h3>会员服务</h3>
+              </el-icon></div>
+              <h3 class="font-heading">会员服务</h3>
               <p>专属功能，更多权益</p>
             </div>
             <div class="feature-card" @click="goToFeature('community')">
-              <el-icon :size="48" color="#22c55e">
+              <div class="sketch-icon"><el-icon :size="32" color="#2d5da1">
                 <chatDotRound />
-              </el-icon>
-              <h3>营养圈</h3>
+              </el-icon></div>
+              <h3 class="font-heading">营养圈</h3>
               <p>分享饮食心得，交流营养知识</p>
             </div>
           </div>
@@ -140,7 +140,7 @@
     </main>
 
     <!-- 页脚 -->
-    <footer class="footer">
+    <footer class="footer font-hand">
       <div class="container">
         <div class="footer-content">
           <div class="footer-info">
@@ -312,12 +312,15 @@ const goToFeature = feature => {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  font-family: 'Patrick Hand', 'PingFang SC', 'Microsoft YaHei', cursive;
+  color: #2d2d2d;
 }
 
 /* 导航栏 */
 .navbar {
-  background: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: #fdfbf7;
+  border-bottom: 3px solid #2d2d2d;
+  box-shadow: 0 4px 0px 0px rgba(45, 45, 45, 0.08);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -348,9 +351,10 @@ const goToFeature = feature => {
 }
 
 .logo-text {
-  font-size: 18px;
-  font-weight: 600;
-  color: #22c55e;
+  font-size: 22px;
+  font-weight: 700;
+  color: #ff4d4d;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
 }
 
 .nav-buttons {
@@ -365,22 +369,27 @@ const goToFeature = feature => {
 
 /* Hero区域 */
 .hero-section {
-  background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+  background-color: #fdfbf7;
+  background-image: radial-gradient(#e5e0d8 1px, transparent 1px);
+  background-size: 24px 24px;
   padding: 100px 20px;
   text-align: center;
+  position: relative;
 }
 
 .hero-title {
   font-size: 48px;
   font-weight: 700;
-  color: #1e293b;
+  color: #2d2d2d;
   margin-bottom: 16px;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
 }
 
 .hero-subtitle {
   font-size: 20px;
-  color: #64748b;
+  color: #5a5a5a;
   margin-bottom: 32px;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .hero-buttons {
@@ -392,27 +401,29 @@ const goToFeature = feature => {
 .hero-mobile-hint {
   margin-top: 20px;
   font-size: 14px;
-  color: #64748b;
+  color: #5a5a5a;
 }
 .h5-link {
-  color: #22c55e;
+  color: #2d5da1;
   font-weight: 600;
   text-decoration: none;
-  &:hover { color: #16a34a; text-decoration: underline; }
+  &:hover { color: #ff4d4d; text-decoration: underline; }
 }
 
 /* 功能特色 */
 .features-section {
   padding: 80px 20px;
-  background: white;
+  background: #fdfbf7;
+  border-top: 2px dashed #e5e0d8;
 }
 
 .section-title {
   font-size: 36px;
   font-weight: 600;
   text-align: center;
-  color: #1e293b;
+  color: #2d2d2d;
   margin-bottom: 48px;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
 }
 
 .features-grid {
@@ -425,37 +436,62 @@ const goToFeature = feature => {
 
 .feature-card {
   text-align: center;
-  padding: 32px;
-  border-radius: 12px;
-  background: #f8fafc;
+  padding: 32px 24px;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  background: #fff;
+  border: 2px solid #2d2d2d;
+  box-shadow: 4px 4px 0px 0px #2d2d2d;
   transition: all 0.3s ease;
   cursor: pointer;
 }
 
+.feature-card:nth-child(odd) {
+  transform: rotate(-1deg);
+}
+.feature-card:nth-child(even) {
+  transform: rotate(1deg);
+}
+
 .feature-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
-  background: #e0f2fe;
+  transform: translateY(-4px) rotate(0deg);
+  box-shadow: 6px 6px 0px 0px #2d2d2d;
+  background: #fff9c4;
+}
+
+.feature-card .sketch-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border: 2px solid #2d2d2d;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  box-shadow: 2px 2px 0px 0px rgba(45, 45, 45, 0.1);
+  background: #fdfbf7;
+  margin-bottom: 8px;
 }
 
 .feature-card h3 {
   font-size: 20px;
   font-weight: 600;
-  margin: 16px 0 8px;
-  color: #1e293b;
+  margin: 12px 0 8px;
+  color: #2d2d2d;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
 }
 
 .feature-card p {
-  color: #64748b;
+  color: #5a5a5a;
   line-height: 1.6;
+  font-family: 'Patrick Hand', cursive;
 }
 
 /* 页脚 */
 .footer {
-  background: #f8fafc;
+  background: #fdfbf7;
   padding: 32px 20px;
-  color: #64748b;
-  border-top: 1px solid #e2e8f0;
+  color: #5a5a5a;
+  border-top: 3px dashed #e5e0d8;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .footer-content {
@@ -477,7 +513,7 @@ const goToFeature = feature => {
 
 .icp-number {
   font-size: 12px;
-  color: #94a3b8;
+  color: #5a5a5a;
 }
 
 .footer-contact {
@@ -494,20 +530,20 @@ const goToFeature = feature => {
 
 .feedback-link {
   cursor: pointer;
-  color: #22c55e;
+  color: #2d5da1;
   transition: color .2s;
 }
-.feedback-link:hover { color: #16a34a; text-decoration: underline; }
+.feedback-link:hover { color: #ff4d4d; text-decoration: underline; }
 
 .footer-legal {
   width: 100%;
   text-align: center;
   margin-top: 16px;
   padding-top: 12px;
-  border-top: 1px solid #e2e8f0;
+  border-top: 2px dashed #e5e0d8;
   font-size: 13px;
-  a { color: #64748b; text-decoration: none; &:hover { color: #409eff; } }
-  .sep { margin: 0 8px; color: #cbd5e1; }
+  a { color: #5a5a5a; text-decoration: none; &:hover { color: #2d5da1; } }
+  .sep { margin: 0 8px; color: #e5e0d8; }
 }
 
 /* 响应式 */
@@ -537,6 +573,11 @@ const goToFeature = feature => {
 
   .features-grid {
     grid-template-columns: 1fr;
+  }
+
+  .feature-card:nth-child(odd),
+  .feature-card:nth-child(even) {
+    transform: rotate(0deg);
   }
 }
 </style>

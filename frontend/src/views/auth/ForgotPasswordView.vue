@@ -1,10 +1,10 @@
 <template>
   <div class="forgot-container">
-    <div class="forgot-card">
+    <div class="forgot-card decoration-tape">
       <!-- Logo和标题 -->
       <div class="forgot-header">
-        <h1 class="logo">🥗 NutriAI</h1>
-        <p class="subtitle">重置您的密码</p>
+        <h1 class="logo font-heading">🥗 NutriAI</h1>
+        <p class="subtitle font-hand">重置您的密码</p>
       </div>
 
       <!-- 步骤指示器 -->
@@ -23,7 +23,7 @@
         class="forgot-form"
         @submit.prevent="handleSendCode"
       >
-        <p class="form-tip">请输入您注册时使用的邮箱地址，我们将发送验证码到该邮箱。</p>
+        <p class="form-tip font-hand">请输入您注册时使用的邮箱地址，我们将发送验证码到该邮箱。</p>
 
         <el-form-item prop="email">
           <el-input
@@ -61,7 +61,7 @@
         label-position="top"
         @submit.prevent="handleResetPassword"
       >
-        <p class="form-tip">
+        <p class="form-tip font-hand">
           验证码已发送至 <strong>{{ maskedEmail }}</strong
           >，请查收。
         </p>
@@ -127,7 +127,7 @@
       </div>
 
       <!-- 返回登录 -->
-      <div v-if="currentStep < 2" class="back-link">
+      <div v-if="currentStep < 2" class="back-link font-hand">
         <router-link to="/login" class="link"> ← 返回登录 </router-link>
       </div>
     </div>
@@ -342,17 +342,22 @@ onUnmounted(() => {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: #fdfbf7;
+  background-image: radial-gradient(#e5e0d8 1px, transparent 1px);
+  background-size: 24px 24px;
   padding: 20px;
 }
 
 .forgot-card {
   width: 100%;
   max-width: 480px;
-  background: white;
-  border-radius: 16px;
-  padding: 40px 32px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  background: #fff;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  padding: 48px 32px 40px;
+  border: 3px solid #2d2d2d;
+  box-shadow: 8px 8px 0px 0px #2d2d2d;
+  position: relative;
+  transform: rotate(-0.5deg);
 }
 
 .forgot-header {
@@ -362,14 +367,16 @@ onUnmounted(() => {
   .logo {
     font-size: 32px;
     font-weight: bold;
-    color: #667eea;
+    color: #ff4d4d;
     margin: 0 0 8px 0;
+    font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
   }
 
   .subtitle {
-    color: #6b7280;
+    color: #5a5a5a;
     font-size: 14px;
     margin: 0;
+    font-family: 'Patrick Hand', cursive;
   }
 }
 
@@ -378,11 +385,19 @@ onUnmounted(() => {
 }
 
 .forgot-form {
+  font-family: 'Patrick Hand', cursive;
+
+  :deep(.el-form-item__label) {
+    font-family: 'Patrick Hand', cursive;
+    color: #2d2d2d;
+  }
+
   .form-tip {
-    color: #6b7280;
+    color: #5a5a5a;
     font-size: 14px;
     margin: 0 0 20px 0;
     line-height: 1.6;
+    font-family: 'Patrick Hand', cursive;
   }
 
   .code-wrapper {
@@ -398,12 +413,19 @@ onUnmounted(() => {
     width: 100%;
     height: 44px;
     font-size: 16px;
-    font-weight: 500;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
+    font-weight: 600;
+    font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+    background: #ff4d4d;
+    border: 3px solid #2d2d2d;
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+    box-shadow: 4px 4px 0px 0px #2d2d2d;
+    color: #fff;
+    transition: all 0.2s;
 
     &:hover {
-      opacity: 0.9;
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0px 0px #2d2d2d;
+      background: #e04343;
     }
   }
 }
@@ -417,32 +439,15 @@ onUnmounted(() => {
   margin-top: 20px;
 
   .link {
-    color: #667eea;
+    color: #2d5da1;
     text-decoration: none;
     font-size: 14px;
+    font-family: 'Patrick Hand', cursive;
 
     &:hover {
+      color: #ff4d4d;
       text-decoration: underline;
     }
-  }
-}
-
-// 深色模式适配
-.dark {
-  .forgot-card {
-    background: #1f2937;
-  }
-
-  .forgot-header .subtitle {
-    color: #9ca3af;
-  }
-
-  .forgot-form .form-tip {
-    color: #9ca3af;
-  }
-
-  .back-link .link {
-    color: #818cf8;
   }
 }
 </style>

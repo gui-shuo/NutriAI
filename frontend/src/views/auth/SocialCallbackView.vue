@@ -3,11 +3,11 @@
     <div class="callback-card">
       <div v-if="loading" class="loading-state">
         <el-icon class="is-loading" :size="48"><Loading /></el-icon>
-        <p>{{ statusMsg }}</p>
+        <p class="font-hand">{{ statusMsg }}</p>
       </div>
       <div v-else-if="error" class="error-state">
-        <el-icon :size="48" color="#f56c6c"><CircleCloseFilled /></el-icon>
-        <p>{{ statusMsg }}</p>
+        <el-icon :size="48" color="#ff4d4d"><CircleCloseFilled /></el-icon>
+        <p class="font-hand">{{ statusMsg }}</p>
         <el-button type="primary" @click="goLogin">返回登录</el-button>
       </div>
     </div>
@@ -115,15 +115,18 @@ const goLogin = () => router.push('/login')
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: #fdfbf7;
+  background-image: radial-gradient(#e5e0d8 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
 .callback-card {
-  background: white;
-  border-radius: 16px;
+  background: #fff;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
   padding: 60px 40px;
   text-align: center;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  border: 3px solid #2d2d2d;
+  box-shadow: 8px 8px 0px 0px #2d2d2d;
   min-width: 360px;
 }
 
@@ -135,7 +138,8 @@ const goLogin = () => router.push('/login')
 }
 
 .loading-state p, .error-state p {
-  color: #666;
+  color: #2d2d2d;
   font-size: 16px;
+  font-family: 'Patrick Hand', cursive;
 }
 </style>

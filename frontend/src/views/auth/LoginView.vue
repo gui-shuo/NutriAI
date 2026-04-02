@@ -1,10 +1,10 @@
 <template>
   <div class="login-container">
-    <div class="login-card">
+    <div class="login-card decoration-tape">
       <!-- Logo和标题 -->
       <div class="login-header">
-        <h1 class="logo">🥗 NutriAI</h1>
-        <p class="subtitle">NutriAI饮食规划助手</p>
+        <h1 class="logo font-heading">🥗 NutriAI</h1>
+        <p class="subtitle font-hand">NutriAI饮食规划助手</p>
       </div>
 
       <!-- 登录表单 -->
@@ -91,12 +91,12 @@
         </el-form-item>
 
         <!-- 注册链接 -->
-        <div class="register-link">
+        <div class="register-link font-hand">
           还没有账号？
           <router-link to="/register" class="link"> 立即注册 </router-link>
-          <span style="margin: 0 8px; color: #d1d5db;">|</span>
+          <span style="margin: 0 8px; color: #e5e0d8;">|</span>
           <router-link to="/nutritionist/register" class="link"> 营养师入驻 </router-link>
-          <span style="margin: 0 8px; color: #d1d5db;">|</span>
+          <span style="margin: 0 8px; color: #e5e0d8;">|</span>
           <router-link to="/nutritionist/login" class="link"> 营养师登录 </router-link>
         </div>
       </el-form>
@@ -331,17 +331,22 @@ const handleSocialLogin = async (provider) => {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: #fdfbf7;
+  background-image: radial-gradient(#e5e0d8 1px, transparent 1px);
+  background-size: 24px 24px;
   padding: 20px;
 }
 
 .login-card {
   width: 100%;
   max-width: 420px;
-  background: white;
-  border-radius: 16px;
-  padding: 40px 32px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  background: #fff;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  padding: 48px 32px 40px;
+  border: 3px solid #2d2d2d;
+  box-shadow: 8px 8px 0px 0px #2d2d2d;
+  position: relative;
+  transform: rotate(-0.5deg);
 }
 
 .login-header {
@@ -351,18 +356,22 @@ const handleSocialLogin = async (provider) => {
   .logo {
     font-size: 32px;
     font-weight: bold;
-    color: #667eea;
+    color: #ff4d4d;
     margin: 0 0 8px 0;
+    font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
   }
 
   .subtitle {
-    color: #6b7280;
+    color: #5a5a5a;
     font-size: 14px;
     margin: 0;
+    font-family: 'Patrick Hand', cursive;
   }
 }
 
 .login-form {
+  font-family: 'Patrick Hand', cursive;
+
   .captcha-wrapper {
     display: flex;
     gap: 12px;
@@ -380,13 +389,13 @@ const handleSocialLogin = async (provider) => {
     .captcha-image {
       width: 100%;
       height: 100%;
-      border-radius: 4px;
-      border: 1px solid #dcdfe6;
+      border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
+      border: 2px solid #2d2d2d;
       transition: all 0.3s;
 
       &:hover {
         opacity: 0.8;
-        border-color: #667eea;
+        border-color: #ff4d4d;
       }
     }
 
@@ -397,11 +406,11 @@ const handleSocialLogin = async (provider) => {
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: #f5f5f5;
-      border: 1px solid #dcdfe6;
-      border-radius: 4px;
+      background: #fdfbf7;
+      border: 2px dashed #e5e0d8;
+      border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
       font-size: 12px;
-      color: #909399;
+      color: #5a5a5a;
       gap: 4px;
     }
   }
@@ -417,26 +426,34 @@ const handleSocialLogin = async (provider) => {
     width: 100%;
     height: 44px;
     font-size: 16px;
-    font-weight: 500;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
+    font-weight: 600;
+    font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+    background: #ff4d4d;
+    border: 3px solid #2d2d2d;
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+    box-shadow: 4px 4px 0px 0px #2d2d2d;
+    color: #fff;
+    transition: all 0.2s;
 
     &:hover {
-      opacity: 0.9;
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0px 0px #2d2d2d;
+      background: #e04343;
     }
   }
 
   .register-link {
     text-align: center;
-    color: #6b7280;
+    color: #5a5a5a;
     font-size: 14px;
 
     .link {
-      color: #667eea;
+      color: #2d5da1;
       text-decoration: none;
       font-weight: 500;
 
       &:hover {
+        color: #ff4d4d;
         text-decoration: underline;
       }
     }
@@ -449,26 +466,9 @@ const handleSocialLogin = async (provider) => {
   .tip-text {
     text-align: center;
     font-size: 12px;
-    color: #9ca3af;
+    color: #5a5a5a;
     line-height: 1.6;
     margin: 8px 0 0 0;
-  }
-}
-
-// 深色模式适配
-.dark {
-  .login-card {
-    background: #1f2937;
-  }
-
-  .login-header {
-    .subtitle {
-      color: #9ca3af;
-    }
-  }
-
-  .register-link {
-    color: #9ca3af;
   }
 }
 
@@ -477,7 +477,12 @@ const handleSocialLogin = async (provider) => {
 
   :deep(.el-divider__text) {
     font-size: 13px;
-    color: #9ca3af;
+    color: #5a5a5a;
+    font-family: 'Patrick Hand', cursive;
+    background: #fff;
+  }
+  :deep(.el-divider) {
+    border-color: #e5e0d8;
   }
 }
 
@@ -491,18 +496,20 @@ const handleSocialLogin = async (provider) => {
 .social-btn {
   width: 48px;
   height: 48px;
-  border-radius: 50%;
-  border: 1px solid #e5e7eb;
-  background: #fff;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  border: 2px solid #2d2d2d;
+  background: #fdfbf7;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s;
+  box-shadow: 3px 3px 0px 0px rgba(45, 45, 45, 0.1);
+  transition: all 0.2s;
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0px 0px rgba(45, 45, 45, 0.1);
+    background: #fff9c4;
   }
 
   &:disabled {
@@ -514,11 +521,11 @@ const handleSocialLogin = async (provider) => {
 
 .wechat-btn {
   color: #07c160;
-  &:hover { border-color: #07c160; background: #f0fdf4; }
+  &:hover { border-color: #07c160; }
 }
 
 .qq-btn {
   color: #12b7f5;
-  &:hover { border-color: #12b7f5; background: #eff6ff; }
+  &:hover { border-color: #12b7f5; }
 }
 </style>
