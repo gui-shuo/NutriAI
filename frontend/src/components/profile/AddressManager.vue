@@ -316,7 +316,7 @@ onMounted(fetchAddresses)
 
   &.default {
     border-color: #0052FF;
-    background: #fff9c4;
+    background: #F1F5F9;
   }
 
   .card-main {

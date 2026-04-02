@@ -182,7 +182,7 @@ const formatTime = timeStr => {
   .stat-cal {
     font-weight: 600;
     color: #EF4444;
-    background: #fff9c4;
+    background: #F1F5F9;
   }
 
   .card-meta {

@@ -188,7 +188,7 @@ const handleRemove = () => {
     &:hover,
     &.is-dragover {
       border-color: #0052FF;
-      background: #fff9c4;
+      background: #F1F5F9;
     }
 
     &.has-image {
@@ -263,7 +263,7 @@ const handleRemove = () => {
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(253, 251, 247, 0.85);
+        background: rgba(250, 250, 250, 0.85);
         display: flex;
         align-items: center;
         justify-content: center;

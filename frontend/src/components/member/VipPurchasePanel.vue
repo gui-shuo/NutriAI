@@ -490,7 +490,7 @@ function statusTagType(status) {
 
   &.plan-selected {
     border-color: #0052FF;
-    background: #fff9c4;
+    background: #F1F5F9;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
   }
 

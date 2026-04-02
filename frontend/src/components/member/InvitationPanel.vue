@@ -413,7 +413,7 @@ onMounted(() => {
           transition: all 0.3s;
 
           &:hover {
-            background: #fff9c4;
+            background: #F1F5F9;
           }
 
           &:not(:last-child) {
@@ -471,7 +471,7 @@ onMounted(() => {
     transition: all 0.3s;
 
     &:hover {
-      background: #fff9c4;
+      background: #F1F5F9;
     }
 
     &:not(:last-child) {
