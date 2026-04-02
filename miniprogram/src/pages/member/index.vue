@@ -427,24 +427,23 @@ onShow(() => {
 <style scoped lang="scss">
 .page {
   min-height: 100vh;
-  background: #fdfbf7;
+  background: $background;
   padding-bottom: 30rpx;
-  font-family: 'Patrick Hand', cursive;
+  font-family: 'Inter', sans-serif;
 }
 
 /* VIP Banner */
 .vip-banner {
   padding: 40rpx 30rpx;
   color: #fff;
-  border-bottom: 3rpx solid #2d2d2d;
 
   &.vip-active {
-    background: #d4a248;
+    background: $gradient-accent;
     padding-bottom: 30rpx;
   }
 
   &.vip-inactive {
-    background: #ff4d4d;
+    background: $gradient-accent;
   }
 }
 
@@ -472,19 +471,18 @@ onShow(() => {
 .vip-plan-name {
   font-size: 34rpx;
   font-weight: 700;
-  font-family: 'Kalam', cursive;
+  font-family: 'Calistoga', cursive;
 }
 
 .vip-tag-badge {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.2);
   color: #fff;
   font-size: 20rpx;
   font-weight: 700;
   padding: 4rpx 14rpx;
-  border-radius: 4rpx 8rpx 6rpx 10rpx;
+  border-radius: $radius-full;
   letter-spacing: 2rpx;
-  border: 2rpx solid rgba(255, 255, 255, 0.5);
-  font-family: 'Kalam', cursive;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 .vip-username {
@@ -497,11 +495,11 @@ onShow(() => {
 .vip-detail-row {
   display: flex;
   justify-content: space-between;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 10rpx 16rpx 12rpx 18rpx;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: $radius-lg;
   padding: 20rpx 24rpx;
   margin-bottom: 20rpx;
-  border: 2rpx dashed rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(4px);
 }
 
 .vip-detail-item {
@@ -519,10 +517,10 @@ onShow(() => {
 .vip-detail-val {
   font-size: 28rpx;
   font-weight: 600;
-  font-family: 'Kalam', cursive;
+  font-family: 'JetBrains Mono', monospace;
 
   &.accent {
-    color: #fff9c4;
+    color: #FCD34D;
   }
 }
 
@@ -539,16 +537,15 @@ onShow(() => {
 
 .progress-bar-bg {
   height: 12rpx;
-  background: rgba(255, 255, 255, 0.25);
-  border-radius: 6rpx;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: $radius-full;
   overflow: hidden;
-  border: 1rpx solid rgba(255, 255, 255, 0.3);
 }
 
 .progress-bar-fill {
   height: 100%;
-  background: #fff9c4;
-  border-radius: 6rpx;
+  background: #fff;
+  border-radius: $radius-full;
   transition: width 0.5s;
 }
 
@@ -556,7 +553,7 @@ onShow(() => {
   font-size: 36rpx;
   font-weight: 700;
   margin-bottom: 10rpx;
-  font-family: 'Kalam', cursive;
+  font-family: 'Calistoga', cursive;
 }
 
 .vip-hint {
@@ -567,12 +564,12 @@ onShow(() => {
 
 /* Card */
 .card {
-  background: #fff;
-  border-radius: 12rpx 18rpx 14rpx 20rpx;
+  background: $card;
+  border-radius: $radius-xl;
   margin: 20rpx 24rpx;
   padding: 30rpx;
-  border: 2rpx solid #2d2d2d;
-  box-shadow: 4px 4px 0px 0px #2d2d2d;
+  border: 1rpx solid $border;
+  box-shadow: $shadow-sm;
 }
 
 .card-title {
@@ -581,7 +578,7 @@ onShow(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-family: 'Kalam', cursive;
+  font-family: 'Calistoga', cursive;
 }
 
 /* Sign-In */
@@ -599,33 +596,31 @@ onShow(() => {
 
   .day-label {
     font-size: 24rpx;
-    color: #2d2d2d;
-    opacity: 0.6;
+    color: $muted-foreground;
     margin-bottom: 10rpx;
   }
 
   .day-dot {
     width: 56rpx;
     height: 56rpx;
-    border-radius: 50%;
+    border-radius: $radius-full;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #fdfbf7;
+    background: $muted;
     font-size: 28rpx;
-    color: #e5e0d8;
-    border: 2rpx dashed #e5e0d8;
+    color: $border;
   }
 
   &.signed .day-dot {
-    background: #ff4d4d;
+    background: $accent;
     color: #fff;
-    border: 2rpx solid #2d2d2d;
   }
 
   &.today .day-dot {
-    border: 2rpx solid #ff4d4d;
-    color: #ff4d4d;
+    border: 2rpx solid $accent;
+    color: $accent;
+    background: rgba(0, 82, 255, 0.06);
   }
 }
 
@@ -633,16 +628,16 @@ onShow(() => {
   height: 80rpx;
   line-height: 80rpx;
   font-size: 30rpx;
-  border-radius: 18rpx 12rpx 16rpx 14rpx;
-  background: #ff4d4d;
+  border-radius: $radius-xl;
+  background: $accent;
   color: #fff;
-  border: 2rpx solid #2d2d2d;
-  box-shadow: 3px 3px 0px 0px rgba(45,45,45,0.1);
-  font-family: 'Patrick Hand', cursive;
+  border: none;
+  box-shadow: $shadow-accent;
+  font-family: 'Inter', sans-serif;
 
   &[disabled] {
-    background: #e5e0d8 !important;
-    opacity: 0.7;
+    background: $muted !important;
+    color: $muted-foreground !important;
     box-shadow: none;
   }
 }
@@ -658,22 +653,22 @@ onShow(() => {
   flex: 1 1 calc(33.33% - 16rpx);
   min-width: 180rpx;
   max-width: calc(50% - 8rpx);
-  border: 2rpx solid #2d2d2d;
-  border-radius: 10rpx 16rpx 12rpx 18rpx;
+  border: 1rpx solid $border;
+  border-radius: $radius-xl;
   padding: 24rpx 16rpx;
   text-align: center;
   position: relative;
   transition: all 0.2s;
-  background: #fff;
+  background: $card;
 
   &.selected {
-    border-color: #ff4d4d;
-    background: rgba(255, 77, 77, 0.05);
-    box-shadow: 3px 3px 0px 0px #ff4d4d;
+    border-color: $accent;
+    background: rgba(0, 82, 255, 0.04);
+    box-shadow: $shadow-accent;
   }
 
   &.recommended {
-    border-color: #ff4d4d;
+    border-color: $accent;
     border-width: 3rpx;
   }
 }
@@ -682,26 +677,24 @@ onShow(() => {
   position: absolute;
   top: -2rpx;
   right: -2rpx;
-  background: #ff4d4d;
+  background: $accent;
   color: #fff;
   font-size: 20rpx;
   padding: 4rpx 14rpx;
-  border-radius: 0 16rpx 0 12rpx;
-  font-family: 'Patrick Hand', cursive;
-  border-left: 2rpx solid #2d2d2d;
-  border-bottom: 2rpx solid #2d2d2d;
+  border-radius: 0 $radius-xl 0 $radius-lg;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 .plan-name {
   font-size: 26rpx;
   font-weight: 600;
   margin-bottom: 12rpx;
-  color: #2d2d2d;
-  font-family: 'Kalam', cursive;
+  color: $foreground;
+  font-family: 'Calistoga', cursive;
 }
 
 .plan-price {
-  color: #ff4d4d;
+  color: $accent;
   margin-bottom: 6rpx;
 }
 
@@ -712,27 +705,26 @@ onShow(() => {
 .price-value {
   font-size: 44rpx;
   font-weight: 700;
-  font-family: 'Kalam', cursive;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 .plan-original {
   font-size: 22rpx;
-  color: #2d2d2d;
-  opacity: 0.5;
+  color: $muted-foreground;
   text-decoration: line-through;
   margin-bottom: 6rpx;
 }
 
 .plan-daily {
   font-size: 22rpx;
-  color: #ff4d4d;
-  font-family: 'Patrick Hand', cursive;
+  color: $accent-secondary;
+  font-family: 'Inter', sans-serif;
 }
 
 .plan-features {
   margin-top: 24rpx;
   padding-top: 20rpx;
-  border-top: 2rpx dashed #e5e0d8;
+  border-top: 1rpx solid $border;
 }
 
 .feature-item {
@@ -740,14 +732,13 @@ onShow(() => {
   align-items: center;
   gap: 10rpx;
   font-size: 26rpx;
-  color: #2d2d2d;
-  opacity: 0.7;
+  color: $muted-foreground;
   padding: 8rpx 0;
-  font-family: 'Patrick Hand', cursive;
+  font-family: 'Inter', sans-serif;
 }
 
 .feature-check {
-  color: #ff4d4d;
+  color: $uni-success;
   font-weight: 700;
 }
 
@@ -755,7 +746,7 @@ onShow(() => {
 .growth-chart {
   margin-bottom: 24rpx;
   padding-bottom: 16rpx;
-  border-bottom: 2rpx dashed #e5e0d8;
+  border-bottom: 1rpx solid $border;
 }
 
 .chart-bars {
@@ -776,28 +767,26 @@ onShow(() => {
 
 .chart-bar-val {
   font-size: 20rpx;
-  color: #ff4d4d;
+  color: $accent;
   font-weight: 600;
-  font-family: 'Kalam', cursive;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 .chart-bar {
   width: 40rpx;
   min-height: 8rpx;
-  background: #ff4d4d;
-  border-radius: 4rpx 6rpx 0 0;
-  border: 1rpx solid #2d2d2d;
+  background: $accent;
+  border-radius: $radius-sm $radius-sm 0 0;
   transition: height 0.3s;
 
   &.negative {
-    background: #2d5da1;
+    background: $accent-secondary;
   }
 }
 
 .chart-bar-label {
   font-size: 20rpx;
-  color: #2d2d2d;
-  opacity: 0.6;
+  color: $muted-foreground;
   white-space: nowrap;
 }
 
@@ -809,7 +798,7 @@ onShow(() => {
 
 .growth-item {
   padding: 16rpx 0;
-  border-bottom: 2rpx dashed #e5e0d8;
+  border-bottom: 1rpx solid $border;
 
   &:last-child {
     border-bottom: none;
@@ -818,64 +807,62 @@ onShow(() => {
 
 .growth-desc {
   font-size: 28rpx;
-  color: #2d2d2d;
+  color: $foreground;
   display: block;
-  font-family: 'Patrick Hand', cursive;
+  font-family: 'Inter', sans-serif;
 }
 
 .growth-time {
   display: block;
   margin-top: 6rpx;
-  color: #2d2d2d;
-  opacity: 0.5;
+  color: $muted-foreground;
 }
 
 .growth-points {
   font-size: 32rpx;
   font-weight: 700;
-  font-family: 'Kalam', cursive;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 /* Invitation */
 .invite-code-box {
-  background: #fff9c4;
-  border-radius: 8rpx 14rpx 10rpx 16rpx;
+  background: $muted;
+  border-radius: $radius-lg;
   padding: 24rpx;
-  border: 2rpx dashed #2d2d2d;
 }
 
 .invite-code {
   font-size: 36rpx;
   font-weight: 700;
-  color: #ff4d4d;
+  color: $accent;
   margin-top: 8rpx;
   letter-spacing: 4rpx;
-  font-family: 'Kalam', cursive;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 .btn-small {
   font-size: 24rpx;
   padding: 10rpx 24rpx;
-  border-radius: 14rpx 10rpx 16rpx 12rpx;
+  border-radius: $radius-full;
   line-height: 1.4;
   height: auto;
   min-height: 0;
-  border: 2rpx solid #2d2d2d;
-  font-family: 'Patrick Hand', cursive;
+  border: none;
+  font-family: 'Inter', sans-serif;
 }
 
 .btn-outline-sm {
-  background: #fdfbf7;
-  color: #ff4d4d;
-  border: 2rpx solid #2d2d2d;
-  box-shadow: 2px 2px 0px 0px rgba(45,45,45,0.1);
+  background: $card;
+  color: $accent;
+  border: 1rpx solid $border;
+  box-shadow: $shadow-sm;
 }
 
 .invite-record {
   padding: 14rpx 0;
-  border-bottom: 2rpx dashed #e5e0d8;
+  border-bottom: 1rpx solid $border;
   font-size: 28rpx;
-  color: #2d2d2d;
+  color: $foreground;
 
   &:last-child {
     border-bottom: none;
@@ -896,7 +883,7 @@ onShow(() => {
   align-items: center;
   gap: 20rpx;
   padding: 18rpx 0;
-  border-bottom: 2rpx dashed #e5e0d8;
+  border-bottom: 1rpx solid $border;
 
   &:last-child {
     border-bottom: none;
@@ -910,9 +897,8 @@ onShow(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fff9c4;
-  border-radius: 14rpx 10rpx 16rpx 12rpx;
-  border: 2rpx solid #2d2d2d;
+  background: $muted;
+  border-radius: $radius-lg;
 }
 
 .benefit-info {
@@ -922,30 +908,29 @@ onShow(() => {
 .benefit-name {
   font-size: 28rpx;
   font-weight: 600;
-  color: #2d2d2d;
+  color: $foreground;
   display: block;
-  font-family: 'Kalam', cursive;
+  font-family: 'Calistoga', cursive;
 }
 
 .benefit-desc {
   display: block;
   margin-top: 4rpx;
-  color: #2d2d2d;
-  opacity: 0.6;
+  color: $muted-foreground;
 }
 
 /* Override global button style for this page */
 .btn-primary {
-  background: #ff4d4d;
+  background: $accent;
   color: #fff;
-  border: 2rpx solid #2d2d2d;
-  border-radius: 18rpx 12rpx 16rpx 14rpx;
-  box-shadow: 3px 3px 0px 0px rgba(45,45,45,0.1);
-  font-family: 'Patrick Hand', cursive;
+  border: none;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-accent;
+  font-family: 'Inter', sans-serif;
 }
 
-.text-primary { color: #ff4d4d !important; }
-.text-danger { color: #ff4d4d !important; }
+.text-primary { color: $accent !important; }
+.text-danger { color: $uni-error !important; }
 
 .empty-state {
   text-align: center;
@@ -960,8 +945,7 @@ onShow(() => {
 
 .empty-text {
   font-size: 28rpx;
-  color: #2d2d2d;
-  opacity: 0.6;
+  color: $muted-foreground;
 }
 
 .safe-bottom {

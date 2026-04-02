@@ -26,7 +26,7 @@
     <el-alert type="warning" :closable="true" show-icon style="margin: 0 24px 16px">
       <template #title>
         AI生成的饮食计划仅供参考，不能替代专业营养师或医生的建议。患有疾病者请遵医嘱。
-        <router-link to="/legal/disclaimer" style="color:#ff4d4d">详细声明</router-link>
+        <router-link to="/legal/disclaimer" style="color:#0052FF">详细声明</router-link>
       </template>
     </el-alert>
     <div class="plan-body">
@@ -231,7 +231,7 @@
           <h3>AI正在为您生成个性化饮食计划...</h3>
           <p>{{ getEstimatedTimeText() }}</p>
           <el-progress :percentage="Math.floor(progress)" :stroke-width="8" />
-          <p style="margin-top: 12px; font-size: 14px; color: #5a5a5a">
+          <p style="margin-top: 12px; font-size: 14px; color: #64748B">
             {{ progressText }}
           </p>
           <el-button
@@ -243,7 +243,7 @@
           >
             取消生成
           </el-button>
-          <p v-else style="margin-top: 16px; color: #5a5a5a; font-size: 14px">
+          <p v-else style="margin-top: 16px; color: #64748B; font-size: 14px">
             正在创建任务，请稍候...
           </p>
         </div>
@@ -284,7 +284,7 @@
               <div class="history-item-content" @click="loadHistoryDetail(item.planId)">
                 <h4>
                   {{ item.title }}
-                  <el-icon v-if="item.isFavorite" style="color: #ff4d4d; margin-left: 4px"
+                  <el-icon v-if="item.isFavorite" style="color: #0052FF; margin-left: 4px"
                     ><StarFilled
                   /></el-icon>
                 </h4>
@@ -1019,23 +1019,23 @@ const submitModifySuggestion = async () => {
 <style scoped>
 .diet-plan-view {
   min-height: 100vh;
-  background: #fdfbf7;
+  background: #FAFAFA;
   display: flex;
   flex-direction: column;
-  font-family: 'Patrick Hand', cursive;
+  font-family: 'Inter', sans-serif;
 }
 
 /* 顶部标题栏 */
 .plan-header {
   height: 60px;
-  background: #fff;
-  border-bottom: 2px solid #2d2d2d;
+  background: #FFFFFF;
+  border-bottom: 1px solid #E2E8F0;
   padding: 0 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-shrink: 0;
-  box-shadow: 4px 4px 0px 0px #2d2d2d;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.07);
   position: relative;
   z-index: 10;
 }
@@ -1049,16 +1049,16 @@ const submitModifySuggestion = async () => {
 .header-title {
   font-size: 20px;
   font-weight: 600;
-  color: #2d2d2d;
+  color: #0F172A;
   margin: 0;
   display: flex;
   align-items: center;
   gap: 8px;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+  font-family: 'Calistoga', serif;
 }
 
 .title-icon {
-  color: #2d5da1;
+  color: #0052FF;
   font-size: 24px;
 }
 
@@ -1093,33 +1093,33 @@ const submitModifySuggestion = async () => {
   gap: 8px;
   font-weight: 600;
   justify-content: space-between;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
-  color: #2d2d2d;
+  font-family: 'Calistoga', serif;
+  color: #0F172A;
 }
 
 /* 表单 */
 .form-section {
   margin-bottom: 32px;
   padding: 20px;
-  background: #fff;
-  border: 2px dashed #e5e0d8;
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
 }
 
 .section-title {
   font-size: 16px;
   font-weight: 600;
-  color: #2d2d2d;
+  color: #0F172A;
   margin-bottom: 16px;
   padding-left: 12px;
-  border-left: 4px solid #2d5da1;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+  border-left: 4px solid #0052FF;
+  font-family: 'Calistoga', serif;
 }
 
 .form-tip {
   display: block;
   font-size: 12px;
-  color: #5a5a5a;
+  color: #64748B;
   margin-top: 4px;
 }
 
@@ -1145,7 +1145,7 @@ const submitModifySuggestion = async () => {
 }
 
 .history-item-content:hover {
-  color: #2d5da1;
+  color: #0052FF;
 }
 
 .history-item-actions {
@@ -1153,15 +1153,15 @@ const submitModifySuggestion = async () => {
 }
 
 .history-item:hover {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0px 0px #2d2d2d;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.07);
 }
 
 .history-item h4 {
   margin: 0 0 8px 0;
   font-size: 16px;
-  color: #2d2d2d;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+  color: #0F172A;
+  font-family: 'Calistoga', serif;
 }
 
 .history-item p {
@@ -1173,9 +1173,9 @@ const submitModifySuggestion = async () => {
 /* Markdown内容 */
 .markdown-content {
   line-height: 1.8;
-  color: #2d2d2d;
+  color: #0F172A;
   font-size: 15px;
-  font-family: 'Patrick Hand', cursive;
+  font-family: 'Inter', sans-serif;
 }
 
 .markdown-content :deep(h1) {
@@ -1183,25 +1183,25 @@ const submitModifySuggestion = async () => {
   font-weight: 600;
   margin: 24px 0 16px;
   padding-bottom: 8px;
-  border-bottom: 3px solid #2d5da1;
-  color: #2d5da1;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+  border-bottom: 3px solid #0052FF;
+  color: #0052FF;
+  font-family: 'Calistoga', serif;
 }
 
 .markdown-content :deep(h2) {
   font-size: 24px;
   font-weight: 600;
   margin: 20px 0 12px;
-  color: #2d5da1;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+  color: #0052FF;
+  font-family: 'Calistoga', serif;
 }
 
 .markdown-content :deep(h3) {
   font-size: 20px;
   font-weight: 600;
   margin: 16px 0 8px;
-  color: #2d2d2d;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+  color: #0F172A;
+  font-family: 'Calistoga', serif;
 }
 
 .markdown-content :deep(p) {
@@ -1219,35 +1219,35 @@ const submitModifySuggestion = async () => {
 }
 
 .markdown-content :deep(strong) {
-  color: #ff4d4d;
+  color: #0052FF;
   font-weight: 600;
 }
 
 .markdown-content :deep(code) {
-  background: #fff9c4;
+  background: #F1F5F9;
   padding: 2px 6px;
   border-radius: 4px;
-  font-family: 'Consolas', 'Monaco', monospace;
+  font-family: 'JetBrains Mono', monospace;
   font-size: 0.9em;
-  color: #ff4d4d;
-  border: 1px solid #e5e0d8;
+  color: #0052FF;
+  border: 1px solid #E2E8F0;
 }
 
 .markdown-content :deep(pre) {
-  background: #fdfbf7;
+  background: #F1F5F9;
   padding: 16px;
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-  border: 2px solid #e5e0d8;
+  border-radius: 12px;
+  border: 1px solid #E2E8F0;
   overflow-x: auto;
   margin: 16px 0;
 }
 
 .markdown-content :deep(blockquote) {
-  border-left: 4px solid #2d5da1;
+  border-left: 4px solid #0052FF;
   padding-left: 16px;
   margin: 16px 0;
-  color: #2d2d2d;
-  background: #fff9c4;
+  color: #0F172A;
+  background: #F1F5F9;
   padding: 12px 16px;
   border-radius: 4px;
 }
@@ -1260,19 +1260,19 @@ const submitModifySuggestion = async () => {
 
 .markdown-content :deep(th),
 .markdown-content :deep(td) {
-  border: 2px solid #2d2d2d;
+  border: 1px solid #E2E8F0;
   padding: 12px;
   text-align: left;
 }
 
 .markdown-content :deep(th) {
-  background: #fff9c4;
+  background: #F1F5F9;
   font-weight: 600;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+  font-family: 'Calistoga', serif;
 }
 
 .markdown-content :deep(tr:hover) {
-  background: #fdfbf7;
+  background: #F1F5F9;
 }
 
 /* 加载状态 */
@@ -1287,7 +1287,7 @@ const submitModifySuggestion = async () => {
 
 .loading-icon {
   font-size: 48px;
-  color: #2d5da1;
+  color: #0052FF;
   animation: rotate 2s linear infinite;
 }
 
@@ -1302,12 +1302,12 @@ const submitModifySuggestion = async () => {
 
 .loading-content h3 {
   margin: 24px 0 12px;
-  color: #2d2d2d;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+  color: #0F172A;
+  font-family: 'Calistoga', serif;
 }
 
 .loading-content p {
-  color: #5a5a5a;
+  color: #64748B;
   margin-bottom: 24px;
 }
 
@@ -1328,20 +1328,20 @@ const submitModifySuggestion = async () => {
 </style>
 
 <style>
-/* 自定义MessageBox样式 - 手绘风格 */
+/* 自定义MessageBox样式 - 简约现代风格 */
 .custom-message-box {
   width: 420px !important;
   max-width: 90vw !important;
-  background: #fdfbf7 !important;
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px !important;
-  border: 2px solid #2d2d2d !important;
-  box-shadow: 6px 6px 0px 0px #2d2d2d !important;
+  background: #FAFAFA !important;
+  border-radius: 16px !important;
+  border: 1px solid #E2E8F0 !important;
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.07), 0 4px 6px -4px rgba(0,0,0,0.07) !important;
   position: fixed !important;
   top: 50% !important;
   left: 50% !important;
   transform: translate(-50%, -50%) !important;
   margin: 0 !important;
-  font-family: 'Patrick Hand', cursive !important;
+  font-family: 'Inter', sans-serif !important;
 }
 
 .custom-message-box .el-message-box__header {
@@ -1349,15 +1349,15 @@ const submitModifySuggestion = async () => {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
-  border-bottom: 2px dashed #e5e0d8 !important;
+  border-bottom: 1px solid #E2E8F0 !important;
 }
 
 .custom-message-box .el-message-box__title {
   font-size: 18px !important;
   font-weight: 600 !important;
   flex: 1 !important;
-  color: #2d2d2d !important;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive !important;
+  color: #0F172A !important;
+  font-family: 'Calistoga', serif !important;
 }
 
 .custom-message-box .el-message-box__headerbtn {
@@ -1369,7 +1369,7 @@ const submitModifySuggestion = async () => {
 
 .custom-message-box .el-message-box__content {
   padding: 10px 20px !important;
-  color: #5a5a5a !important;
+  color: #64748B !important;
   font-size: 14px !important;
   line-height: 1.6 !important;
 }

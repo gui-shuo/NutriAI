@@ -154,42 +154,43 @@ onShow(() => {
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .page {
   min-height: 100vh;
-  background: #fdfbf7;
+  background: $background;
   padding: 20rpx 24rpx;
-  font-family: 'Patrick Hand', cursive;
+  font-family: 'Inter', sans-serif;
 }
 
 .card {
-  background: #fff;
-  border-radius: 12rpx 18rpx 14rpx 20rpx;
+  background: $card;
+  border-radius: $radius-xl;
   padding: 30rpx;
   margin-bottom: 20rpx;
-  border: 2rpx solid #2d2d2d;
-  box-shadow: 4px 4px 0px 0px #2d2d2d;
+  border: 1rpx solid $border;
+  box-shadow: $shadow-sm;
 }
 
 .section-title {
   font-size: 32rpx;
   font-weight: 700;
-  color: #2d2d2d;
+  color: $foreground;
   display: block;
   margin-bottom: 8rpx;
-  font-family: 'Kalam', cursive;
+  font-family: 'Calistoga', cursive;
 }
+
 .section-desc {
   display: block;
   margin-bottom: 30rpx;
-  color: #2d2d2d;
-  opacity: 0.6;
+  color: $muted-foreground;
 }
 
 .bind-item {
   padding: 28rpx 0;
-  border-bottom: 2rpx dashed #e5e0d8;
+  border-bottom: 1rpx solid $border;
 }
+
 .bind-item:last-child { border-bottom: none; }
 
 .bind-info {
@@ -200,61 +201,66 @@ onShow(() => {
 .bind-icon {
   width: 72rpx;
   height: 72rpx;
-  border-radius: 18rpx 14rpx 20rpx 16rpx;
+  border-radius: $radius-lg;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 22rpx;
   font-weight: 600;
   color: #fff;
-  border: 2rpx solid #2d2d2d;
 }
-.wechat-icon { background: #ff4d4d; }
-.qq-icon { background: #2d5da1; }
+
+.wechat-icon { background: #07C160; }
+.qq-icon { background: $accent; }
 
 .bind-name {
   font-size: 28rpx;
-  color: #2d2d2d;
+  color: $foreground;
   display: block;
 }
+
 .bind-status { display: block; margin-top: 4rpx; }
 
 .btn-small {
   font-size: 24rpx;
   padding: 10rpx 28rpx;
-  border-radius: 14rpx 10rpx 16rpx 12rpx;
+  border-radius: $radius-full;
   line-height: 1.4;
   height: auto;
   min-height: 0;
-  border: 2rpx solid #2d2d2d;
-  font-family: 'Patrick Hand', cursive;
+  border: none;
+  font-family: 'Inter', sans-serif;
 }
+
 .btn-bind {
-  background: #ff4d4d;
+  background: $accent;
   color: #fff;
-  box-shadow: 3px 3px 0px 0px rgba(45,45,45,0.1);
+  box-shadow: $shadow-accent;
 }
+
 .btn-unbind {
-  background: #fdfbf7;
-  color: #2d2d2d;
+  background: $muted;
+  color: $foreground;
+  border: 1rpx solid $border;
 }
 
 .tips-card {
-  background: #fff9c4;
-  border: 2rpx solid #2d2d2d;
+  background: #EFF6FF;
+  border: 1rpx solid rgba(0, 82, 255, 0.1);
 }
+
 .tips-title {
   font-size: 28rpx;
   font-weight: 600;
-  color: #2d2d2d;
+  color: $foreground;
   display: block;
   margin-bottom: 16rpx;
-  font-family: 'Kalam', cursive;
+  font-family: 'Calistoga', cursive;
 }
+
 .tips-item {
   font-size: 24rpx;
-  color: #2d2d2d;
-  opacity: 0.7;
+  color: $muted-foreground;
   display: block;
   line-height: 2;
 }

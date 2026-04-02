@@ -417,17 +417,16 @@ onShow(() => {
 <style scoped lang="scss">
 .page {
   min-height: 100vh;
-  background: #fdfbf7;
+  background: $background;
   padding-bottom: 30rpx;
-  font-family: 'Patrick Hand', cursive;
+  font-family: 'Inter', sans-serif;
 }
 
 .user-header {
-  background: #ff4d4d;
+  background: $gradient-accent;
   padding: 50rpx 30rpx 40rpx;
   display: flex;
   align-items: center;
-  border-bottom: 3rpx solid #2d2d2d;
 }
 
 .avatar-wrap {
@@ -438,16 +437,16 @@ onShow(() => {
 .avatar {
   width: 120rpx;
   height: 120rpx;
-  border-radius: 50%;
-  border: 3rpx solid #2d2d2d;
+  border-radius: $radius-full;
+  border: 4rpx solid rgba(255, 255, 255, 0.3);
 }
 
 .avatar-edit {
   position: absolute;
   bottom: 0;
   right: 0;
-  background: rgba(0, 0, 0, 0.5);
-  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: $radius-full;
   width: 36rpx;
   height: 36rpx;
   font-size: 20rpx;
@@ -470,18 +469,18 @@ onShow(() => {
   font-size: 36rpx;
   font-weight: 700;
   color: #fff;
-  font-family: 'Kalam', cursive;
+  font-family: 'Calistoga', cursive;
 }
 
 .vip-badge-tag {
-  background: #2d2d2d;
-  color: #fff9c4;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
   font-size: 20rpx;
-  padding: 4rpx 12rpx;
-  border-radius: 4rpx 8rpx 6rpx 10rpx;
-  font-weight: 600;
-  border: 2rpx solid #2d2d2d;
-  font-family: 'Kalam', cursive;
+  padding: 4rpx 14rpx;
+  border-radius: $radius-full;
+  font-weight: 700;
+  letter-spacing: 2rpx;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 .username {
@@ -493,20 +492,21 @@ onShow(() => {
 .edit-btn {
   color: #fff;
   font-size: 26rpx;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.15);
   padding: 10rpx 24rpx;
-  border-radius: 14rpx 10rpx 16rpx 12rpx;
-  border: 2rpx solid rgba(255, 255, 255, 0.5);
-  font-family: 'Patrick Hand', cursive;
+  border-radius: $radius-full;
+  border: 2rpx solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(4px);
+  font-family: 'Inter', sans-serif;
 }
 
 .card {
-  background: #fff;
-  border-radius: 12rpx 18rpx 14rpx 20rpx;
+  background: $card;
+  border-radius: $radius-xl;
   margin: 20rpx 24rpx;
   padding: 10rpx 0;
-  border: 2rpx solid #2d2d2d;
-  box-shadow: 4px 4px 0px 0px #2d2d2d;
+  border: 1rpx solid $border;
+  box-shadow: $shadow-sm;
 }
 
 .edit-section {
@@ -514,17 +514,16 @@ onShow(() => {
 }
 
 .edit-section .input-group {
-  background: #fdfbf7;
-  border-radius: 8rpx 12rpx 10rpx 14rpx;
+  background: $muted;
+  border-radius: $radius-lg;
   padding: 16rpx 24rpx;
   margin-bottom: 16rpx;
-  border: 2rpx solid #e5e0d8;
+  border: 1rpx solid $border;
 }
 
 .edit-section .input-group .label {
   font-size: 24rpx;
-  color: #2d2d2d;
-  opacity: 0.6;
+  color: $muted-foreground;
   margin-bottom: 6rpx;
   display: block;
 }
@@ -532,27 +531,27 @@ onShow(() => {
 .edit-section .input-group input {
   height: 48rpx;
   font-size: 28rpx;
-  font-family: 'Patrick Hand', cursive;
+  font-family: 'Inter', sans-serif;
 }
 
 .picker-value {
   height: 48rpx;
   line-height: 48rpx;
   font-size: 28rpx;
-  color: #2d2d2d;
+  color: $foreground;
 }
 
 .save-btn {
   margin-top: 10rpx;
   height: 80rpx;
   line-height: 80rpx;
-  border-radius: 18rpx 12rpx 16rpx 14rpx;
+  border-radius: $radius-xl;
   font-size: 30rpx;
-  background: #ff4d4d;
+  background: $accent;
   color: #fff;
-  border: 2rpx solid #2d2d2d;
-  box-shadow: 3px 3px 0px 0px rgba(45,45,45,0.1);
-  font-family: 'Patrick Hand', cursive;
+  border: none;
+  box-shadow: $shadow-accent;
+  font-family: 'Inter', sans-serif;
 }
 
 .menu-card {
@@ -563,7 +562,7 @@ onShow(() => {
   display: flex;
   align-items: center;
   padding: 30rpx;
-  border-bottom: 2rpx dashed #e5e0d8;
+  border-bottom: 1rpx solid $border;
   position: relative;
 
   &:last-child {
@@ -571,7 +570,7 @@ onShow(() => {
   }
 
   &:active {
-    background: #fdfbf7;
+    background: $muted;
   }
 }
 
@@ -583,13 +582,13 @@ onShow(() => {
 .menu-text {
   flex: 1;
   font-size: 28rpx;
-  color: #2d2d2d;
-  font-family: 'Patrick Hand', cursive;
+  color: $foreground;
+  font-family: 'Inter', sans-serif;
 }
 
 .menu-arrow {
   font-size: 32rpx;
-  color: #e5e0d8;
+  color: $border;
 }
 
 .logout-wrap {
@@ -597,16 +596,16 @@ onShow(() => {
 }
 
 .btn-logout {
-  background: #fdfbf7;
-  color: #ff4d4d;
-  border: 2rpx solid #2d2d2d;
-  border-radius: 18rpx 14rpx 20rpx 12rpx;
+  background: $card;
+  color: $uni-error;
+  border: 1rpx solid $border;
+  border-radius: $radius-xl;
   height: 88rpx;
   line-height: 88rpx;
   font-size: 30rpx;
   text-align: center;
-  box-shadow: 4px 4px 0px 0px #2d2d2d;
-  font-family: 'Patrick Hand', cursive;
+  box-shadow: $shadow-sm;
+  font-family: 'Inter', sans-serif;
 }
 
 .btn-logout::after {
@@ -614,17 +613,16 @@ onShow(() => {
 }
 
 .btn-delete-account {
-  background: #fdfbf7;
-  color: #2d2d2d;
-  border: 2rpx dashed #2d2d2d;
-  border-radius: 18rpx 14rpx 20rpx 12rpx;
+  background: $card;
+  color: $muted-foreground;
+  border: 1rpx solid $border;
+  border-radius: $radius-xl;
   height: 88rpx;
   line-height: 88rpx;
   font-size: 28rpx;
   text-align: center;
   margin-top: 16rpx;
-  font-family: 'Patrick Hand', cursive;
-  opacity: 0.6;
+  font-family: 'Inter', sans-serif;
 }
 
 .btn-delete-account::after {
@@ -633,31 +631,31 @@ onShow(() => {
 
 .delete-dialog {
   .danger-title {
-    color: #ff4d4d;
+    color: $uni-error;
   }
 }
 
 .delete-warning {
-  background: #fff9c4;
-  border-radius: 8rpx 12rpx 10rpx 14rpx;
+  background: #FEF2F2;
+  border-radius: $radius-lg;
   padding: 24rpx;
   margin-bottom: 24rpx;
-  border: 2rpx dashed #ff4d4d;
+  border: 1rpx solid rgba(239, 68, 68, 0.2);
 }
 
 .warning-text {
   display: block;
   font-size: 26rpx;
-  color: #ff4d4d;
+  color: $uni-error;
   font-weight: 600;
   margin-bottom: 12rpx;
-  font-family: 'Kalam', cursive;
+  font-family: 'Inter', sans-serif;
 }
 
 .warning-item {
   display: block;
   font-size: 24rpx;
-  color: #2d2d2d;
+  color: $foreground;
   opacity: 0.7;
   line-height: 1.8;
 }
@@ -672,13 +670,13 @@ onShow(() => {
 
 .checkbox-icon {
   font-size: 36rpx;
-  color: #e5e0d8;
-  &.checked { color: #ff4d4d; }
+  color: $border;
+  &.checked { color: $uni-error; }
 }
 
 .checkbox-text {
   font-size: 24rpx;
-  color: #2d2d2d;
+  color: $foreground;
   opacity: 0.7;
   flex: 1;
   line-height: 1.6;
@@ -686,16 +684,16 @@ onShow(() => {
 
 .btn-delete-confirm {
   flex: 1;
-  background: #ff4d4d;
+  background: $uni-error;
   color: #fff;
-  border: 2rpx solid #2d2d2d;
-  border-radius: 18rpx 12rpx 16rpx 14rpx;
+  border: none;
+  border-radius: $radius-xl;
   height: 80rpx;
   line-height: 80rpx;
   font-size: 28rpx;
-  font-family: 'Patrick Hand', cursive;
+  font-family: 'Inter', sans-serif;
   &[disabled] {
-    opacity: 0.5;
+    opacity: 0.4;
   }
 }
 
@@ -703,14 +701,13 @@ onShow(() => {
   border: none;
 }
 
-/* Dialog Styles */
 .dialog-mask {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(15, 23, 42, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -718,12 +715,11 @@ onShow(() => {
 }
 
 .dialog {
-  background: #fdfbf7;
-  border-radius: 12rpx 20rpx 16rpx 22rpx;
+  background: $card;
+  border-radius: $radius-2xl;
   width: 600rpx;
   padding: 40rpx;
-  border: 2rpx solid #2d2d2d;
-  box-shadow: 6px 6px 0px 0px #2d2d2d;
+  box-shadow: $shadow-lg;
 }
 
 .dialog-title {
@@ -731,22 +727,21 @@ onShow(() => {
   font-weight: 700;
   text-align: center;
   margin-bottom: 30rpx;
-  color: #2d2d2d;
-  font-family: 'Kalam', cursive;
+  color: $foreground;
+  font-family: 'Calistoga', cursive;
 }
 
 .dialog .input-group {
-  background: #fff;
-  border-radius: 8rpx 12rpx 10rpx 14rpx;
+  background: $muted;
+  border-radius: $radius-lg;
   padding: 16rpx 24rpx;
   margin-bottom: 16rpx;
-  border: 2rpx solid #e5e0d8;
+  border: 1rpx solid $border;
 }
 
 .dialog .input-group .label {
   font-size: 24rpx;
-  color: #2d2d2d;
-  opacity: 0.6;
+  color: $muted-foreground;
   margin-bottom: 6rpx;
   display: block;
 }
@@ -754,7 +749,7 @@ onShow(() => {
 .dialog .input-group input {
   height: 48rpx;
   font-size: 28rpx;
-  font-family: 'Patrick Hand', cursive;
+  font-family: 'Inter', sans-serif;
 }
 
 .dialog-actions {
@@ -765,14 +760,14 @@ onShow(() => {
 
 .btn-dialog-cancel {
   flex: 1;
-  background: #e5e0d8;
-  color: #2d2d2d;
-  border: 2rpx solid #2d2d2d;
-  border-radius: 18rpx 12rpx 16rpx 14rpx;
+  background: $muted;
+  color: $foreground;
+  border: 1rpx solid $border;
+  border-radius: $radius-xl;
   height: 80rpx;
   line-height: 80rpx;
   font-size: 28rpx;
-  font-family: 'Patrick Hand', cursive;
+  font-family: 'Inter', sans-serif;
 }
 
 .btn-dialog-cancel::after {
@@ -781,15 +776,15 @@ onShow(() => {
 
 .btn-dialog-confirm {
   flex: 1;
-  background: #ff4d4d;
+  background: $accent;
   color: #fff;
-  border: 2rpx solid #2d2d2d;
-  border-radius: 18rpx 12rpx 16rpx 14rpx;
+  border: none;
+  border-radius: $radius-xl;
   height: 80rpx;
   line-height: 80rpx;
   font-size: 28rpx;
-  font-family: 'Patrick Hand', cursive;
-  box-shadow: 3px 3px 0px 0px rgba(45,45,45,0.1);
+  font-family: 'Inter', sans-serif;
+  box-shadow: $shadow-accent;
 }
 
 .btn-dialog-confirm::after {
@@ -820,21 +815,19 @@ onShow(() => {
 .about-name {
   font-size: 32rpx;
   font-weight: 700;
-  color: #2d2d2d;
-  font-family: 'Kalam', cursive;
+  color: $foreground;
+  font-family: 'Calistoga', cursive;
 }
 
 .about-version {
   margin-top: 8rpx;
-  color: #2d2d2d;
-  opacity: 0.6;
+  color: $muted-foreground;
 }
 
 .about-desc {
   line-height: 1.8;
   text-align: center;
-  color: #2d2d2d;
-  opacity: 0.7;
+  color: $muted-foreground;
 }
 
 .safe-bottom {

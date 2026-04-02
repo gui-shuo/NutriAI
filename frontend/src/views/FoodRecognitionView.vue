@@ -13,7 +13,7 @@
       <el-alert type="info" :closable="true" show-icon class="disclaimer-alert">
         <template #title>
           上传食物图片即可自动识别并获取完整营养成分数据，支持各类常见食物。营养数据仅供参考。
-          <router-link to="/legal/disclaimer" style="color:#2d5da1">详细声明</router-link>
+          <router-link to="/legal/disclaimer" style="color:#0052FF">详细声明</router-link>
         </template>
       </el-alert>
 
@@ -59,7 +59,7 @@
                   <div class="el-upload__text">拖拽图片到此处或 <em>点击上传</em></div>
                   <template #tip>
                     <div class="el-upload__tip">支持 JPG / PNG / GIF / WebP / BMP，大小不超过 5MB（大图将自动压缩）</div>
-                    <div class="el-upload__tip" style="color: #ff4d4d; margin-top: 4px;">💡 识别结果请以置信度为准，置信度越高结果越可靠</div>
+                    <div class="el-upload__tip" style="color: #0052FF; margin-top: 4px;">💡 识别结果请以置信度为准，置信度越高结果越可靠</div>
                   </template>
                 </el-upload>
 
@@ -747,9 +747,9 @@ onBeforeUnmount(() => {
 <style scoped>
 .food-recognition-view {
   min-height: 100vh;
-  background: #fdfbf7;
+  background: #FAFAFA;
   padding: 0 24px 40px;
-  font-family: 'Patrick Hand', cursive;
+  font-family: 'Inter', sans-serif;
 }
 
 /* 顶部导航栏 */
@@ -758,20 +758,20 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 16px;
   padding: 16px 0;
-  border-bottom: 2px dashed #e5e0d8;
+  border-bottom: 1px solid #E2E8F0;
   margin-bottom: 24px;
 }
 
 .topbar-title h2 {
   font-size: 24px;
   margin: 0;
-  color: #2d2d2d;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+  color: #0F172A;
+  font-family: 'Calistoga', serif;
 }
 
 .topbar-title p {
   font-size: 13px;
-  color: #5a5a5a;
+  color: #64748B;
   margin: 2px 0 0 0;
 }
 
@@ -793,10 +793,10 @@ onBeforeUnmount(() => {
 }
 
 .input-card {
-  border: 2px solid #2d2d2d;
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-  box-shadow: 4px 4px 0px 0px #2d2d2d;
-  background: #fff;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.07);
+  background: #FFFFFF;
 }
 
 .input-card :deep(.el-tabs__nav-wrap::after) {
@@ -811,7 +811,7 @@ onBeforeUnmount(() => {
 .input-tip {
   margin-top: 8px;
   font-size: 12px;
-  color: #5a5a5a;
+  color: #64748B;
 }
 
 .upload-demo {
@@ -819,14 +819,14 @@ onBeforeUnmount(() => {
 }
 
 .upload-demo :deep(.el-upload-dragger) {
-  border: 2px dashed #2d2d2d;
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-  background: #fdfbf7;
+  border: 2px dashed #E2E8F0;
+  border-radius: 12px;
+  background: #FAFAFA;
 }
 
 .upload-demo :deep(.el-upload-dragger:hover) {
-  border-color: #2d5da1;
-  background: #fff;
+  border-color: #0052FF;
+  background: #FFFFFF;
 }
 
 .preview-section {
@@ -843,9 +843,9 @@ onBeforeUnmount(() => {
 .preview-image {
   max-width: 100%;
   max-height: 260px;
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-  border: 2px solid #2d2d2d;
-  box-shadow: 4px 4px 0px 0px #2d2d2d;
+  border-radius: 12px;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.07);
 }
 
 .delete-image-btn {
@@ -857,24 +857,23 @@ onBeforeUnmount(() => {
 
 /* 快捷识别侧栏 */
 .quick-card {
-  border: 2px solid #2d2d2d;
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-  box-shadow: 4px 4px 0px 0px #2d2d2d;
-  background: #fff9c4;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.07);
+  background: #FFFFFF;
   height: fit-content;
-  transform: rotate(1deg);
 }
 
 .quick-card :deep(.el-card__header) {
   padding: 14px 16px;
-  border-bottom: 2px dashed #e5e0d8;
+  border-bottom: 1px solid #E2E8F0;
 }
 
 .quick-card h4 {
   margin: 0;
   font-size: 14px;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
-  color: #2d2d2d;
+  font-family: 'Calistoga', serif;
+  color: #0F172A;
 }
 
 .quick-tags {
@@ -889,17 +888,17 @@ onBeforeUnmount(() => {
 }
 
 .quick-tags .el-tag:hover {
-  transform: translateY(-2px);
-  box-shadow: 2px 2px 0px 0px #2d2d2d;
+  transform: translateY(-1px);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
 /* 加载状态 */
 .loading-card {
-  border: 2px solid #2d2d2d;
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-  box-shadow: 4px 4px 0px 0px #2d2d2d;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.07);
   margin-bottom: 24px;
-  background: #fff;
+  background: #FFFFFF;
 }
 
 .loading-content {
@@ -909,7 +908,7 @@ onBeforeUnmount(() => {
 
 .loading-icon {
   font-size: 48px;
-  color: #2d5da1;
+  color: #0052FF;
   animation: rotate 1s linear infinite;
 }
 
@@ -920,21 +919,21 @@ onBeforeUnmount(() => {
 
 .loading-content h3 {
   margin: 16px 0 8px 0;
-  color: #2d2d2d;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+  color: #0F172A;
+  font-family: 'Calistoga', serif;
 }
 
 .loading-content p {
   margin: 0;
-  color: #5a5a5a;
+  color: #64748B;
 }
 
 /* 空状态 */
 .empty-card {
-  border: 2px dashed #e5e0d8;
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
   margin-bottom: 24px;
-  background: #fff;
+  background: #FFFFFF;
 }
 
 .empty-content {
@@ -944,14 +943,14 @@ onBeforeUnmount(() => {
 
 .empty-content h3 {
   margin: 20px 0 8px 0;
-  color: #5a5a5a;
+  color: #64748B;
   font-size: 18px;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+  font-family: 'Calistoga', serif;
 }
 
 .empty-content p {
   margin: 0;
-  color: #5a5a5a;
+  color: #64748B;
   font-size: 14px;
 }
 
@@ -970,8 +969,8 @@ onBeforeUnmount(() => {
 .result-bar h3 {
   margin: 0;
   font-size: 18px;
-  color: #2d2d2d;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+  color: #0F172A;
+  font-family: 'Calistoga', serif;
 }
 
 .result-bar-right {
@@ -982,7 +981,7 @@ onBeforeUnmount(() => {
 
 .recognition-time {
   font-size: 12px;
-  color: #5a5a5a;
+  color: #64748B;
 }
 
 /* 结果卡片网格 — 多食物时并排 */
@@ -993,21 +992,16 @@ onBeforeUnmount(() => {
 }
 
 .food-result-card {
-  border: 2px solid #2d2d2d;
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-  box-shadow: 4px 4px 0px 0px #2d2d2d;
-  background: #fff;
-  transform: rotate(-0.3deg);
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.07);
+  background: #FFFFFF;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.food-result-card:nth-child(even) {
-  transform: rotate(0.3deg);
-}
-
 .food-result-card:hover {
-  transform: translate(2px, 2px) rotate(0deg);
-  box-shadow: 2px 2px 0px 0px #2d2d2d;
+  transform: translateY(-4px);
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.07), 0 4px 6px -4px rgba(0,0,0,0.07);
 }
 
 .food-result-card :deep(.el-card__body) {
@@ -1020,7 +1014,7 @@ onBeforeUnmount(() => {
   align-items: center;
   margin-bottom: 16px;
   padding-bottom: 12px;
-  border-bottom: 2px dashed #e5e0d8;
+  border-bottom: 1px solid #E2E8F0;
 }
 
 .food-name-wrap {
@@ -1032,8 +1026,8 @@ onBeforeUnmount(() => {
 .food-header h4 {
   margin: 0;
   font-size: 18px;
-  color: #2d2d2d;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+  color: #0F172A;
+  font-family: 'Calistoga', serif;
 }
 
 /* 核心营养横向展示 */
@@ -1047,34 +1041,34 @@ onBeforeUnmount(() => {
 .core-item {
   text-align: center;
   padding: 12px 6px;
-  background: #fdfbf7;
-  border: 1px solid #e5e0d8;
-  border-radius: 30px 2px 30px 2px / 2px 30px 2px 30px;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
 }
 
 .energy-item {
-  background: #fff9c4;
-  border: 2px solid #2d2d2d;
-  box-shadow: 2px 2px 0px 0px #2d2d2d;
+  background: rgba(0,82,255,0.06);
+  border: 1px solid #0052FF;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
 .core-label {
   font-size: 12px;
-  color: #5a5a5a;
+  color: #64748B;
   margin-bottom: 4px;
 }
 
 .core-value {
   font-size: 18px;
   font-weight: bold;
-  color: #2d2d2d;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+  color: #0F172A;
+  font-family: 'Calistoga', serif;
 }
 
 .core-value .unit {
   font-size: 11px;
   font-weight: normal;
-  color: #5a5a5a;
+  color: #64748B;
 }
 
 /* 折叠面板 */
@@ -1086,10 +1080,10 @@ onBeforeUnmount(() => {
 .detail-collapse :deep(.el-collapse-item__header) {
   font-size: 13px;
   font-weight: 600;
-  color: #2d2d2d;
+  color: #0F172A;
   height: 36px;
   line-height: 36px;
-  font-family: 'Patrick Hand', cursive;
+  font-family: 'Inter', sans-serif;
 }
 
 .detail-collapse :deep(.el-collapse-item__wrap) {
@@ -1110,28 +1104,28 @@ onBeforeUnmount(() => {
   flex-direction: column;
   align-items: center;
   padding: 8px 4px;
-  background: #fdfbf7;
-  border: 1px solid #e5e0d8;
-  border-radius: 30px 2px 30px 2px / 2px 30px 2px 30px;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
 }
 
 .label-sm {
   font-size: 11px;
-  color: #5a5a5a;
+  color: #64748B;
   margin-bottom: 2px;
 }
 
 .value-sm {
   font-size: 13px;
   font-weight: 600;
-  color: #2d2d2d;
+  color: #0F172A;
 }
 
 .value-sm em {
   font-style: normal;
   font-size: 10px;
   font-weight: normal;
-  color: #5a5a5a;
+  color: #64748B;
 }
 
 .data-source {
@@ -1139,9 +1133,9 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 4px;
   font-size: 12px;
-  color: #5a5a5a;
+  color: #64748B;
   padding-top: 8px;
-  border-top: 2px dashed #e5e0d8;
+  border-top: 1px solid #E2E8F0;
 }
 
 /* 历史区域 — 卡片网格 */
@@ -1159,8 +1153,8 @@ onBeforeUnmount(() => {
 .history-bar h3 {
   margin: 0;
   font-size: 18px;
-  color: #2d2d2d;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+  color: #0F172A;
+  font-family: 'Calistoga', serif;
 }
 
 .history-grid {
@@ -1170,16 +1164,16 @@ onBeforeUnmount(() => {
 }
 
 .history-card-item {
-  border: 2px solid #2d2d2d;
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-  box-shadow: 3px 3px 0px 0px #2d2d2d;
-  background: #fff;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.07);
+  background: #FFFFFF;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .history-card-item:hover {
-  transform: translate(2px, 2px);
-  box-shadow: 1px 1px 0px 0px #2d2d2d;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.07), 0 4px 6px -4px rgba(0,0,0,0.07);
 }
 
 .history-card-item :deep(.el-card__body) {
@@ -1203,7 +1197,7 @@ onBeforeUnmount(() => {
 
 .history-text {
   font-size: 14px;
-  color: #2d2d2d;
+  color: #0F172A;
   cursor: pointer;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1211,7 +1205,7 @@ onBeforeUnmount(() => {
 }
 
 .history-text:hover {
-  color: #2d5da1;
+  color: #0052FF;
 }
 
 .history-actions {
@@ -1223,27 +1217,27 @@ onBeforeUnmount(() => {
 
 .history-time {
   font-size: 12px;
-  color: #5a5a5a;
+  color: #64748B;
   white-space: nowrap;
 }
 
 .expand-icon {
   cursor: pointer;
-  color: #5a5a5a;
+  color: #64748B;
   font-size: 16px;
 }
 
 .expand-icon:hover {
-  color: #2d5da1;
+  color: #0052FF;
 }
 
 /* 历史详情 */
 .history-detail {
   margin-top: 12px;
   padding: 14px;
-  background: #fff9c4;
-  border-radius: 30px 2px 30px 2px / 2px 30px 2px 30px;
-  border-left: 4px solid #2d5da1;
+  background: #F1F5F9;
+  border-radius: 8px;
+  border-left: 4px solid #0052FF;
 }
 
 .detail-info {
@@ -1259,7 +1253,7 @@ onBeforeUnmount(() => {
 
 .detail-label {
   font-weight: 600;
-  color: #2d2d2d;
+  color: #0F172A;
   margin-right: 8px;
   min-width: 65px;
 }
@@ -1272,16 +1266,16 @@ onBeforeUnmount(() => {
 .result-detail h5 {
   margin: 0 0 8px 0;
   font-size: 13px;
-  color: #2d2d2d;
+  color: #0F172A;
   font-weight: 600;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+  font-family: 'Calistoga', serif;
 }
 
 .history-image-wrapper {
   text-align: center;
-  background: #fff;
-  border: 1px solid #e5e0d8;
-  border-radius: 30px 2px 30px 2px / 2px 30px 2px 30px;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
   padding: 8px;
 }
 
@@ -1293,10 +1287,10 @@ onBeforeUnmount(() => {
 }
 
 .history-food-item {
-  background: #fff;
+  background: #FFFFFF;
   padding: 10px;
-  border: 1px solid #e5e0d8;
-  border-radius: 30px 2px 30px 2px / 2px 30px 2px 30px;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
   margin-bottom: 8px;
 }
 
@@ -1313,7 +1307,7 @@ onBeforeUnmount(() => {
 
 .food-name-row strong {
   font-size: 14px;
-  color: #2d2d2d;
+  color: #0F172A;
 }
 
 .nutrition-mini-grid {
@@ -1321,14 +1315,14 @@ onBeforeUnmount(() => {
   grid-template-columns: repeat(4, 1fr);
   gap: 6px;
   font-size: 12px;
-  color: #2d2d2d;
+  color: #0F172A;
 }
 
 .nutrition-mini-grid span {
   padding: 3px 6px;
-  background: #fdfbf7;
-  border: 1px solid #e5e0d8;
-  border-radius: 30px 2px 30px 2px / 2px 30px 2px 30px;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  border-radius: 6px;
   text-align: center;
 }
 
@@ -1337,7 +1331,7 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 4px;
   font-size: 11px;
-  color: #5a5a5a;
+  color: #64748B;
   margin-top: 4px;
 }
 

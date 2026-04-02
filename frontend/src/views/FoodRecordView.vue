@@ -262,9 +262,9 @@ onBeforeUnmount(() => {
 <style scoped lang="scss">
 .food-record-container {
   min-height: 100vh;
-  background: #fdfbf7;
+  background: #FAFAFA;
   padding: 0 24px 40px;
-  font-family: 'Patrick Hand', cursive;
+  font-family: 'Inter', sans-serif;
 }
 
 .food-record-layout {
@@ -278,28 +278,28 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 16px;
   padding: 16px 0;
-  border-bottom: 2px dashed #e5e0d8;
+  border-bottom: 1px solid #E2E8F0;
   margin-bottom: 24px;
 
   :deep(.el-button) {
-    color: #2d2d2d;
-    font-family: 'Patrick Hand', cursive;
-    &:hover { color: #2d5da1; }
+    color: #0F172A;
+    font-family: 'Inter', sans-serif;
+    &:hover { color: #0052FF; }
   }
 }
 
 .topbar-title h2 {
   font-size: 24px;
   margin: 0;
-  color: #2d2d2d;
-  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+  color: #0F172A;
+  font-family: 'Calistoga', serif;
 }
 
 .topbar-title p {
   font-size: 13px;
-  color: #5a5a5a;
+  color: #64748B;
   margin: 2px 0 0 0;
-  font-family: 'Patrick Hand', cursive;
+  font-family: 'Inter', sans-serif;
 }
 
 /* 两栏主布局 */
@@ -323,11 +323,11 @@ onBeforeUnmount(() => {
   gap: 16px;
   margin-bottom: 20px;
   padding: 16px 20px;
-  background: #fff;
-  border: 2px solid #2d2d2d;
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-  box-shadow: 4px 4px 0px 0px #2d2d2d;
-  font-family: 'Patrick Hand', cursive;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.07);
+  font-family: 'Inter', sans-serif;
 }
 
 .toolbar-filters {
@@ -375,23 +375,23 @@ onBeforeUnmount(() => {
 </style>
 
 <style lang="scss">
-// 删除确认框样式（全局 - 手绘风格）
+// 删除确认框样式（全局 - 简约现代风格）
 .el-message-box.food-delete-confirm {
   width: 440px !important;
   max-width: 90vw !important;
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px !important;
+  border-radius: 16px !important;
   padding: 0 !important;
-  background: #fdfbf7 !important;
-  box-shadow: 6px 6px 0px 0px #2d2d2d !important;
-  border: 2px solid #2d2d2d !important;
+  background: #FAFAFA !important;
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.07), 0 4px 6px -4px rgba(0,0,0,0.07) !important;
+  border: 1px solid #E2E8F0 !important;
   overflow: hidden !important;
-  font-family: 'Patrick Hand', cursive !important;
+  font-family: 'Inter', sans-serif !important;
 
   .el-message-box__header {
     position: relative !important;
     padding: 20px 50px 16px 20px !important;
-    background: #fdfbf7 !important;
-    border-bottom: 2px dashed #e5e0d8 !important;
+    background: #FAFAFA !important;
+    border-bottom: 1px solid #E2E8F0 !important;
     display: flex !important;
     align-items: center !important;
   }
@@ -399,8 +399,8 @@ onBeforeUnmount(() => {
   .el-message-box__title {
     font-size: 18px !important;
     font-weight: 600 !important;
-    color: #2d2d2d !important;
-    font-family: 'Kalam', 'ZCOOL KuaiLe', cursive !important;
+    color: #0F172A !important;
+    font-family: 'Calistoga', serif !important;
     flex: 1 !important;
     line-height: 1.4 !important;
   }
@@ -415,21 +415,21 @@ onBeforeUnmount(() => {
     margin: 0 !important;
 
     .el-message-box__close {
-      color: #5a5a5a !important;
+      color: #64748B !important;
       font-size: 16px !important;
       width: 20px !important;
       height: 20px !important;
       line-height: 20px !important;
 
       &:hover {
-        color: #2d2d2d !important;
+        color: #0F172A !important;
       }
     }
   }
 
   .el-message-box__content {
     padding: 8px 20px 20px !important;
-    background: #fdfbf7 !important;
+    background: #FAFAFA !important;
   }
 
   .el-message-box__container {
@@ -442,17 +442,17 @@ onBeforeUnmount(() => {
       flex-shrink: 0 !important;
 
       &.el-message-box-icon--warning {
-        color: #ff4d4d !important;
+        color: #0052FF !important;
       }
     }
   }
 
   .el-message-box__message {
-    color: #5a5a5a !important;
+    color: #64748B !important;
     font-size: 14px !important;
     line-height: 1.6 !important;
     padding-left: 4px !important;
-    font-family: 'Patrick Hand', cursive !important;
+    font-family: 'Inter', sans-serif !important;
 
     p {
       margin: 0 !important;
@@ -462,7 +462,7 @@ onBeforeUnmount(() => {
 
   .el-message-box__btns {
     padding: 0 20px 20px !important;
-    background: #fdfbf7 !important;
+    background: #FAFAFA !important;
     display: flex !important;
     justify-content: flex-end !important;
     gap: 12px !important;
@@ -471,45 +471,45 @@ onBeforeUnmount(() => {
     .el-button {
       margin: 0 !important;
       padding: 10px 24px !important;
-      border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px !important;
+      border-radius: 8px !important;
       font-size: 14px !important;
       font-weight: 500 !important;
-      font-family: 'Patrick Hand', cursive !important;
+      font-family: 'Inter', sans-serif !important;
       transition: transform 0.15s ease, box-shadow 0.15s ease !important;
       min-width: 90px !important;
-      border: 2px solid #2d2d2d !important;
+      border: 1px solid #E2E8F0 !important;
 
       &.el-button--primary {
-        background: #ff4d4d !important;
-        border-color: #2d2d2d !important;
+        background: linear-gradient(135deg, #0052FF, #4D7CFF) !important;
+        border-color: transparent !important;
         color: #ffffff !important;
-        box-shadow: 3px 3px 0px 0px #2d2d2d !important;
+        box-shadow: 0 4px 14px 0 rgba(0,82,255,0.39) !important;
 
         &:hover {
-          background: #e04343 !important;
-          border-color: #2d2d2d !important;
-          box-shadow: 1px 1px 0px 0px #2d2d2d !important;
-          transform: translate(2px, 2px) !important;
+          background: linear-gradient(135deg, #0047E0, #3D6CEF) !important;
+          border-color: transparent !important;
+          box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.07) !important;
+          transform: translateY(-1px) !important;
         }
 
         &:active {
-          background: #cc3b3b !important;
-          border-color: #2d2d2d !important;
+          background: linear-gradient(135deg, #003CC0, #2D5CDF) !important;
+          border-color: transparent !important;
         }
       }
 
       &.el-button--default {
-        background: #fdfbf7 !important;
-        border-color: #2d2d2d !important;
-        color: #5a5a5a !important;
-        box-shadow: 3px 3px 0px 0px #2d2d2d !important;
+        background: #FFFFFF !important;
+        border-color: #E2E8F0 !important;
+        color: #64748B !important;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
 
         &:hover {
-          color: #2d2d2d !important;
-          border-color: #2d2d2d !important;
-          background: #fff !important;
-          box-shadow: 1px 1px 0px 0px #2d2d2d !important;
-          transform: translate(2px, 2px) !important;
+          color: #0F172A !important;
+          border-color: #E2E8F0 !important;
+          background: #FFFFFF !important;
+          box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.07) !important;
+          transform: translateY(-1px) !important;
         }
       }
     }

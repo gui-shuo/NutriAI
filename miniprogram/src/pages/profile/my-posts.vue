@@ -124,12 +124,12 @@ onReachBottom(() => {
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .page {
   min-height: 100vh;
-  background: #fdfbf7;
+  background: $background;
   padding: 20rpx 24rpx;
-  font-family: 'Patrick Hand', cursive;
+  font-family: 'Inter', sans-serif;
 }
 
 .loading-state, .empty-state {
@@ -139,61 +139,57 @@ onReachBottom(() => {
   justify-content: center;
   padding: 120rpx 0;
 }
+
 .empty-icon { font-size: 80rpx; margin-bottom: 20rpx; }
-.empty-text { font-size: 28rpx; color: #2d2d2d; margin-bottom: 30rpx; }
+.empty-text { font-size: 28rpx; color: $muted-foreground; margin-bottom: 30rpx; }
+
 .btn-create {
   width: 240rpx;
   height: 72rpx;
   font-size: 28rpx;
-  border-radius: 18rpx 12rpx 16rpx 10rpx;
-  background: #ff4d4d;
+  border-radius: $radius-full;
+  background: $accent;
   color: #fff;
-  border: 2rpx solid #2d2d2d;
-  box-shadow: 3px 3px 0px 0px rgba(45,45,45,0.1);
-  font-family: 'Patrick Hand', cursive;
+  border: none;
+  box-shadow: $shadow-accent;
+  font-family: 'Inter', sans-serif;
 }
 
 .post-card {
-  background: #fff9c4;
-  border-radius: 4rpx 20rpx 12rpx 18rpx;
+  background: $card;
+  border-radius: $radius-xl;
   padding: 28rpx;
   margin-bottom: 24rpx;
-  border: 2rpx solid #2d2d2d;
-  box-shadow: 4px 4px 0px 0px #2d2d2d;
+  border: 1rpx solid $border;
+  box-shadow: $shadow-sm;
   position: relative;
-}
-.post-card::before {
-  content: '📌';
-  position: absolute;
-  top: -16rpx;
-  right: 24rpx;
-  font-size: 32rpx;
 }
 
 .post-header { margin-bottom: 12rpx; }
+
 .post-category {
   font-size: 22rpx;
-  color: #ff4d4d;
-  background: rgba(255,77,77,0.08);
+  color: $accent;
+  background: rgba(0, 82, 255, 0.06);
   padding: 4rpx 16rpx;
-  border-radius: 10rpx 6rpx 12rpx 8rpx;
-  border: 1rpx solid #ff4d4d;
-  font-family: 'Patrick Hand', cursive;
+  border-radius: $radius-full;
+  font-family: 'JetBrains Mono', monospace;
 }
-.post-time { font-size: 24rpx; color: #2d2d2d; opacity: 0.5; }
+
+.post-time { font-size: 24rpx; color: $muted-foreground; }
 
 .post-title {
   font-size: 32rpx;
   font-weight: 600;
-  color: #2d2d2d;
+  color: $foreground;
   display: block;
   margin-bottom: 10rpx;
-  font-family: 'Kalam', cursive;
+  font-family: 'Calistoga', cursive;
 }
+
 .post-content {
   font-size: 28rpx;
-  color: #2d2d2d;
-  opacity: 0.7;
+  color: $muted-foreground;
   line-height: 1.6;
   display: block;
   margin-bottom: 16rpx;
@@ -204,45 +200,45 @@ onReachBottom(() => {
   gap: 12rpx;
   margin-bottom: 16rpx;
 }
+
 .post-img {
   width: 200rpx;
   height: 200rpx;
-  border-radius: 8rpx 12rpx 10rpx 14rpx;
-  background: #fdfbf7;
-  border: 2rpx solid #2d2d2d;
+  border-radius: $radius-lg;
+  background: $muted;
 }
+
 .more-images {
   width: 200rpx;
   height: 200rpx;
-  border-radius: 8rpx 12rpx 10rpx 14rpx;
-  background: #fdfbf7;
-  border: 2rpx dashed #2d2d2d;
+  border-radius: $radius-lg;
+  background: $muted;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 28rpx;
-  color: #2d2d2d;
-  font-family: 'Kalam', cursive;
+  color: $muted-foreground;
+  font-family: 'Inter', sans-serif;
 }
 
 .post-stats {
   gap: 30rpx;
   margin-bottom: 12rpx;
 }
-.stat-item { font-size: 24rpx; color: #2d2d2d; opacity: 0.6; }
+
+.stat-item { font-size: 24rpx; color: $muted-foreground; }
 
 .post-actions { text-align: right; }
+
 .delete-btn {
   font-size: 24rpx;
-  color: #ff4d4d;
+  color: $uni-error;
   padding: 8rpx 16rpx;
-  border-bottom: 2rpx dashed #ff4d4d;
 }
 
 .no-more {
   text-align: center;
   padding: 30rpx 0;
-  color: #2d2d2d;
-  opacity: 0.5;
+  color: $muted-foreground;
 }
 </style>
