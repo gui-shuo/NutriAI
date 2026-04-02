@@ -15,4 +15,6 @@ public interface DietPlanTaskRepository extends JpaRepository<DietPlanTask, Long
     List<DietPlanTask> findByUserIdOrderByCreatedAtDesc(Long userId);
     
     List<DietPlanTask> findByUserIdAndStatusOrderByCreatedAtDesc(Long userId, String status);
+
+    void deleteAllByUserId(Long userId);
 }

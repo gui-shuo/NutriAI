@@ -54,4 +54,6 @@ public interface GrowthRecordRepository extends JpaRepository<GrowthRecord, Long
            "ORDER BY month")
     List<Object[]> getMonthlyGrowthStats(@Param("userId") Long userId, 
                                          @Param("startDate") LocalDateTime startDate);
+
+    void deleteAllByUserId(Long userId);
 }

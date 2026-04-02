@@ -21,4 +21,6 @@ public interface FoodRecognitionHistoryRepository extends JpaRepository<FoodReco
      * 根据用户ID查询最近N条记录
      */
     List<FoodRecognitionHistory> findTop10ByUserIdOrderByCreatedAtDesc(Long userId);
+
+    void deleteAllByUserId(Long userId);
 }

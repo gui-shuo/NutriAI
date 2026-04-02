@@ -17,4 +17,5 @@ public interface CommunityLikeRepository extends JpaRepository<CommunityLike, Lo
     List<CommunityLike> findByUserIdAndTargetTypeAndTargetIdIn(Long userId, String targetType, List<Long> targetIds);
 
     void deleteByTargetTypeAndTargetId(String targetType, Long targetId);
+    void deleteAllByUserId(Long userId);
 }

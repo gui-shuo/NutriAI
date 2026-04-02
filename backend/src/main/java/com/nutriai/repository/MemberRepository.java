@@ -54,4 +54,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Modifying
     @Query("UPDATE Member m SET m.invitationCount = m.invitationCount + 1 WHERE m.id = :memberId")
     void incrementInvitationCount(@Param("memberId") Long memberId);
+
+    void deleteByUserId(Long userId);
 }

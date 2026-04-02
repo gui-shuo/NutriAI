@@ -42,4 +42,6 @@ public interface VipOrderRepository extends JpaRepository<VipOrder, Long> {
      * 统计用户成功支付订单数
      */
     long countByUserIdAndPaymentStatus(Long userId, String paymentStatus);
+
+    void deleteAllByUserId(Long userId);
 }

@@ -24,4 +24,5 @@ public interface CommunityCommentRepository extends JpaRepository<CommunityComme
     @Modifying
     @Query("UPDATE CommunityComment c SET c.likesCount = c.likesCount + :delta WHERE c.id = :commentId")
     void updateLikesCount(Long commentId, int delta);
+    void deleteAllByUserId(Long userId);
 }

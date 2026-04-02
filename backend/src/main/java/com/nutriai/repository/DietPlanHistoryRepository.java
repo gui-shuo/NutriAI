@@ -16,4 +16,6 @@ public interface DietPlanHistoryRepository extends JpaRepository<DietPlanHistory
     Page<DietPlanHistory> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
     
     Page<DietPlanHistory> findByUserIdAndIsFavoriteTrueOrderByCreatedAtDesc(Long userId, Pageable pageable);
+
+    void deleteAllByUserId(Long userId);
 }

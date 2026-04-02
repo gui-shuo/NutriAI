@@ -131,6 +131,24 @@ public class UserController {
         HealthProfileResponse profile = healthProfileService.saveHealthProfile(userId, request);
         return ApiResponse.success("健康档案保存成功", profile);
     }
+
+    /**
+     * 注销账号
+     */
+    @PostMapping("/delete-account")
+    public ApiResponse<Void> deleteAccount(
+            @RequestBody java.util.Map<String, String> body,
+            HttpServletRequest httpRequest) {
+        Long userId = getUserIdFromToken(httpRequest);
+        String password = body.get("password");
+        if (password == null || password.isBlank()) {
+            return ApiResponse.error(400, "请输入密码确认注销");
+        }
+        userService.deleteAccount(userId, password);
+        ApiResponse<Void> response = ApiResponse.success();
+        response.setMessage("账号已注销");
+        return response;
+    }
     
     /**
      * 从Token中获取用户ID（由JwtAuthenticationFilter注入）

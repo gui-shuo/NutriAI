@@ -27,6 +27,9 @@
 
         <!-- 账号绑定 -->
         <AccountBinding v-if="activeMenu === 'bindAccount'" />
+
+        <!-- 注销账号 -->
+        <DeleteAccount v-if="activeMenu === 'deleteAccount'" />
       </div>
     </div>
   </div>
@@ -41,6 +44,7 @@ import PasswordChange from '@/components/profile/PasswordChange.vue'
 import HealthRecord from '@/components/profile/HealthRecord.vue'
 import AddressManager from '@/components/profile/AddressManager.vue'
 import AccountBinding from '@/components/profile/AccountBinding.vue'
+import DeleteAccount from '@/components/profile/DeleteAccount.vue'
 
 // 当前激活的菜单
 const activeMenu = ref('info')

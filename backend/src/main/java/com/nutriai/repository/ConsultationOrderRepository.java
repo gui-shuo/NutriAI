@@ -39,4 +39,6 @@ public interface ConsultationOrderRepository extends JpaRepository<ConsultationO
 
     @Query("SELECT COUNT(o) FROM ConsultationOrder o WHERE o.nutritionistId = :nutritionistId AND o.status = 'COMPLETED'")
     Long countCompletedByNutritionistId(@Param("nutritionistId") Long nutritionistId);
+
+    void deleteAllByUserId(Long userId);
 }

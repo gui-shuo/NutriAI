@@ -50,4 +50,6 @@ public interface InvitationRepository extends JpaRepository<Invitation, Long> {
      * 查询待发放奖励的邀请
      */
     List<Invitation> findByStatusAndIsRewardedFalse(String status);
+
+    void deleteAllByInviterIdOrInviteeId(Long inviterId, Long inviteeId);
 }

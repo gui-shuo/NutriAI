@@ -97,4 +97,6 @@ public interface AIChatLogRepository extends JpaRepository<AIChatLog, Long> {
            "WHERE l.createdAt BETWEEN :startDate AND :endDate " +
            "GROUP BY DATE(l.createdAt) ORDER BY date")
     List<Object[]> countByDateRange(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
+    void deleteAllByUserId(Long userId);
 }

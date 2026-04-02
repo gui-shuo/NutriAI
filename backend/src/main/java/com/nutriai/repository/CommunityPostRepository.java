@@ -28,4 +28,5 @@ public interface CommunityPostRepository extends JpaRepository<CommunityPost, Lo
     @Modifying
     @Query("UPDATE CommunityPost p SET p.commentsCount = p.commentsCount + :delta WHERE p.id = :postId")
     void updateCommentsCount(Long postId, int delta);
+    void deleteAllByUserId(Long userId);
 }

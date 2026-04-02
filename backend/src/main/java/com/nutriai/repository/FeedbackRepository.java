@@ -22,4 +22,5 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
     Page<Feedback> findByStatusAndTypeOrderByCreatedAtDesc(String status, String type, Pageable pageable);
 
     long countByStatus(String status);
+    void deleteAllByUserId(Long userId);
 }

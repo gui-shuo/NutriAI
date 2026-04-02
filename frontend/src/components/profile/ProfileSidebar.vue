@@ -55,6 +55,11 @@
         <el-icon><Link /></el-icon>
         <span>账号绑定</span>
       </el-menu-item>
+
+      <el-menu-item index="deleteAccount" class="danger-menu-item">
+        <el-icon><Delete /></el-icon>
+        <span>注销账号</span>
+      </el-menu-item>
     </el-menu>
 
     <!-- 返回首页按钮 -->
@@ -70,7 +75,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { Edit, User, Lock, TrendCharts, HomeFilled, Location, Link } from '@element-plus/icons-vue'
+import { Edit, User, Lock, TrendCharts, HomeFilled, Location, Link, Delete } from '@element-plus/icons-vue'
 import { useAuthStore } from '@/stores/auth'
 
 defineProps({
@@ -183,6 +188,27 @@ const handleSelect = index => {
 
       .el-icon {
         color: white;
+      }
+    }
+
+    &.danger-menu-item {
+      color: #f56c6c;
+
+      .el-icon {
+        color: #f56c6c;
+      }
+
+      &:hover {
+        background: #fef0f0;
+      }
+
+      &.is-active {
+        background: #f56c6c;
+        color: white;
+
+        .el-icon {
+          color: white;
+        }
       }
     }
 

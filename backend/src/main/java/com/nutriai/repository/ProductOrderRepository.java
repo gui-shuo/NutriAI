@@ -20,4 +20,6 @@ public interface ProductOrderRepository extends JpaRepository<ProductOrder, Long
 
     @Query("SELECT o FROM ProductOrder o WHERE o.paymentStatus = 'PENDING' AND o.expireTime < :now")
     List<ProductOrder> findExpiredPendingOrders(LocalDateTime now);
+
+    void deleteAllByUserId(Long userId);
 }

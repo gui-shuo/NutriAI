@@ -15,4 +15,6 @@ public interface HealthProfileRepository extends JpaRepository<HealthProfile, Lo
     Optional<HealthProfile> findByUserId(Long userId);
 
     boolean existsByUserId(Long userId);
+
+    void deleteByUserId(Long userId);
 }

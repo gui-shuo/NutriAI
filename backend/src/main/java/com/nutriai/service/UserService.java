@@ -3,7 +3,7 @@ package com.nutriai.service;
 import com.nutriai.dto.user.*;
 import com.nutriai.entity.User;
 import com.nutriai.exception.BusinessException;
-import com.nutriai.repository.UserRepository;
+import com.nutriai.repository.*;
 import com.nutriai.service.sms.SmsProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +30,29 @@ public class UserService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final SmsProvider smsProvider;
     private final EmailService emailService;
+    
+    // 注销相关的仓库依赖
+    private final AIChatFavoriteRepository aiChatFavoriteRepository;
+    private final AIChatHistoryRepository aiChatHistoryRepository;
+    private final AIChatLogRepository aiChatLogRepository;
+    private final CommunityCommentRepository communityCommentRepository;
+    private final CommunityLikeRepository communityLikeRepository;
+    private final CommunityPostRepository communityPostRepository;
+    private final ConsultationOrderRepository consultationOrderRepository;
+    private final DietPlanHistoryRepository dietPlanHistoryRepository;
+    private final DietPlanTaskRepository dietPlanTaskRepository;
+    private final FeedbackRepository feedbackRepository;
+    private final FoodRecognitionHistoryRepository foodRecognitionHistoryRepository;
+    private final FoodRecordRepository foodRecordRepository;
+    private final GrowthRecordRepository growthRecordRepository;
+    private final HealthProfileRepository healthProfileRepository;
+    private final MemberRepository memberRepository;
+    private final NutritionistRepository nutritionistRepository;
+    private final ProductOrderRepository productOrderRepository;
+    private final UserAddressRepository userAddressRepository;
+    private final UserFollowRepository userFollowRepository;
+    private final InvitationRepository invitationRepository;
+    private final VipOrderRepository vipOrderRepository;
 
     private static final String SMS_CODE_PREFIX = "sms:code:";
     private static final int SMS_CODE_EXPIRE_MINUTES = 5;
@@ -253,5 +276,54 @@ public class UserService {
             code.append(random.nextInt(10));
         }
         return code.toString();
+    }
+
+    /**
+     * 注销账号 — 验证密码后级联删除所有用户数据
+     */
+    @Transactional
+    public void deleteAccount(Long userId, String password) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(BusinessException.Auth::userNotFound);
+
+        // 管理员账号不允许自行注销
+        if ("ADMIN".equals(user.getRole()) || "SUPER_ADMIN".equals(user.getRole())) {
+            throw new BusinessException(403, "管理员账号不允许通过此方式注销");
+        }
+
+        // 验证密码
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new BusinessException(400, "密码验证失败，请输入正确的登录密码");
+        }
+
+        log.warn("用户请求注销账号: userId={}, email={}", userId, user.getEmail());
+
+        // 级联删除所有关联数据
+        aiChatFavoriteRepository.deleteByUserId(userId);
+        aiChatHistoryRepository.deleteByUserId(userId);
+        aiChatLogRepository.deleteAllByUserId(userId);
+        communityCommentRepository.deleteAllByUserId(userId);
+        communityLikeRepository.deleteAllByUserId(userId);
+        communityPostRepository.deleteAllByUserId(userId);
+        consultationOrderRepository.deleteAllByUserId(userId);
+        dietPlanHistoryRepository.deleteAllByUserId(userId);
+        dietPlanTaskRepository.deleteAllByUserId(userId);
+        feedbackRepository.deleteAllByUserId(userId);
+        foodRecognitionHistoryRepository.deleteAllByUserId(userId);
+        foodRecordRepository.deleteByUserId(userId);
+        growthRecordRepository.deleteAllByUserId(userId);
+        healthProfileRepository.deleteByUserId(userId);
+        memberRepository.deleteByUserId(userId);
+        nutritionistRepository.deleteByUserId(userId);
+        productOrderRepository.deleteAllByUserId(userId);
+        userAddressRepository.deleteAllByUserId(userId);
+        userFollowRepository.deleteAllByFollowerIdOrFollowingId(userId, userId);
+        invitationRepository.deleteAllByInviterIdOrInviteeId(userId, userId);
+        vipOrderRepository.deleteAllByUserId(userId);
+
+        // 最后删除用户本身
+        userRepository.delete(user);
+
+        log.warn("用户账号已注销: userId={}, email={}", userId, user.getEmail());
     }
 }
