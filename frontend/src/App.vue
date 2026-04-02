@@ -19,14 +19,17 @@ const isDark = computed(() => themeStore.isDark)
 <style>
 #app {
   min-height: 100vh;
-  background-color: var(--el-bg-color);
+  background-color: #fdfbf7;
+  background-image: radial-gradient(#e5e0d8 1px, transparent 1px);
+  background-size: 24px 24px;
   transition: background-color 0.3s ease;
+  font-family: 'Patrick Hand', 'PingFang SC', 'Microsoft YaHei', cursive;
 }
 
 /* 页面切换动画 */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.2s ease;
 }
 
 .fade-enter-from,

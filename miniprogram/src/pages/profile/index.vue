@@ -162,7 +162,7 @@
         <view class="dialog-title danger-title">⚠️ 注销账号</view>
         <view class="delete-warning">
           <text class="warning-text">注销后以下数据将被永久删除且无法恢复：</text>
-          <text class="warning-item">• 个人资料、健康档案</text>
+          <text class="warning-item">• 个人资料、饮食档案</text>
           <text class="warning-item">• AI对话记录、饮食计划</text>
           <text class="warning-item">• 社区帖子、订单记录</text>
           <text class="warning-item">• 所有其他关联数据</text>

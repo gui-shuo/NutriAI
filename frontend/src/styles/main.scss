@@ -4,6 +4,10 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ========================================
+   Hand-Drawn Design System — Global Styles
+   ======================================== */
+
 * {
   margin: 0;
   padding: 0;
@@ -13,40 +17,454 @@
 html,
 body {
   height: 100%;
-  font-family: 'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB', 'Inter', 'Roboto', sans-serif;
+  font-family: $font-body;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: $paper;
+  color: $pencil;
 }
 
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+/* Paper texture — dot grid background */
+body {
+  background-image: radial-gradient($muted 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
-::-webkit-scrollbar-track {
-  background: var(--el-fill-color-lighter);
-}
-
+/* ===== Scrollbar ===== */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: $muted; }
 ::-webkit-scrollbar-thumb {
-  background: var(--el-color-primary-light-5);
-  border-radius: 4px;
-
-  &:hover {
-    background: var(--el-color-primary);
-  }
+  background: $pencil;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  &:hover { background: $accent; }
 }
 
+/* ===== Headings ===== */
+h1, h2, h3, h4, h5, h6,
+.el-dialog__title,
+.el-card__header {
+  font-family: $font-heading;
+  color: $pencil;
+}
+
+/* ===== Element Plus Theme Overrides ===== */
+:root {
+  --el-color-primary: #{$accent};
+  --el-color-primary-light-3: #ff8080;
+  --el-color-primary-light-5: #ffa6a6;
+  --el-color-primary-light-7: #ffcccc;
+  --el-color-primary-light-8: #ffe0e0;
+  --el-color-primary-light-9: #fff0f0;
+  --el-color-primary-dark-2: #cc3d3d;
+
+  --el-color-success: #4caf50;
+  --el-color-warning: #ff9800;
+  --el-color-danger: #{$accent};
+  --el-color-info: #{$ink};
+
+  --el-font-family: #{$font-body};
+  --el-font-size-base: 16px;
+
+  --el-bg-color: #{$paper};
+  --el-bg-color-page: #{$paper};
+  --el-bg-color-overlay: #ffffff;
+
+  --el-text-color-primary: #{$pencil};
+  --el-text-color-regular: #{$pencil};
+  --el-text-color-secondary: #5a5a5a;
+  --el-text-color-placeholder: rgba(45, 45, 45, 0.4);
+
+  --el-border-color: #{$pencil};
+  --el-border-color-light: #{$muted};
+  --el-border-color-lighter: #{$muted};
+  --el-border-color-extra-light: #f0ebe3;
+
+  --el-border-radius-base: 12px;
+  --el-border-radius-small: 8px;
+  --el-border-radius-round: 255px 15px 225px 15px / 15px 225px 15px 255px;
+
+  --el-box-shadow: 4px 4px 0px 0px #{$pencil};
+  --el-box-shadow-light: 3px 3px 0px 0px rgba(45, 45, 45, 0.1);
+  --el-box-shadow-lighter: 2px 2px 0px 0px rgba(45, 45, 45, 0.06);
+  --el-box-shadow-dark: 8px 8px 0px 0px #{$pencil};
+
+  --el-fill-color: #f5f0e8;
+  --el-fill-color-light: #faf7f2;
+  --el-fill-color-lighter: #{$paper};
+  --el-fill-color-blank: #ffffff;
+}
+
+/* ===== Element Plus — Buttons ===== */
 .el-button {
-  transition: all 0.3s ease;
+  font-family: $font-body;
+  font-size: 16px;
+  border-width: 2px;
+  border-color: $pencil;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  box-shadow: $shadow-hard;
+  transition: all 0.1s ease;
+  position: relative;
 
   &:hover {
-    transform: translateY(-2px);
+    background-color: $accent !important;
+    color: #fff !important;
+    border-color: $pencil !important;
+    box-shadow: $shadow-hard-hover;
+    transform: translate(2px, 2px);
   }
 
   &:active {
-    transform: translateY(0);
+    box-shadow: none;
+    transform: translate(4px, 4px);
+  }
+
+  &--primary {
+    background-color: $accent;
+    border-color: $pencil;
+    color: #fff;
+    &:hover {
+      background-color: darken($accent, 10%) !important;
+    }
+  }
+
+  &--success {
+    background-color: #4caf50;
+    border-color: $pencil;
+    &:hover { background-color: darken(#4caf50, 10%) !important; }
+  }
+
+  &--info {
+    background-color: $muted;
+    border-color: $pencil;
+    color: $pencil;
+    &:hover { background-color: $ink !important; color: #fff !important; }
+  }
+
+  &--warning {
+    background-color: #ff9800;
+    border-color: $pencil;
+    &:hover { background-color: darken(#ff9800, 10%) !important; }
+  }
+
+  &--danger {
+    background-color: $accent;
+    border-color: $pencil;
+    &:hover { background-color: darken($accent, 15%) !important; }
+  }
+
+  &--text, &--link {
+    border: none;
+    box-shadow: none;
+    &:hover {
+      background-color: transparent !important;
+      color: $accent !important;
+      box-shadow: none;
+      transform: none;
+    }
+    &:active { transform: none; }
+  }
+
+  &.is-plain {
+    background-color: #fff;
+    &:hover {
+      background-color: $accent !important;
+      color: #fff !important;
+    }
+  }
+
+  &.is-round {
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  }
+
+  &.is-disabled, &.is-disabled:hover {
+    opacity: 0.5;
+    transform: none;
+    box-shadow: $shadow-hard-sm;
   }
 }
+
+/* ===== Element Plus — Cards ===== */
+.el-card {
+  background-color: #fff;
+  border: 2px solid $pencil;
+  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px;
+  box-shadow: $shadow-hard-sm;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  overflow: visible;
+
+  &:hover {
+    transform: rotate(-0.5deg);
+    box-shadow: $shadow-hard;
+  }
+
+  .el-card__header {
+    border-bottom: 2px dashed $muted;
+    font-family: $font-heading;
+    font-weight: 700;
+  }
+
+  .el-card__body {
+    font-family: $font-body;
+  }
+}
+
+/* ===== Element Plus — Inputs ===== */
+.el-input__wrapper,
+.el-textarea__inner {
+  border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px !important;
+  border: 2px solid $pencil !important;
+  box-shadow: none !important;
+  font-family: $font-body;
+  background-color: #fff;
+  transition: border-color 0.1s ease;
+
+  &:hover { border-color: $ink !important; }
+  &:focus-within, &.is-focus {
+    border-color: $ink !important;
+    box-shadow: 0 0 0 2px rgba(45, 93, 161, 0.2) !important;
+  }
+}
+
+.el-textarea__inner {
+  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px !important;
+}
+
+.el-input__inner,
+.el-textarea__inner {
+  font-family: $font-body;
+  font-size: 16px;
+  color: $pencil;
+  &::placeholder { color: rgba(45, 45, 45, 0.4); }
+}
+
+.el-select .el-input__wrapper {
+  border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px !important;
+}
+
+/* ===== Element Plus — Dialog ===== */
+.el-dialog {
+  border: 3px solid $pencil;
+  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px;
+  box-shadow: $shadow-hard-lg;
+  background-color: #fff;
+
+  .el-dialog__header {
+    border-bottom: 2px dashed $muted;
+    font-family: $font-heading;
+    padding: 20px 24px 16px;
+  }
+
+  .el-dialog__title {
+    font-family: $font-heading;
+    font-weight: 700;
+    font-size: 20px;
+    color: $pencil;
+  }
+
+  .el-dialog__body {
+    font-family: $font-body;
+    padding: 20px 24px;
+  }
+
+  .el-dialog__footer {
+    border-top: 2px dashed $muted;
+    padding: 12px 24px 20px;
+  }
+}
+
+.el-overlay {
+  background-color: rgba(45, 45, 45, 0.4) !important;
+}
+
+/* ===== Element Plus — Table ===== */
+.el-table {
+  border: 2px solid $pencil;
+  border-radius: 12px;
+  overflow: hidden;
+  font-family: $font-body;
+
+  th.el-table__cell {
+    background-color: $muted !important;
+    font-family: $font-heading;
+    font-weight: 700;
+    color: $pencil;
+    border-bottom: 2px solid $pencil;
+  }
+
+  td.el-table__cell {
+    border-bottom: 1px dashed $muted;
+  }
+
+  .el-table__row:hover > td.el-table__cell {
+    background-color: rgba(229, 224, 216, 0.3) !important;
+  }
+
+  &::before, &::after {
+    display: none;
+  }
+}
+
+/* ===== Element Plus — Menu / Navigation ===== */
+.el-menu {
+  border-right: 2px solid $pencil !important;
+  background-color: #fff;
+  font-family: $font-body;
+
+  .el-menu-item, .el-sub-menu__title {
+    font-family: $font-body;
+    font-size: 16px;
+    color: $pencil;
+    border-radius: 8px;
+    margin: 4px 8px;
+    transition: all 0.1s ease;
+
+    &:hover {
+      background-color: rgba(229, 224, 216, 0.5) !important;
+      transform: rotate(-0.5deg);
+    }
+
+    &.is-active {
+      color: $accent !important;
+      background-color: rgba(255, 77, 77, 0.08) !important;
+      font-weight: 600;
+      border-left: 3px solid $accent;
+    }
+  }
+}
+
+/* ===== Element Plus — Tag ===== */
+.el-tag {
+  border: 2px solid $pencil;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  font-family: $font-body;
+  box-shadow: 2px 2px 0px 0px rgba(45, 45, 45, 0.1);
+}
+
+/* ===== Element Plus — Tabs ===== */
+.el-tabs__item {
+  font-family: $font-body;
+  font-size: 16px;
+  &.is-active { color: $accent; font-weight: 700; }
+  &:hover { color: $accent; }
+}
+
+.el-tabs__active-bar {
+  background-color: $accent;
+  height: 3px;
+  border-radius: 2px;
+}
+
+/* ===== Element Plus — Form ===== */
+.el-form-item__label {
+  font-family: $font-heading;
+  font-weight: 700;
+  color: $pencil;
+  font-size: 15px;
+}
+
+/* ===== Element Plus — Pagination ===== */
+.el-pagination {
+  font-family: $font-body;
+  .el-pager li {
+    border: 2px solid transparent;
+    border-radius: 8px;
+    font-family: $font-body;
+    &.is-active {
+      border-color: $pencil;
+      background-color: $accent;
+      color: #fff;
+      box-shadow: 2px 2px 0px 0px $pencil;
+    }
+  }
+}
+
+/* ===== Element Plus — Drawer ===== */
+.el-drawer {
+  border-left: 3px solid $pencil;
+  box-shadow: $shadow-hard-lg;
+  .el-drawer__header {
+    font-family: $font-heading;
+    border-bottom: 2px dashed $muted;
+  }
+}
+
+/* ===== Element Plus — Dropdown ===== */
+.el-dropdown-menu {
+  border: 2px solid $pencil;
+  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px;
+  box-shadow: $shadow-hard;
+  background-color: #fff;
+
+  .el-dropdown-menu__item {
+    font-family: $font-body;
+    &:hover {
+      background-color: rgba(229, 224, 216, 0.5);
+      color: $accent;
+    }
+  }
+}
+
+/* ===== Element Plus — Popover / Tooltip ===== */
+.el-popover.el-popper,
+.el-tooltip__popper {
+  border: 2px solid $pencil !important;
+  border-radius: 12px !important;
+  box-shadow: $shadow-hard !important;
+  font-family: $font-body;
+}
+
+/* ===== Element Plus — Badge ===== */
+.el-badge__content {
+  border: 2px solid $pencil;
+  font-family: $font-body;
+  box-shadow: 2px 2px 0px 0px rgba(45, 45, 45, 0.2);
+}
+
+/* ===== Element Plus — Switch ===== */
+.el-switch.is-checked .el-switch__core {
+  border-color: $pencil;
+  background-color: $accent;
+}
+.el-switch__core {
+  border: 2px solid $pencil;
+}
+
+/* ===== Element Plus — Checkbox & Radio ===== */
+.el-checkbox__inner, .el-radio__inner {
+  border: 2px solid $pencil;
+}
+.el-checkbox__input.is-checked .el-checkbox__inner,
+.el-radio__input.is-checked .el-radio__inner {
+  background-color: $accent;
+  border-color: $pencil;
+}
+
+/* ===== Element Plus — Upload ===== */
+.el-upload-dragger {
+  border: 3px dashed $pencil !important;
+  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px !important;
+  background-color: rgba(229, 224, 216, 0.2) !important;
+  transition: all 0.1s ease;
+  &:hover {
+    border-color: $accent !important;
+    background-color: rgba(255, 77, 77, 0.04) !important;
+  }
+}
+
+/* ===== Element Plus — DatePicker ===== */
+.el-date-editor {
+  .el-input__wrapper {
+    border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px !important;
+  }
+}
+
+/* ===== Element Plus — Breadcrumb ===== */
+.el-breadcrumb {
+  font-family: $font-body;
+  font-size: 15px;
+}
+
+/* ===== Global Utility Classes ===== */
 
 .container {
   width: 100%;
@@ -56,26 +474,155 @@ body {
 }
 
 .card {
-  background: var(--el-bg-color);
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+  border: 2px solid $pencil;
+  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px;
+  box-shadow: $shadow-hard-sm;
   padding: 24px;
-  transition: all 0.3s ease;
+  transition: all 0.1s ease;
+  position: relative;
 
   &:hover {
-    box-shadow: 0 8px 24px rgba(76, 175, 80, 0.2);
-    transform: translateY(-4px);
+    box-shadow: $shadow-hard;
+    transform: rotate(-0.5deg);
   }
 }
 
 .text-gradient {
-  background: linear-gradient(135deg, var(--el-color-primary) 0%, var(--el-color-success) 100%);
+  background: linear-gradient(135deg, $accent 0%, $ink 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-// 全局消息提示样式修复
+/* ===== Decorative Elements ===== */
+
+/* Tape decoration on cards */
+.decoration-tape::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-2deg);
+  width: 80px;
+  height: 24px;
+  background: rgba(229, 224, 216, 0.7);
+  border: 1px solid rgba(45, 45, 45, 0.15);
+  z-index: 1;
+}
+
+/* Tack decoration on cards */
+.decoration-tack::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 16px;
+  background: $accent;
+  border: 2px solid $pencil;
+  border-radius: 50%;
+  box-shadow: 1px 1px 0px 0px rgba(45, 45, 45, 0.3);
+  z-index: 1;
+}
+
+/* Sticky note style */
+.sticky-note {
+  background-color: $sticky;
+  border: 2px solid $pencil;
+  border-radius: 2px 2px 2px 2px;
+  box-shadow: $shadow-hard;
+  padding: 16px;
+  transform: rotate(-1deg);
+  position: relative;
+}
+
+/* Dashed circle highlight */
+.dashed-circle {
+  border: 3px dashed $pencil;
+  border-radius: 50%;
+  padding: 16px;
+}
+
+/* Wavy underline decoration */
+.wavy-underline {
+  text-decoration: underline wavy $accent;
+  text-underline-offset: 4px;
+}
+
+/* Speech bubble */
+.speech-bubble {
+  position: relative;
+  background: #fff;
+  border: 2px solid $pencil;
+  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px;
+  box-shadow: $shadow-hard-sm;
+  padding: 16px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    left: 30px;
+    width: 0;
+    height: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-top: 12px solid #fff;
+    filter: drop-shadow(2px 2px 0px rgba(45, 45, 45, 0.1));
+  }
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 29px;
+    width: 0;
+    height: 0;
+    border-left: 13px solid transparent;
+    border-right: 13px solid transparent;
+    border-top: 13px solid $pencil;
+  }
+}
+
+/* Sketch icon wrapper */
+.sketch-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: 2px solid $pencil;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  background: #fff;
+  box-shadow: 2px 2px 0px 0px rgba(45, 45, 45, 0.1);
+}
+
+/* Wobbly border utilities */
+.wobbly-border {
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+}
+.wobbly-border-md {
+  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px;
+}
+.wobbly-border-sm {
+  border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
+}
+
+/* Hard shadow utilities */
+.hard-shadow { box-shadow: $shadow-hard; }
+.hard-shadow-lg { box-shadow: $shadow-hard-lg; }
+.hard-shadow-sm { box-shadow: $shadow-hard-sm; }
+.hard-shadow-accent { box-shadow: $shadow-hard-accent; }
+
+/* Paper backgrounds */
+.paper-bg {
+  background-color: $paper;
+  background-image: radial-gradient($muted 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* ===== Message Toast Overrides ===== */
 .el-message,
 .el-message.is-center {
   position: fixed !important;
@@ -91,15 +638,18 @@ body {
   padding: 14px 20px !important;
   display: flex !important;
   align-items: center !important;
-  border-radius: 8px !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+  border: 2px solid $pencil !important;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px !important;
+  box-shadow: $shadow-hard !important;
+  font-family: $font-body;
 
   .el-message__content {
-    font-size: 14px !important;
+    font-size: 15px !important;
     font-weight: 500 !important;
     line-height: 1.5 !important;
     padding-right: 16px !important;
     flex: 1 !important;
+    font-family: $font-body;
   }
 
   .el-message__icon {
@@ -118,89 +668,50 @@ body {
     height: 20px !important;
     line-height: 20px !important;
     text-align: center !important;
-    color: rgba(0, 0, 0, 0.45) !important;
+    color: $pencil !important;
     flex-shrink: 0 !important;
 
     &:hover {
-      color: rgba(0, 0, 0, 0.75) !important;
+      color: $accent !important;
     }
   }
 }
 
-// 自定义消息提示增强样式
 .el-message.custom-message {
-  border: none !important;
-  backdrop-filter: blur(10px);
+  border: 2px solid $pencil !important;
   animation: message-slide-in 0.3s ease-out;
 
-  // 成功消息
   &.custom-message-success {
-    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%) !important;
-
-    .el-message__icon {
-      color: #059669 !important;
-    }
-
-    .el-message__content {
-      color: #065f46 !important;
-    }
+    background: $sticky !important;
+    .el-message__icon { color: #4caf50 !important; }
+    .el-message__content { color: $pencil !important; }
   }
 
-  // 错误消息
   &.custom-message-error {
-    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%) !important;
-
-    .el-message__icon {
-      color: #dc2626 !important;
-    }
-
-    .el-message__content {
-      color: #991b1b !important;
-    }
+    background: #fff0f0 !important;
+    .el-message__icon { color: $accent !important; }
+    .el-message__content { color: $pencil !important; }
   }
 
-  // 警告消息
   &.custom-message-warning {
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important;
-
-    .el-message__icon {
-      color: #d97706 !important;
-    }
-
-    .el-message__content {
-      color: #92400e !important;
-    }
+    background: $sticky !important;
+    .el-message__icon { color: #ff9800 !important; }
+    .el-message__content { color: $pencil !important; }
   }
 
-  // 信息消息
   &.custom-message-info {
-    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important;
-
-    .el-message__icon {
-      color: #2563eb !important;
-    }
-
-    .el-message__content {
-      color: #1e40af !important;
-    }
+    background: #eff6ff !important;
+    .el-message__icon { color: $ink !important; }
+    .el-message__content { color: $pencil !important; }
   }
-
-  // 动画效果
-  animation: message-slide-in 0.3s ease-out;
 }
 
 @keyframes message-slide-in {
-  from {
-    transform: translateY(-20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
-// MessageBox 位置修复 - 仅针对使用 custom-message-box 类的对话框
+/* ===== MessageBox Overrides ===== */
 .custom-message-box {
   position: fixed !important;
   top: 50% !important;
@@ -210,25 +721,27 @@ body {
   max-width: 420px !important;
   z-index: 3000 !important;
   background-color: #ffffff !important;
-  border-radius: 8px !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
+  border: 3px solid $pencil !important;
+  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px !important;
+  box-shadow: $shadow-hard-lg !important;
 }
 
-// MessageBox 标题栏布局修复
 .custom-message-box .el-message-box__header {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
   padding: 15px 15px 10px !important;
   background-color: #ffffff !important;
+  border-bottom: 2px dashed $muted;
 }
 
 .custom-message-box .el-message-box__title {
   flex: 1 !important;
   line-height: 24px !important;
-  font-size: 16px !important;
-  font-weight: 600 !important;
-  color: #303133 !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  color: $pencil !important;
+  font-family: $font-heading;
 }
 
 .custom-message-box .el-message-box__headerbtn {
@@ -244,24 +757,20 @@ body {
 
   .el-message-box__close {
     font-size: 16px !important;
-    color: #909399 !important;
-
-    &:hover {
-      color: #606266 !important;
-    }
+    color: $pencil !important;
+    &:hover { color: $accent !important; }
   }
 }
 
-// MessageBox 内容区域
 .custom-message-box .el-message-box__content {
   padding: 20px 15px !important;
   background-color: #ffffff !important;
-  color: #606266 !important;
-  font-size: 14px !important;
+  color: $pencil !important;
+  font-size: 15px !important;
   line-height: 1.6 !important;
+  font-family: $font-body;
 }
 
-// MessageBox 按钮区域
 .custom-message-box .el-message-box__btns {
   padding: 10px 15px 15px !important;
   background-color: #ffffff !important;
@@ -270,18 +779,20 @@ body {
   gap: 10px !important;
 }
 
-// MessageBox 遮罩层
 .el-overlay:has(.custom-message-box) {
-  background-color: rgba(0, 0, 0, 0.5) !important;
+  background-color: rgba(45, 45, 45, 0.4) !important;
 }
 
-// 会员对话框样式修复
+/* ===== Member Dialog ===== */
 .el-dialog.member-dialog {
   background-color: #ffffff !important;
+  border: 3px solid $pencil;
+  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px;
+  box-shadow: $shadow-hard-lg;
 
   .el-dialog__header {
     background-color: #ffffff !important;
-    border-bottom: 1px solid #ebeef5 !important;
+    border-bottom: 2px dashed $muted !important;
   }
 
   .el-dialog__body {
@@ -290,11 +801,82 @@ body {
 
   .el-dialog__footer {
     background-color: #ffffff !important;
-    border-top: 1px solid #ebeef5 !important;
+    border-top: 2px dashed $muted !important;
   }
 }
 
-// 确保遮罩层也不透明
 .el-overlay:has(.member-dialog) {
-  background-color: rgba(0, 0, 0, 0.5) !important;
+  background-color: rgba(45, 45, 45, 0.4) !important;
+}
+
+/* ===== Loading Overlay ===== */
+.el-loading-mask {
+  background-color: rgba(253, 251, 247, 0.8) !important;
+}
+
+.el-loading-spinner .el-loading-text {
+  font-family: $font-body;
+  color: $pencil;
+}
+
+/* ===== Notification ===== */
+.el-notification {
+  border: 2px solid $pencil;
+  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px;
+  box-shadow: $shadow-hard;
+  font-family: $font-body;
+
+  .el-notification__title {
+    font-family: $font-heading;
+    font-weight: 700;
+  }
+}
+
+/* ===== Steps ===== */
+.el-step__title {
+  font-family: $font-heading;
+  font-weight: 700;
+}
+
+.el-step__head.is-finish .el-step__icon {
+  border-color: $accent;
+  color: $accent;
+}
+
+/* ===== Alert ===== */
+.el-alert {
+  border: 2px solid $pencil;
+  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px;
+  font-family: $font-body;
+
+  .el-alert__title {
+    font-family: $font-heading;
+    font-weight: 700;
+  }
+}
+
+/* ===== Empty ===== */
+.el-empty__description p {
+  font-family: $font-body;
+  color: $pencil;
+}
+
+/* ===== Collapse ===== */
+.el-collapse-item__header {
+  font-family: $font-heading;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.el-collapse-item__content {
+  font-family: $font-body;
+}
+
+/* ===== Timeline ===== */
+.el-timeline-item__content {
+  font-family: $font-body;
+}
+
+.el-timeline-item__timestamp {
+  font-family: $font-body;
 }

@@ -1,46 +1,70 @@
-// 颜色变量
-$primary-color: #4caf50;
-$secondary-color: #2196f3;
+// ========== Hand-Drawn Design System Tokens ==========
+
+// Core palette
+$paper: #fdfbf7;
+$pencil: #2d2d2d;
+$muted: #e5e0d8;
+$accent: #ff4d4d;
+$ink: #2d5da1;
+$sticky: #fff9c4;
+
+// Semantic colors (remapped)
+$primary-color: #ff4d4d;
+$secondary-color: #2d5da1;
 $success-color: #4caf50;
 $warning-color: #ff9800;
-$error-color: #f44336;
-$info-color: #2196f3;
+$error-color: #ff4d4d;
+$info-color: #2d5da1;
 
-// 文字颜色
-$text-primary: #212121;
-$text-secondary: #757575;
-$text-disabled: #bdbdbd;
+// Text colors
+$text-primary: #2d2d2d;
+$text-secondary: #5a5a5a;
+$text-disabled: #b0a89f;
 
-// 背景颜色
-$bg-primary: #ffffff;
-$bg-secondary: #fafafa;
-$bg-tertiary: #f5f5f5;
+// Background colors
+$bg-primary: #fdfbf7;
+$bg-secondary: #ffffff;
+$bg-tertiary: #f5f0e8;
 
-// 边框颜色
-$border-light: #e0e0e0;
-$border-medium: #bdbdbd;
-$border-dark: #9e9e9e;
+// Border colors
+$border-light: #e5e0d8;
+$border-medium: #c4bfb6;
+$border-dark: #2d2d2d;
 
-// 间距
+// Spacing
 $spacing-xs: 4px;
 $spacing-sm: 8px;
 $spacing-md: 16px;
 $spacing-lg: 24px;
 $spacing-xl: 32px;
 
-// 圆角
+// Wobbly border-radius
+$radius-wobbly: 255px 15px 225px 15px / 15px 225px 15px 255px;
+$radius-wobbly-md: 15px 225px 15px 255px / 255px 15px 225px 15px;
+$radius-wobbly-sm: 185px 10px 155px 10px / 10px 155px 10px 185px;
 $radius-sm: 4px;
 $radius-md: 8px;
 $radius-lg: 12px;
 $radius-xl: 16px;
 
-// 阴影
+// Hard offset shadows
+$shadow-hard: 4px 4px 0px 0px #2d2d2d;
+$shadow-hard-lg: 8px 8px 0px 0px #2d2d2d;
+$shadow-hard-sm: 3px 3px 0px 0px rgba(45, 45, 45, 0.1);
+$shadow-hard-hover: 2px 2px 0px 0px #2d2d2d;
+$shadow-hard-accent: 4px 4px 0px 0px #ff4d4d;
+
+// Legacy shadows (kept for compat)
 $shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
 $shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
 $shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
 $shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
 
-// 断点
+// Fonts
+$font-heading: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', 'Microsoft YaHei', cursive;
+$font-body: 'Patrick Hand', 'PingFang SC', 'Microsoft YaHei', cursive;
+
+// Breakpoints
 $breakpoint-mobile: 768px;
 $breakpoint-tablet: 1024px;
 $breakpoint-desktop: 1200px;
