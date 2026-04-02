@@ -23,9 +23,24 @@ page {
   font-size: 28rpx;
   color: #0F172A;
   line-height: 1.6;
-  /* H5: ensure full width */
   width: 100%;
   min-width: 0;
+}
+
+/* Global box-sizing reset for H5 */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* H5 inputs: prevent overflow */
+uni-input,
+uni-textarea,
+input,
+textarea {
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* H5: center content on wide screens */
@@ -33,6 +48,7 @@ uni-page-body {
   width: 100%;
   max-width: 960px;
   margin: 0 auto;
+  overflow-x: hidden;
 }
 
 .container {
@@ -43,13 +59,13 @@ uni-page-body {
 
 /* Two-column grid utility */
 .grid-2 {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
   gap: 20rpx;
 }
 .grid-3 {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
   gap: 20rpx;
 }
 
@@ -141,6 +157,9 @@ uni-page-body {
   padding: 20rpx 24rpx;
   margin-bottom: 20rpx;
   transition: border-color 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 .input-group:focus-within {
   border-color: #10B981;
@@ -151,6 +170,8 @@ uni-page-body {
   font-size: 28rpx;
   font-family: 'Inter', 'PingFang SC', sans-serif;
   color: #0F172A;
+  width: 100%;
+  box-sizing: border-box;
 }
 .input-group .label {
   font-size: 24rpx;

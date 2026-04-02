@@ -1010,21 +1010,21 @@ onReachBottom(() => {
 
 /* ===== Product Grid ===== */
 .product-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   padding: 12rpx;
   gap: 12rpx;
   margin-top: 4rpx;
 }
 
 .product-card {
-  width: calc(50% - 6rpx);
   background: $card;
   border-radius: $radius-xl;
   overflow: hidden;
   border: 1rpx solid $border;
   box-shadow: $shadow-sm;
   position: relative;
+  min-width: 0;
 }
 
 .card-tap-area {
@@ -1735,6 +1735,7 @@ onReachBottom(() => {
 
 .form-input {
   width: 100%;
+  max-width: 100%;
   height: 80rpx;
   border: 1rpx solid $border;
   border-radius: $radius-lg;
@@ -1746,6 +1747,7 @@ onReachBottom(() => {
 
 .form-textarea {
   width: 100%;
+  max-width: 100%;
   height: 140rpx;
   border: 1rpx solid $border;
   border-radius: $radius-lg;

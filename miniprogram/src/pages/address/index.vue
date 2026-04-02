@@ -495,6 +495,7 @@ onShow(() => {
 
 .form-input {
   width: 100%;
+  max-width: 100%;
   height: 80rpx;
   border: 1rpx solid $border;
   border-radius: $radius-lg;
@@ -502,10 +503,12 @@ onShow(() => {
   font-size: 28rpx;
   font-family: 'Inter', sans-serif;
   background: $background;
+  box-sizing: border-box;
 }
 
 .form-textarea {
   width: 100%;
+  max-width: 100%;
   height: 160rpx;
   border: 1rpx solid $border;
   border-radius: $radius-lg;
@@ -513,6 +516,7 @@ onShow(() => {
   font-size: 28rpx;
   font-family: 'Inter', sans-serif;
   background: $background;
+  box-sizing: border-box;
 }
 
 .region-picker {

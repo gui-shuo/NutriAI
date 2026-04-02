@@ -395,6 +395,8 @@ async function handlePublish() {
   border-radius: $radius-lg;
   padding: 20rpx;
   background: $muted;
+  box-sizing: border-box;
+  width: 100%;
 }
 .content-textarea {
   width: 100%;
@@ -402,6 +404,7 @@ async function handlePublish() {
   color: $foreground;
   line-height: 1.6;
   font-family: 'Inter', 'PingFang SC', sans-serif;
+  box-sizing: border-box;
 }
 .char-count {
   text-align: right;
@@ -439,17 +442,17 @@ async function handlePublish() {
 
 /* ===== Image Upload Grid ===== */
 .image-upload-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 12rpx;
 }
 .upload-item {
   position: relative;
-  width: calc(33.33% - 8rpx);
   aspect-ratio: 1;
   border-radius: $radius-lg;
   overflow: hidden;
   border: none;
+  min-width: 0;
 }
 .upload-img {
   width: 100%;
@@ -504,7 +507,6 @@ async function handlePublish() {
   justify-content: center;
 }
 .add-btn {
-  width: calc(33.33% - 8rpx);
   aspect-ratio: 1;
   border: 2rpx dashed $border;
   border-radius: $radius-lg;
@@ -515,6 +517,7 @@ async function handlePublish() {
   gap: 8rpx;
   background: $muted;
   transition: border-color 0.2s;
+  min-width: 0;
 }
 .add-icon {
   font-size: 48rpx;

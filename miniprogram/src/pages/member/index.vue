@@ -1451,16 +1451,14 @@ onShow(() => {
 }
 
 .plans-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 16rpx;
   margin-bottom: 24rpx;
 }
 
 .plan-card {
-  flex: 1 1 calc(33.33% - 16rpx);
-  min-width: 180rpx;
-  max-width: calc(50% - 8rpx);
+  min-width: 0;
   border: 1rpx solid $border;
   border-radius: $radius-xl;
   padding: 24rpx 16rpx;

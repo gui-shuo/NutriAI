@@ -822,6 +822,7 @@ onShow(() => {
   font-size: 28rpx;
   color: $foreground;
   width: 100%;
+  max-width: 100%;
   box-sizing: border-box;
 }
 
@@ -837,6 +838,7 @@ onShow(() => {
   font-size: 28rpx;
   color: $foreground;
   width: 100%;
+  max-width: 100%;
   min-height: 120rpx;
   box-sizing: border-box;
 }

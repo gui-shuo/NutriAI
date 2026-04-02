@@ -1150,6 +1150,7 @@ function extractFoods(block: string): string[] {
 }
 .loading-card {
   width: 85%;
+  max-width: 600rpx;
   text-align: center;
   padding: 50rpx 36rpx;
 }

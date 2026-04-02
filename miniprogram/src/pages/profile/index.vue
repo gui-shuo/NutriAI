@@ -892,10 +892,12 @@ onUnmounted(() => {
   background: $card;
   border-radius: $radius-2xl $radius-2xl 0 0;
   width: 100%;
+  max-width: 750px;
   max-height: 85vh;
   display: flex;
   flex-direction: column;
   animation: sheetUp 0.3s ease;
+  overflow: hidden;
 }
 
 .sheet-sm {
@@ -933,12 +935,15 @@ onUnmounted(() => {
   padding: 24rpx 32rpx;
   padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
   overflow-y: auto;
+  overflow-x: hidden;
   flex: 1;
 }
 
 /* ============ Form controls ============ */
 .form-group {
   margin-bottom: 24rpx;
+  width: 100%;
+  overflow: hidden;
 }
 
 .form-label {
@@ -957,8 +962,10 @@ onUnmounted(() => {
   font-size: 28rpx;
   color: $foreground;
   width: 100%;
+  max-width: 100%;
   box-sizing: border-box;
   font-family: 'Inter', sans-serif;
+  overflow: hidden;
 }
 
 .form-textarea {
@@ -969,6 +976,7 @@ onUnmounted(() => {
   font-size: 28rpx;
   color: $foreground;
   width: 100%;
+  max-width: 100%;
   min-height: 120rpx;
   box-sizing: border-box;
   font-family: 'Inter', sans-serif;
@@ -1009,6 +1017,14 @@ onUnmounted(() => {
   display: flex;
   gap: 12rpx;
   align-items: center;
+  width: 100%;
+  overflow: hidden;
+}
+
+.phone-row .form-input {
+  flex: 1;
+  min-width: 0;
+  width: auto;
 }
 
 .flex-1 { flex: 1; }

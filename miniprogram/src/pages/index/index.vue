@@ -300,13 +300,12 @@ function goTo(url: string) {
 
 /* Feature Grid */
 .feature-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   padding: 0 24rpx;
   gap: 20rpx;
 }
 .feature-card {
-  width: calc(50% - 10rpx);
   background: $card;
   border-radius: $radius-xl;
   padding: 28rpx 24rpx;
@@ -316,6 +315,8 @@ function goTo(url: string) {
   flex-direction: column;
   gap: 16rpx;
   transition: transform 0.15s, box-shadow 0.15s;
+  min-width: 0;
+  overflow: hidden;
 
   &:active {
     transform: translateY(2rpx);
