@@ -1,7 +1,10 @@
 <template>
-  <el-card class="nutrition-stats">
+  <div class="nutrition-stats-card">
     <div class="stats-header">
-      <h2 class="title">今日营养摄入</h2>
+      <div class="header-left">
+        <span class="header-icon">📊</span>
+        <h2 class="title">今日营养摄入</h2>
+      </div>
       <el-date-picker
         v-model="currentDate"
         type="date"
@@ -17,18 +20,26 @@
       <div v-if="stats" class="stats-content">
         <!-- 卡路里总览卡片 -->
         <div class="calorie-card">
+          <div class="calorie-glow"></div>
           <div class="calorie-main">
+            <div class="calorie-label">总卡路里摄入</div>
             <div class="calorie-value">
-              {{ stats.totalCalories || 0 }}
+              <span class="number">{{ stats.totalCalories || 0 }}</span>
               <span class="unit">千卡</span>
             </div>
-            <div class="calorie-label">总卡路里</div>
+            <div class="calorie-ring">
+              <svg viewBox="0 0 120 120" class="ring-svg">
+                <circle cx="60" cy="60" r="52" class="ring-bg" />
+                <circle cx="60" cy="60" r="52" class="ring-fill" />
+              </svg>
+              <span class="ring-label">🔥</span>
+            </div>
           </div>
           <div class="calorie-breakdown">
             <div v-for="meal in mealCalories" :key="meal.type" class="meal-item">
               <span class="meal-dot" :style="{ background: meal.color }" />
               <span class="meal-name">{{ meal.name }}</span>
-              <span class="meal-value">{{ meal.value }}</span>
+              <span class="meal-value">{{ meal.value }} <small>kcal</small></span>
             </div>
           </div>
         </div>
@@ -36,39 +47,50 @@
         <!-- 营养成分卡片 -->
         <div class="nutrition-cards">
           <div class="nutrition-item protein">
-            <el-icon class="icon">
-              <User />
-            </el-icon>
-            <div class="value">{{ stats.totalProtein || 0 }}g</div>
-            <div class="label">蛋白质</div>
+            <div class="nut-icon-wrap">
+              <el-icon class="icon"><User /></el-icon>
+            </div>
+            <div class="nut-info">
+              <div class="value">{{ stats.totalProtein || 0 }}<small>g</small></div>
+              <div class="label">蛋白质</div>
+            </div>
           </div>
           <div class="nutrition-item carbs">
-            <el-icon class="icon">
-              <Food />
-            </el-icon>
-            <div class="value">{{ stats.totalCarbohydrates || 0 }}g</div>
-            <div class="label">碳水化合物</div>
+            <div class="nut-icon-wrap">
+              <el-icon class="icon"><Food /></el-icon>
+            </div>
+            <div class="nut-info">
+              <div class="value">{{ stats.totalCarbohydrates || 0 }}<small>g</small></div>
+              <div class="label">碳水化合物</div>
+            </div>
           </div>
           <div class="nutrition-item fat">
-            <el-icon class="icon">
-              <Apple />
-            </el-icon>
-            <div class="value">{{ stats.totalFat || 0 }}g</div>
-            <div class="label">脂肪</div>
+            <div class="nut-icon-wrap">
+              <el-icon class="icon"><Apple /></el-icon>
+            </div>
+            <div class="nut-info">
+              <div class="value">{{ stats.totalFat || 0 }}<small>g</small></div>
+              <div class="label">脂肪</div>
+            </div>
           </div>
           <div class="nutrition-item fiber">
-            <el-icon class="icon">
-              <Grape />
-            </el-icon>
-            <div class="value">{{ stats.totalFiber || 0 }}g</div>
-            <div class="label">膳食纤维</div>
+            <div class="nut-icon-wrap">
+              <el-icon class="icon"><Grape /></el-icon>
+            </div>
+            <div class="nut-info">
+              <div class="value">{{ stats.totalFiber || 0 }}<small>g</small></div>
+              <div class="label">膳食纤维</div>
+            </div>
           </div>
         </div>
 
         <!-- ECharts图表 -->
         <div class="charts-section">
           <div class="chart-container">
-            <h3 class="chart-title">营养成分占比</h3>
+            <h3 class="chart-title">
+              <span class="chart-dot pie"></span>
+              营养成分占比
+            </h3>
             <v-chart
               :key="`pie-${currentDate}`"
               class="chart"
@@ -78,7 +100,10 @@
             />
           </div>
           <div class="chart-container">
-            <h3 class="chart-title">餐次卡路里分布</h3>
+            <h3 class="chart-title">
+              <span class="chart-dot bar"></span>
+              餐次卡路里分布
+            </h3>
             <v-chart
               :key="`bar-${currentDate}`"
               class="chart"
@@ -97,7 +122,7 @@
 
       <el-empty v-else description="暂无数据" />
     </el-skeleton>
-  </el-card>
+  </div>
 </template>
 
 <script setup>
@@ -345,83 +370,211 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped lang="scss">
-.nutrition-stats {
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-
-  :deep(.el-card__body) {
-    padding: 24px;
-  }
+.nutrition-stats-card {
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  padding: 28px;
 }
 
 .stats-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .header-icon {
+      font-size: 24px;
+    }
+  }
 
   .title {
-    font-size: 24px;
-    font-weight: 600;
-    color: #303133;
+    font-size: 22px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.95);
     margin: 0;
+    letter-spacing: 0.3px;
+  }
+
+  :deep(.el-input__wrapper) {
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: none;
+
+    &:hover,
+    &.is-focus {
+      border-color: rgba(99, 102, 241, 0.5);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .el-input__inner {
+      color: rgba(255, 255, 255, 0.85);
+
+      &::placeholder {
+        color: rgba(255, 255, 255, 0.35);
+      }
+    }
+
+    .el-input__icon {
+      color: rgba(255, 255, 255, 0.5);
+    }
   }
 }
 
 .stats-content {
   .calorie-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 16px;
+    position: relative;
+    background: linear-gradient(135deg, #312e81, #4c1d95, #581c87);
+    border-radius: 20px;
     padding: 32px;
     color: white;
     margin-bottom: 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    overflow: hidden;
+
+    .calorie-glow {
+      position: absolute;
+      top: -40px;
+      right: -40px;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(167, 139, 250, 0.3) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
 
     .calorie-main {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+
+      .calorie-label {
+        font-size: 14px;
+        opacity: 0.7;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 500;
+      }
+
       .calorie-value {
-        font-size: 48px;
-        font-weight: 700;
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+
+        .number {
+          font-size: 52px;
+          font-weight: 800;
+          line-height: 1;
+          letter-spacing: -1px;
+          background: linear-gradient(180deg, #fff 0%, rgba(255, 255, 255, 0.8) 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
 
         .unit {
-          font-size: 20px;
-          font-weight: 400;
-          margin-left: 8px;
+          font-size: 18px;
+          font-weight: 500;
+          opacity: 0.7;
         }
       }
 
-      .calorie-label {
-        font-size: 16px;
-        opacity: 0.9;
-        margin-top: 8px;
+      .calorie-ring {
+        position: absolute;
+        right: -140px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 100px;
+        height: 100px;
+
+        .ring-svg {
+          width: 100%;
+          height: 100%;
+          transform: rotate(-90deg);
+
+          .ring-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.1);
+            stroke-width: 8;
+          }
+
+          .ring-fill {
+            fill: none;
+            stroke: rgba(167, 139, 250, 0.6);
+            stroke-width: 8;
+            stroke-linecap: round;
+            stroke-dasharray: 327;
+            stroke-dashoffset: 80;
+            animation: ring-anim 1.5s ease-out forwards;
+          }
+        }
+
+        .ring-label {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          font-size: 28px;
+        }
       }
     }
 
     .calorie-breakdown {
+      position: relative;
+      z-index: 1;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
+      gap: 14px 24px;
 
       .meal-item {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
+        padding: 8px 14px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        backdrop-filter: blur(4px);
 
         .meal-dot {
-          width: 12px;
-          height: 12px;
+          width: 10px;
+          height: 10px;
           border-radius: 50%;
+          flex-shrink: 0;
+          box-shadow: 0 0 8px currentColor;
         }
 
         .meal-name {
-          font-size: 14px;
-          opacity: 0.9;
+          font-size: 13px;
+          opacity: 0.85;
+          white-space: nowrap;
         }
 
         .meal-value {
-          font-weight: 600;
+          font-weight: 700;
+          font-size: 15px;
           margin-left: auto;
+
+          small {
+            font-size: 11px;
+            font-weight: 400;
+            opacity: 0.6;
+            margin-left: 2px;
+          }
         }
       }
     }
@@ -434,67 +587,94 @@ onBeforeUnmount(() => {
     margin-bottom: 24px;
 
     .nutrition-item {
-      background: white;
-      border-radius: 12px;
-      padding: 24px;
-      text-align: center;
-      border: 2px solid #f0f0f0;
-      transition: all 0.3s;
+      border-radius: 16px;
+      padding: 22px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid transparent;
+      position: relative;
+      overflow: hidden;
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: -20px;
+        right: -20px;
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.06);
+        pointer-events: none;
+      }
 
       &:hover {
         transform: translateY(-4px);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
       }
 
-      .icon {
-        font-size: 32px;
-        margin-bottom: 12px;
+      .nut-icon-wrap {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        .icon {
+          font-size: 24px;
+          color: #fff;
+        }
       }
 
-      .value {
-        font-size: 28px;
-        font-weight: 700;
-        margin-bottom: 8px;
-      }
+      .nut-info {
+        .value {
+          font-size: 26px;
+          font-weight: 800;
+          color: #fff;
+          line-height: 1.2;
 
-      .label {
-        font-size: 14px;
-        color: #909399;
+          small {
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0.7;
+          }
+        }
+
+        .label {
+          font-size: 13px;
+          color: rgba(255, 255, 255, 0.7);
+          margin-top: 2px;
+        }
       }
 
       &.protein {
-        .icon {
-          color: #ff6384;
-        }
-        .value {
-          color: #ff6384;
+        background: linear-gradient(135deg, #1e40af, #3b82f6);
+        .nut-icon-wrap {
+          background: rgba(255, 255, 255, 0.15);
         }
       }
 
       &.carbs {
-        .icon {
-          color: #36a2eb;
-        }
-        .value {
-          color: #36a2eb;
+        background: linear-gradient(135deg, #065f46, #10b981);
+        .nut-icon-wrap {
+          background: rgba(255, 255, 255, 0.15);
         }
       }
 
       &.fat {
-        .icon {
-          color: #ffce56;
-        }
-        .value {
-          color: #ffce56;
+        background: linear-gradient(135deg, #92400e, #f59e0b);
+        .nut-icon-wrap {
+          background: rgba(255, 255, 255, 0.15);
         }
       }
 
       &.fiber {
-        .icon {
-          color: #4bc0c0;
-        }
-        .value {
-          color: #4bc0c0;
+        background: linear-gradient(135deg, #581c87, #a855f7);
+        .nut-icon-wrap {
+          background: rgba(255, 255, 255, 0.15);
         }
       }
     }
@@ -503,20 +683,42 @@ onBeforeUnmount(() => {
   .charts-section {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
+    gap: 20px;
     margin-bottom: 24px;
 
     .chart-container {
-      background: white;
-      border-radius: 12px;
-      padding: 20px;
-      border: 2px solid #f0f0f0;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 16px;
+      padding: 22px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      transition: border-color 0.3s ease;
+
+      &:hover {
+        border-color: rgba(255, 255, 255, 0.12);
+      }
 
       .chart-title {
-        font-size: 16px;
+        font-size: 15px;
         font-weight: 600;
-        color: #303133;
+        color: rgba(255, 255, 255, 0.9);
         margin: 0 0 16px 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .chart-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+
+          &.pie {
+            background: #818cf8;
+          }
+
+          &.bar {
+            background: #34d399;
+          }
+        }
       }
 
       .chart {
@@ -528,7 +730,34 @@ onBeforeUnmount(() => {
 
   .stats-info {
     text-align: center;
+
+    :deep(.el-tag) {
+      border-radius: 20px;
+      padding: 6px 20px;
+      background: rgba(99, 102, 241, 0.15);
+      border-color: rgba(99, 102, 241, 0.25);
+      color: #a5b4fc;
+      font-weight: 500;
+    }
   }
+}
+
+@keyframes ring-anim {
+  from {
+    stroke-dashoffset: 327;
+  }
+  to {
+    stroke-dashoffset: 80;
+  }
+}
+
+:deep(.el-skeleton) {
+  --el-skeleton-color: rgba(255, 255, 255, 0.06);
+  --el-skeleton-to-color: rgba(255, 255, 255, 0.12);
+}
+
+:deep(.el-empty__description p) {
+  color: rgba(255, 255, 255, 0.5);
 }
 
 @media (max-width: 1200px) {
@@ -542,6 +771,16 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 768px) {
+  .nutrition-stats-card {
+    padding: 20px;
+  }
+
+  .stats-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
   .nutrition-cards {
     grid-template-columns: 1fr !important;
   }
