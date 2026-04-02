@@ -344,19 +344,19 @@ function formatMsgTime(ts) {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background: $paper;
+  background: $background;
   font-family: $font-body;
 }
 
 .chat-header {
-  background: #fff;
+  background: $card;
   padding: 0 20px;
   height: 60px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 2.5px solid $pencil;
-  box-shadow: 0 4px 0px 0px rgba(45, 45, 45, 0.08);
+  border-bottom: 1px solid $border;
+  box-shadow: $shadow-sm;
   flex-shrink: 0;
   z-index: 10;
 
@@ -374,18 +374,17 @@ function formatMsgTime(ts) {
     h3 {
       margin: 0;
       font-size: 17px;
-      font-family: $font-heading;
+      font-family: $font-display;
       font-weight: 700;
-      color: $pencil;
+      color: $foreground;
     }
   }
 
   .n-avatar {
-    background: $ink;
+    background: $accent;
     color: #fff;
     font-weight: 700;
-    font-family: $font-heading;
-    border: 2px solid $pencil;
+    font-family: $font-display;
   }
 }
 
@@ -407,14 +406,11 @@ function formatMsgTime(ts) {
   }
 
   .desc-msg {
-    background: $sticky;
-    border: 2px solid $pencil;
-    border-radius: $radius-wobbly-sm;
-    box-shadow: $shadow-hard-sm;
+    background: $muted;
+    border: 1px solid $border;
+    border-radius: $radius-lg;
     padding: 14px 18px;
     margin-bottom: 20px;
-    position: relative;
-    transform: rotate(-0.5deg);
 
     .desc-label {
       font-size: 12px;
@@ -426,7 +422,7 @@ function formatMsgTime(ts) {
     }
     .desc-content {
       font-size: 14px;
-      color: $pencil;
+      color: $foreground;
       font-family: $font-body;
       line-height: 1.6;
     }
@@ -439,11 +435,10 @@ function formatMsgTime(ts) {
     &.msg-user {
       justify-content: flex-end;
       .msg-bubble {
-        background: $ink;
+        background: $accent;
         color: #fff;
-        border: 2px solid $pencil;
-        border-radius: 255px 15px 15px 225px / 15px 225px 255px 15px;
-        box-shadow: $shadow-hard-sm;
+        border-radius: $radius-lg $radius-lg 4px $radius-lg;
+        box-shadow: $shadow-sm;
         .msg-time { color: rgba(255,255,255,0.7); }
       }
     }
@@ -451,37 +446,12 @@ function formatMsgTime(ts) {
     &.msg-nutritionist {
       justify-content: flex-start;
       .msg-bubble {
-        background: #fff;
-        color: $pencil;
-        border: 2px solid $pencil;
-        border-radius: 15px 255px 225px 15px / 225px 15px 15px 255px;
-        box-shadow: $shadow-hard-sm;
-        position: relative;
+        background: $card;
+        color: $foreground;
+        border: 1px solid $border;
+        border-radius: $radius-lg $radius-lg $radius-lg 4px;
+        box-shadow: $shadow-sm;
         .msg-time { color: $text-secondary; }
-
-        // Speech bubble pointer
-        &::before {
-          content: '';
-          position: absolute;
-          left: -9px;
-          top: 14px;
-          width: 0;
-          height: 0;
-          border-top: 7px solid transparent;
-          border-bottom: 7px solid transparent;
-          border-right: 9px solid $pencil;
-        }
-        &::after {
-          content: '';
-          position: absolute;
-          left: -6px;
-          top: 14px;
-          width: 0;
-          height: 0;
-          border-top: 7px solid transparent;
-          border-bottom: 7px solid transparent;
-          border-right: 9px solid #fff;
-        }
       }
     }
 
@@ -507,10 +477,10 @@ function formatMsgTime(ts) {
 }
 
 .chat-footer {
-  background: #fff;
+  background: $card;
   padding: 16px 20px;
-  border-top: 2.5px solid $pencil;
-  box-shadow: 0 -3px 0px 0px rgba(45, 45, 45, 0.05);
+  border-top: 1px solid $border;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
   flex-shrink: 0;
   max-width: 900px;
   width: 100%;
@@ -531,9 +501,9 @@ function formatMsgTime(ts) {
 }
 
 .chat-footer-closed {
-  background: #fff;
+  background: $card;
   padding: 20px;
   flex-shrink: 0;
-  border-top: 2px dashed $muted;
+  border-top: 1px solid $border;
 }
 </style>

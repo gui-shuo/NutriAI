@@ -410,14 +410,14 @@ function formatDate(dt) {
 
 .consultation-view {
   min-height: 100vh;
-  background: $paper;
+  background: $background;
   font-family: $font-body;
 }
 
 .top-nav {
-  background: #fff;
-  border-bottom: 2.5px solid $pencil;
-  box-shadow: 0 4px 0px 0px rgba(45, 45, 45, 0.08);
+  background: $card;
+  border-bottom: 1px solid $border;
+  box-shadow: $shadow-sm;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -440,9 +440,9 @@ function formatDate(dt) {
 
   .page-title {
     font-size: 20px;
-    font-family: $font-heading;
+    font-family: $font-display;
     font-weight: 600;
-    color: $pencil;
+    color: $foreground;
     margin: 0;
   }
 }
@@ -460,9 +460,9 @@ function formatDate(dt) {
 
   h2 {
     font-size: 28px;
-    font-family: $font-heading;
+    font-family: $font-display;
     font-weight: 700;
-    color: $pencil;
+    color: $foreground;
     margin-bottom: 8px;
   }
 
@@ -486,34 +486,16 @@ function formatDate(dt) {
   }
 }
 
-// Hand-drawn profile card with tack decoration
 .nutritionist-card {
-  border-radius: $radius-wobbly;
-  border: 2.5px solid $pencil !important;
-  box-shadow: $shadow-hard-sm;
+  border-radius: $radius-lg !important;
+  border: 1px solid $border !important;
+  box-shadow: $shadow-sm;
   transition: box-shadow 0.2s, transform 0.2s;
   position: relative;
-  overflow: visible;
-
-  // Tack decoration
-  &::before {
-    content: '';
-    position: absolute;
-    top: -6px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 14px;
-    height: 14px;
-    background: $accent;
-    border: 2px solid $pencil;
-    border-radius: 50%;
-    box-shadow: 1px 1px 0px 0px rgba(45, 45, 45, 0.3);
-    z-index: 1;
-  }
 
   &:hover {
-    box-shadow: $shadow-hard;
-    transform: translateY(-3px) rotate(-0.5deg);
+    box-shadow: $shadow-md;
+    transform: translateY(-3px);
   }
 
   .n-header {
@@ -524,18 +506,17 @@ function formatDate(dt) {
   }
 
   .n-avatar {
-    background: $ink;
+    background: $accent;
     color: #fff;
     font-weight: 700;
-    font-family: $font-heading;
-    border: 2px solid $pencil;
+    font-family: $font-display;
   }
 
   .n-name {
     font-size: 18px;
-    font-family: $font-heading;
+    font-family: $font-display;
     font-weight: 700;
-    color: $pencil;
+    color: $foreground;
     margin: 0 0 4px;
   }
 
@@ -554,7 +535,7 @@ function formatDate(dt) {
   }
 
   .n-intro {
-    color: $pencil;
+    color: $foreground;
     font-size: 13px;
     font-family: $font-body;
     line-height: 1.5;
@@ -570,16 +551,16 @@ function formatDate(dt) {
     justify-content: space-between;
     margin-bottom: 16px;
     padding: 10px 0;
-    border-top: 2px dashed $muted;
-    border-bottom: 2px dashed $muted;
+    border-top: 1px solid $border;
+    border-bottom: 1px solid $border;
 
     .stat {
       text-align: center;
       .stat-value {
         font-size: 15px;
         font-weight: 700;
-        font-family: $font-heading;
-        color: $pencil;
+        font-family: $font-display;
+        color: $foreground;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -608,7 +589,7 @@ function formatDate(dt) {
     .fee-value {
       font-size: 20px;
       font-weight: 700;
-      font-family: $font-heading;
+      font-family: $font-display;
       color: $accent;
     }
   }
@@ -620,25 +601,10 @@ function formatDate(dt) {
 }
 
 .active-card {
-  border-radius: $radius-wobbly-md !important;
-  border: 2.5px solid $pencil !important;
-  box-shadow: $shadow-hard;
-  background: $sticky !important;
-  position: relative;
-
-  // Tape decoration
-  &::before {
-    content: '';
-    position: absolute;
-    top: -8px;
-    left: 50%;
-    transform: translateX(-50%) rotate(-2deg);
-    width: 80px;
-    height: 22px;
-    background: rgba(255, 249, 196, 0.85);
-    border: 1.5px solid $muted;
-    z-index: 1;
-  }
+  border-radius: $radius-xl !important;
+  border: 1px solid $border !important;
+  box-shadow: $shadow-accent;
+  background: $card !important;
 
   .active-info {
     display: flex;
@@ -646,11 +612,10 @@ function formatDate(dt) {
     gap: 16px;
 
     .n-avatar {
-      background: $ink;
+      background: $accent;
       color: #fff;
       font-weight: 700;
-      font-family: $font-heading;
-      border: 2px solid $pencil;
+      font-family: $font-display;
     }
 
     .active-detail {
@@ -659,9 +624,9 @@ function formatDate(dt) {
       h3 {
         margin: 0 0 4px;
         font-size: 18px;
-        font-family: $font-heading;
+        font-family: $font-display;
         font-weight: 700;
-        color: $pencil;
+        color: $foreground;
       }
 
       .active-desc {
@@ -674,24 +639,23 @@ function formatDate(dt) {
   }
 }
 
-// === 预约表单 (sketchy inputs) ===
+// === 预约表单 ===
 .consult-form {
   .consult-info {
     display: flex;
     align-items: center;
     gap: 12px;
     padding: 16px;
-    background: $paper;
-    border: 2px solid $pencil;
-    border-radius: $radius-wobbly-sm;
-    box-shadow: $shadow-hard-sm;
+    background: $muted;
+    border: 1px solid $border;
+    border-radius: $radius-lg;
     margin-bottom: 20px;
 
     h4 {
       margin: 0;
       font-size: 16px;
-      font-family: $font-heading;
-      color: $pencil;
+      font-family: $font-display;
+      color: $foreground;
     }
     p {
       margin: 0;
@@ -703,7 +667,7 @@ function formatDate(dt) {
       margin-left: auto;
       font-size: 22px;
       font-weight: 700;
-      font-family: $font-heading;
+      font-family: $font-display;
       color: $accent;
     }
   }

@@ -646,15 +646,15 @@ onMounted(() => loadFeed(true))
 
 .community-view {
   min-height: 100vh;
-  background: $paper;
+  background: $background;
   font-family: $font-body;
 }
 
 /* 顶部导航 */
 .top-nav {
-  background: #fff;
-  border-bottom: 2.5px solid $pencil;
-  box-shadow: 0 4px 0px 0px rgba(45, 45, 45, 0.08);
+  background: $card;
+  border-bottom: 1px solid $border;
+  box-shadow: $shadow-sm;
   position: sticky;
   top: 0;
   z-index: 50;
@@ -675,9 +675,9 @@ onMounted(() => loadFeed(true))
 }
 .page-title {
   font-size: 20px;
-  font-family: $font-heading;
+  font-family: $font-display;
   font-weight: 600;
-  color: $pencil;
+  color: $foreground;
   margin: 0;
 }
 
@@ -697,26 +697,25 @@ onMounted(() => loadFeed(true))
   align-items: center;
   gap: 4px;
   padding: 6px 14px;
-  border-radius: $radius-wobbly-sm;
-  background: #fff;
+  border-radius: $radius-full;
+  background: $card;
   cursor: pointer;
   white-space: nowrap;
   font-size: 13px;
   font-family: $font-body;
-  color: $pencil;
+  color: $foreground;
   transition: all .2s;
-  border: 2px solid $muted;
+  border: 1px solid $border;
 }
 .cat-tag:hover {
-  border-color: $ink;
-  color: $ink;
-  transform: translateY(-1px);
+  border-color: $accent;
+  color: $accent;
 }
 .cat-tag.active {
-  background: $ink;
+  background: $gradient-accent;
   color: #fff;
-  border-color: $pencil;
-  box-shadow: 2px 2px 0px 0px $pencil;
+  border-color: transparent;
+  box-shadow: $shadow-accent;
 }
 .cat-icon { font-size: 14px; }
 
@@ -728,33 +727,31 @@ onMounted(() => loadFeed(true))
 }
 .loading-box, .empty-box { padding: 40px 0; }
 
-/* 帖子卡片 — pinned-note corkboard style */
+/* 帖子卡片 */
 .post-card {
-  background: #fff;
-  border: 2px solid $pencil;
-  border-radius: $radius-wobbly-md;
+  background: $card;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
   padding: 16px;
   margin-bottom: 16px;
-  box-shadow: $shadow-hard-sm;
+  box-shadow: $shadow-sm;
   transition: box-shadow .2s, transform .2s;
   position: relative;
 }
 .post-card:hover {
-  box-shadow: $shadow-hard;
-  transform: rotate(-0.3deg) translateY(-2px);
+  box-shadow: $shadow-md;
+  transform: translateY(-2px);
 }
 .post-card.pinned {
-  border-left: 4px solid $accent;
-  background: lighten(#fff9c4, 3%);
+  border-left: 3px solid $accent;
+  background: $card;
 }
-/* Tack decoration on pinned posts */
 .post-card.pinned::before {
   content: '📌';
   position: absolute;
-  top: -8px;
+  top: 12px;
   right: 16px;
-  font-size: 18px;
-  transform: rotate(15deg);
+  font-size: 16px;
   z-index: 1;
 }
 
@@ -775,10 +772,10 @@ onMounted(() => loadFeed(true))
   flex-direction: column;
 }
 .user-meta .username {
-  font-weight: 700;
+  font-weight: 600;
   font-size: 14px;
-  font-family: $font-heading;
-  color: $pencil;
+  font-family: $font-body;
+  color: $foreground;
 }
 .user-meta .time { font-size: 12px; color: $text-secondary; font-family: $font-body; }
 .post-tags { display: flex; gap: 6px; }
@@ -787,7 +784,7 @@ onMounted(() => loadFeed(true))
 .content-text {
   font-size: 15px;
   line-height: 1.7;
-  color: $pencil;
+  color: $foreground;
   font-family: $font-body;
   margin: 0 0 10px;
   white-space: pre-wrap;
@@ -798,10 +795,10 @@ onMounted(() => loadFeed(true))
 .image-grid {
   display: grid;
   gap: 4px;
-  border-radius: $radius-wobbly-sm;
+  border-radius: $radius-md;
   overflow: hidden;
   margin-bottom: 8px;
-  border: 2px solid $pencil;
+  border: 1px solid $border;
 }
 .image-grid.cols-1 { grid-template-columns: 1fr; max-width: 360px; }
 .image-grid.cols-2 { grid-template-columns: 1fr 1fr; max-width: 400px; }
@@ -809,26 +806,26 @@ onMounted(() => loadFeed(true))
 .image-item { position: relative; aspect-ratio: 1; cursor: pointer; overflow: hidden; }
 .image-item .el-image { width: 100%; height: 100%; }
 .more-overlay {
-  position: absolute; inset: 0; background: rgba(45, 45, 45, .55);
+  position: absolute; inset: 0; background: rgba(15, 23, 42, .55);
   display: flex; align-items: center; justify-content: center;
   color: #fff; font-size: 20px; font-weight: 600;
-  font-family: $font-heading;
+  font-family: $font-display;
 }
 
 .video-box { margin-bottom: 8px; }
 .video-box video {
   width: 100%; max-height: 360px;
-  border-radius: $radius-wobbly-sm;
-  border: 2px solid $pencil;
+  border-radius: $radius-md;
+  border: 1px solid $border;
   background: #000;
 }
 
-/* 操作栏 — hand-drawn buttons */
+/* 操作栏 */
 .post-actions {
   display: flex;
   gap: 20px;
   padding-top: 10px;
-  border-top: 2px dashed $muted;
+  border-top: 1px solid $border;
 }
 .action-btn {
   display: flex;
@@ -839,17 +836,16 @@ onMounted(() => loadFeed(true))
   color: $text-secondary;
   cursor: pointer;
   padding: 4px 10px;
-  border-radius: $radius-wobbly-sm;
-  border: 1.5px solid transparent;
+  border-radius: $radius-md;
+  border: 1px solid transparent;
   transition: all .2s;
 }
 .action-btn:hover {
-  color: $ink;
-  border-color: $ink;
-  background: rgba(45, 93, 161, 0.06);
+  color: $accent;
+  background: rgba(0, 82, 255, 0.06);
 }
-.action-btn.active { color: $accent; border-color: $accent; }
-.action-btn.delete-btn:hover { color: $accent; border-color: $accent; }
+.action-btn.active { color: $accent; }
+.action-btn.delete-btn:hover { color: $error-color; }
 
 .load-more { text-align: center; padding: 16px 0; }
 
@@ -857,49 +853,48 @@ onMounted(() => loadFeed(true))
 .category-selector { display: flex; flex-wrap: wrap; gap: 8px; }
 .cat-option {
   padding: 6px 14px;
-  border-radius: $radius-wobbly-sm;
-  border: 2px solid $muted;
+  border-radius: $radius-full;
+  border: 1px solid $border;
   font-size: 13px;
   font-family: $font-body;
-  color: $pencil;
+  color: $foreground;
   cursor: pointer;
   transition: all .2s;
 }
-.cat-option:hover { border-color: $ink; color: $ink; }
+.cat-option:hover { border-color: $accent; color: $accent; }
 .cat-option.active {
-  background: $ink;
+  background: $gradient-accent;
   color: #fff;
-  border-color: $pencil;
-  box-shadow: 2px 2px 0px 0px $pencil;
+  border-color: transparent;
+  box-shadow: $shadow-accent;
 }
 
 .upload-grid { display: flex; flex-wrap: wrap; gap: 8px; }
 .upload-preview {
   width: 80px; height: 80px;
-  border-radius: $radius-wobbly-sm;
-  border: 2px solid $pencil;
+  border-radius: $radius-md;
+  border: 1px solid $border;
   overflow: hidden; position: relative;
 }
 .upload-preview .el-image { width: 100%; height: 100%; }
 .upload-preview .remove-btn {
   position: absolute; top: 2px; right: 2px;
   width: 20px; height: 20px; border-radius: 50%;
-  background: $accent; color: #fff;
-  border: 1.5px solid $pencil;
+  background: $error-color; color: #fff;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer; font-size: 12px;
 }
 .upload-btn {
   width: 80px; height: 80px;
-  border-radius: $radius-wobbly-sm;
-  border: 2px dashed $muted; display: flex;
+  border-radius: $radius-md;
+  border: 1px dashed $border-medium; display: flex;
   flex-direction: column; align-items: center;
   justify-content: center; cursor: pointer;
   color: $text-secondary; font-size: 12px; gap: 4px;
   font-family: $font-body;
   transition: all .2s;
 }
-.upload-btn:hover { border-color: $ink; color: $ink; }
+.upload-btn:hover { border-color: $accent; color: $accent; }
 
 /* 详情对话框 */
 .detail-dialog .detail-header {
@@ -911,14 +906,14 @@ onMounted(() => loadFeed(true))
 .detail-dialog .user-info { display: flex; align-items: center; gap: 10px; }
 .detail-dialog .user-meta { display: flex; flex-direction: column; }
 .username-row { display: flex; align-items: center; }
-.detail-dialog .username { font-weight: 700; font-size: 15px; font-family: $font-heading; color: $pencil; }
+.detail-dialog .username { font-weight: 600; font-size: 15px; font-family: $font-body; color: $foreground; }
 .detail-dialog .time { font-size: 12px; color: $text-secondary; }
 
 .detail-content { margin-bottom: 16px; }
 .detail-content p {
   font-size: 15px; line-height: 1.8; white-space: pre-wrap;
   word-break: break-word; margin: 0 0 12px;
-  font-family: $font-body; color: $pencil;
+  font-family: $font-body; color: $foreground;
 }
 
 .detail-actions {
@@ -926,13 +921,13 @@ onMounted(() => loadFeed(true))
   align-items: center;
   gap: 20px;
   padding: 10px 0;
-  border-top: 2px dashed $muted;
-  border-bottom: 2px dashed $muted;
+  border-top: 1px solid $border;
+  border-bottom: 1px solid $border;
   margin-bottom: 16px;
 }
 .comment-count { font-size: 13px; color: $text-secondary; font-family: $font-body; }
 
-/* 评论区 — speech bubble style */
+/* 评论区 */
 .comments-section { max-height: 400px; overflow-y: auto; }
 .comment-input { margin-bottom: 16px; }
 .comment-list { display: flex; flex-direction: column; gap: 12px; }
@@ -944,48 +939,25 @@ onMounted(() => loadFeed(true))
 .comment-item { display: flex; gap: 8px; }
 .comment-body {
   flex: 1; min-width: 0;
-  background: $paper;
-  border: 1.5px solid $muted;
-  border-radius: $radius-wobbly-sm;
+  background: $muted;
+  border: 1px solid $border;
+  border-radius: $radius-md;
   padding: 8px 12px;
-  position: relative;
-}
-.comment-body::before {
-  content: '';
-  position: absolute;
-  left: -7px;
-  top: 10px;
-  width: 0;
-  height: 0;
-  border-top: 6px solid transparent;
-  border-bottom: 6px solid transparent;
-  border-right: 7px solid $muted;
-}
-.comment-body::after {
-  content: '';
-  position: absolute;
-  left: -5px;
-  top: 10px;
-  width: 0;
-  height: 0;
-  border-top: 6px solid transparent;
-  border-bottom: 6px solid transparent;
-  border-right: 7px solid $paper;
 }
 .comment-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.comment-user { font-weight: 700; font-size: 13px; color: $pencil; font-family: $font-heading; }
+.comment-user { font-weight: 600; font-size: 13px; color: $foreground; font-family: $font-body; }
 .reply-to { font-size: 12px; color: $text-secondary; }
 .comment-time { font-size: 12px; color: $text-disabled; }
-.comment-text { font-size: 13px; line-height: 1.6; margin: 4px 0; color: $pencil; font-family: $font-body; }
+.comment-text { font-size: 13px; line-height: 1.6; margin: 4px 0; color: $foreground; font-family: $font-body; }
 .comment-actions { display: flex; gap: 12px; }
 .act-btn {
   font-size: 12px; color: $text-secondary; cursor: pointer;
   display: flex; align-items: center; gap: 2px;
   font-family: $font-body;
 }
-.act-btn:hover { color: $ink; }
+.act-btn:hover { color: $accent; }
 .act-btn.active { color: $accent; }
-.act-btn.del:hover { color: $accent; }
+.act-btn.del:hover { color: $error-color; }
 
 @media (max-width: 640px) {
   .nav-inner, .category-bar, .feed-container { padding-left: 12px; padding-right: 12px; }
