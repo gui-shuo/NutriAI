@@ -135,13 +135,16 @@ onMounted(() => {
 <style scoped lang="scss">
 .page {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: #fdfbf7;
   padding: 20rpx 0 30rpx;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .loading-state {
   text-align: center;
   padding: 100rpx 0;
+  color: #2d2d2d;
+  opacity: 0.6;
 }
 
 .announcement-list {
@@ -149,15 +152,31 @@ onMounted(() => {
 }
 
 .announcement-card {
-  background: #fff;
-  border-radius: 16rpx;
+  background: #fdfbf7;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
   padding: 28rpx;
-  margin-bottom: 20rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  margin-bottom: 24rpx;
+  border: 2rpx solid #2d2d2d;
+  box-shadow: 4px 4px 0px 0px #2d2d2d;
+  position: relative;
   transition: all 0.2s;
 
+  /* Tack decoration */
+  &::before {
+    content: '\1F4CC';
+    position: absolute;
+    top: -14rpx;
+    right: 30rpx;
+    font-size: 32rpx;
+    z-index: 1;
+  }
+
   &.important {
-    border-left: 6rpx solid #ee0a24;
+    border-left: 6rpx solid #ff4d4d;
+
+    &::before {
+      content: '\1F4CD';
+    }
   }
 }
 
@@ -173,54 +192,90 @@ onMounted(() => {
 }
 
 .priority-badge {
-  background: #ee0a24;
-  color: #fff;
+  background: #ff4d4d;
+  color: #fdfbf7;
   font-size: 20rpx;
   padding: 4rpx 12rpx;
-  border-radius: 6rpx;
+  border-radius: 8px 18px 8px 18px / 18px 8px 18px 8px;
   white-space: nowrap;
   font-weight: 600;
+  border: 1rpx solid #2d2d2d;
 }
 
 .announcement-title {
   font-size: 30rpx;
   font-weight: 700;
-  color: #333;
+  color: #2d2d2d;
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-family: 'Kalam', cursive;
 }
 
 .announcement-date {
   display: block;
+  color: #2d2d2d;
+  opacity: 0.5;
+  font-size: 24rpx;
 }
 
 .announcement-preview {
   font-size: 26rpx;
-  color: #666;
+  color: #2d2d2d;
+  opacity: 0.7;
   line-height: 1.7;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .announcement-content {
   font-size: 26rpx;
-  color: #333;
+  color: #2d2d2d;
   line-height: 1.8;
   word-break: break-all;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .expand-hint {
   margin-top: 12rpx;
   text-align: right;
+  color: #2d5da1;
+  font-size: 24rpx;
+  text-decoration: underline;
+  text-decoration-style: wavy;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .load-more {
   text-align: center;
   padding: 30rpx 0;
+  color: #2d2d2d;
+  opacity: 0.5;
+  font-size: 24rpx;
+  font-family: 'Patrick Hand', cursive;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 200rpx;
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 20rpx;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #2d2d2d;
+  opacity: 0.6;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .safe-bottom {

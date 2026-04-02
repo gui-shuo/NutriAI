@@ -356,7 +356,8 @@ async function loadProduct(id: number) {
 <style scoped>
 .detail-page {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: #fdfbf7;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .loading-page {
@@ -365,12 +366,15 @@ async function loadProduct(id: number) {
   justify-content: center;
   min-height: 100vh;
   font-size: 28rpx;
-  color: #999;
+  color: #2d2d2d;
+  opacity: 0.6;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .product-swiper {
   width: 100%;
   height: 750rpx;
+  border-bottom: 3rpx solid #2d2d2d;
 }
 
 .swiper-img {
@@ -379,8 +383,9 @@ async function loadProduct(id: number) {
 }
 
 .price-section {
-  background: #fff;
+  background: #fdfbf7;
   padding: 28rpx;
+  border-bottom: 2rpx dashed #e5e0d8;
 }
 
 .price-row {
@@ -392,81 +397,99 @@ async function loadProduct(id: number) {
 
 .current-price {
   font-size: 48rpx;
-  color: #ee0a24;
+  color: #ff4d4d;
   font-weight: 700;
+  font-family: 'Kalam', cursive;
+  background: #fff9c4;
+  padding: 0 12rpx;
+  display: inline-block;
+  transform: rotate(-1deg);
 }
 
 .original-price {
   font-size: 28rpx;
-  color: #999;
+  color: #2d2d2d;
   text-decoration: line-through;
+  opacity: 0.5;
 }
 
 .discount-tag {
   font-size: 20rpx;
-  color: #fff;
-  background: #ee0a24;
+  color: #fdfbf7;
+  background: #ff4d4d;
   padding: 4rpx 12rpx;
-  border-radius: 8rpx;
+  border-radius: 8px 18px 8px 18px / 18px 8px 18px 8px;
+  border: 1rpx solid #2d2d2d;
+  font-family: 'Kalam', cursive;
 }
 
 .product-name {
   font-size: 32rpx;
-  color: #333;
+  color: #2d2d2d;
   font-weight: 600;
   line-height: 1.5;
   display: block;
+  font-family: 'Kalam', cursive;
 }
 
 .sales-info {
   font-size: 24rpx;
-  color: #999;
+  color: #2d2d2d;
+  opacity: 0.5;
   margin-top: 8rpx;
   display: block;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .info-section {
-  background: #fff;
+  background: #fdfbf7;
   margin-top: 16rpx;
   padding: 28rpx;
+  border-top: 2rpx dashed #e5e0d8;
 }
 
 .section-title {
   font-size: 30rpx;
   font-weight: 600;
-  color: #333;
+  color: #2d2d2d;
   margin-bottom: 20rpx;
   padding-left: 16rpx;
-  border-left: 6rpx solid #07c160;
+  border-left: 6rpx solid #ff4d4d;
+  font-family: 'Kalam', cursive;
 }
 
 .description-text {
   font-size: 28rpx;
-  color: #666;
+  color: #2d2d2d;
   line-height: 1.8;
+  opacity: 0.7;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .spec-list {
-  border-top: 1rpx solid #f0f0f0;
+  border-top: 2rpx dashed #e5e0d8;
 }
 
 .spec-item {
   display: flex;
   padding: 16rpx 0;
-  border-bottom: 1rpx solid #f5f5f5;
+  border-bottom: 1rpx dashed #e5e0d8;
 }
 
 .spec-label {
   width: 200rpx;
   font-size: 26rpx;
-  color: #999;
+  color: #2d2d2d;
+  opacity: 0.5;
   flex-shrink: 0;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .spec-value {
   font-size: 26rpx;
-  color: #333;
+  color: #2d2d2d;
   flex: 1;
+  font-family: 'Patrick Hand', cursive;
 }
 
 /* Bottom Bar */
@@ -475,21 +498,24 @@ async function loadProduct(id: number) {
   bottom: 0;
   left: 0;
   right: 0;
-  background: #fff;
+  background: #fdfbf7;
   padding: 16rpx 28rpx;
   padding-bottom: calc(16rpx + env(safe-area-inset-bottom));
-  border-top: 1rpx solid #eee;
+  border-top: 2rpx dashed #e5e0d8;
   z-index: 100;
 }
 
 .buy-btn {
   text-align: center;
   padding: 24rpx;
-  background: linear-gradient(135deg, #07c160, #06ad56);
-  color: #fff;
+  background: #ff4d4d;
+  color: #fdfbf7;
   font-size: 32rpx;
   font-weight: 600;
-  border-radius: 44rpx;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  border: 2rpx solid #2d2d2d;
+  box-shadow: 4px 4px 0px 0px #2d2d2d;
+  font-family: 'Kalam', cursive;
 }
 
 /* Modal */
@@ -508,8 +534,9 @@ async function loadProduct(id: number) {
 .modal-content {
   width: 100%;
   max-height: 85vh;
-  background: #fff;
-  border-radius: 24rpx 24rpx 0 0;
+  background: #fdfbf7;
+  border-radius: 30rpx 30rpx 0 0;
+  border-top: 3rpx solid #2d2d2d;
   display: flex;
   flex-direction: column;
 }
@@ -519,18 +546,19 @@ async function loadProduct(id: number) {
   align-items: center;
   justify-content: space-between;
   padding: 28rpx;
-  border-bottom: 1rpx solid #eee;
+  border-bottom: 2rpx dashed #e5e0d8;
 }
 
 .modal-title {
   font-size: 32rpx;
   font-weight: 600;
-  color: #333;
+  color: #2d2d2d;
+  font-family: 'Kalam', cursive;
 }
 
 .modal-close {
   font-size: 36rpx;
-  color: #999;
+  color: #2d2d2d;
   padding: 8rpx;
 }
 
@@ -544,13 +572,14 @@ async function loadProduct(id: number) {
   display: flex;
   margin-bottom: 28rpx;
   padding-bottom: 28rpx;
-  border-bottom: 1rpx solid #f0f0f0;
+  border-bottom: 2rpx dashed #e5e0d8;
 }
 
 .purchase-img {
   width: 160rpx;
   height: 160rpx;
-  border-radius: 12rpx;
+  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px;
+  border: 2rpx solid #2d2d2d;
   margin-right: 20rpx;
   flex-shrink: 0;
 }
@@ -564,18 +593,20 @@ async function loadProduct(id: number) {
 
 .purchase-name {
   font-size: 28rpx;
-  color: #333;
+  color: #2d2d2d;
   margin-bottom: 12rpx;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .purchase-price {
   font-size: 36rpx;
-  color: #ee0a24;
+  color: #ff4d4d;
   font-weight: 600;
+  font-family: 'Kalam', cursive;
 }
 
 .form-section {
@@ -588,12 +619,16 @@ async function loadProduct(id: number) {
 .form-label {
   font-size: 28rpx;
   font-weight: 600;
-  color: #333;
+  color: #2d2d2d;
+  font-family: 'Kalam', cursive;
 }
 
 .manage-link {
   font-size: 26rpx;
-  color: #07c160;
+  color: #2d5da1;
+  font-family: 'Patrick Hand', cursive;
+  text-decoration: underline;
+  text-decoration-style: wavy;
 }
 
 /* Saved Address Selection */
@@ -602,14 +637,15 @@ async function loadProduct(id: number) {
   align-items: flex-start;
   gap: 16rpx;
   padding: 20rpx;
-  border: 2rpx solid #eee;
-  border-radius: 12rpx;
+  border: 2rpx dashed #e5e0d8;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
   margin-bottom: 12rpx;
 }
 
 .saved-address-item.active {
-  border-color: #07c160;
-  background: rgba(7, 193, 96, 0.03);
+  border-color: #ff4d4d;
+  border-style: solid;
+  background: rgba(255, 77, 77, 0.04);
 }
 
 .saved-addr-radio {
@@ -619,7 +655,7 @@ async function loadProduct(id: number) {
 .radio-dot {
   width: 36rpx;
   height: 36rpx;
-  border: 2rpx solid #ddd;
+  border: 2rpx solid #e5e0d8;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -627,8 +663,8 @@ async function loadProduct(id: number) {
 }
 
 .radio-dot.checked {
-  border-color: #07c160;
-  background: #07c160;
+  border-color: #ff4d4d;
+  background: #ff4d4d;
 }
 
 .radio-dot.checked::after {
@@ -636,7 +672,7 @@ async function loadProduct(id: number) {
   width: 16rpx;
   height: 16rpx;
   border-radius: 50%;
-  background: #fff;
+  background: #fdfbf7;
 }
 
 .saved-addr-info {
@@ -653,42 +689,52 @@ async function loadProduct(id: number) {
 .saved-addr-name {
   font-size: 28rpx;
   font-weight: 600;
-  color: #333;
+  color: #2d2d2d;
+  font-family: 'Kalam', cursive;
 }
 
 .saved-addr-phone {
   font-size: 26rpx;
-  color: #666;
+  color: #2d2d2d;
+  opacity: 0.6;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .saved-addr-default {
   font-size: 18rpx;
-  color: #fff;
-  background: #07c160;
+  color: #fdfbf7;
+  background: #ff4d4d;
   padding: 2rpx 10rpx;
-  border-radius: 6rpx;
+  border-radius: 8px 18px 8px 18px / 18px 8px 18px 8px;
+  border: 1rpx solid #2d2d2d;
 }
 
 .saved-addr-detail {
   font-size: 24rpx;
-  color: #999;
+  color: #2d2d2d;
+  opacity: 0.5;
   line-height: 1.4;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .manual-entry-link {
   text-align: center;
   padding: 16rpx;
   font-size: 26rpx;
-  color: #07c160;
-  border: 2rpx dashed #07c160;
-  border-radius: 12rpx;
+  color: #2d5da1;
+  border: 2rpx dashed #2d5da1;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
   margin-bottom: 16rpx;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .back-to-saved {
   font-size: 26rpx;
-  color: #07c160;
+  color: #2d5da1;
   margin-bottom: 16rpx;
+  font-family: 'Patrick Hand', cursive;
+  text-decoration: underline;
+  text-decoration-style: wavy;
 }
 
 .save-address-check {
@@ -702,7 +748,7 @@ async function loadProduct(id: number) {
 .check-box {
   width: 36rpx;
   height: 36rpx;
-  border: 2rpx solid #ddd;
+  border: 2rpx solid #e5e0d8;
   border-radius: 6rpx;
   display: flex;
   align-items: center;
@@ -712,14 +758,16 @@ async function loadProduct(id: number) {
 }
 
 .check-box.checked {
-  background: #07c160;
-  border-color: #07c160;
-  color: #fff;
+  background: #ff4d4d;
+  border-color: #2d2d2d;
+  color: #fdfbf7;
 }
 
 .check-label {
   font-size: 26rpx;
-  color: #666;
+  color: #2d2d2d;
+  opacity: 0.7;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .quantity-selector {
@@ -731,18 +779,19 @@ async function loadProduct(id: number) {
 .qty-btn {
   width: 56rpx;
   height: 56rpx;
-  border: 2rpx solid #ddd;
-  border-radius: 8rpx;
+  border: 2rpx solid #2d2d2d;
+  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 32rpx;
-  color: #333;
+  color: #2d2d2d;
+  font-family: 'Kalam', cursive;
 }
 
 .qty-btn.disabled {
-  color: #ccc;
-  border-color: #eee;
+  color: #e5e0d8;
+  border-color: #e5e0d8;
 }
 
 .qty-value {
@@ -750,6 +799,7 @@ async function loadProduct(id: number) {
   text-align: center;
   font-size: 30rpx;
   font-weight: 600;
+  font-family: 'Kalam', cursive;
 }
 
 .form-group {
@@ -759,19 +809,23 @@ async function loadProduct(id: number) {
 .form-input {
   width: 100%;
   height: 80rpx;
-  border: 2rpx solid #eee;
-  border-radius: 12rpx;
+  border: 2rpx solid #e5e0d8;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
   padding: 0 24rpx;
   font-size: 28rpx;
+  font-family: 'Patrick Hand', cursive;
+  background: #fdfbf7;
 }
 
 .form-textarea {
   width: 100%;
   height: 160rpx;
-  border: 2rpx solid #eee;
-  border-radius: 12rpx;
+  border: 2rpx solid #e5e0d8;
+  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px;
   padding: 16rpx 24rpx;
   font-size: 28rpx;
+  font-family: 'Patrick Hand', cursive;
+  background: #fdfbf7;
 }
 
 .total-row {
@@ -780,32 +834,41 @@ async function loadProduct(id: number) {
   justify-content: flex-end;
   margin-top: 28rpx;
   padding-top: 20rpx;
-  border-top: 1rpx solid #f0f0f0;
+  border-top: 2rpx dashed #e5e0d8;
   font-size: 28rpx;
-  color: #333;
+  color: #2d2d2d;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .total-price {
   font-size: 40rpx;
-  color: #ee0a24;
+  color: #ff4d4d;
   font-weight: 700;
   margin-left: 8rpx;
+  font-family: 'Kalam', cursive;
+  background: #fff9c4;
+  padding: 0 8rpx;
+  display: inline-block;
+  transform: rotate(-1deg);
 }
 
 .modal-footer {
   padding: 20rpx 28rpx;
   padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
-  border-top: 1rpx solid #eee;
+  border-top: 2rpx dashed #e5e0d8;
 }
 
 .confirm-buy-btn {
   text-align: center;
   padding: 24rpx;
-  background: linear-gradient(135deg, #07c160, #06ad56);
-  color: #fff;
+  background: #ff4d4d;
+  color: #fdfbf7;
   font-size: 30rpx;
   font-weight: 600;
-  border-radius: 44rpx;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  border: 2rpx solid #2d2d2d;
+  box-shadow: 4px 4px 0px 0px #2d2d2d;
+  font-family: 'Kalam', cursive;
 }
 
 /* Result Modal */
@@ -815,8 +878,10 @@ async function loadProduct(id: number) {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 560rpx;
-  background: #fff;
-  border-radius: 24rpx;
+  background: #fdfbf7;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  border: 2rpx solid #2d2d2d;
+  box-shadow: 4px 4px 0px 0px #2d2d2d;
   padding: 60rpx 40rpx;
   display: flex;
   flex-direction: column;
@@ -831,24 +896,30 @@ async function loadProduct(id: number) {
 .result-title {
   font-size: 36rpx;
   font-weight: 600;
-  color: #333;
+  color: #2d2d2d;
   margin-bottom: 16rpx;
+  font-family: 'Kalam', cursive;
 }
 
 .result-desc {
   font-size: 26rpx;
-  color: #666;
+  color: #2d2d2d;
+  opacity: 0.7;
   text-align: center;
   margin-bottom: 36rpx;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .result-btn {
   width: 100%;
   text-align: center;
   padding: 24rpx;
-  background: #07c160;
-  color: #fff;
+  background: #ff4d4d;
+  color: #fdfbf7;
   font-size: 30rpx;
-  border-radius: 44rpx;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  border: 2rpx solid #2d2d2d;
+  box-shadow: 3px 3px 0px 0px #2d2d2d;
+  font-family: 'Kalam', cursive;
 }
 </style>

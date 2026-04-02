@@ -91,7 +91,7 @@
           </view>
           <view class="form-group switch-group">
             <text class="form-label">设为默认地址</text>
-            <switch :checked="form.isDefault" @change="form.isDefault = $event.detail.value" color="#07c160" />
+            <switch :checked="form.isDefault" @change="form.isDefault = $event.detail.value" color="#ff4d4d" />
           </view>
         </scroll-view>
         <view class="modal-footer">
@@ -273,20 +273,23 @@ onShow(() => {
 <style scoped>
 .address-page {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: #fdfbf7;
   padding-bottom: 140rpx;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .address-card {
-  background: #fff;
+  background: #fdfbf7;
   margin: 16rpx 24rpx;
-  border-radius: 16rpx;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
   padding: 28rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04);
+  border: 2rpx solid #2d2d2d;
+  box-shadow: 4px 4px 0px 0px #2d2d2d;
 }
 
 .address-card.selected {
-  border: 2rpx solid #07c160;
+  border: 2rpx solid #ff4d4d;
+  box-shadow: 4px 4px 0px 0px #ff4d4d;
 }
 
 .address-top {
@@ -299,20 +302,24 @@ onShow(() => {
 .receiver-name {
   font-size: 32rpx;
   font-weight: 600;
-  color: #333;
+  color: #2d2d2d;
+  font-family: 'Kalam', cursive;
 }
 
 .receiver-phone {
   font-size: 28rpx;
-  color: #666;
+  color: #2d2d2d;
+  opacity: 0.6;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .default-tag {
   font-size: 20rpx;
-  color: #fff;
-  background: #07c160;
+  color: #fdfbf7;
+  background: #ff4d4d;
   padding: 4rpx 12rpx;
-  border-radius: 8rpx;
+  border-radius: 8px 18px 8px 18px / 18px 8px 18px 8px;
+  border: 1rpx solid #2d2d2d;
 }
 
 .address-detail {
@@ -323,18 +330,21 @@ onShow(() => {
 
 .address-label {
   font-size: 22rpx;
-  color: #07c160;
-  border: 1rpx solid #07c160;
+  color: #2d5da1;
+  border: 1rpx solid #2d5da1;
   padding: 2rpx 10rpx;
-  border-radius: 6rpx;
+  border-radius: 8px 18px 8px 18px / 18px 8px 18px 8px;
   flex-shrink: 0;
   margin-top: 4rpx;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .address-text {
   font-size: 26rpx;
-  color: #666;
+  color: #2d2d2d;
+  opacity: 0.7;
   line-height: 1.5;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .address-actions {
@@ -342,7 +352,7 @@ onShow(() => {
   gap: 24rpx;
   margin-top: 20rpx;
   padding-top: 20rpx;
-  border-top: 1rpx solid #f0f0f0;
+  border-top: 2rpx dashed #e5e0d8;
 }
 
 .action-btn {
@@ -357,11 +367,14 @@ onShow(() => {
 
 .action-text {
   font-size: 24rpx;
-  color: #666;
+  color: #2d2d2d;
+  opacity: 0.7;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .action-btn.danger .action-text {
-  color: #ee0a24;
+  color: #ff4d4d;
+  opacity: 1;
 }
 
 .empty-state {
@@ -378,20 +391,25 @@ onShow(() => {
 
 .empty-text {
   font-size: 30rpx;
-  color: #333;
+  color: #2d2d2d;
   margin-bottom: 8rpx;
+  font-family: 'Kalam', cursive;
 }
 
 .empty-hint {
   font-size: 24rpx;
-  color: #999;
+  color: #2d2d2d;
+  opacity: 0.5;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .loading-state {
   text-align: center;
   padding: 40rpx;
   font-size: 28rpx;
-  color: #999;
+  color: #2d2d2d;
+  opacity: 0.6;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .add-btn-wrap {
@@ -401,18 +419,21 @@ onShow(() => {
   right: 0;
   padding: 20rpx 28rpx;
   padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
-  background: #fff;
-  border-top: 1rpx solid #eee;
+  background: #fdfbf7;
+  border-top: 2rpx dashed #e5e0d8;
 }
 
 .add-btn {
   text-align: center;
   padding: 24rpx;
-  background: linear-gradient(135deg, #07c160, #06ad56);
-  color: #fff;
+  background: #ff4d4d;
+  color: #fdfbf7;
   font-size: 30rpx;
   font-weight: 600;
-  border-radius: 44rpx;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  border: 2rpx solid #2d2d2d;
+  box-shadow: 4px 4px 0px 0px #2d2d2d;
+  font-family: 'Kalam', cursive;
 }
 
 /* Modal */
@@ -428,8 +449,9 @@ onShow(() => {
 .modal-content {
   width: 100%;
   max-height: 90vh;
-  background: #fff;
-  border-radius: 24rpx 24rpx 0 0;
+  background: #fdfbf7;
+  border-radius: 30rpx 30rpx 0 0;
+  border-top: 3rpx solid #2d2d2d;
   display: flex;
   flex-direction: column;
 }
@@ -439,18 +461,19 @@ onShow(() => {
   align-items: center;
   justify-content: space-between;
   padding: 28rpx;
-  border-bottom: 1rpx solid #eee;
+  border-bottom: 2rpx dashed #e5e0d8;
 }
 
 .modal-title {
   font-size: 32rpx;
   font-weight: 600;
-  color: #333;
+  color: #2d2d2d;
+  font-family: 'Kalam', cursive;
 }
 
 .modal-close {
   font-size: 36rpx;
-  color: #999;
+  color: #2d2d2d;
   padding: 8rpx;
 }
 
@@ -467,31 +490,36 @@ onShow(() => {
 .form-label {
   font-size: 28rpx;
   font-weight: 500;
-  color: #333;
+  color: #2d2d2d;
   margin-bottom: 12rpx;
   display: block;
+  font-family: 'Kalam', cursive;
 }
 
 .required {
-  color: #ee0a24;
+  color: #ff4d4d;
 }
 
 .form-input {
   width: 100%;
   height: 80rpx;
-  border: 2rpx solid #eee;
-  border-radius: 12rpx;
+  border: 2rpx solid #e5e0d8;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
   padding: 0 24rpx;
   font-size: 28rpx;
+  font-family: 'Patrick Hand', cursive;
+  background: #fdfbf7;
 }
 
 .form-textarea {
   width: 100%;
   height: 160rpx;
-  border: 2rpx solid #eee;
-  border-radius: 12rpx;
+  border: 2rpx solid #e5e0d8;
+  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px;
   padding: 16rpx 24rpx;
   font-size: 28rpx;
+  font-family: 'Patrick Hand', cursive;
+  background: #fdfbf7;
 }
 
 .region-picker {
@@ -499,20 +527,21 @@ onShow(() => {
   align-items: center;
   justify-content: space-between;
   height: 80rpx;
-  border: 2rpx solid #eee;
-  border-radius: 12rpx;
+  border: 2rpx solid #e5e0d8;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
   padding: 0 24rpx;
   font-size: 28rpx;
-  color: #333;
+  color: #2d2d2d;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .placeholder-text {
-  color: #c0c4cc;
+  color: #e5e0d8;
 }
 
 .arrow {
   font-size: 32rpx;
-  color: #c0c4cc;
+  color: #e5e0d8;
 }
 
 .label-tags {
@@ -523,16 +552,20 @@ onShow(() => {
 
 .label-tag {
   padding: 10rpx 28rpx;
-  border: 2rpx solid #eee;
-  border-radius: 28rpx;
+  border: 2rpx dashed #e5e0d8;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
   font-size: 26rpx;
-  color: #666;
+  color: #2d2d2d;
+  opacity: 0.7;
+  font-family: 'Patrick Hand', cursive;
 }
 
 .label-tag.active {
-  border-color: #07c160;
-  color: #07c160;
-  background: rgba(7, 193, 96, 0.06);
+  border-color: #ff4d4d;
+  border-style: solid;
+  color: #ff4d4d;
+  opacity: 1;
+  background: rgba(255, 77, 77, 0.06);
 }
 
 .switch-group {
@@ -548,16 +581,19 @@ onShow(() => {
 .modal-footer {
   padding: 20rpx 28rpx;
   padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
-  border-top: 1rpx solid #eee;
+  border-top: 2rpx dashed #e5e0d8;
 }
 
 .save-btn {
   text-align: center;
   padding: 24rpx;
-  background: linear-gradient(135deg, #07c160, #06ad56);
-  color: #fff;
+  background: #ff4d4d;
+  color: #fdfbf7;
   font-size: 30rpx;
   font-weight: 600;
-  border-radius: 44rpx;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  border: 2rpx solid #2d2d2d;
+  box-shadow: 4px 4px 0px 0px #2d2d2d;
+  font-family: 'Kalam', cursive;
 }
 </style>
