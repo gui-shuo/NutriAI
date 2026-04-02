@@ -1,5 +1,10 @@
-// API 配置
+// API 配置 — H5端使用相对路径（nginx代理），其他端使用绝对URL
+// #ifdef H5
+const BASE_URL = '/api'
+// #endif
+// #ifndef H5
 const BASE_URL = 'https://nutriai.itshuo.me/api'
+// #endif
 
 // Token 管理
 const getToken = (): string => uni.getStorageSync('accessToken') || ''
