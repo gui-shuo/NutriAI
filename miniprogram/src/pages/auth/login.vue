@@ -268,7 +268,7 @@ function goTo(url: string) {
 
   &:focus {
     border-color: $accent;
-    box-shadow: 0 0 0 3px rgba(0, 82, 255, 0.1);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
   }
 }
 
@@ -327,7 +327,7 @@ function goTo(url: string) {
 
   &:active {
     transform: translateY(1px);
-    box-shadow: 0 2px 6px rgba(0, 82, 255, 0.15);
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.15);
     opacity: 0.95;
   }
 

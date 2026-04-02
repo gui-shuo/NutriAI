@@ -996,7 +996,7 @@ onUnmounted(() => {
   flex-shrink: 0;
   border-bottom: 1px solid #E2E8F0;
   font-family: 'Inter', sans-serif;
-  a { color: #0052FF; margin-left: 4px; text-decoration: underline; }
+  a { color: #10B981; margin-left: 4px; text-decoration: underline; }
 }
 
 .header-left {
@@ -1017,7 +1017,7 @@ onUnmounted(() => {
 }
 
 .title-icon {
-  color: #0052FF;
+  color: #10B981;
   font-size: 24px;
 }
 
@@ -1068,7 +1068,7 @@ onUnmounted(() => {
 }
 
 .history-item:hover {
-  border-color: #0052FF;
+  border-color: #10B981;
   background: #FAFAFA;
   transform: translateY(-2px);
   box-shadow: 0 10px 15px -3px rgba(0,0,0,0.07), 0 4px 6px -4px rgba(0,0,0,0.07);
@@ -1234,7 +1234,7 @@ onUnmounted(() => {
       flex-shrink: 0 !important;
 
       &.el-message-box-icon--warning {
-        color: #0052FF !important;
+        color: #10B981 !important;
       }
     }
   }
@@ -1272,10 +1272,10 @@ onUnmounted(() => {
       border: 1px solid #E2E8F0 !important;
 
       &.el-button--primary {
-        background: linear-gradient(135deg, #0052FF, #4D7CFF) !important;
-        border-color: #0052FF !important;
+        background: linear-gradient(135deg, #10B981, #34D399) !important;
+        border-color: #10B981 !important;
         color: #ffffff !important;
-        box-shadow: 0 4px 14px 0 rgba(0,82,255,0.39) !important;
+        box-shadow: 0 4px 14px 0 rgba(16,185,129,0.39) !important;
 
         &:hover {
           background: linear-gradient(135deg, #0047E0, #4170E8) !important;

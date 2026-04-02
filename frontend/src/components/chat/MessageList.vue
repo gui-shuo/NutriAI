@@ -300,7 +300,7 @@ defineExpose({
 }
 
 .welcome-icon {
-  color: #0052FF;
+  color: #10B981;
   margin-bottom: 20px;
 }
 
@@ -366,7 +366,7 @@ defineExpose({
 }
 
 .ai-avatar {
-  background: #0052FF;
+  background: #10B981;
 }
 
 /* 消息气泡 */
@@ -378,7 +378,7 @@ defineExpose({
 }
 
 .user-bubble {
-  background: #0052FF;
+  background: #10B981;
   color: white;
   border-radius: 12px;
 }
@@ -444,7 +444,7 @@ defineExpose({
 }
 
 .ai-bubble .message-text :deep(blockquote) {
-  border-left: 4px solid #0052FF;
+  border-left: 4px solid #10B981;
   padding-left: 12px;
   margin: 8px 0;
   color: #0F172A;
@@ -455,7 +455,7 @@ defineExpose({
   display: inline-block;
   width: 2px;
   height: 1em;
-  background-color: #0052FF;
+  background-color: #10B981;
   margin-left: 2px;
   animation: blink 1s step-end infinite;
   vertical-align: text-bottom;
@@ -497,7 +497,7 @@ defineExpose({
 .typing-indicator span {
   width: 8px;
   height: 8px;
-  background: #0052FF;
+  background: #10B981;
   border-radius: 50%;
   animation: typing 1.4s infinite;
 }
@@ -556,7 +556,7 @@ defineExpose({
 }
 
 .action-buttons .el-button:hover {
-  color: #0052FF;
+  color: #10B981;
 }
 
 /* 滚动到底部按钮 */

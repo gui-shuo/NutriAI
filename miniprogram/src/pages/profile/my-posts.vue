@@ -170,7 +170,7 @@ onReachBottom(() => {
 .post-category {
   font-size: 22rpx;
   color: $accent;
-  background: rgba(0, 82, 255, 0.06);
+  background: rgba(16, 185, 129, 0.06);
   padding: 4rpx 16rpx;
   border-radius: $radius-full;
   font-family: 'JetBrains Mono', monospace;

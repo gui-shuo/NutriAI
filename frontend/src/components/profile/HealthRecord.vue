@@ -595,7 +595,7 @@ onMounted(fetchProfile)
     display: flex; align-items: center; justify-content: center; transition: all 0.3s;
     .segment-label { font-size: 12px; color: #c0c4cc; }
     &.active {
-      background: #0052FF;
+      background: #10B981;
       .segment-label { color: white; font-weight: 600; }
     }
   }
@@ -612,7 +612,7 @@ onMounted(fetchProfile)
   display: flex; justify-content: space-between; position: relative; padding: 20px 0 30px; margin: 0 20px;
   .step-line {
     position: absolute; top: 34px; left: 30px; right: 30px; height: 3px; background: #F1F5F9; border-radius: 2px; z-index: 0;
-    .step-line-fill { height: 100%; background: #0052FF; border-radius: 2px; transition: width 0.4s ease; }
+    .step-line-fill { height: 100%; background: #10B981; border-radius: 2px; transition: width 0.4s ease; }
   }
   .step-dot {
     display: flex; flex-direction: column; align-items: center; z-index: 1; cursor: default;
@@ -622,7 +622,7 @@ onMounted(fetchProfile)
       transition: all 0.3s;
     }
     .step-name { font-size: 12px; color: #64748B; margin-top: 6px; }
-    &.active .dot { background: #0052FF; color: white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); }
+    &.active .dot { background: #10B981; color: white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); }
     &.done { cursor: pointer;
       .dot { background: #67c23a; color: white; }
       .step-name { color: #67c23a; }
@@ -641,7 +641,7 @@ onMounted(fetchProfile)
     .gender-icon { font-size: 40px; }
     span:last-child { font-size: 15px; color: #0F172A; font-weight: 500; }
     &:hover { border-color: #0F172A; background: #FAFAFA; }
-    &.selected { border-color: #0052FF; background: #F1F5F9; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); }
+    &.selected { border-color: #10B981; background: #F1F5F9; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); }
   }
 }
 
@@ -679,7 +679,7 @@ onMounted(fetchProfile)
     .activity-name { font-size: 14px; font-weight: 600; color: #0F172A; }
     .activity-desc { font-size: 11px; color: #64748B; line-height: 1.3; }
     &:hover { border-color: #0F172A; }
-    &.selected { border-color: #0052FF; background: rgba(0, 82, 255,0.06); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); }
+    &.selected { border-color: #10B981; background: rgba(16, 185, 129,0.06); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); }
   }
 }
 
@@ -695,7 +695,7 @@ onMounted(fetchProfile)
     padding: 8px 18px; border-radius: 12px; font-size: 14px; cursor: pointer;
     border: 1px solid #E2E8F0; color: #0F172A; background: #FAFAFA; transition: all 0.25s; user-select: none;
     &:hover { border-color: #0F172A; background: #FAFAFA; }
-    &.selected { border-color: #0052FF; color: #0052FF; background: #FAFAFA; font-weight: 500; }
+    &.selected { border-color: #10B981; color: #10B981; background: #FAFAFA; font-weight: 500; }
     &.warning.selected { border-color: #EF4444; color: #EF4444; background: #FAFAFA; }
     &.info.selected { border-color: #64748B; color: #0F172A; background: rgba(144,147,153,0.08); }
   }

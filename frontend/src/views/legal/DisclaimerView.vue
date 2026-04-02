@@ -104,7 +104,7 @@ import { ArrowLeft } from '@element-plus/icons-vue'
   p, li { font-size: 14px; line-height: 1.8; color: #0F172A; font-family: 'Inter', sans-serif; }
   ol { padding-left: 20px; }
   .update-date { color: #0F172A; opacity: 0.5; font-size: 13px; margin-bottom: 24px; font-family: 'Inter', sans-serif; }
-  strong { color: #0052FF; }
-  a { color: #0052FF; text-decoration: none; &:hover { text-decoration: underline; } }
+  strong { color: #10B981; }
+  a { color: #10B981; text-decoration: none; &:hover { text-decoration: underline; } }
 }
 </style>

@@ -496,7 +496,7 @@ onShow(() => {
 .card-title {
   font-size: 22rpx;
   color: $accent;
-  background: rgba(0, 82, 255, 0.06);
+  background: rgba(16, 185, 129, 0.06);
   padding: 4rpx 12rpx;
   border-radius: $radius-full;
   border: none;
@@ -906,7 +906,7 @@ onShow(() => {
 .time-slot.active {
   border-color: $accent;
   color: $accent;
-  background: rgba(0, 82, 255, 0.06);
+  background: rgba(16, 185, 129, 0.06);
 }
 
 .detail-price {

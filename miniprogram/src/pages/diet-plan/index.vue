@@ -469,10 +469,10 @@ function goVip() {
 }
 .radio-item.selected {
   border-color: $accent;
-  background: rgba(0, 82, 255, 0.06);
+  background: rgba(16, 185, 129, 0.06);
   color: $accent;
   font-weight: 500;
-  box-shadow: 0 0 0 3px rgba(0, 82, 255, 0.1);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
 }
 .picker-display {
   margin-top: 8rpx;
@@ -600,7 +600,7 @@ function goVip() {
 }
 .history-goal {
   font-size: 24rpx;
-  background: rgba(0, 82, 255, 0.08);
+  background: rgba(16, 185, 129, 0.08);
   color: $accent;
   padding: 4rpx 16rpx;
   border-radius: $radius-full;
@@ -693,12 +693,12 @@ function goVip() {
 .picker-option.selected {
   color: $accent;
   font-weight: 500;
-  background: rgba(0, 82, 255, 0.04);
+  background: rgba(16, 185, 129, 0.04);
 }
 .disclaimer-tip {
-  background: rgba(0, 82, 255, 0.06);
+  background: rgba(16, 185, 129, 0.06);
   color: $foreground;
-  border: 1rpx solid rgba(0, 82, 255, 0.15);
+  border: 1rpx solid rgba(16, 185, 129, 0.15);
   border-radius: $radius-lg;
   padding: 14rpx 48rpx 14rpx 20rpx;
   font-size: 22rpx;

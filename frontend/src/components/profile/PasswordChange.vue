@@ -180,7 +180,7 @@ const handleReset = () => {
 
   .change-form {
     max-width: 600px;
-    border-left: 3px solid #0052FF;
+    border-left: 3px solid #10B981;
     padding-left: 20px;
 
     :deep(.el-form-item) {

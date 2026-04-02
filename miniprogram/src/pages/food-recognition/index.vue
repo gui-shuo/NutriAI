@@ -817,9 +817,9 @@ function sourceText(source: string): string {
   font-size: 24rpx;
 }
 .disclaimer-tip {
-  background: rgba(0, 82, 255, 0.06);
+  background: rgba(16, 185, 129, 0.06);
   color: $foreground;
-  border: 1rpx solid rgba(0, 82, 255, 0.15);
+  border: 1rpx solid rgba(16, 185, 129, 0.15);
   border-radius: $radius-lg;
   padding: 14rpx 48rpx 14rpx 20rpx;
   font-size: 22rpx;

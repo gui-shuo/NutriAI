@@ -125,7 +125,7 @@ const handleSelect = index => {
 .user-card {
   padding: 32px 24px;
   text-align: center;
-  background: #0052FF;
+  background: #10B981;
   color: white;
 
   .avatar-wrapper {
@@ -143,7 +143,7 @@ const handleSelect = index => {
       bottom: 0;
       right: 0;
       background: white;
-      color: #0052FF;
+      color: #10B981;
       border: none;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
 
@@ -185,7 +185,7 @@ const handleSelect = index => {
     }
 
     &.is-active {
-      background: #0052FF;
+      background: #10B981;
       color: white;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
 
@@ -230,7 +230,7 @@ const handleSelect = index => {
     width: 100%;
     height: 44px;
     font-size: 15px;
-    background: #0052FF;
+    background: #10B981;
     border: none;
     border-radius: 12px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);

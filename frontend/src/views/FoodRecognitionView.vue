@@ -13,7 +13,7 @@
       <el-alert type="info" :closable="true" show-icon class="disclaimer-alert">
         <template #title>
           上传食物图片即可自动识别并获取完整营养成分数据，支持各类常见食物。营养数据仅供参考。
-          <router-link to="/legal/disclaimer" style="color:#0052FF">详细声明</router-link>
+          <router-link to="/legal/disclaimer" style="color:#10B981">详细声明</router-link>
         </template>
       </el-alert>
 
@@ -59,7 +59,7 @@
                   <div class="el-upload__text">拖拽图片到此处或 <em>点击上传</em></div>
                   <template #tip>
                     <div class="el-upload__tip">支持 JPG / PNG / GIF / WebP / BMP，大小不超过 5MB（大图将自动压缩）</div>
-                    <div class="el-upload__tip" style="color: #0052FF; margin-top: 4px;">💡 识别结果请以置信度为准，置信度越高结果越可靠</div>
+                    <div class="el-upload__tip" style="color: #10B981; margin-top: 4px;">💡 识别结果请以置信度为准，置信度越高结果越可靠</div>
                   </template>
                 </el-upload>
 
@@ -825,7 +825,7 @@ onBeforeUnmount(() => {
 }
 
 .upload-demo :deep(.el-upload-dragger:hover) {
-  border-color: #0052FF;
+  border-color: #10B981;
   background: #FFFFFF;
 }
 
@@ -908,7 +908,7 @@ onBeforeUnmount(() => {
 
 .loading-icon {
   font-size: 48px;
-  color: #0052FF;
+  color: #10B981;
   animation: rotate 1s linear infinite;
 }
 
@@ -1047,8 +1047,8 @@ onBeforeUnmount(() => {
 }
 
 .energy-item {
-  background: rgba(0,82,255,0.06);
-  border: 1px solid #0052FF;
+  background: rgba(16,185,129,0.06);
+  border: 1px solid #10B981;
   box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
@@ -1205,7 +1205,7 @@ onBeforeUnmount(() => {
 }
 
 .history-text:hover {
-  color: #0052FF;
+  color: #10B981;
 }
 
 .history-actions {
@@ -1228,7 +1228,7 @@ onBeforeUnmount(() => {
 }
 
 .expand-icon:hover {
-  color: #0052FF;
+  color: #10B981;
 }
 
 /* 历史详情 */
@@ -1237,7 +1237,7 @@ onBeforeUnmount(() => {
   padding: 14px;
   background: #F1F5F9;
   border-radius: 8px;
-  border-left: 4px solid #0052FF;
+  border-left: 4px solid #10B981;
 }
 
 .detail-info {

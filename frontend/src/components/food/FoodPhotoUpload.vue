@@ -187,7 +187,7 @@ const handleRemove = () => {
 
     &:hover,
     &.is-dragover {
-      border-color: #0052FF;
+      border-color: #10B981;
       background: #F1F5F9;
     }
 
@@ -208,7 +208,7 @@ const handleRemove = () => {
       .upload-icon {
         font-size: 48px;
         margin-bottom: 16px;
-        color: #0052FF;
+        color: #10B981;
       }
 
       .upload-text {

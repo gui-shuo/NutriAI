@@ -451,10 +451,10 @@ function formatMsgTime(ts) {
   transition: background 0.2s;
 
   &:hover { background: #F1F5F9; }
-  &.active { background: #F1F5F9; border-left: 3px solid #0052FF; }
+  &.active { background: #F1F5F9; border-left: 3px solid #10B981; }
 
   .conv-avatar {
-    background: linear-gradient(135deg, #0052FF, #4D7CFF);
+    background: linear-gradient(135deg, #10B981, #34D399);
     color: #FFFFFF;
     font-weight: 600;
     flex-shrink: 0;
@@ -561,7 +561,7 @@ function formatMsgTime(ts) {
 
     .system-label {
       font-weight: 600;
-      color: #0052FF;
+      color: #10B981;
       margin-right: 6px;
       font-family: 'Inter', sans-serif;
     }
@@ -582,11 +582,11 @@ function formatMsgTime(ts) {
     &.msg-self {
       flex-direction: row-reverse;
       .msg-bubble {
-        background: linear-gradient(135deg, #0052FF, #4D7CFF);
+        background: linear-gradient(135deg, #10B981, #34D399);
         color: #FFFFFF;
         border: none;
         border-radius: 16px 16px 4px 16px;
-        box-shadow: 0 2px 8px rgba(0, 82, 255, 0.2);
+        box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
         .msg-time { color: rgba(255, 255, 255, 0.7); }
       }
     }
@@ -608,7 +608,7 @@ function formatMsgTime(ts) {
     font-weight: 600;
     font-size: 13px;
     border: none;
-    &.avatar-self { background: linear-gradient(135deg, #0052FF, #4D7CFF); color: #FFFFFF; }
+    &.avatar-self { background: linear-gradient(135deg, #10B981, #34D399); color: #FFFFFF; }
     &.avatar-other { background: #F1F5F9; color: #0F172A; }
   }
 
@@ -644,7 +644,7 @@ function formatMsgTime(ts) {
     border: 1px solid #E2E8F0;
     background: #FAFAFA;
     font-family: 'Inter', sans-serif;
-    &:focus { box-shadow: 0 0 0 2px rgba(0, 82, 255, 0.15); border-color: #0052FF; }
+    &:focus { box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.15); border-color: #10B981; }
   }
 }
 

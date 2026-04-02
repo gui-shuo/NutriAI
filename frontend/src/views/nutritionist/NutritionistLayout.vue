@@ -208,7 +208,7 @@ function handleLogout() {
     background: #FFFFFF;
 
     .n-avatar {
-      background: linear-gradient(135deg, #0052FF, #4D7CFF);
+      background: linear-gradient(135deg, #10B981, #34D399);
       color: #FFFFFF;
       font-weight: 600;
       border: none;
@@ -243,9 +243,9 @@ function handleLogout() {
       border-radius: 8px;
       margin: 2px 8px;
       &.is-active {
-        color: #0052FF;
+        color: #10B981;
         background: #F1F5F9;
-        border-right: 3px solid #0052FF;
+        border-right: 3px solid #10B981;
       }
       &:hover {
         background: #F1F5F9;

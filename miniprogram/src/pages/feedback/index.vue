@@ -228,7 +228,7 @@ onMounted(() => {
   &.active {
     border-color: $accent;
     color: $accent;
-    background: rgba(0, 82, 255, 0.06);
+    background: rgba(16, 185, 129, 0.06);
     box-shadow: $shadow-sm;
   }
 }
@@ -351,7 +351,7 @@ onMounted(() => {
 }
 
 .badge-SUGGESTION {
-  background: rgba(0, 82, 255, 0.1);
+  background: rgba(16, 185, 129, 0.1);
   color: $accent;
 }
 

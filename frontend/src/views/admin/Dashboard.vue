@@ -548,7 +548,7 @@ onUnmounted(() => {
   }
 }
 
-.stat-users { background: linear-gradient(135deg, #0052FF 0%, #4D7CFF 100%); }
+.stat-users { background: linear-gradient(135deg, #10B981 0%, #34D399 100%); }
 .stat-chats { background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%); }
 .stat-ai { background: linear-gradient(135deg, #0891b2 0%, #22d3ee 100%); }
 .stat-active { background: linear-gradient(135deg, #059669 0%, #34d399 100%); }

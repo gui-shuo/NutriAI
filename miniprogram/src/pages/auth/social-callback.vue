@@ -100,7 +100,7 @@ function goLogin() {
 
 .btn-back:active {
   transform: translateY(1px);
-  box-shadow: 0 2px 6px rgba(0, 82, 255, 0.15);
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.15);
   opacity: 0.95;
 }
 

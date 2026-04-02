@@ -284,7 +284,7 @@ onBeforeUnmount(() => {
   :deep(.el-button) {
     color: #0F172A;
     font-family: 'Inter', sans-serif;
-    &:hover { color: #0052FF; }
+    &:hover { color: #10B981; }
   }
 }
 
@@ -442,7 +442,7 @@ onBeforeUnmount(() => {
       flex-shrink: 0 !important;
 
       &.el-message-box-icon--warning {
-        color: #0052FF !important;
+        color: #10B981 !important;
       }
     }
   }
@@ -480,10 +480,10 @@ onBeforeUnmount(() => {
       border: 1px solid #E2E8F0 !important;
 
       &.el-button--primary {
-        background: linear-gradient(135deg, #0052FF, #4D7CFF) !important;
+        background: linear-gradient(135deg, #10B981, #34D399) !important;
         border-color: transparent !important;
         color: #ffffff !important;
-        box-shadow: 0 4px 14px 0 rgba(0,82,255,0.39) !important;
+        box-shadow: 0 4px 14px 0 rgba(16,185,129,0.39) !important;
 
         &:hover {
           background: linear-gradient(135deg, #0047E0, #3D6CEF) !important;

@@ -168,10 +168,10 @@ onMounted(loadData)
 }
 
 .latest-info :deep(.el-button--success) {
-  background: linear-gradient(135deg, #0052FF, #4D7CFF);
+  background: linear-gradient(135deg, #10B981, #34D399);
   border: none;
   border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 82, 255, 0.25);
+  box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.25);
   font-family: 'Inter', sans-serif;
   font-weight: 600;
   transition: box-shadow 0.2s, transform 0.2s;
@@ -179,7 +179,7 @@ onMounted(loadData)
 
 .latest-info :deep(.el-button--success:hover) {
   transform: translateY(-1px);
-  box-shadow: 0 10px 15px -3px rgba(0, 82, 255, 0.3);
+  box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
 }
 
 .version-meta {
@@ -200,13 +200,13 @@ onMounted(loadData)
   font-size: 14px;
 }
 .alt-access a {
-  color: #0052FF;
+  color: #10B981;
   font-weight: 600;
   text-decoration: none;
 }
 .alt-access a:hover {
   text-decoration: underline;
-  text-decoration-color: #4D7CFF;
+  text-decoration-color: #34D399;
 }
 
 .update-log, .version-history {
@@ -261,9 +261,9 @@ onMounted(loadData)
 }
 
 .version-card.latest {
-  border-color: #0052FF;
-  background: linear-gradient(135deg, rgba(0, 82, 255, 0.03), rgba(77, 124, 255, 0.06));
-  box-shadow: 0 4px 6px -1px rgba(0, 82, 255, 0.1), 0 2px 4px -2px rgba(0, 82, 255, 0.1);
+  border-color: #10B981;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.03), rgba(77, 124, 255, 0.06));
+  box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.1), 0 2px 4px -2px rgba(16, 185, 129, 0.1);
 }
 
 .version-name {

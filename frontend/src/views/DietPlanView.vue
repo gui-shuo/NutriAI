@@ -26,7 +26,7 @@
     <el-alert type="warning" :closable="true" show-icon style="margin: 0 24px 16px">
       <template #title>
         AI生成的饮食计划仅供参考，不能替代专业营养师或医生的建议。患有疾病者请遵医嘱。
-        <router-link to="/legal/disclaimer" style="color:#0052FF">详细声明</router-link>
+        <router-link to="/legal/disclaimer" style="color:#10B981">详细声明</router-link>
       </template>
     </el-alert>
     <div class="plan-body">
@@ -284,7 +284,7 @@
               <div class="history-item-content" @click="loadHistoryDetail(item.planId)">
                 <h4>
                   {{ item.title }}
-                  <el-icon v-if="item.isFavorite" style="color: #0052FF; margin-left: 4px"
+                  <el-icon v-if="item.isFavorite" style="color: #10B981; margin-left: 4px"
                     ><StarFilled
                   /></el-icon>
                 </h4>
@@ -1058,7 +1058,7 @@ const submitModifySuggestion = async () => {
 }
 
 .title-icon {
-  color: #0052FF;
+  color: #10B981;
   font-size: 24px;
 }
 
@@ -1112,7 +1112,7 @@ const submitModifySuggestion = async () => {
   color: #0F172A;
   margin-bottom: 16px;
   padding-left: 12px;
-  border-left: 4px solid #0052FF;
+  border-left: 4px solid #10B981;
   font-family: 'Calistoga', serif;
 }
 
@@ -1145,7 +1145,7 @@ const submitModifySuggestion = async () => {
 }
 
 .history-item-content:hover {
-  color: #0052FF;
+  color: #10B981;
 }
 
 .history-item-actions {
@@ -1183,8 +1183,8 @@ const submitModifySuggestion = async () => {
   font-weight: 600;
   margin: 24px 0 16px;
   padding-bottom: 8px;
-  border-bottom: 3px solid #0052FF;
-  color: #0052FF;
+  border-bottom: 3px solid #10B981;
+  color: #10B981;
   font-family: 'Calistoga', serif;
 }
 
@@ -1192,7 +1192,7 @@ const submitModifySuggestion = async () => {
   font-size: 24px;
   font-weight: 600;
   margin: 20px 0 12px;
-  color: #0052FF;
+  color: #10B981;
   font-family: 'Calistoga', serif;
 }
 
@@ -1219,7 +1219,7 @@ const submitModifySuggestion = async () => {
 }
 
 .markdown-content :deep(strong) {
-  color: #0052FF;
+  color: #10B981;
   font-weight: 600;
 }
 
@@ -1229,7 +1229,7 @@ const submitModifySuggestion = async () => {
   border-radius: 4px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.9em;
-  color: #0052FF;
+  color: #10B981;
   border: 1px solid #E2E8F0;
 }
 
@@ -1243,7 +1243,7 @@ const submitModifySuggestion = async () => {
 }
 
 .markdown-content :deep(blockquote) {
-  border-left: 4px solid #0052FF;
+  border-left: 4px solid #10B981;
   padding-left: 16px;
   margin: 16px 0;
   color: #0F172A;
@@ -1287,7 +1287,7 @@ const submitModifySuggestion = async () => {
 
 .loading-icon {
   font-size: 48px;
-  color: #0052FF;
+  color: #10B981;
   animation: rotate 2s linear infinite;
 }
 

@@ -15,24 +15,24 @@ export default {
           foreground: '#64748B'
         },
         accent: {
-          DEFAULT: '#0052FF',
-          secondary: '#4D7CFF',
+          DEFAULT: '#10B981',
+          secondary: '#34D399',
           foreground: '#FFFFFF'
         },
         border: '#E2E8F0',
         card: '#FFFFFF',
-        ring: '#0052FF',
+        ring: '#10B981',
         // Compatibility aliases
         primary: {
-          50: '#EFF6FF',
+          50: '#ECFDF5',
           100: '#DBEAFE',
           200: '#BFDBFE',
           300: '#93C5FD',
-          400: '#4D7CFF',
-          500: '#0052FF',
-          600: '#0047DB',
-          700: '#003BB8',
-          800: '#002F94',
+          400: '#34D399',
+          500: '#10B981',
+          600: '#059669',
+          700: '#047857',
+          800: '#065F46',
           900: '#0F172A'
         },
         secondary: {
@@ -68,8 +68,8 @@ export default {
         'md': '0 4px 6px rgba(0, 0, 0, 0.07)',
         'lg': '0 10px 15px rgba(0, 0, 0, 0.08)',
         'xl': '0 20px 25px rgba(0, 0, 0, 0.1)',
-        'accent': '0 4px 14px rgba(0, 82, 255, 0.25)',
-        'accent-lg': '0 8px 24px rgba(0, 82, 255, 0.35)'
+        'accent': '0 4px 14px rgba(16, 185, 129, 0.25)',
+        'accent-lg': '0 8px 24px rgba(16, 185, 129, 0.35)'
       },
       animation: {
         'float': 'float 5s ease-in-out infinite',

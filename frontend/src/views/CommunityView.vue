@@ -842,7 +842,7 @@ onMounted(() => loadFeed(true))
 }
 .action-btn:hover {
   color: $accent;
-  background: rgba(0, 82, 255, 0.06);
+  background: rgba(16, 185, 129, 0.06);
 }
 .action-btn.active { color: $accent; }
 .action-btn.delete-btn:hover { color: $error-color; }

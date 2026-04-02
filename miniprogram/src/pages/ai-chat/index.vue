@@ -623,7 +623,7 @@ function goBack() {
   position: fixed;
   left: 0; right: 0;
   z-index: 90;
-  background: rgba(0, 82, 255, 0.06);
+  background: rgba(16, 185, 129, 0.06);
   color: $foreground;
   font-size: 22rpx;
   text-align: center;

@@ -345,7 +345,7 @@ onMounted(() => {
   font-family: 'Calistoga', 'Inter', sans-serif;
   font-weight: 600;
   color: #0F172A;
-  border-left: 3px solid #0052FF;
+  border-left: 3px solid #10B981;
   padding-left: 10px;
 }
 
@@ -385,15 +385,15 @@ onMounted(() => {
     transition: all 0.25s;
 
     &:hover {
-      border-color: #4D7CFF;
+      border-color: #34D399;
       transform: translateY(-2px);
-      box-shadow: 0 4px 6px -1px rgba(0, 82, 255, 0.1);
+      box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.1);
     }
 
     &.active {
-      border-color: #0052FF;
-      background: linear-gradient(135deg, rgba(0, 82, 255, 0.04), rgba(77, 124, 255, 0.08));
-      box-shadow: 0 0 0 1px #0052FF;
+      border-color: #10B981;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.04), rgba(77, 124, 255, 0.08));
+      box-shadow: 0 0 0 1px #10B981;
     }
 
     .type-icon {
@@ -417,8 +417,8 @@ onMounted(() => {
 
   :deep(.el-input__wrapper:focus-within),
   :deep(.el-textarea__inner:focus) {
-    box-shadow: 0 0 0 2px rgba(0, 82, 255, 0.2) !important;
-    border-color: #0052FF !important;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
+    border-color: #10B981 !important;
   }
 }
 
@@ -430,13 +430,13 @@ onMounted(() => {
   font-family: 'Inter', sans-serif;
   border-radius: 12px;
   border: none;
-  background: linear-gradient(135deg, #0052FF, #4D7CFF) !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 82, 255, 0.25);
+  background: linear-gradient(135deg, #10B981, #34D399) !important;
+  box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.25);
   transition: box-shadow 0.2s, transform 0.2s;
 
   &:hover {
     transform: translateY(-1px);
-    box-shadow: 0 10px 15px -3px rgba(0, 82, 255, 0.3);
+    box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
   }
 }
 
@@ -465,9 +465,9 @@ onMounted(() => {
 
   &:hover {
     background: #F1F5F9;
-    border-color: #4D7CFF;
+    border-color: #34D399;
     transform: translateX(2px);
-    box-shadow: 0 2px 4px -1px rgba(0, 82, 255, 0.1);
+    box-shadow: 0 2px 4px -1px rgba(16, 185, 129, 0.1);
   }
 
   .item-header {
@@ -513,7 +513,7 @@ onMounted(() => {
       display: flex;
       align-items: center;
       gap: 4px;
-      color: #0052FF;
+      color: #10B981;
       opacity: 1;
     }
   }
@@ -569,10 +569,10 @@ onMounted(() => {
 .admin-reply-section {
   margin-top: 16px;
   padding: 16px;
-  background: linear-gradient(135deg, rgba(0, 82, 255, 0.04), rgba(77, 124, 255, 0.08));
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.04), rgba(77, 124, 255, 0.08));
   border-radius: 12px;
-  border: 1px solid #4D7CFF;
-  box-shadow: 0 1px 3px 0 rgba(0, 82, 255, 0.1);
+  border: 1px solid #34D399;
+  box-shadow: 0 1px 3px 0 rgba(16, 185, 129, 0.1);
   position: relative;
 
   .reply-header {
@@ -582,7 +582,7 @@ onMounted(() => {
     font-size: 14px;
     font-family: 'Calistoga', 'Inter', sans-serif;
     font-weight: 600;
-    color: #0052FF;
+    color: #10B981;
     margin-bottom: 8px;
   }
 

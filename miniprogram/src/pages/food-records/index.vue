@@ -436,7 +436,7 @@ async function deleteRecord(record: FoodRecord) {
   transition: all 0.2s;
 }
 .date-arrow:active {
-  background: rgba(0, 82, 255, 0.08);
+  background: rgba(16, 185, 129, 0.08);
   border-color: $accent;
 }
 .arrow-icon {
@@ -456,7 +456,7 @@ async function deleteRecord(record: FoodRecord) {
 .today-badge {
   font-size: 20rpx;
   color: $accent;
-  background: rgba(0, 82, 255, 0.08);
+  background: rgba(16, 185, 129, 0.08);
   padding: 4rpx 12rpx;
   border-radius: $radius-full;
   font-family: 'JetBrains Mono', monospace;
@@ -551,7 +551,7 @@ async function deleteRecord(record: FoodRecord) {
   width: 56rpx;
   height: 56rpx;
   border-radius: $radius-full;
-  background: rgba(0, 82, 255, 0.08);
+  background: rgba(16, 185, 129, 0.08);
   border: none;
 }
 .add-icon {
@@ -668,8 +668,8 @@ async function deleteRecord(record: FoodRecord) {
 .meal-type-option.selected {
   border-color: $accent;
   color: $accent;
-  background: rgba(0, 82, 255, 0.06);
-  box-shadow: 0 0 0 3px rgba(0, 82, 255, 0.1);
+  background: rgba(16, 185, 129, 0.06);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
 }
 
 .nutrition-input {

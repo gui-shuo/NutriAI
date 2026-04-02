@@ -123,7 +123,7 @@ function goTo(url: string) {
   right: 0;
   z-index: 999;
   background: $gradient-accent;
-  border-bottom: 1rpx solid rgba(0, 82, 255, 0.15);
+  border-bottom: 1rpx solid rgba(16, 185, 129, 0.15);
 }
 
 .nav-bar-content {

@@ -213,7 +213,7 @@ const uploadFile = async file => {
     transition: all 0.3s;
 
     &:hover {
-      border-color: #0052FF;
+      border-color: #10B981;
 
       .avatar-mask {
         opacity: 1;
@@ -221,8 +221,8 @@ const uploadFile = async file => {
     }
 
     &.is-dragover {
-      border-color: #0052FF;
-      background: rgba(0, 82, 255, 0.05);
+      border-color: #10B981;
+      background: rgba(16, 185, 129, 0.05);
     }
 
     .avatar-preview {
@@ -273,7 +273,7 @@ const uploadFile = async file => {
 
       .icon-upload {
         font-size: 48px;
-        color: #0052FF;
+        color: #10B981;
         margin-bottom: 12px;
       }
 

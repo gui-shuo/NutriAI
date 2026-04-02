@@ -141,20 +141,20 @@ const goLogin = () => router.push('/login')
 }
 
 .loading-state :deep(.el-icon) {
-  color: #0052FF;
+  color: #10B981;
 }
 
 .error-state :deep(.el-button--primary) {
-  background: linear-gradient(135deg, #0052FF, #4D7CFF);
+  background: linear-gradient(135deg, #10B981, #34D399);
   border: none;
   border-radius: 12px;
-  box-shadow: 0 4px 14px rgba(0, 82, 255, 0.25);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
   font-weight: 600;
   transition: all 0.3s ease;
 }
 
 .error-state :deep(.el-button--primary:hover) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 82, 255, 0.35);
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.35);
 }
 </style>

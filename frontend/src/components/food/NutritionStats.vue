@@ -368,7 +368,7 @@ onBeforeUnmount(() => {
 
 /* 卡路里卡片 */
 .calorie-card {
-  background: #0052FF;
+  background: #10B981;
   color: white;
   :deep(.el-card__body) { padding: 20px; }
   :deep(.el-tag) { color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.2); border: none; }
@@ -451,7 +451,7 @@ onBeforeUnmount(() => {
 }
 
 .protein-color { color: #EF4444; }
-.carbs-color { color: #0052FF; }
+.carbs-color { color: #10B981; }
 .fat-color { color: #e6a23c; }
 .fiber-color { color: #67c23a; }
 

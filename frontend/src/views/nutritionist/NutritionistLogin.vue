@@ -163,7 +163,7 @@ const handleLogin = async () => {
   background: #FAFAFA;
   border-radius: 16px;
   padding: 40px 36px;
-  box-shadow: 0 4px 14px rgba(0, 82, 255, 0.25);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
   border: 1px solid #E2E8F0;
 }
 
@@ -195,14 +195,14 @@ const handleLogin = async () => {
   width: 100%;
   height: 44px;
   font-size: 16px;
-  background: #0052FF;
+  background: #10B981;
   border: 1px solid #E2E8F0;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   transition: all 0.15s ease;
   &:hover {
-    background: #0052FF;
-    box-shadow: 0 4px 14px rgba(0, 82, 255, 0.25);
+    background: #10B981;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
     transform: translateY(-1px);
   }
 }
@@ -214,7 +214,7 @@ const handleLogin = async () => {
   font-size: 14px;
 
   a {
-    color: #0052FF;
+    color: #10B981;
     text-decoration: none;
     font-weight: 500;
     &:hover { text-decoration: underline; }

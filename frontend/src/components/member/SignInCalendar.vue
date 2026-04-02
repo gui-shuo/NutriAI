@@ -248,7 +248,7 @@ onMounted(() => {
         }
 
         &.signed {
-          background: #0052FF;
+          background: #10B981;
           color: white;
           border-color: #0F172A;
 
@@ -288,7 +288,7 @@ onMounted(() => {
         width: 70%;
         font-size: 12px;
         font-weight: 600;
-        background: #0052FF;
+        background: #10B981;
         border-radius: 12px;
         border: 1px solid #E2E8F0;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);

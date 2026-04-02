@@ -284,7 +284,7 @@ const getTagType = limit => {
     .growth-value {
       font-size: 16px;
       font-weight: 600;
-      color: #0052FF;
+      color: #10B981;
     }
 
     .benefits-preview {
@@ -311,7 +311,7 @@ const getTagType = limit => {
       align-items: center;
 
       strong {
-        color: #0052FF;
+        color: #10B981;
         font-size: 18px;
         margin: 0 4px;
       }

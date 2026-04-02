@@ -377,7 +377,7 @@ async function handlePublish() {
 }
 
 .toggle-btn.active {
-  background: rgba(0, 82, 255, 0.06);
+  background: rgba(16, 185, 129, 0.06);
   color: $accent;
   border: 1rpx solid $accent;
 }

@@ -489,7 +489,7 @@ function statusTagType(status) {
   }
 
   &.plan-selected {
-    border-color: #0052FF;
+    border-color: #10B981;
     background: #F1F5F9;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
   }
@@ -498,7 +498,7 @@ function statusTagType(status) {
     border-color: #e6a23c;
 
     &.plan-selected {
-      border-color: #0052FF;
+      border-color: #10B981;
     }
   }
 
@@ -516,7 +516,7 @@ function statusTagType(status) {
       background: #EF4444;
     }
     &.badge-recommend {
-      background: #0052FF;
+      background: #10B981;
     }
     &.badge-value {
       background: #67c23a;
@@ -545,7 +545,7 @@ function statusTagType(status) {
     .price-current {
       font-size: 22px;
       font-weight: 700;
-      color: #0052FF;
+      color: #10B981;
     }
 
     .price-discount {
@@ -594,7 +594,7 @@ function statusTagType(status) {
     }
 
     .more-features {
-      color: #0052FF;
+      color: #10B981;
       font-size: 11px;
       cursor: pointer;
       &:hover { text-decoration: underline; }
@@ -644,7 +644,7 @@ function statusTagType(status) {
     height: 40px;
     font-size: 14px;
     border-radius: 12px;
-    background: #0052FF;
+    background: #10B981;
     border: 1px solid #E2E8F0;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
 

@@ -316,13 +316,13 @@ onMounted(() => {
         padding: 8px;
         background: #FAFAFA;
         border-radius: 12px;
-        border: 1px solid #0052FF;
+        border: 1px solid #10B981;
 
         .code {
           flex: 1;
           font-size: 14px;
           font-weight: 600;
-          color: #0052FF;
+          color: #10B981;
           letter-spacing: 1.5px;
           font-family: 'Inter', sans-serif;
         }
@@ -367,7 +367,7 @@ onMounted(() => {
         }
 
         &:nth-child(1) .stat-icon {
-          background: #0052FF;
+          background: #10B981;
         }
         &:nth-child(2) .stat-icon {
           background: #EF4444;

@@ -631,7 +631,7 @@ async function loadProduct(id: number) {
 
 .saved-address-item.active {
   border-color: $accent;
-  background: rgba(0, 82, 255, 0.04);
+  background: rgba(16, 185, 129, 0.04);
 }
 
 .saved-addr-radio {

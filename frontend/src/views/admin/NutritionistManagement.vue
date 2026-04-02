@@ -467,7 +467,7 @@ onMounted(() => {
     margin-bottom: 16px;
 
     .pending-avatar {
-      background: linear-gradient(135deg, #0052FF, #4D7CFF);
+      background: linear-gradient(135deg, #10B981, #34D399);
       color: #fff;
       font-weight: 600;
       border: 2px solid #E2E8F0;

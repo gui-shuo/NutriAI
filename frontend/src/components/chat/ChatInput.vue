@@ -234,8 +234,8 @@ defineExpose({
 }
 
 .message-input :deep(.el-textarea__inner):focus {
-  border-color: #0052FF;
-  box-shadow: 0 4px 14px rgba(0, 82, 255, 0.25);
+  border-color: #10B981;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
 }
 
 .message-input :deep(.el-textarea__inner):disabled {
@@ -264,7 +264,7 @@ defineExpose({
 }
 
 .file-icon {
-  color: #0052FF;
+  color: #10B981;
   font-size: 20px;
 }
 

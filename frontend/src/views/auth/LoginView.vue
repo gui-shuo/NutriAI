@@ -387,7 +387,7 @@ const handleSocialLogin = async (provider) => {
 
       &:hover {
         opacity: 0.8;
-        border-color: #0052FF;
+        border-color: #10B981;
       }
     }
 
@@ -419,16 +419,16 @@ const handleSocialLogin = async (provider) => {
     height: 44px;
     font-size: 16px;
     font-weight: 600;
-    background: linear-gradient(135deg, #0052FF, #4D7CFF);
+    background: linear-gradient(135deg, #10B981, #34D399);
     border: none;
     border-radius: 12px;
-    box-shadow: 0 4px 14px rgba(0, 82, 255, 0.25);
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
     color: #fff;
     transition: all 0.3s ease;
 
     &:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0, 82, 255, 0.35);
+      box-shadow: 0 8px 24px rgba(16, 185, 129, 0.35);
     }
   }
 
@@ -438,13 +438,13 @@ const handleSocialLogin = async (provider) => {
     font-size: 14px;
 
     .link {
-      color: #0052FF;
+      color: #10B981;
       text-decoration: none;
       font-weight: 500;
       transition: color 0.2s;
 
       &:hover {
-        color: #4D7CFF;
+        color: #34D399;
         text-decoration: underline;
       }
     }
@@ -458,11 +458,11 @@ const handleSocialLogin = async (provider) => {
 }
 
 :deep(.el-input__wrapper:hover) {
-  box-shadow: 0 0 0 1px #0052FF inset;
+  box-shadow: 0 0 0 1px #10B981 inset;
 }
 
 :deep(.el-input__wrapper.is-focus) {
-  box-shadow: 0 0 0 1px #0052FF inset, 0 0 0 3px rgba(0, 82, 255, 0.1);
+  box-shadow: 0 0 0 1px #10B981 inset, 0 0 0 3px rgba(16, 185, 129, 0.1);
 }
 
 .social-login-section {
@@ -501,7 +501,7 @@ const handleSocialLogin = async (provider) => {
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
-    border-color: #0052FF;
+    border-color: #10B981;
   }
 
   &:disabled {

@@ -426,7 +426,7 @@ onMounted(() => {
       cursor: pointer;
 
       &:hover {
-        color: #0052FF;
+        color: #10B981;
       }
     }
 
@@ -455,7 +455,7 @@ onMounted(() => {
       color: #0F172A;
       margin-bottom: 8px;
       padding-left: 10px;
-      border-left: 3px solid #0052FF;
+      border-left: 3px solid #10B981;
       font-family: 'Inter', sans-serif;
     }
 

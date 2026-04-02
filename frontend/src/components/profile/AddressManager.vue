@@ -315,7 +315,7 @@ onMounted(fetchAddresses)
   }
 
   &.default {
-    border-color: #0052FF;
+    border-color: #10B981;
     background: #F1F5F9;
   }
 

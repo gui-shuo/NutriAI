@@ -620,7 +620,7 @@ onShow(() => {
   &.today .day-dot {
     border: 2rpx solid $accent;
     color: $accent;
-    background: rgba(0, 82, 255, 0.06);
+    background: rgba(16, 185, 129, 0.06);
   }
 }
 
@@ -663,7 +663,7 @@ onShow(() => {
 
   &.selected {
     border-color: $accent;
-    background: rgba(0, 82, 255, 0.04);
+    background: rgba(16, 185, 129, 0.04);
     box-shadow: $shadow-accent;
   }
 

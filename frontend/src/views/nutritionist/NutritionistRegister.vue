@@ -327,7 +327,7 @@ const handleSubmit = async () => {
   background: #FAFAFA;
   border-radius: 16px;
   padding: 40px 36px;
-  box-shadow: 0 4px 14px rgba(0, 82, 255, 0.25);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
   border: 1px solid #E2E8F0;
 }
 
@@ -357,13 +357,13 @@ const handleSubmit = async () => {
 
 .full-btn {
   width: 100%; height: 44px; font-size: 16px;
-  background: #0052FF;
+  background: #10B981;
   border: 1px solid #E2E8F0;
   border-radius: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   transition: all 0.15s ease;
   &:hover {
-    box-shadow: 0 4px 14px rgba(0, 82, 255, 0.25);
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
     transform: translateY(-1px);
   }
 }
@@ -375,7 +375,7 @@ const handleSubmit = async () => {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
     transition: all 0.15s ease;
     &:hover {
-      box-shadow: 0 4px 14px rgba(0, 82, 255, 0.25);
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
       transform: translateY(-1px);
     }
   }
@@ -383,7 +383,7 @@ const handleSubmit = async () => {
 
 .tip {
   font-size: 12px; margin-top: 4px; display: block;
-  &.success { color: #0052FF; }
+  &.success { color: #10B981; }
   &.error { color: #EF4444; }
 }
 
@@ -393,7 +393,7 @@ const handleSubmit = async () => {
     display: flex; gap: 8px; align-items: flex-start;
     background: #F1F5F9; border: 1px solid #E2E8F0; border-radius: 12px;
     padding: 12px 16px; margin-top: 16px;
-    .el-icon { color: #0052FF; font-size: 20px; margin-top: 2px; }
+    .el-icon { color: #10B981; font-size: 20px; margin-top: 2px; }
     p { margin: 0; color: #0F172A; font-size: 13px; line-height: 1.6; }
   }
 }
@@ -402,7 +402,7 @@ const handleSubmit = async () => {
 
 .login-link {
   text-align: center; margin-top: 20px; font-size: 14px; color: #0F172A;
-  a { color: #0052FF; text-decoration: none; font-weight: 500;
+  a { color: #10B981; text-decoration: none; font-weight: 500;
     &:hover { text-decoration: underline; }
   }
 }
@@ -422,10 +422,10 @@ const handleSubmit = async () => {
 }
 
 :deep(.el-steps) {
-  .el-step__head.is-finish { color: #0052FF; border-color: #0052FF; }
-  .el-step__title.is-finish { color: #0052FF; }
-  .el-step__head.is-process { color: #0052FF; border-color: #0052FF; }
-  .el-step__title.is-process { color: #0052FF; }
+  .el-step__head.is-finish { color: #10B981; border-color: #10B981; }
+  .el-step__title.is-finish { color: #10B981; }
+  .el-step__head.is-process { color: #10B981; border-color: #10B981; }
+  .el-step__title.is-process { color: #10B981; }
 }
 
 :deep(.el-upload--picture-card) {

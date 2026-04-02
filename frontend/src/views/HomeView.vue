@@ -363,7 +363,7 @@ const goToFeature = feature => {
 }
 
 .nav-buttons :deep(.el-button--primary) {
-  background: linear-gradient(135deg, #0052FF, #4D7CFF);
+  background: linear-gradient(135deg, #10B981, #34D399);
   border: none;
   border-radius: 10px;
   font-weight: 600;
@@ -390,7 +390,7 @@ const goToFeature = feature => {
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle at 30% 40%, rgba(0, 82, 255, 0.05) 0%, transparent 50%),
+  background: radial-gradient(circle at 30% 40%, rgba(16, 185, 129, 0.05) 0%, transparent 50%),
               radial-gradient(circle at 70% 60%, rgba(77, 124, 255, 0.04) 0%, transparent 50%);
   animation: floatBg 8s ease-in-out infinite;
   pointer-events: none;
@@ -427,9 +427,9 @@ const goToFeature = feature => {
 }
 
 .hero-buttons :deep(.el-button--primary) {
-  background: linear-gradient(135deg, #0052FF, #4D7CFF);
+  background: linear-gradient(135deg, #10B981, #34D399);
   border: none;
-  box-shadow: 0 4px 14px rgba(0, 82, 255, 0.25);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
   border-radius: 12px;
   font-weight: 600;
   transition: all 0.3s ease;
@@ -437,7 +437,7 @@ const goToFeature = feature => {
 
 .hero-buttons :deep(.el-button--primary:hover) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 82, 255, 0.35);
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.35);
 }
 
 .hero-buttons :deep(.el-button--default) {
@@ -450,8 +450,8 @@ const goToFeature = feature => {
 }
 
 .hero-buttons :deep(.el-button--default:hover) {
-  border-color: #0052FF;
-  color: #0052FF;
+  border-color: #10B981;
+  color: #10B981;
   transform: translateY(-2px);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
 }
@@ -465,14 +465,14 @@ const goToFeature = feature => {
 }
 
 .h5-link {
-  color: #0052FF;
+  color: #10B981;
   font-weight: 600;
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .h5-link:hover {
-  color: #4D7CFF;
+  color: #34D399;
   text-decoration: underline;
 }
 
@@ -514,7 +514,7 @@ const goToFeature = feature => {
 .feature-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 10px 15px rgba(0, 0, 0, 0.08);
-  border-color: rgba(0, 82, 255, 0.2);
+  border-color: rgba(16, 185, 129, 0.2);
 }
 
 .feature-card .feature-icon {
@@ -524,8 +524,8 @@ const goToFeature = feature => {
   width: 56px;
   height: 56px;
   border-radius: 16px;
-  background: linear-gradient(135deg, #0052FF, #4D7CFF);
-  box-shadow: 0 4px 14px rgba(0, 82, 255, 0.25);
+  background: linear-gradient(135deg, #10B981, #34D399);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
   margin-bottom: 12px;
 }
 
@@ -587,12 +587,12 @@ const goToFeature = feature => {
 
 .feedback-link {
   cursor: pointer;
-  color: #0052FF;
+  color: #10B981;
   transition: color 0.2s;
 }
 
 .feedback-link:hover {
-  color: #4D7CFF;
+  color: #34D399;
   text-decoration: underline;
 }
 
@@ -612,7 +612,7 @@ const goToFeature = feature => {
 }
 
 .footer-legal a:hover {
-  color: #0052FF;
+  color: #10B981;
 }
 
 .footer-legal .sep {

@@ -165,9 +165,9 @@ onBeforeUnmount(() => {
   position: relative;
 
   &.is-vip {
-    background: linear-gradient(135deg, rgba(0, 82, 255, 0.05), rgba(77, 124, 255, 0.08));
-    border-color: #4D7CFF;
-    box-shadow: 0 4px 6px -1px rgba(0, 82, 255, 0.1), 0 2px 4px -2px rgba(0, 82, 255, 0.1);
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(77, 124, 255, 0.08));
+    border-color: #34D399;
+    box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.1), 0 2px 4px -2px rgba(16, 185, 129, 0.1);
   }
 
   &.loading-state {
@@ -236,7 +236,7 @@ onBeforeUnmount(() => {
       font-size: 20px;
       font-weight: 700;
       font-family: 'Calistoga', 'Inter', sans-serif;
-      color: #0052FF;
+      color: #10B981;
     }
   }
 }

@@ -163,7 +163,7 @@ const progressColors = [
           align-items: center;
           justify-content: center;
           color: white;
-          background: #0052FF;
+          background: #10B981;
           box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
         }
 
@@ -262,13 +262,13 @@ const progressColors = [
         }
 
         &:nth-child(1) .stat-icon {
-          background: #0052FF;
+          background: #10B981;
         }
         &:nth-child(2) .stat-icon {
           background: #EF4444;
         }
         &:nth-child(3) .stat-icon {
-          background: #0052FF;
+          background: #10B981;
         }
 
         .stat-content {

@@ -245,8 +245,8 @@ onShow(() => {
 }
 
 .tips-card {
-  background: #EFF6FF;
-  border: 1rpx solid rgba(0, 82, 255, 0.1);
+  background: #ECFDF5;
+  border: 1rpx solid rgba(16, 185, 129, 0.1);
 }
 
 .tips-title {

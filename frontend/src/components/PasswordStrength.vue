@@ -132,7 +132,7 @@ const strengthTips = computed(() => {
       }
 
       &.strength-very-strong {
-        background-color: #0052FF;
+        background-color: #10B981;
       }
     }
   }
@@ -159,7 +159,7 @@ const strengthTips = computed(() => {
       }
 
       &.strength-very-strong {
-        color: #0052FF;
+        color: #10B981;
       }
     }
 

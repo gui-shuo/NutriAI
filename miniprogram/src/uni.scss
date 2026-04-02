@@ -8,16 +8,16 @@ $background: #FAFAFA;
 $foreground: #0F172A;
 $muted: #F1F5F9;
 $muted-foreground: #64748B;
-$accent: #0052FF;
-$accent-secondary: #4D7CFF;
+$accent: #10B981;
+$accent-secondary: #34D399;
 $accent-foreground: #FFFFFF;
 $border: #E2E8F0;
 $card: #FFFFFF;
 
 /* ============ NutriAI Theme Variables ============ */
 $uni-primary: $accent;
-$uni-primary-light: #EFF6FF;
-$uni-success: #10B981;
+$uni-primary-light: #ECFDF5;
+$uni-success: #22C55E;
 $uni-warning: #F59E0B;
 $uni-error: #EF4444;
 $uni-text-color: $foreground;
@@ -34,7 +34,7 @@ $uni-font-size-xl: 36rpx;
 
 /* Semantic colors */
 $uni-color-primary: $accent;
-$uni-color-success: #10B981;
+$uni-color-success: #22C55E;
 $uni-color-warning: #F59E0B;
 $uni-color-error: #EF4444;
 
@@ -45,7 +45,7 @@ $uni-text-color-disable: #CBD5E1;
 
 /* Background colors */
 $uni-bg-color-grey: $muted;
-$uni-bg-color-hover: rgba(0, 82, 255, 0.04);
+$uni-bg-color-hover: rgba(16, 185, 129, 0.04);
 $uni-bg-color-mask: rgba(15, 23, 42, 0.5);
 
 /* Border colors */
@@ -67,7 +67,7 @@ $uni-border-radius-circle: 50%;
 $shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
 $shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
 $shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.08);
-$shadow-accent: 0 4px 14px rgba(0, 82, 255, 0.25);
+$shadow-accent: 0 4px 14px rgba(16, 185, 129, 0.25);
 
 /* Gradient */
 $gradient-accent: linear-gradient(135deg, $accent, $accent-secondary);

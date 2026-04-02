@@ -205,16 +205,16 @@ onMounted(() => {
 }
 
 .admin-menu :deep(.el-menu-item:hover) {
-  color: #0052FF;
+  color: #10B981;
   background: #F1F5F9;
   border-radius: 8px;
 }
 
 .admin-menu :deep(.el-menu-item.is-active) {
-  color: #0052FF;
+  color: #10B981;
   font-weight: 600;
-  background: rgba(0, 82, 255, 0.06);
-  border-left: 3px solid #0052FF;
+  background: rgba(16, 185, 129, 0.06);
+  border-left: 3px solid #10B981;
   border-radius: 0 8px 8px 0;
 }
 

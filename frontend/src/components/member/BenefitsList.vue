@@ -205,7 +205,7 @@ const getBenefitDescription = feature => {
         }
 
         &:nth-child(3n+1) .benefit-icon {
-          background: #0052FF;
+          background: #10B981;
         }
         &:nth-child(3n+2) .benefit-icon {
           background: #EF4444;
@@ -260,7 +260,7 @@ const getBenefitDescription = feature => {
         .stat-value {
           font-size: 16px;
           font-weight: 600;
-          color: #0052FF;
+          color: #10B981;
         }
       }
     }

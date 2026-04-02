@@ -59,13 +59,13 @@ Imagine the intersection of a high-tech SaaS product's precision with a creative
 - Not generic or template-like (bold choices prevent this)
 - Not busy or overwhelming (restraint in element count)
 - Not flat or lifeless (texture, shadow, and motion add depth)
-- Not cold or corporate (the warm serif headlines and vibrant blue inject personality)
+- Not cold or corporate (the warm serif headlines and vibrant green inject personality)
 
 ### The DNA of This Style
 
 #### 1. The Signature Gradient
 
-The Electric Blue gradient (`#0052FF` → `#4D7CFF`) is the heartbeat of this design system. It's not just an accent color—it's a visual signature that creates instant recognition.
+The Health Green gradient (`#10B981` → `#34D399`) is the heartbeat of this design system. It's not just an accent color—it's a visual signature that creates instant recognition.
 
 **Where it appears:**
 - Primary button backgrounds
@@ -77,7 +77,7 @@ The Electric Blue gradient (`#0052FF` → `#4D7CFF`) is the heartbeat of this de
 - CTA section buttons
 - Pricing tier highlights
 
-**Why it works:** A gradient feels more alive than a flat color. The subtle shift from deep Electric Blue to a lighter sky blue creates dimensionality and draws the eye along the element. It signals "this is important" without screaming.
+**Why it works:** A gradient feels more alive than a flat color. The subtle shift from deep Health Green to a lighter mint green creates dimensionality and draws the eye along the element. It signals "this is important" without screaming.
 
 #### 2. Inverted Contrast Sections
 
@@ -151,7 +151,7 @@ This style refuses to be "just clean." Many minimal designs strip away so much t
 
 **Minimalism through bold choices, not absence.**
 
-- Where others use subtle gray, we use Electric Blue
+- Where others use subtle gray, we use Health Green
 - Where others use flat backgrounds, we use inverted sections and gradient glows
 - Where others use static layouts, we use floating animations and pulsing indicators
 - Where others use one safe font, we use a memorable dual-font pairing
@@ -166,7 +166,7 @@ The result is a design that is unmistakably minimal in its restraint (few colors
 If this design were a physical space, it would be:
 - A bright, airy gallery with white walls and polished concrete floors
 - One wall painted in deep midnight blue, dramatically lit
-- A single piece of art in electric blue, drawing every eye
+- A single piece of art in health green, drawing every eye
 - Soft ambient lighting that makes surfaces glow
 - The faint hum of something technological and precise
 - Clean lines everywhere, but one sculptural element with an unexpected curve
@@ -192,18 +192,18 @@ If it were music, it would be:
 | `foreground` | `#0F172A` (Slate-900) | Primary text. Deep slate, not pure black. Also used as inverted section backgrounds. |
 | `muted` | `#F1F5F9` (Slate-100) | Secondary surfaces, card backgrounds, subtle fills. |
 | `muted-foreground` | `#64748B` (Slate-500) | Secondary text, descriptions, metadata. |
-| `accent` | `#0052FF` (Electric Blue) | **Primary action color.** CTAs, links, highlights, icon backgrounds. |
-| `accent-secondary` | `#4D7CFF` | Gradient endpoint. Used with `accent` for gradient effects. |
+| `accent` | `#10B981` (Health Green) | **Primary action color.** CTAs, links, highlights, icon backgrounds. |
+| `accent-secondary` | `#34D399` | Gradient endpoint. Used with `accent` for gradient effects. |
 | `accent-foreground` | `#FFFFFF` | Text on accent backgrounds. Always white. |
 | `border` | `#E2E8F0` (Slate-200) | Subtle structural borders on cards and dividers. |
 | `card` | `#FFFFFF` | Elevated surfaces. Pure white for maximum lift. |
-| `ring` | `#0052FF` | Focus rings. Matches the primary accent. |
+| `ring` | `#10B981` | Focus rings. Matches the primary accent. |
 
 **The Signature Gradient:**
 ```css
-background: linear-gradient(to right, #0052FF, #4D7CFF);
+background: linear-gradient(to right, #10B981, #34D399);
 /* Or diagonal: */
-background: linear-gradient(135deg, #0052FF, #4D7CFF);
+background: linear-gradient(135deg, #10B981, #34D399);
 ```
 This gradient appears on: primary buttons, featured badges, icon backgrounds, pricing tier borders, testimonial accent bars, trend indicators, and text highlights.
 
@@ -229,7 +229,7 @@ This gradient appears on: primary buttons, featured badges, icon backgrounds, pr
 **Gradient Text Effect (with Enhanced Underline):**
 ```css
 .gradient-text {
-  background: linear-gradient(to right, #0052FF, #4D7CFF);
+  background: linear-gradient(to right, #10B981, #34D399);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -243,7 +243,7 @@ This gradient appears on: primary buttons, featured badges, icon backgrounds, pr
   height: 0.75rem; /* md: 1rem */
   width: 100%;
   border-radius: 0.125rem;
-  background: linear-gradient(to right, rgba(0, 82, 255, 0.15), rgba(77, 124, 255, 0.1));
+  background: linear-gradient(to right, rgba(16, 185, 129, 0.15), rgba(77, 124, 255, 0.1));
 }
 ```
 
@@ -279,8 +279,8 @@ This gradient appears on: primary buttons, featured badges, icon backgrounds, pr
 | `shadow-md` | `0 4px 6px rgba(0,0,0,0.07)` | Standard cards |
 | `shadow-lg` | `0 10px 15px rgba(0,0,0,0.08)` | Elevated cards |
 | `shadow-xl` | `0 20px 25px rgba(0,0,0,0.1)` | Hero elements |
-| `shadow-accent` | `0 4px 14px rgba(0,82,255,0.25)` | Accent-tinted lift |
-| `shadow-accent-lg` | `0 8px 24px rgba(0,82,255,0.35)` | Featured elements |
+| `shadow-accent` | `0 4px 14px rgba(16,185,129,0.25)` | Accent-tinted lift |
+| `shadow-accent-lg` | `0 8px 24px rgba(16,185,129,0.35)` | Featured elements |
 
 **Textures (Critical for Avoiding Flatness):**
 - **Dot Pattern:** `radial-gradient(circle, white 1px, transparent 1px)` at `32px` intervals, `opacity: 0.03` — Used on dark inverted sections
@@ -294,7 +294,7 @@ This gradient appears on: primary buttons, featured badges, icon backgrounds, pr
 ### Buttons
 
 **Primary Button:**
-- Background: Gradient from `accent` to `accent-secondary` (`bg-gradient-to-r from-[var(--accent)] to-[#4D7CFF]`)
+- Background: Gradient from `accent` to `accent-secondary` (`bg-gradient-to-r from-[var(--accent)] to-[#34D399]`)
 - Text: White, medium weight
 - Shadow: `shadow-sm` default, `shadow-accent` on hover (accent-tinted)
 - Border-radius: `rounded-xl` (12px)
@@ -457,7 +457,7 @@ const stagger = {
 
 ## Accessibility & Best Practices
 
-**Color Contrast:** All text meets WCAG AA. The `accent` blue (#0052FF) on white background passes at 4.5:1+. Inverted sections use near-white text (#FFFFFF or rgba(255,255,255,0.9)) on deep slate (#0F172A) for maximum contrast.
+**Color Contrast:** All text meets WCAG AA. The `accent` blue (#10B981) on white background passes at 4.5:1+. Inverted sections use near-white text (#FFFFFF or rgba(255,255,255,0.9)) on deep slate (#0F172A) for maximum contrast.
 
 **Focus States:**
 - Visible focus rings using `ring-2 ring-accent ring-offset-2` with `ring-offset-background`

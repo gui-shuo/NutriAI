@@ -801,12 +801,12 @@ function orderStatusText(s) {
       box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 
       &:focus-within {
-        border-color: #0052FF;
-        box-shadow: 0 0 0 2px rgba(0, 82, 255, 0.2);
+        border-color: #10B981;
+        box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
       }
     }
     :deep(.el-input-group__append) {
-      background: linear-gradient(135deg, #0052FF, #4D7CFF);
+      background: linear-gradient(135deg, #10B981, #34D399);
       color: #fff;
       border: none;
       border-radius: 0 12px 12px 0;
@@ -927,7 +927,7 @@ function orderStatusText(s) {
         font-size: 20px;
         font-weight: 700;
         font-family: 'Calistoga', 'Inter', sans-serif;
-        color: #0052FF;
+        color: #10B981;
       }
       .orig-price {
         font-size: 13px;
@@ -944,15 +944,15 @@ function orderStatusText(s) {
       :deep(.el-button) {
         border-radius: 10px;
         border: none;
-        background: linear-gradient(135deg, #0052FF, #4D7CFF);
-        box-shadow: 0 2px 4px -1px rgba(0, 82, 255, 0.25);
+        background: linear-gradient(135deg, #10B981, #34D399);
+        box-shadow: 0 2px 4px -1px rgba(16, 185, 129, 0.25);
         font-family: 'Inter', sans-serif;
         font-weight: 500;
         transition: box-shadow 0.2s, transform 0.2s;
 
         &:hover {
           transform: translateY(-1px);
-          box-shadow: 0 4px 6px -1px rgba(0, 82, 255, 0.3);
+          box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
         }
       }
     }
@@ -1017,7 +1017,7 @@ function orderStatusText(s) {
         font-size: 28px;
         font-weight: 700;
         font-family: 'Calistoga', 'Inter', sans-serif;
-        color: #0052FF;
+        color: #10B981;
       }
       .orig-price {
         font-size: 15px;
@@ -1093,7 +1093,7 @@ function orderStatusText(s) {
         font-weight: 600;
       }
       .cart-price {
-        color: #0052FF;
+        color: #10B981;
         font-weight: 600;
         font-family: 'Calistoga', 'Inter', sans-serif;
         display: block;
@@ -1121,7 +1121,7 @@ function orderStatusText(s) {
   font-size: 24px;
   font-weight: 700;
   font-family: 'Calistoga', 'Inter', sans-serif;
-  color: #0052FF;
+  color: #10B981;
 }
 
 // === 结算 ===
@@ -1193,8 +1193,8 @@ function orderStatusText(s) {
       transition: all 0.2s;
 
       &:hover {
-        border-color: #4D7CFF;
-        box-shadow: 0 2px 4px -1px rgba(0, 82, 255, 0.1);
+        border-color: #34D399;
+        box-shadow: 0 2px 4px -1px rgba(16, 185, 129, 0.1);
       }
 
       .addr-name {

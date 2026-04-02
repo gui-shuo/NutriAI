@@ -227,7 +227,7 @@ defineExpose({
 }
 
 .section-title .el-icon {
-  color: #0052FF;
+  color: #10B981;
 }
 
 .action-buttons {
@@ -284,7 +284,7 @@ defineExpose({
 }
 
 .action-btn:hover:not(:disabled) .btn-text {
-  color: #0052FF;
+  color: #10B981;
 }
 
 /* 展开/收起动画 */

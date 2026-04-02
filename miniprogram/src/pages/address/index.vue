@@ -91,7 +91,7 @@
           </view>
           <view class="form-group switch-group">
             <text class="form-label">设为默认地址</text>
-            <switch :checked="form.isDefault" @change="form.isDefault = $event.detail.value" color="#0052FF" />
+            <switch :checked="form.isDefault" @change="form.isDefault = $event.detail.value" color="#10B981" />
           </view>
         </scroll-view>
         <view class="modal-footer">
@@ -556,7 +556,7 @@ onShow(() => {
 .label-tag.active {
   border-color: $accent;
   color: $accent;
-  background: rgba(0, 82, 255, 0.06);
+  background: rgba(16, 185, 129, 0.06);
 }
 
 .switch-group {

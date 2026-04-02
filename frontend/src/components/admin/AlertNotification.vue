@@ -338,8 +338,8 @@ onUnmounted(() => {
 }
 
 .alert-item.unread {
-  background-color: rgba(0, 82, 255, 0.04);
-  border-left: 3px solid #0052FF;
+  background-color: rgba(16, 185, 129, 0.04);
+  border-left: 3px solid #10B981;
 }
 
 .alert-header {

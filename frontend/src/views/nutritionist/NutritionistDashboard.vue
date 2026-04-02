@@ -137,10 +137,10 @@ function formatDate(dt) {
   align-items: center;
   margin-bottom: 24px;
   padding: 20px 24px;
-  background: linear-gradient(135deg, #0052FF, #4D7CFF);
+  background: linear-gradient(135deg, #10B981, #34D399);
   border-radius: 16px;
   border: none;
-  box-shadow: 0 4px 14px 0 rgba(0, 82, 255, 0.25);
+  box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.25);
   color: #FFFFFF;
 
   h2 { margin: 0 0 4px; font-size: 20px; font-family: 'Calistoga', cursive; }
@@ -182,7 +182,7 @@ function formatDate(dt) {
   }
 
   .stat-icon { font-size: 28px; margin-bottom: 8px; }
-  .stat-num { font-size: 28px; font-weight: 700; color: #0052FF; font-family: 'Calistoga', cursive; }
+  .stat-num { font-size: 28px; font-weight: 700; color: #10B981; font-family: 'Calistoga', cursive; }
   .stat-label { font-size: 13px; color: #0F172A; margin-top: 4px; font-family: 'Inter', sans-serif; }
 }
 
