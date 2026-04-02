@@ -35,19 +35,27 @@
               <el-descriptions-item label="申请时间">{{ formatDate(n.createdAt) }}</el-descriptions-item>
             </el-descriptions>
             <!-- Credential images -->
-            <div v-if="n.certificates && n.certificates.urls && n.certificates.urls.length" class="cert-section">
+            <div class="cert-section">
               <p class="cert-label">资质证书：</p>
-              <div class="cert-images">
+              <div v-if="getCertUrls(n).length" class="cert-images">
                 <el-image
-                  v-for="(url, i) in n.certificates.urls"
+                  v-for="(url, i) in getCertUrls(n)"
                   :key="i"
                   :src="url"
-                  :preview-src-list="n.certificates.urls"
+                  :preview-src-list="getCertUrls(n)"
                   :initial-index="i"
                   fit="cover"
                   class="cert-img"
-                />
+                  :zoom-rate="1.2"
+                  :max-scale="5"
+                  :min-scale="0.5"
+                >
+                  <template #error>
+                    <div class="cert-img-error">加载失败</div>
+                  </template>
+                </el-image>
               </div>
+              <el-empty v-else description="未上传资质证书" :image-size="40" />
             </div>
             <div class="pending-actions">
               <el-button type="success" @click="handleApprove(n)" :loading="n._approving">
@@ -382,6 +390,15 @@ const formatDate = (dt) => {
   return new Date(dt).toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
 }
 
+// 兼容不同证书格式：{urls:[...]}, ["url1"], null, {}
+const getCertUrls = (n) => {
+  if (!n || !n.certificates) return []
+  const c = n.certificates
+  if (Array.isArray(c)) return c
+  if (c.urls && Array.isArray(c.urls)) return c.urls
+  return []
+}
+
 onMounted(() => {
   fetchPending()
 })
@@ -458,6 +475,18 @@ onMounted(() => {
       height: 90px;
       border-radius: 8px;
       border: 1px solid #e5e7eb;
+      cursor: pointer;
+    }
+    .cert-img-error {
+      width: 120px;
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f5f5f5;
+      color: #999;
+      font-size: 12px;
+      border-radius: 8px;
     }
   }
 

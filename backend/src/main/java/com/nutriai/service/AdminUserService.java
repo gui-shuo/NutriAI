@@ -2,6 +2,7 @@ package com.nutriai.service;
 
 import com.nutriai.dto.admin.UserManagementDTO;
 import com.nutriai.entity.User;
+import com.nutriai.repository.AIChatHistoryRepository;
 import com.nutriai.repository.AIChatLogRepository;
 import com.nutriai.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class AdminUserService {
     
     private final UserRepository userRepository;
     private final AIChatLogRepository chatLogRepository;
+    private final AIChatHistoryRepository chatHistoryRepository;
     
     /**
      * 分页查询用户列表
@@ -116,9 +118,9 @@ public class AdminUserService {
         LocalDateTime todayStart = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
         LocalDateTime now = LocalDateTime.now();
         
-        // 统计用户的对话数
-        long totalChats = chatLogRepository.countByUserId(user.getId());
-        long todayChats = chatLogRepository.countByUserIdAndCreatedAtBetween(user.getId(), todayStart, now);
+        // 统计用户的对话数（会话数从ai_chat_history，调用数从ai_chat_log）
+        long totalChats = chatHistoryRepository.countByUserId(user.getId());
+        long totalCalls = chatLogRepository.countByUserId(user.getId());
         
         return UserManagementDTO.builder()
                 .id(user.getId())
@@ -134,7 +136,7 @@ public class AdminUserService {
                 .lastLoginTime(user.getLastLoginTime())
                 .createdAt(user.getCreatedAt())
                 .totalChats(totalChats)
-                .todayChats(todayChats)
+                .todayChats(totalCalls)
                 .build();
     }
 }

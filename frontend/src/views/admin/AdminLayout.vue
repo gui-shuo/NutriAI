@@ -15,37 +15,37 @@
             <el-icon><User /></el-icon>
             <span>用户管理</span>
           </el-menu-item>
+          <el-menu-item index="/admin/nutritionists">
+            <el-icon><UserFilled /></el-icon>
+            <span>营养师管理</span>
+          </el-menu-item>
           <el-menu-item index="/admin/ai-logs">
             <el-icon><ChatDotRound /></el-icon>
             <span>AI日志</span>
-          </el-menu-item>
-          <el-menu-item index="/admin/config">
-            <el-icon><Setting /></el-icon>
-            <span>系统配置</span>
-          </el-menu-item>
-          <el-menu-item index="/admin/announcements">
-            <el-icon><Bell /></el-icon>
-            <span>公告管理</span>
           </el-menu-item>
           <el-menu-item index="/admin/feedbacks">
             <el-icon><ChatLineSquare /></el-icon>
             <span>反馈管理</span>
           </el-menu-item>
-          <el-menu-item index="/admin/nutritionists">
-            <el-icon><UserFilled /></el-icon>
-            <span>营养师管理</span>
-          </el-menu-item>
-          <el-menu-item index="/admin/products">
-            <el-icon><ShoppingCart /></el-icon>
-            <span>产品管理</span>
+          <el-menu-item index="/admin/announcements">
+            <el-icon><Bell /></el-icon>
+            <span>公告管理</span>
           </el-menu-item>
           <el-menu-item index="/admin/community">
             <el-icon><ChatDotRound /></el-icon>
             <span>社区管理</span>
           </el-menu-item>
+          <el-menu-item index="/admin/products">
+            <el-icon><ShoppingCart /></el-icon>
+            <span>产品管理</span>
+          </el-menu-item>
           <el-menu-item index="/admin/app-versions">
             <el-icon><Download /></el-icon>
             <span>APP版本</span>
+          </el-menu-item>
+          <el-menu-item index="/admin/config">
+            <el-icon><Setting /></el-icon>
+            <span>系统配置</span>
           </el-menu-item>
         </el-menu>
       </el-aside>

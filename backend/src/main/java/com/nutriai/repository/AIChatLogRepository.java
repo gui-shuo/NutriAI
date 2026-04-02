@@ -74,6 +74,11 @@ public interface AIChatLogRepository extends JpaRepository<AIChatLog, Long> {
     long countByUserId(Long userId);
 
     /**
+     * 按状态统计总数
+     */
+    long countByStatus(String status);
+
+    /**
      * 统计指定用户在时间范围内的日志数
      */
     long countByUserIdAndCreatedAtBetween(Long userId, LocalDateTime startDate, LocalDateTime endDate);

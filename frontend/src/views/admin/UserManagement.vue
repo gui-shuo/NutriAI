@@ -73,7 +73,8 @@
             <el-tag v-else> 免费 </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="totalChats" label="总对话数" width="100" />
+        <el-table-column prop="totalChats" label="会话数" width="80" />
+        <el-table-column prop="todayChats" label="AI调用" width="80" />
         <el-table-column prop="createdAt" label="注册时间" width="180">
           <template #default="{ row }">
             {{ formatDate(row.createdAt) }}
@@ -134,10 +135,10 @@
         <el-descriptions-item label="会员类型">
           {{ currentUser.memberLevel === 'FREE' ? '免费用户' : '营养卡用户' }}
         </el-descriptions-item>
-        <el-descriptions-item label="总对话数">
+        <el-descriptions-item label="会话数">
           {{ currentUser.totalChats }}
         </el-descriptions-item>
-        <el-descriptions-item label="今日对话">
+        <el-descriptions-item label="AI调用次数">
           {{ currentUser.todayChats }}
         </el-descriptions-item>
         <el-descriptions-item label="注册时间" :span="2">

@@ -57,13 +57,11 @@ public class AdminDashboardService {
                 .avgResponseTime(getAvgResponseTimeSafe(todayStart, now))
                 .build();
         
-        // AI统计（使用会话历史数据）
-        long totalCalls = chatHistoryRepository.count();
-        long todayCalls = chatHistoryRepository.countByCreatedAtAfter(todayStart);
-        // 从日志表获取真实成功率
-        long logTotal = chatLogRepository.countByCreatedAtBetween(todayStart, now);
-        long logSuccess = chatLogRepository.countByStatusAndCreatedAtBetween("success", todayStart, now);
-        double successRate = logTotal > 0 ? (logSuccess * 100.0 / logTotal) : 100.0;
+        // AI统计（从ai_chat_log表获取真实数据）
+        long totalCalls = chatLogRepository.count();
+        long todayCalls = chatLogRepository.countByCreatedAtBetween(todayStart, now);
+        long logSuccess = chatLogRepository.countByStatus("success");
+        double successRate = totalCalls > 0 ? (logSuccess * 100.0 / totalCalls) : 100.0;
         
         DashboardStatsDTO.AIStats aiStats = DashboardStatsDTO.AIStats.builder()
                 .totalCalls(totalCalls)
@@ -113,7 +111,7 @@ public class AdminDashboardService {
     }
     
     /**
-     * 获取AI使用趋势（从ai_chat_history表）
+     * 获取AI使用趋势（从ai_chat_log表）
      */
     public List<TrendDataDTO> getAIUsageTrend(int days) {
         List<TrendDataDTO> trendData = new ArrayList<>();
@@ -125,10 +123,8 @@ public class AdminDashboardService {
             LocalDateTime startOfDay = LocalDateTime.of(date, LocalTime.MIN);
             LocalDateTime endOfDay = LocalDateTime.of(date, LocalTime.MAX);
             
-            // 从ai_chat_history表统计
-            long totalCalls = chatHistoryRepository.countByCreatedAtBetween(startOfDay, endOfDay);
-            // 会话历史都是成功的
-            long successCalls = totalCalls;
+            long totalCalls = chatLogRepository.countByCreatedAtBetween(startOfDay, endOfDay);
+            long successCalls = chatLogRepository.countByStatusAndCreatedAtBetween("success", startOfDay, endOfDay);
             
             trendData.add(TrendDataDTO.builder()
                     .date(date.format(formatter))

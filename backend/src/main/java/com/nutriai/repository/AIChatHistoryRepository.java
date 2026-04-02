@@ -55,4 +55,9 @@ public interface AIChatHistoryRepository extends JpaRepository<AIChatHistory, Lo
      * 统计指定时间范围内创建的记录数
      */
     long countByCreatedAtBetween(LocalDateTime startTime, LocalDateTime endTime);
+
+    /**
+     * 统计用户的会话数
+     */
+    long countByUserId(Long userId);
 }
