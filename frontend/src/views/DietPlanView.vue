@@ -83,7 +83,10 @@
 
           <!-- 个人数据 -->
           <div class="form-section">
-            <h3 class="section-title">个人数据（可选）</h3>
+            <h3 class="section-title">
+              个人数据（可选）
+              <el-tag v-if="profileLoaded" type="success" size="small" style="margin-left: 8px; vertical-align: middle">已从体质档案加载</el-tag>
+            </h3>
 
             <el-row :gutter="20">
               <el-col :span="12">
@@ -401,6 +404,7 @@ const modifyDialogVisible = ref(false)
 const modifySuggestion = ref('')
 const isModifying = ref(false)
 const showFavoritesOnly = ref(false)
+const profileLoaded = ref(false)
 
 // 配置marked
 marked.setOptions({
@@ -867,6 +871,44 @@ const handleCancelGenerate = () => {
 
 // 初始化
 onMounted(async () => {
+  // 从体质档案预填表单
+  try {
+    const { data } = await api.get('/user/health-profile')
+    const profile = data?.data
+    if (profile) {
+      if (profile.gender) {
+        formData.gender = profile.gender === 'MALE' ? 'male' : profile.gender === 'FEMALE' ? 'female' : null
+      }
+      if (profile.age != null) formData.age = profile.age
+      if (profile.height != null) formData.height = profile.height
+      if (profile.weight != null) formData.weight = profile.weight
+      if (profile.dailyCalorieTarget != null) formData.dailyCalories = profile.dailyCalorieTarget
+
+      if (profile.activityLevel) {
+        const activityMap = { SEDENTARY: 'low', LIGHT: 'low', MODERATE: 'medium', ACTIVE: 'high', VERY_ACTIVE: 'high' }
+        formData.exerciseLevel = activityMap[profile.activityLevel] || 'medium'
+      }
+
+      if (Array.isArray(profile.healthGoals) && profile.healthGoals.length > 0) {
+        const goals = profile.healthGoals.join(',')
+        if (goals.includes('减脂')) formData.goal = 'lose_weight'
+        else if (goals.includes('增肌')) formData.goal = 'gain_muscle'
+        else formData.goal = 'maintain'
+      }
+
+      const allergyItems = [...(Array.isArray(profile.allergies) ? profile.allergies : []), ...(Array.isArray(profile.dietaryRestrictions) ? profile.dietaryRestrictions : [])]
+      if (allergyItems.length > 0) formData.allergies = allergyItems.join('，')
+
+      if (Array.isArray(profile.dietaryRestrictions) && profile.dietaryRestrictions.length > 0) {
+        formData.preferences = profile.dietaryRestrictions.join('，')
+      }
+
+      profileLoaded.value = true
+    }
+  } catch {
+    // Health profile unavailable, keep default form values
+  }
+
   const savedTaskId = localStorage.getItem('currentTaskId')
 
   if (savedTaskId) {
