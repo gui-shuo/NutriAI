@@ -2,69 +2,59 @@
   <div class="food-record-container">
     <div class="food-record-layout">
       <!-- 顶部导航栏 -->
-      <div class="page-header">
-        <button class="back-btn" @click="goToHome">
-          <el-icon><ArrowLeft /></el-icon>
-          <span>返回首页</span>
-        </button>
-        <div class="page-title">
-          <span class="title-icon">🍽️</span>
-          <h1>饮食记录</h1>
+      <div class="page-topbar">
+        <el-button :icon="ArrowLeft" text @click="goToHome">返回首页</el-button>
+        <div class="topbar-title">
+          <h2>📋 饮食记录</h2>
+          <p>记录每日饮食，追踪营养摄入</p>
         </div>
       </div>
 
-      <!-- 头部统计卡片 -->
-      <div class="stats-section">
-        <NutritionStats :key="statsKey" :date="selectedDate" @date-change="handleDateChange" />
-      </div>
+      <!-- 两栏布局：左侧统计 + 右侧记录 -->
+      <div class="main-grid">
+        <!-- 左栏：营养统计 -->
+        <aside class="stats-aside">
+          <NutritionStats :key="statsKey" :date="selectedDate" @date-change="handleDateChange" />
+        </aside>
 
-      <!-- 主内容区 -->
-      <div class="content-section">
-        <el-card class="content-card">
-          <template #header>
-            <div class="card-header">
-              <div class="header-left">
-                <span class="header-icon">📋</span>
-                <span class="title">饮食记录</span>
-              </div>
-              <el-button class="add-btn" type="primary" @click="showAddDialog = true">
-                <el-icon><Plus /></el-icon>
-                添加记录
-              </el-button>
-            </div>
-            <!-- 筛选栏 -->
-            <div class="filter-bar">
-              <div class="filter-item">
-                <el-date-picker
-                  v-model="dateRange"
-                  type="daterange"
-                  range-separator="至"
-                  start-placeholder="开始日期"
-                  end-placeholder="结束日期"
-                  format="YYYY-MM-DD"
-                  value-format="YYYY-MM-DD"
-                  @change="handleFilterChange"
+        <!-- 右栏：筛选 + 列表 -->
+        <section class="records-main">
+          <!-- 工具栏：筛选 + 添加 -->
+          <div class="toolbar">
+            <div class="toolbar-filters">
+              <el-date-picker
+                v-model="dateRange"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                format="YYYY-MM-DD"
+                value-format="YYYY-MM-DD"
+                size="default"
+                @change="handleFilterChange"
+              />
+              <el-select
+                v-model="filterMealType"
+                placeholder="餐次类型"
+                clearable
+                size="default"
+                @change="handleFilterChange"
+              >
+                <el-option
+                  v-for="type in mealTypeList"
+                  :key="type.value"
+                  :label="type.label"
+                  :value="type.value"
                 />
-              </div>
-              <div class="filter-item">
-                <el-select
-                  v-model="filterMealType"
-                  placeholder="餐次类型"
-                  clearable
-                  @change="handleFilterChange"
-                >
-                  <el-option
-                    v-for="type in mealTypeList"
-                    :key="type.value"
-                    :label="type.label"
-                    :value="type.value"
-                  />
-                </el-select>
-              </div>
+              </el-select>
             </div>
-          </template>
+            <el-button type="primary" @click="showAddDialog = true">
+              <el-icon><Plus /></el-icon>
+              添加记录
+            </el-button>
+          </div>
 
-          <!-- 饮食记录列表 -->
+          <!-- 记录列表 -->
           <FoodRecordList
             :records="records"
             :loading="loading"
@@ -73,18 +63,18 @@
           />
 
           <!-- 分页 -->
-          <div v-if="total > 0" class="pagination-wrap">
-            <el-pagination
-              v-model:current-page="currentPage"
-              v-model:page-size="pageSize"
-              :total="total"
-              :page-sizes="[10, 20, 50, 100]"
-              layout="total, sizes, prev, pager, next, jumper"
-              @current-change="fetchRecords"
-              @size-change="fetchRecords"
-            />
-          </div>
-        </el-card>
+          <el-pagination
+            v-if="total > 0"
+            v-model:current-page="currentPage"
+            v-model:page-size="pageSize"
+            :total="total"
+            :page-sizes="[10, 20, 50, 100]"
+            layout="total, sizes, prev, pager, next, jumper"
+            class="list-pagination"
+            @current-change="fetchRecords"
+            @size-change="fetchRecords"
+          />
+        </section>
       </div>
     </div>
 
@@ -272,302 +262,108 @@ onBeforeUnmount(() => {
 <style scoped lang="scss">
 .food-record-container {
   min-height: 100vh;
-  background: linear-gradient(160deg, #0f172a 0%, #1e293b 50%, #334155 100%);
-  padding: 32px 20px 60px;
-  position: relative;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: -120px;
-    right: -80px;
-    width: 400px;
-    height: 400px;
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
-    border-radius: 50%;
-    pointer-events: none;
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: -60px;
-    left: -100px;
-    width: 350px;
-    height: 350px;
-    background: radial-gradient(circle, rgba(168, 85, 247, 0.1) 0%, transparent 70%);
-    border-radius: 50%;
-    pointer-events: none;
-  }
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 0 24px 40px;
 }
 
 .food-record-layout {
   max-width: 1400px;
   margin: 0 auto;
-  position: relative;
-  z-index: 1;
 }
 
-.page-header {
+/* 顶部导航栏 */
+.page-topbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 28px;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  margin-bottom: 24px;
 
-  .back-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 10px 20px;
-    border-radius: 50px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    background: rgba(255, 255, 255, 0.06);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+  :deep(.el-button) {
     color: rgba(255, 255, 255, 0.85);
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.2);
-      color: #fff;
-      transform: translateX(-2px);
-    }
-
-    .el-icon {
-      font-size: 16px;
-    }
-  }
-
-  .page-title {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-
-    .title-icon {
-      font-size: 28px;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: 26px;
-      font-weight: 700;
-      background: linear-gradient(135deg, #e0e7ff, #c4b5fd);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      letter-spacing: 0.5px;
-    }
+    &:hover { color: #fff; }
   }
 }
 
-.stats-section {
-  margin-bottom: 28px;
+.topbar-title h2 {
+  font-size: 24px;
+  margin: 0;
+  color: #fff;
 }
 
-.content-section {
-  .content-card {
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(30, 41, 59, 0.7);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    box-shadow:
-      0 8px 32px rgba(0, 0, 0, 0.3),
-      inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    overflow: hidden;
-
-    :deep(.el-card__header) {
-      padding: 24px 28px 20px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      background: rgba(255, 255, 255, 0.02);
-    }
-
-    :deep(.el-card__body) {
-      padding: 24px 28px;
-      background: transparent;
-    }
-  }
+.topbar-title p {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 2px 0 0 0;
 }
 
-.card-header {
+/* 两栏主布局 */
+.main-grid {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.stats-aside {
+  position: sticky;
+  top: 24px;
+}
+
+/* 工具栏 */
+.toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 18px;
-
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-
-    .header-icon {
-      font-size: 22px;
-    }
-  }
-
-  .title {
-    font-size: 20px;
-    font-weight: 700;
-    color: rgba(255, 255, 255, 0.95);
-    letter-spacing: 0.3px;
-  }
-
-  .add-btn {
-    border-radius: 50px;
-    padding: 10px 24px;
-    font-weight: 600;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
-    border: none;
-    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
-    transition: all 0.3s ease;
-
-    &:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
-      background: linear-gradient(135deg, #818cf8, #a78bfa);
-    }
-  }
+  gap: 16px;
+  margin-bottom: 20px;
+  padding: 16px 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
-.filter-bar {
+.toolbar-filters {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
-
-  .filter-item {
-    :deep(.el-date-editor),
-    :deep(.el-select) {
-      width: 260px;
-    }
-
-    :deep(.el-input__wrapper) {
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: none;
-      transition: all 0.3s ease;
-
-      &:hover,
-      &.is-focus {
-        border-color: rgba(99, 102, 241, 0.5);
-        background: rgba(255, 255, 255, 0.08);
-      }
-
-      .el-input__inner {
-        color: rgba(255, 255, 255, 0.85);
-
-        &::placeholder {
-          color: rgba(255, 255, 255, 0.35);
-        }
-      }
-
-      .el-input__icon,
-      .el-range-separator,
-      .el-range-input {
-        color: rgba(255, 255, 255, 0.5);
-      }
-
-      .el-range-input {
-        background: transparent;
-        color: rgba(255, 255, 255, 0.85);
-
-        &::placeholder {
-          color: rgba(255, 255, 255, 0.35);
-        }
-      }
-    }
-
-    :deep(.el-select) {
-      .el-select__suffix .el-icon {
-        color: rgba(255, 255, 255, 0.5);
-      }
-    }
-  }
 }
 
-.pagination-wrap {
-  margin-top: 28px;
+.list-pagination {
+  margin-top: 24px;
   display: flex;
   justify-content: center;
+}
 
-  :deep(.el-pagination) {
-    --el-pagination-bg-color: rgba(255, 255, 255, 0.06);
-    --el-pagination-text-color: rgba(255, 255, 255, 0.7);
-    --el-pagination-button-color: rgba(255, 255, 255, 0.7);
-    --el-pagination-hover-color: #818cf8;
-    --el-pagination-button-bg-color: rgba(255, 255, 255, 0.06);
-    --el-pagination-button-disabled-color: rgba(255, 255, 255, 0.25);
-    --el-pagination-button-disabled-bg-color: rgba(255, 255, 255, 0.03);
+@media (max-width: 1024px) {
+  .main-grid {
+    grid-template-columns: 1fr;
+  }
 
-    .el-pager li {
-      border-radius: 8px;
-      margin: 0 3px;
-      background: rgba(255, 255, 255, 0.06);
-      color: rgba(255, 255, 255, 0.7);
-
-      &.is-active {
-        background: linear-gradient(135deg, #6366f1, #8b5cf6);
-        color: #fff;
-        font-weight: 600;
-      }
-    }
-
-    .btn-prev,
-    .btn-next {
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.06);
-    }
-
-    .el-pagination__total,
-    .el-pagination__jump {
-      color: rgba(255, 255, 255, 0.6);
-    }
-
-    .el-input__wrapper {
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.06);
-      box-shadow: none;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-
-      .el-input__inner {
-        color: rgba(255, 255, 255, 0.85);
-      }
-    }
-
-    .el-select {
-      .el-input__wrapper {
-        border-radius: 8px;
-        background: rgba(255, 255, 255, 0.06);
-        box-shadow: none;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-      }
-    }
+  .stats-aside {
+    position: static;
   }
 }
 
 @media (max-width: 768px) {
   .food-record-container {
-    padding: 20px 12px 40px;
+    padding: 0 12px 24px;
   }
 
-  .page-header {
+  .page-topbar {
     flex-direction: column;
     align-items: flex-start;
-    gap: 12px;
+    gap: 8px;
   }
 
-  .filter-bar {
+  .toolbar {
     flex-direction: column;
+    align-items: stretch;
+  }
 
-    .filter-item {
-      :deep(.el-date-editor),
-      :deep(.el-select) {
-        width: 100%;
-      }
-    }
+  .toolbar-filters {
+    flex-direction: column;
   }
 }
 </style>

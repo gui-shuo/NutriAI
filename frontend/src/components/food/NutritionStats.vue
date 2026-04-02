@@ -1,124 +1,88 @@
 <template>
-  <div class="nutrition-stats-card">
-    <div class="stats-header">
-      <div class="header-left">
-        <span class="header-icon">📊</span>
-        <h2 class="title">今日营养摄入</h2>
+  <div class="nutrition-stats-wrap">
+    <!-- 日期选择卡片 -->
+    <el-card class="date-card" shadow="never">
+      <div class="date-header">
+        <h3 class="date-title">📅 营养统计</h3>
+        <el-date-picker
+          v-model="currentDate"
+          type="date"
+          placeholder="选择日期"
+          format="MM月DD日"
+          value-format="YYYY-MM-DD"
+          clearable
+          size="small"
+          @change="handleDateChange"
+        />
       </div>
-      <el-date-picker
-        v-model="currentDate"
-        type="date"
-        placeholder="选择日期"
-        format="YYYY年MM月DD日"
-        value-format="YYYY-MM-DD"
-        clearable
-        @change="handleDateChange"
-      />
-    </div>
+    </el-card>
 
-    <el-skeleton :loading="loading" animated :rows="3">
-      <div v-if="stats" class="stats-content">
-        <!-- 卡路里总览卡片 -->
-        <div class="calorie-card">
-          <div class="calorie-glow"></div>
-          <div class="calorie-main">
-            <div class="calorie-label">总卡路里摄入</div>
-            <div class="calorie-value">
-              <span class="number">{{ stats.totalCalories || 0 }}</span>
-              <span class="unit">千卡</span>
+    <el-skeleton :loading="loading" animated :rows="4">
+      <template v-if="stats">
+        <!-- 卡路里总览 -->
+        <el-card class="calorie-card" shadow="never">
+          <div class="calorie-top">
+            <div class="calorie-number">
+              {{ stats.totalCalories || 0 }}
+              <span class="calorie-unit">千卡</span>
             </div>
-            <div class="calorie-ring">
-              <svg viewBox="0 0 120 120" class="ring-svg">
-                <circle cx="60" cy="60" r="52" class="ring-bg" />
-                <circle cx="60" cy="60" r="52" class="ring-fill" />
-              </svg>
-              <span class="ring-label">🔥</span>
-            </div>
+            <el-tag type="info" size="small">共 {{ stats.recordCount || 0 }} 条</el-tag>
           </div>
-          <div class="calorie-breakdown">
-            <div v-for="meal in mealCalories" :key="meal.type" class="meal-item">
+          <div class="meal-breakdown">
+            <div v-for="meal in mealCalories" :key="meal.type" class="meal-row">
               <span class="meal-dot" :style="{ background: meal.color }" />
               <span class="meal-name">{{ meal.name }}</span>
-              <span class="meal-value">{{ meal.value }} <small>kcal</small></span>
+              <span class="meal-val">{{ meal.value }} kcal</span>
             </div>
           </div>
-        </div>
+        </el-card>
 
-        <!-- 营养成分卡片 -->
-        <div class="nutrition-cards">
-          <div class="nutrition-item protein">
-            <div class="nut-icon-wrap">
-              <el-icon class="icon"><User /></el-icon>
+        <!-- 营养素横向条 -->
+        <el-card class="nutrients-card" shadow="never">
+          <div class="nutrient-strip">
+            <div class="nutrient-item">
+              <div class="nutrient-val protein-color">{{ stats.totalProtein || 0 }}g</div>
+              <div class="nutrient-label">蛋白质</div>
             </div>
-            <div class="nut-info">
-              <div class="value">{{ stats.totalProtein || 0 }}<small>g</small></div>
-              <div class="label">蛋白质</div>
+            <div class="nutrient-item">
+              <div class="nutrient-val carbs-color">{{ stats.totalCarbohydrates || 0 }}g</div>
+              <div class="nutrient-label">碳水</div>
             </div>
-          </div>
-          <div class="nutrition-item carbs">
-            <div class="nut-icon-wrap">
-              <el-icon class="icon"><Food /></el-icon>
+            <div class="nutrient-item">
+              <div class="nutrient-val fat-color">{{ stats.totalFat || 0 }}g</div>
+              <div class="nutrient-label">脂肪</div>
             </div>
-            <div class="nut-info">
-              <div class="value">{{ stats.totalCarbohydrates || 0 }}<small>g</small></div>
-              <div class="label">碳水化合物</div>
-            </div>
-          </div>
-          <div class="nutrition-item fat">
-            <div class="nut-icon-wrap">
-              <el-icon class="icon"><Apple /></el-icon>
-            </div>
-            <div class="nut-info">
-              <div class="value">{{ stats.totalFat || 0 }}<small>g</small></div>
-              <div class="label">脂肪</div>
+            <div class="nutrient-item">
+              <div class="nutrient-val fiber-color">{{ stats.totalFiber || 0 }}g</div>
+              <div class="nutrient-label">纤维</div>
             </div>
           </div>
-          <div class="nutrition-item fiber">
-            <div class="nut-icon-wrap">
-              <el-icon class="icon"><Grape /></el-icon>
-            </div>
-            <div class="nut-info">
-              <div class="value">{{ stats.totalFiber || 0 }}<small>g</small></div>
-              <div class="label">膳食纤维</div>
-            </div>
-          </div>
-        </div>
+        </el-card>
 
-        <!-- ECharts图表 -->
-        <div class="charts-section">
-          <div class="chart-container">
-            <h3 class="chart-title">
-              <span class="chart-dot pie"></span>
-              营养成分占比
-            </h3>
-            <v-chart
-              :key="`pie-${currentDate}`"
-              class="chart"
-              :option="nutritionPieOption"
-              :init-options="{ renderer: 'canvas' }"
-              autoresize
-            />
-          </div>
-          <div class="chart-container">
-            <h3 class="chart-title">
-              <span class="chart-dot bar"></span>
-              餐次卡路里分布
-            </h3>
-            <v-chart
-              :key="`bar-${currentDate}`"
-              class="chart"
-              :option="mealBarOption"
-              :init-options="{ renderer: 'canvas' }"
-              autoresize
-            />
-          </div>
-        </div>
-
-        <!-- 统计信息 -->
-        <div class="stats-info">
-          <el-tag type="info"> 今日共记录 {{ stats.recordCount || 0 }} 条 </el-tag>
-        </div>
-      </div>
+        <!-- 图表（折叠） -->
+        <el-card class="charts-card" shadow="never">
+          <el-collapse>
+            <el-collapse-item title="📊 营养成分占比" name="pie">
+              <v-chart
+                :key="`pie-${currentDate}`"
+                class="sidebar-chart"
+                :option="nutritionPieOption"
+                :init-options="{ renderer: 'canvas' }"
+                autoresize
+              />
+            </el-collapse-item>
+            <el-collapse-item title="📈 餐次卡路里分布" name="bar">
+              <v-chart
+                :key="`bar-${currentDate}`"
+                class="sidebar-chart"
+                :option="mealBarOption"
+                :init-options="{ renderer: 'canvas' }"
+                autoresize
+              />
+            </el-collapse-item>
+          </el-collapse>
+        </el-card>
+      </template>
 
       <el-empty v-else description="暂无数据" />
     </el-skeleton>
@@ -127,7 +91,6 @@
 
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
-import { User, Food, Apple, Grape } from '@element-plus/icons-vue'
 import VChart from 'vue-echarts'
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
@@ -370,424 +333,155 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped lang="scss">
-.nutrition-stats-card {
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(30, 41, 59, 0.7);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  padding: 28px;
+.nutrition-stats-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.stats-header {
+.date-card,
+.calorie-card,
+.nutrients-card,
+.charts-card {
+  border-radius: 12px;
+  :deep(.el-card__body) {
+    padding: 16px;
+  }
+}
+
+/* 日期选择 */
+.date-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 28px;
-
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-
-    .header-icon {
-      font-size: 24px;
-    }
-  }
-
-  .title {
-    font-size: 22px;
-    font-weight: 700;
-    color: rgba(255, 255, 255, 0.95);
-    margin: 0;
-    letter-spacing: 0.3px;
-  }
-
-  :deep(.el-input__wrapper) {
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: none;
-
-    &:hover,
-    &.is-focus {
-      border-color: rgba(99, 102, 241, 0.5);
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .el-input__inner {
-      color: rgba(255, 255, 255, 0.85);
-
-      &::placeholder {
-        color: rgba(255, 255, 255, 0.35);
-      }
-    }
-
-    .el-input__icon {
-      color: rgba(255, 255, 255, 0.5);
-    }
-  }
 }
 
-.stats-content {
-  .calorie-card {
-    position: relative;
-    background: linear-gradient(135deg, #312e81, #4c1d95, #581c87);
-    border-radius: 20px;
-    padding: 32px;
-    color: white;
-    margin-bottom: 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    overflow: hidden;
+.date-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #303133;
+}
 
-    .calorie-glow {
-      position: absolute;
-      top: -40px;
-      right: -40px;
-      width: 200px;
-      height: 200px;
-      background: radial-gradient(circle, rgba(167, 139, 250, 0.3) 0%, transparent 70%);
-      border-radius: 50%;
-      pointer-events: none;
-    }
+/* 卡路里卡片 */
+.calorie-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  :deep(.el-card__body) { padding: 20px; }
+  :deep(.el-tag) { color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.2); border: none; }
+}
 
-    .calorie-main {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+.calorie-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
 
-      .calorie-label {
-        font-size: 14px;
-        opacity: 0.7;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        font-weight: 500;
-      }
+.calorie-number {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1;
+}
 
-      .calorie-value {
-        display: flex;
-        align-items: baseline;
-        gap: 8px;
+.calorie-unit {
+  font-size: 14px;
+  font-weight: 400;
+  opacity: 0.85;
+  margin-left: 4px;
+}
 
-        .number {
-          font-size: 52px;
-          font-weight: 800;
-          line-height: 1;
-          letter-spacing: -1px;
-          background: linear-gradient(180deg, #fff 0%, rgba(255, 255, 255, 0.8) 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
+.meal-breakdown {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
 
-        .unit {
-          font-size: 18px;
-          font-weight: 500;
-          opacity: 0.7;
-        }
-      }
+.meal-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
 
-      .calorie-ring {
-        position: absolute;
-        right: -140px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 100px;
-        height: 100px;
+.meal-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
 
-        .ring-svg {
-          width: 100%;
-          height: 100%;
-          transform: rotate(-90deg);
+.meal-name {
+  opacity: 0.85;
+}
 
-          .ring-bg {
-            fill: none;
-            stroke: rgba(255, 255, 255, 0.1);
-            stroke-width: 8;
-          }
+.meal-val {
+  margin-left: auto;
+  font-weight: 600;
+  font-size: 12px;
+}
 
-          .ring-fill {
-            fill: none;
-            stroke: rgba(167, 139, 250, 0.6);
-            stroke-width: 8;
-            stroke-linecap: round;
-            stroke-dasharray: 327;
-            stroke-dashoffset: 80;
-            animation: ring-anim 1.5s ease-out forwards;
-          }
-        }
+/* 营养素条 */
+.nutrient-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  text-align: center;
+}
 
-        .ring-label {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          font-size: 28px;
-        }
-      }
-    }
+.nutrient-item {
+  padding: 10px 4px;
+  background: #f5f7fa;
+  border-radius: 8px;
+}
 
-    .calorie-breakdown {
-      position: relative;
-      z-index: 1;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px 24px;
+.nutrient-val {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
 
-      .meal-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 8px 14px;
-        background: rgba(255, 255, 255, 0.08);
-        border-radius: 10px;
-        backdrop-filter: blur(4px);
+.nutrient-label {
+  font-size: 11px;
+  color: #909399;
+}
 
-        .meal-dot {
-          width: 10px;
-          height: 10px;
-          border-radius: 50%;
-          flex-shrink: 0;
-          box-shadow: 0 0 8px currentColor;
-        }
+.protein-color { color: #ff6384; }
+.carbs-color { color: #36a2eb; }
+.fat-color { color: #ffce56; }
+.fiber-color { color: #4bc0c0; }
 
-        .meal-name {
-          font-size: 13px;
-          opacity: 0.85;
-          white-space: nowrap;
-        }
-
-        .meal-value {
-          font-weight: 700;
-          font-size: 15px;
-          margin-left: auto;
-
-          small {
-            font-size: 11px;
-            font-weight: 400;
-            opacity: 0.6;
-            margin-left: 2px;
-          }
-        }
-      }
-    }
+/* 图表 */
+.charts-card {
+  :deep(.el-collapse) { border: none; }
+  :deep(.el-collapse-item__header) {
+    font-size: 14px;
+    font-weight: 600;
+    height: 40px;
+    line-height: 40px;
+    border: none;
   }
+  :deep(.el-collapse-item__wrap) { border: none; }
+}
 
-  .nutrition-cards {
-    display: grid;
+.sidebar-chart {
+  width: 100%;
+  height: 220px;
+}
+
+@media (max-width: 1024px) {
+  .nutrient-strip {
     grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    margin-bottom: 24px;
-
-    .nutrition-item {
-      border-radius: 16px;
-      padding: 22px 18px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-      border: 1px solid transparent;
-      position: relative;
-      overflow: hidden;
-
-      &::after {
-        content: '';
-        position: absolute;
-        top: -20px;
-        right: -20px;
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.06);
-        pointer-events: none;
-      }
-
-      &:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
-      }
-
-      .nut-icon-wrap {
-        width: 48px;
-        height: 48px;
-        border-radius: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-
-        .icon {
-          font-size: 24px;
-          color: #fff;
-        }
-      }
-
-      .nut-info {
-        .value {
-          font-size: 26px;
-          font-weight: 800;
-          color: #fff;
-          line-height: 1.2;
-
-          small {
-            font-size: 14px;
-            font-weight: 500;
-            opacity: 0.7;
-          }
-        }
-
-        .label {
-          font-size: 13px;
-          color: rgba(255, 255, 255, 0.7);
-          margin-top: 2px;
-        }
-      }
-
-      &.protein {
-        background: linear-gradient(135deg, #1e40af, #3b82f6);
-        .nut-icon-wrap {
-          background: rgba(255, 255, 255, 0.15);
-        }
-      }
-
-      &.carbs {
-        background: linear-gradient(135deg, #065f46, #10b981);
-        .nut-icon-wrap {
-          background: rgba(255, 255, 255, 0.15);
-        }
-      }
-
-      &.fat {
-        background: linear-gradient(135deg, #92400e, #f59e0b);
-        .nut-icon-wrap {
-          background: rgba(255, 255, 255, 0.15);
-        }
-      }
-
-      &.fiber {
-        background: linear-gradient(135deg, #581c87, #a855f7);
-        .nut-icon-wrap {
-          background: rgba(255, 255, 255, 0.15);
-        }
-      }
-    }
-  }
-
-  .charts-section {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-    margin-bottom: 24px;
-
-    .chart-container {
-      background: rgba(255, 255, 255, 0.04);
-      border-radius: 16px;
-      padding: 22px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      transition: border-color 0.3s ease;
-
-      &:hover {
-        border-color: rgba(255, 255, 255, 0.12);
-      }
-
-      .chart-title {
-        font-size: 15px;
-        font-weight: 600;
-        color: rgba(255, 255, 255, 0.9);
-        margin: 0 0 16px 0;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-
-        .chart-dot {
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-
-          &.pie {
-            background: #818cf8;
-          }
-
-          &.bar {
-            background: #34d399;
-          }
-        }
-      }
-
-      .chart {
-        width: 100%;
-        height: 300px;
-      }
-    }
-  }
-
-  .stats-info {
-    text-align: center;
-
-    :deep(.el-tag) {
-      border-radius: 20px;
-      padding: 6px 20px;
-      background: rgba(99, 102, 241, 0.15);
-      border-color: rgba(99, 102, 241, 0.25);
-      color: #a5b4fc;
-      font-weight: 500;
-    }
-  }
-}
-
-@keyframes ring-anim {
-  from {
-    stroke-dashoffset: 327;
-  }
-  to {
-    stroke-dashoffset: 80;
-  }
-}
-
-:deep(.el-skeleton) {
-  --el-skeleton-color: rgba(255, 255, 255, 0.06);
-  --el-skeleton-to-color: rgba(255, 255, 255, 0.12);
-}
-
-:deep(.el-empty__description p) {
-  color: rgba(255, 255, 255, 0.5);
-}
-
-@media (max-width: 1200px) {
-  .nutrition-cards {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
-
-  .charts-section {
-    grid-template-columns: 1fr !important;
   }
 }
 
 @media (max-width: 768px) {
-  .nutrition-stats-card {
-    padding: 20px;
+  .nutrient-strip {
+    grid-template-columns: repeat(2, 1fr);
   }
 
-  .stats-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-
-  .nutrition-cards {
-    grid-template-columns: 1fr !important;
-  }
-
-  .calorie-card {
-    flex-direction: column !important;
-    gap: 24px;
+  .meal-breakdown {
+    grid-template-columns: 1fr;
   }
 }
 </style>
