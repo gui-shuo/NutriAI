@@ -1,42 +1,157 @@
 <template>
   <div class="health-record">
-    <div class="record-header">
-      <h2 class="title">体质档案</h2>
-      <el-button type="primary" :loading="saving" @click="handleSave">
-        <el-icon v-if="!saving"><Select /></el-icon>
-        保存档案
-      </el-button>
-    </div>
+    <el-skeleton :loading="loading" animated :rows="10">
+      <!-- ========== 仪表盘模式 ========== -->
+      <div v-if="mode === 'dashboard' && savedProfile" class="dashboard">
+        <div class="dash-header">
+          <h2>我的体质档案</h2>
+          <el-button type="primary" round @click="startEdit">
+            <el-icon><Edit /></el-icon> 编辑档案
+          </el-button>
+        </div>
 
-    <el-alert type="info" :closable="true" show-icon style="margin-bottom: 16px">
-      <template #title>
-        体质档案数据仅供个人记录参考，不具有医学诊断价值。您的数据已加密保护，不会泄露给第三方。
-      </template>
-    </el-alert>
+        <!-- BMI 仪表盘卡片 -->
+        <div class="bmi-dashboard" v-if="dashBmi">
+          <div class="bmi-gauge" :class="dashBmi.level">
+            <div class="gauge-circle">
+              <span class="gauge-value">{{ dashBmi.value }}</span>
+              <span class="gauge-label">BMI</span>
+            </div>
+          </div>
+          <div class="bmi-detail">
+            <el-tag :type="dashBmi.tagType" size="large" effect="dark" round>{{ dashBmi.status }}</el-tag>
+            <p class="bmi-advice">{{ dashBmi.advice }}</p>
+          </div>
+        </div>
 
-    <el-skeleton :loading="loading" animated :rows="8">
-      <el-form
-        ref="formRef"
-        :model="formData"
-        :rules="rules"
-        label-width="100px"
-        class="health-form"
-      >
-        <!-- 基础信息 -->
-        <h3 class="section-title">基础信息</h3>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="性别" prop="gender">
-              <el-radio-group v-model="formData.gender">
-                <el-radio value="MALE">男</el-radio>
-                <el-radio value="FEMALE">女</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="出生日期" prop="birthDate">
+        <!-- 数据卡片区 -->
+        <div class="stat-cards">
+          <div class="stat-card" v-if="savedProfile.height">
+            <div class="stat-icon">📏</div>
+            <div class="stat-value">{{ savedProfile.height }}</div>
+            <div class="stat-label">身高 (cm)</div>
+          </div>
+          <div class="stat-card" v-if="savedProfile.weight">
+            <div class="stat-icon">⚖️</div>
+            <div class="stat-value">{{ savedProfile.weight }}</div>
+            <div class="stat-label">体重 (kg)</div>
+          </div>
+          <div class="stat-card" v-if="savedProfile.age">
+            <div class="stat-icon">🎂</div>
+            <div class="stat-value">{{ savedProfile.age }}</div>
+            <div class="stat-label">年龄 (岁)</div>
+          </div>
+          <div class="stat-card" v-if="savedProfile.dailyCalorieTarget">
+            <div class="stat-icon">🔥</div>
+            <div class="stat-value">{{ savedProfile.dailyCalorieTarget }}</div>
+            <div class="stat-label">每日推荐 (kcal)</div>
+          </div>
+          <div class="stat-card" v-if="savedProfile.idealWeightMin">
+            <div class="stat-icon">🎯</div>
+            <div class="stat-value">{{ savedProfile.idealWeightMin }}~{{ savedProfile.idealWeightMax }}</div>
+            <div class="stat-label">理想体重 (kg)</div>
+          </div>
+          <div class="stat-card" v-if="savedProfile.targetWeight">
+            <div class="stat-icon">🏁</div>
+            <div class="stat-value">{{ savedProfile.targetWeight }}</div>
+            <div class="stat-label">目标体重 (kg)</div>
+          </div>
+        </div>
+
+        <!-- 标签区 -->
+        <div class="tag-section" v-if="hasAnyTags">
+          <div class="tag-group" v-if="savedProfile.healthGoals?.length">
+            <h4>🎯 饮食目标</h4>
+            <div class="tags">
+              <el-tag v-for="g in savedProfile.healthGoals" :key="g" type="success" round>{{ g }}</el-tag>
+            </div>
+          </div>
+          <div class="tag-group" v-if="savedProfile.dietaryRestrictions?.length">
+            <h4>🚫 饮食限制</h4>
+            <div class="tags">
+              <el-tag v-for="r in savedProfile.dietaryRestrictions" :key="r" type="warning" round>{{ r }}</el-tag>
+            </div>
+          </div>
+          <div class="tag-group" v-if="savedProfile.allergies?.length">
+            <h4>⚠️ 过敏源</h4>
+            <div class="tags">
+              <el-tag v-for="a in savedProfile.allergies" :key="a" type="danger" round>{{ a }}</el-tag>
+            </div>
+          </div>
+          <div class="tag-group" v-if="savedProfile.medicalConditions?.length">
+            <h4>🏥 身体状况</h4>
+            <div class="tags">
+              <el-tag v-for="m in savedProfile.medicalConditions" :key="m" type="info" round>{{ m }}</el-tag>
+            </div>
+          </div>
+        </div>
+
+        <!-- 活动量 -->
+        <div class="activity-display" v-if="savedProfile.activityLevel">
+          <h4>💪 活动量</h4>
+          <div class="activity-bar">
+            <div
+              v-for="(lvl, i) in activityLevels"
+              :key="lvl.value"
+              class="activity-segment"
+              :class="{ active: i <= activityIndex }"
+            >
+              <span class="segment-label">{{ lvl.label }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== 向导模式 ========== -->
+      <div v-else-if="mode === 'wizard'" class="wizard">
+        <div class="wizard-header">
+          <h2>{{ isEditing ? '编辑体质档案' : '创建体质档案' }}</h2>
+          <p class="wizard-subtitle">{{ stepDescriptions[currentStep] }}</p>
+        </div>
+
+        <!-- 步骤条 -->
+        <div class="step-bar">
+          <div
+            v-for="(s, i) in steps"
+            :key="i"
+            class="step-dot"
+            :class="{ active: i === currentStep, done: i < currentStep }"
+            @click="i < currentStep && (currentStep = i)"
+          >
+            <span class="dot">{{ i < currentStep ? '✓' : i + 1 }}</span>
+            <span class="step-name">{{ s }}</span>
+          </div>
+          <div class="step-line">
+            <div class="step-line-fill" :style="{ width: (currentStep / (steps.length - 1)) * 100 + '%' }"></div>
+          </div>
+        </div>
+
+        <!-- Step 0: 基本身体数据 -->
+        <div v-show="currentStep === 0" class="step-content">
+          <div class="gender-select">
+            <div
+              class="gender-card"
+              :class="{ selected: form.gender === 'MALE' }"
+              @click="form.gender = 'MALE'"
+            >
+              <span class="gender-icon">👨</span>
+              <span>男</span>
+            </div>
+            <div
+              class="gender-card"
+              :class="{ selected: form.gender === 'FEMALE' }"
+              @click="form.gender = 'FEMALE'"
+            >
+              <span class="gender-icon">👩</span>
+              <span>女</span>
+            </div>
+          </div>
+
+          <div class="input-row">
+            <div class="input-card">
+              <label>出生日期</label>
               <el-date-picker
-                v-model="formData.birthDate"
+                v-model="form.birthDate"
                 type="date"
                 placeholder="选择日期"
                 format="YYYY-MM-DD"
@@ -44,299 +159,207 @@
                 :disabled-date="d => d > new Date()"
                 style="width: 100%"
               />
-            </el-form-item>
-          </el-col>
-        </el-row>
+            </div>
+          </div>
 
-        <!-- 身体指标 -->
-        <h3 class="section-title">身体指标</h3>
-        <el-row :gutter="20">
-          <el-col :span="8">
-            <el-form-item label="身高(cm)" prop="height">
-              <el-input-number
-                v-model="formData.height"
-                :min="50"
-                :max="300"
-                :step="0.1"
-                :precision="1"
-                style="width: 100%"
-                @change="calculateBMI"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="体重(kg)" prop="weight">
-              <el-input-number
-                v-model="formData.weight"
-                :min="20"
-                :max="500"
-                :step="0.1"
-                :precision="1"
-                style="width: 100%"
-                @change="calculateBMI"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="目标体重">
-              <el-input-number
-                v-model="formData.targetWeight"
-                :min="20"
-                :max="500"
-                :step="0.1"
-                :precision="1"
-                style="width: 100%"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="8">
-            <el-form-item label="腰围(cm)">
-              <el-input-number
-                v-model="formData.waistCircumference"
-                :min="30"
-                :max="300"
-                :step="0.1"
-                :precision="1"
-                style="width: 100%"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="体脂率(%)">
-              <el-input-number
-                v-model="formData.bodyFatPercentage"
-                :min="1"
-                :max="80"
-                :step="0.1"
-                :precision="1"
-                style="width: 100%"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="活动量">
-              <el-select v-model="formData.activityLevel" placeholder="请选择" style="width: 100%">
-                <el-option label="久坐不动" value="SEDENTARY" />
-                <el-option label="轻度活动" value="LIGHT" />
-                <el-option label="中度活动" value="MODERATE" />
-                <el-option label="重度活动" value="ACTIVE" />
-                <el-option label="专业运动" value="VERY_ACTIVE" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
+          <div class="input-row two-col">
+            <div class="input-card">
+              <label>身高 (cm)</label>
+              <el-input-number v-model="form.height" :min="50" :max="300" :step="1" :precision="1" controls-position="right" style="width: 100%" />
+            </div>
+            <div class="input-card">
+              <label>体重 (kg)</label>
+              <el-input-number v-model="form.weight" :min="20" :max="500" :step="0.5" :precision="1" controls-position="right" style="width: 100%" />
+            </div>
+          </div>
 
-        <!-- 身体信息 -->
-        <h3 class="section-title">身体信息</h3>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="饮食目标">
-              <el-select
-                v-model="formData.healthGoals"
-                multiple
-                placeholder="请选择"
-                style="width: 100%"
-              >
-                <el-option label="减重" value="减重" />
-                <el-option label="增肌" value="增肌" />
-                <el-option label="保持体重" value="保持体重" />
-                <el-option label="改善饮食" value="改善饮食" />
-                <el-option label="控制血糖" value="控制血糖" />
-                <el-option label="降低血压" value="降低血压" />
-                <el-option label="改善睡眠" value="改善睡眠" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="饮食限制">
-              <el-select
-                v-model="formData.dietaryRestrictions"
-                multiple
-                placeholder="请选择"
-                style="width: 100%"
-              >
-                <el-option label="素食" value="素食" />
-                <el-option label="纯素" value="纯素" />
-                <el-option label="无麸质" value="无麸质" />
-                <el-option label="低碳水" value="低碳水" />
-                <el-option label="低脂" value="低脂" />
-                <el-option label="高蛋白" value="高蛋白" />
-                <el-option label="清真" value="清真" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="过敏源">
-              <el-select
-                v-model="formData.allergies"
-                multiple
-                filterable
-                allow-create
-                placeholder="选择或输入"
-                style="width: 100%"
-              >
-                <el-option label="花生" value="花生" />
-                <el-option label="牛奶" value="牛奶" />
-                <el-option label="鸡蛋" value="鸡蛋" />
-                <el-option label="海鲜" value="海鲜" />
-                <el-option label="大豆" value="大豆" />
-                <el-option label="坚果" value="坚果" />
-                <el-option label="小麦" value="小麦" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="身体状况">
-              <el-select
-                v-model="formData.medicalConditions"
-                multiple
-                filterable
-                allow-create
-                placeholder="选择或输入"
-                style="width: 100%"
-              >
-                <el-option label="糖尿病" value="糖尿病" />
-                <el-option label="高血压" value="高血压" />
-                <el-option label="高血脂" value="高血脂" />
-                <el-option label="痛风" value="痛风" />
-                <el-option label="胃炎" value="胃炎" />
-                <el-option label="贫血" value="贫血" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="卡路里目标">
-              <el-input-number
-                v-model="formData.dailyCalorieTarget"
-                :min="500"
-                :max="10000"
-                :step="50"
-                style="width: 100%"
-              />
-              <div class="form-hint" v-if="!formData.dailyCalorieTarget">
-                留空则系统根据身体指标自动计算
-              </div>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="备注">
-              <el-input
-                v-model="formData.notes"
-                type="textarea"
-                :rows="2"
-                maxlength="1000"
-                show-word-limit
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
+          <!-- 实时 BMI 预览 -->
+          <div v-if="liveBmi" class="bmi-preview" :class="liveBmi.level">
+            <span class="preview-bmi">BMI: {{ liveBmi.value }}</span>
+            <el-tag :type="liveBmi.tagType" size="small" round>{{ liveBmi.status }}</el-tag>
+          </div>
+        </div>
+
+        <!-- Step 1: 生活习惯 -->
+        <div v-show="currentStep === 1" class="step-content">
+          <h3 class="chip-title">日常活动量</h3>
+          <div class="activity-cards">
+            <div
+              v-for="lvl in activityLevels"
+              :key="lvl.value"
+              class="activity-card"
+              :class="{ selected: form.activityLevel === lvl.value }"
+              @click="form.activityLevel = lvl.value"
+            >
+              <span class="activity-emoji">{{ lvl.emoji }}</span>
+              <span class="activity-name">{{ lvl.label }}</span>
+              <span class="activity-desc">{{ lvl.desc }}</span>
+            </div>
+          </div>
+
+          <h3 class="chip-title">饮食目标 <span class="chip-hint">可多选</span></h3>
+          <div class="chip-group">
+            <div
+              v-for="g in goalOptions"
+              :key="g"
+              class="chip"
+              :class="{ selected: form.healthGoals.includes(g) }"
+              @click="toggleChip(form.healthGoals, g)"
+            >{{ g }}</div>
+          </div>
+        </div>
+
+        <!-- Step 2: 饮食偏好 -->
+        <div v-show="currentStep === 2" class="step-content">
+          <h3 class="chip-title">饮食限制 <span class="chip-hint">可多选，无则跳过</span></h3>
+          <div class="chip-group">
+            <div
+              v-for="r in restrictionOptions"
+              :key="r"
+              class="chip"
+              :class="{ selected: form.dietaryRestrictions.includes(r) }"
+              @click="toggleChip(form.dietaryRestrictions, r)"
+            >{{ r }}</div>
+          </div>
+
+          <h3 class="chip-title">食物过敏 <span class="chip-hint">可多选，无则跳过</span></h3>
+          <div class="chip-group">
+            <div
+              v-for="a in allergyOptions"
+              :key="a"
+              class="chip warning"
+              :class="{ selected: form.allergies.includes(a) }"
+              @click="toggleChip(form.allergies, a)"
+            >{{ a }}</div>
+          </div>
+
+          <h3 class="chip-title">身体状况 <span class="chip-hint">可多选，无则跳过</span></h3>
+          <div class="chip-group">
+            <div
+              v-for="m in conditionOptions"
+              :key="m"
+              class="chip info"
+              :class="{ selected: form.medicalConditions.includes(m) }"
+              @click="toggleChip(form.medicalConditions, m)"
+            >{{ m }}</div>
+          </div>
+        </div>
+
+        <!-- Step 3: 补充信息（可选） -->
+        <div v-show="currentStep === 3" class="step-content">
+          <el-alert type="info" :closable="false" show-icon style="margin-bottom: 20px">
+            以下信息均为选填，留空系统会自动计算推荐值
+          </el-alert>
+
+          <div class="input-row two-col">
+            <div class="input-card">
+              <label>目标体重 (kg)</label>
+              <el-input-number v-model="form.targetWeight" :min="20" :max="500" :step="0.5" :precision="1" controls-position="right" style="width: 100%" placeholder="选填" />
+            </div>
+            <div class="input-card">
+              <label>每日卡路里目标 (kcal)</label>
+              <el-input-number v-model="form.dailyCalorieTarget" :min="500" :max="10000" :step="50" controls-position="right" style="width: 100%" placeholder="选填" />
+              <span class="input-hint">留空自动计算</span>
+            </div>
+          </div>
+
+          <div class="input-row two-col">
+            <div class="input-card">
+              <label>腰围 (cm) <span class="optional">选填</span></label>
+              <el-input-number v-model="form.waistCircumference" :min="30" :max="300" :step="0.5" :precision="1" controls-position="right" style="width: 100%" />
+            </div>
+            <div class="input-card">
+              <label>体脂率 (%) <span class="optional">选填</span></label>
+              <el-input-number v-model="form.bodyFatPercentage" :min="1" :max="80" :step="0.1" :precision="1" controls-position="right" style="width: 100%" />
+            </div>
+          </div>
+
+          <div class="input-row">
+            <div class="input-card">
+              <label>备注 <span class="optional">选填</span></label>
+              <el-input v-model="form.notes" type="textarea" :rows="3" maxlength="1000" show-word-limit placeholder="其他需要记录的信息" />
+            </div>
+          </div>
+        </div>
+
+        <!-- 底部按钮 -->
+        <div class="wizard-footer">
+          <el-button v-if="currentStep > 0" round @click="currentStep--">
+            上一步
+          </el-button>
+          <el-button v-if="isEditing" round @click="cancelEdit">
+            取消
+          </el-button>
+          <el-button
+            v-if="currentStep < steps.length - 1"
+            type="primary"
+            round
+            @click="nextStep"
+          >
+            下一步
+          </el-button>
+          <el-button
+            v-if="currentStep === steps.length - 1"
+            type="primary"
+            round
+            :loading="saving"
+            @click="handleSave"
+          >
+            {{ currentStep === 3 ? '保存档案' : '完成' }}
+          </el-button>
+        </div>
+      </div>
+
+      <!-- ========== 空状态 ========== -->
+      <div v-else class="empty-state">
+        <div class="empty-illustration">📋</div>
+        <h2>还没有体质档案</h2>
+        <p>只需 1 分钟，快速创建您的体质档案，<br/>获取个性化的饮食建议</p>
+        <el-button type="primary" size="large" round @click="startCreate">
+          开始创建
+        </el-button>
+      </div>
     </el-skeleton>
-
-    <!-- BMI结果显示 -->
-    <div v-if="bmiResult" class="bmi-calculator">
-      <h3 class="section-title">BMI 分析结果</h3>
-      <div class="bmi-result">
-        <div class="result-card" :class="bmiResult.level">
-          <div class="result-value">
-            <span class="value">{{ bmiResult.value }}</span>
-            <span class="unit">BMI</span>
-          </div>
-          <div class="result-status">
-            <el-tag :type="bmiResult.tagType" size="large" effect="dark">
-              {{ bmiResult.status }}
-            </el-tag>
-          </div>
-        </div>
-
-        <div class="bmi-info">
-          <h4>BMI 指数说明</h4>
-          <div class="info-grid">
-            <div class="info-item" :class="{ active: bmiResult.level === 'underweight' }">
-              <div class="info-label">偏瘦</div>
-              <div class="info-range">&lt; 18.5</div>
-            </div>
-            <div class="info-item" :class="{ active: bmiResult.level === 'normal' }">
-              <div class="info-label">正常</div>
-              <div class="info-range">18.5 - 23.9</div>
-            </div>
-            <div class="info-item" :class="{ active: bmiResult.level === 'overweight' }">
-              <div class="info-label">超重</div>
-              <div class="info-range">24.0 - 27.9</div>
-            </div>
-            <div class="info-item" :class="{ active: bmiResult.level === 'obese' }">
-              <div class="info-label">肥胖</div>
-              <div class="info-range">≥ 28.0</div>
-            </div>
-          </div>
-
-          <div class="health-advice">
-            <el-alert
-              :title="bmiResult.advice.title"
-              :type="bmiResult.tagType"
-              :description="bmiResult.advice.description"
-              show-icon
-              :closable="false"
-            />
-          </div>
-        </div>
-      </div>
-
-      <!-- 理想体重范围 -->
-      <div class="ideal-weight">
-        <h4>理想体重范围</h4>
-        <div class="weight-range">
-          <div class="range-item">
-            <div class="range-label">最小值</div>
-            <div class="range-value">{{ idealWeight.min }} kg</div>
-          </div>
-          <div class="range-divider">~</div>
-          <div class="range-item">
-            <div class="range-label">最大值</div>
-            <div class="range-value">{{ idealWeight.max }} kg</div>
-          </div>
-        </div>
-        <div class="weight-tip">
-          <el-icon><InfoFilled /></el-icon>
-          根据您的身高 {{ formData.height }} cm，理想体重范围为 {{ idealWeight.min }} -
-          {{ idealWeight.max }} kg
-        </div>
-      </div>
-
-      <!-- 每日推荐卡路里 -->
-      <div v-if="savedProfile?.dailyCalorieTarget" class="calorie-card">
-        <h4>每日推荐摄入</h4>
-        <div class="calorie-value">{{ savedProfile.dailyCalorieTarget }} <span>kcal</span></div>
-      </div>
-    </div>
-
-    <!-- 空状态 -->
-    <el-empty
-      v-if="!bmiResult && !loading"
-      description="请填写身高和体重后保存，系统将自动计算 BMI"
-      :image-size="120"
-    />
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
-import { InfoFilled, Select } from '@element-plus/icons-vue'
+import { Edit } from '@element-plus/icons-vue'
 import api from '@/services/api'
 import message from '@/utils/message'
 
-const formRef = ref()
+// ---- 常量 ----
+const steps = ['基本信息', '生活习惯', '饮食偏好', '补充信息']
+const stepDescriptions = [
+  '填写性别、年龄和身体基本数据',
+  '选择您的日常活动量和饮食目标',
+  '告诉我们您的饮食限制和过敏信息',
+  '可选的补充信息，留空也没关系'
+]
+
+const activityLevels = [
+  { value: 'SEDENTARY', label: '久坐', emoji: '🪑', desc: '办公室工作，很少运动' },
+  { value: 'LIGHT', label: '轻度', emoji: '🚶', desc: '偶尔散步或轻度运动' },
+  { value: 'MODERATE', label: '中度', emoji: '🏃', desc: '每周运动3-5次' },
+  { value: 'ACTIVE', label: '活跃', emoji: '💪', desc: '每天运动或体力劳动' },
+  { value: 'VERY_ACTIVE', label: '专业', emoji: '🏋️', desc: '高强度训练或重体力工作' }
+]
+
+const goalOptions = ['减重', '增肌', '保持体重', '改善饮食', '控制血糖', '降低血压', '改善睡眠']
+const restrictionOptions = ['素食', '纯素', '无麸质', '低碳水', '低脂', '高蛋白', '清真']
+const allergyOptions = ['花生', '牛奶', '鸡蛋', '海鲜', '大豆', '坚果', '小麦']
+const conditionOptions = ['糖尿病', '高血压', '高血脂', '痛风', '胃炎', '贫血']
+
+// ---- 状态 ----
 const loading = ref(false)
 const saving = ref(false)
+const mode = ref('loading') // 'dashboard' | 'wizard' | 'empty' | 'loading'
+const isEditing = ref(false)
+const currentStep = ref(0)
 const savedProfile = ref(null)
 
-const formData = reactive({
+const form = reactive({
   gender: null,
   birthDate: null,
   height: null,
@@ -353,371 +376,338 @@ const formData = reactive({
   notes: ''
 })
 
-const rules = {
-  height: [{ type: 'number', min: 50, max: 300, message: '身高范围 50-300 cm', trigger: 'change' }],
-  weight: [{ type: 'number', min: 20, max: 500, message: '体重范围 20-500 kg', trigger: 'change' }]
-}
+// ---- 计算属性 ----
+const liveBmi = computed(() => calcBmi(form.height, form.weight))
+const dashBmi = computed(() => savedProfile.value ? calcBmi(Number(savedProfile.value.height), Number(savedProfile.value.weight)) : null)
 
-const bmiResult = ref(null)
-
-const idealWeight = computed(() => {
-  if (!formData.height) return { min: 0, max: 0 }
-  const h = formData.height / 100
-  return {
-    min: (18.5 * h * h).toFixed(1),
-    max: (23.9 * h * h).toFixed(1)
-  }
+const activityIndex = computed(() => {
+  const idx = activityLevels.findIndex(l => l.value === savedProfile.value?.activityLevel)
+  return idx >= 0 ? idx : -1
 })
 
-const calculateBMI = () => {
-  if (!formData.height || !formData.weight) {
-    bmiResult.value = null
-    return
-  }
-  const h = formData.height / 100
-  const bmi = (formData.weight / (h * h)).toFixed(1)
-  let status, level, tagType, advice
+const hasAnyTags = computed(() => {
+  const p = savedProfile.value
+  return p && (p.healthGoals?.length || p.dietaryRestrictions?.length || p.allergies?.length || p.medicalConditions?.length)
+})
 
-  if (bmi < 18.5) {
-    status = '偏瘦'
-    level = 'underweight'
-    tagType = 'info'
-    advice = {
-      title: '体重偏低，需要增加营养',
-      description: '建议增加优质蛋白质和优质脂肪的摄入，配合适当的力量训练，逐步增加体重。'
-    }
-  } else if (bmi < 24) {
-    status = '正常'
-    level = 'normal'
-    tagType = 'success'
-    advice = {
-      title: '体重正常，请继续保持',
-      description: '继续保持均衡饮食和适量运动的良好习惯，定期监测体重变化。'
-    }
-  } else if (bmi < 28) {
-    status = '超重'
-    level = 'overweight'
-    tagType = 'warning'
-    advice = {
-      title: '体重超重，建议减重',
-      description: '建议控制饮食摄入，增加有氧运动，每周至少进行150分钟中等强度运动。'
-    }
-  } else {
-    status = '肥胖'
-    level = 'obese'
-    tagType = 'danger'
-    advice = {
-      title: '体重肥胖，需要减重',
-      description: '建议咨询专业营养师制定减重计划，结合饮食控制和规律运动，必要时就医检查。'
-    }
-  }
-  bmiResult.value = { value: bmi, status, level, tagType, advice }
+// ---- BMI 计算 ----
+function calcBmi(height, weight) {
+  if (!height || !weight) return null
+  const h = height / 100
+  const val = (weight / (h * h)).toFixed(1)
+  if (val < 18.5) return { value: val, status: '偏瘦', level: 'underweight', tagType: 'info', advice: '建议增加优质蛋白质和脂肪摄入，配合适当力量训练。' }
+  if (val < 24) return { value: val, status: '正常', level: 'normal', tagType: 'success', advice: '体重正常，请继续保持均衡饮食和适量运动。' }
+  if (val < 28) return { value: val, status: '超重', level: 'overweight', tagType: 'warning', advice: '建议控制饮食摄入，增加有氧运动。' }
+  return { value: val, status: '肥胖', level: 'obese', tagType: 'danger', advice: '建议咨询营养师制定减重计划。' }
 }
 
-// 从后端加载体质档案
-const fetchHealthProfile = async () => {
+// ---- Chip 切换 ----
+function toggleChip(arr, val) {
+  const i = arr.indexOf(val)
+  i >= 0 ? arr.splice(i, 1) : arr.push(val)
+}
+
+// ---- 模式切换 ----
+function startCreate() {
+  Object.assign(form, { gender: null, birthDate: null, height: null, weight: null, targetWeight: null, activityLevel: null, healthGoals: [], dietaryRestrictions: [], allergies: [], medicalConditions: [], dailyCalorieTarget: null, waistCircumference: null, bodyFatPercentage: null, notes: '' })
+  isEditing.value = false
+  currentStep.value = 0
+  mode.value = 'wizard'
+}
+
+function startEdit() {
+  if (savedProfile.value) {
+    const p = savedProfile.value
+    Object.assign(form, {
+      gender: p.gender || null,
+      birthDate: p.birthDate || null,
+      height: p.height ? Number(p.height) : null,
+      weight: p.weight ? Number(p.weight) : null,
+      targetWeight: p.targetWeight ? Number(p.targetWeight) : null,
+      activityLevel: p.activityLevel || null,
+      healthGoals: [...(p.healthGoals || [])],
+      dietaryRestrictions: [...(p.dietaryRestrictions || [])],
+      allergies: [...(p.allergies || [])],
+      medicalConditions: [...(p.medicalConditions || [])],
+      dailyCalorieTarget: p.dailyCalorieTarget || null,
+      waistCircumference: p.waistCircumference ? Number(p.waistCircumference) : null,
+      bodyFatPercentage: p.bodyFatPercentage ? Number(p.bodyFatPercentage) : null,
+      notes: p.notes || ''
+    })
+  }
+  isEditing.value = true
+  currentStep.value = 0
+  mode.value = 'wizard'
+}
+
+function cancelEdit() {
+  mode.value = 'dashboard'
+}
+
+// ---- 向导步骤 ----
+function nextStep() {
+  if (currentStep.value === 0) {
+    if (!form.height || !form.weight) {
+      message.warning('请至少填写身高和体重')
+      return
+    }
+  }
+  currentStep.value++
+}
+
+// ---- 加载 & 保存 ----
+async function fetchProfile() {
   loading.value = true
   try {
     const res = await api.get('/user/health-profile')
     if (res.data.code === 200 && res.data.data) {
-      const d = res.data.data
-      savedProfile.value = d
-      formData.gender = d.gender || null
-      formData.birthDate = d.birthDate || null
-      formData.height = d.height ? Number(d.height) : null
-      formData.weight = d.weight ? Number(d.weight) : null
-      formData.targetWeight = d.targetWeight ? Number(d.targetWeight) : null
-      formData.activityLevel = d.activityLevel || null
-      formData.healthGoals = d.healthGoals || []
-      formData.dietaryRestrictions = d.dietaryRestrictions || []
-      formData.allergies = d.allergies || []
-      formData.medicalConditions = d.medicalConditions || []
-      formData.dailyCalorieTarget = d.dailyCalorieTarget || null
-      formData.waistCircumference = d.waistCircumference ? Number(d.waistCircumference) : null
-      formData.bodyFatPercentage = d.bodyFatPercentage ? Number(d.bodyFatPercentage) : null
-      formData.notes = d.notes || ''
-      calculateBMI()
+      savedProfile.value = res.data.data
+      mode.value = 'dashboard'
     } else {
-      // 用户尚未创建体质档案，显示空表单
       savedProfile.value = null
+      mode.value = 'empty'
     }
-  } catch (error) {
-    console.error('获取体质档案失败:', error)
-    message.error('获取体质档案失败，请稍后重试')
+  } catch {
+    message.error('获取体质档案失败')
+    mode.value = 'empty'
   } finally {
     loading.value = false
   }
 }
 
-// 保存体质档案到后端
-const handleSave = async () => {
-  if (formRef.value) {
-    try {
-      const valid = await formRef.value.validate()
-      if (!valid) return
-    } catch {
-      return
-    }
-  }
-
+async function handleSave() {
   saving.value = true
   try {
     const res = await api.put('/user/health-profile', {
-      gender: formData.gender,
-      birthDate: formData.birthDate,
-      height: formData.height,
-      weight: formData.weight,
-      targetWeight: formData.targetWeight,
-      activityLevel: formData.activityLevel,
-      healthGoals: formData.healthGoals,
-      dietaryRestrictions: formData.dietaryRestrictions,
-      allergies: formData.allergies,
-      medicalConditions: formData.medicalConditions,
-      dailyCalorieTarget: formData.dailyCalorieTarget,
-      waistCircumference: formData.waistCircumference,
-      bodyFatPercentage: formData.bodyFatPercentage,
-      notes: formData.notes
+      gender: form.gender,
+      birthDate: form.birthDate,
+      height: form.height,
+      weight: form.weight,
+      targetWeight: form.targetWeight,
+      activityLevel: form.activityLevel,
+      healthGoals: form.healthGoals,
+      dietaryRestrictions: form.dietaryRestrictions,
+      allergies: form.allergies,
+      medicalConditions: form.medicalConditions,
+      dailyCalorieTarget: form.dailyCalorieTarget,
+      waistCircumference: form.waistCircumference,
+      bodyFatPercentage: form.bodyFatPercentage,
+      notes: form.notes
     })
-
     if (res.data.code === 200) {
+      message.success('体质档案保存成功！')
       savedProfile.value = res.data.data
-      message.success('体质档案保存成功')
-      calculateBMI()
+      mode.value = 'dashboard'
     } else {
       message.error(res.data.message || '保存失败')
     }
-  } catch (error) {
-    message.error(error.response?.data?.message || '保存失败，请稍后重试')
+  } catch (e) {
+    message.error(e.response?.data?.message || '保存失败，请稍后重试')
   } finally {
     saving.value = false
   }
 }
 
-onMounted(() => {
-  fetchHealthProfile()
-})
+onMounted(fetchProfile)
 </script>
 
 <style scoped lang="scss">
-.health-record {
-  .record-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 32px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid #f0f0f0;
+.health-record { max-width: 720px; }
 
-    .title {
-      font-size: 24px;
-      font-weight: 600;
-      color: #333;
-      margin: 0;
+/* ===== 空状态 ===== */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  .empty-illustration { font-size: 80px; margin-bottom: 16px; }
+  h2 { font-size: 22px; color: #303133; margin: 0 0 12px; }
+  p { color: #909399; line-height: 1.8; margin-bottom: 28px; }
+}
+
+/* ===== 仪表盘 ===== */
+.dash-header {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;
+  h2 { margin: 0; font-size: 22px; color: #303133; }
+}
+
+.bmi-dashboard {
+  display: flex; align-items: center; gap: 28px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+  border-radius: 16px; padding: 28px; margin-bottom: 24px;
+}
+
+.bmi-gauge {
+  .gauge-circle {
+    width: 110px; height: 110px; border-radius: 50%; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; background: white;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 4px solid #ddd;
+    .gauge-value { font-size: 32px; font-weight: 700; line-height: 1.1; }
+    .gauge-label { font-size: 13px; color: #909399; }
+  }
+  &.underweight .gauge-circle { border-color: #909399; .gauge-value { color: #909399; } }
+  &.normal .gauge-circle { border-color: #67c23a; .gauge-value { color: #67c23a; } }
+  &.overweight .gauge-circle { border-color: #e6a23c; .gauge-value { color: #e6a23c; } }
+  &.obese .gauge-circle { border-color: #f56c6c; .gauge-value { color: #f56c6c; } }
+}
+
+.bmi-detail {
+  flex: 1;
+  .bmi-advice { margin-top: 10px; color: #606266; font-size: 14px; line-height: 1.6; }
+}
+
+.stat-cards {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px;
+}
+
+.stat-card {
+  background: white; border-radius: 14px; padding: 18px 14px; text-align: center;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05); transition: transform 0.2s;
+  &:hover { transform: translateY(-2px); }
+  .stat-icon { font-size: 28px; margin-bottom: 6px; }
+  .stat-value { font-size: 22px; font-weight: 700; color: #303133; }
+  .stat-label { font-size: 12px; color: #909399; margin-top: 4px; }
+}
+
+.tag-section {
+  background: white; border-radius: 14px; padding: 20px; margin-bottom: 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+}
+
+.tag-group {
+  margin-bottom: 16px;
+  &:last-child { margin-bottom: 0; }
+  h4 { font-size: 14px; color: #606266; margin: 0 0 10px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+}
+
+.activity-display {
+  background: white; border-radius: 14px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  h4 { font-size: 14px; color: #606266; margin: 0 0 14px; }
+}
+
+.activity-bar {
+  display: flex; gap: 6px;
+  .activity-segment {
+    flex: 1; height: 32px; border-radius: 8px; background: #f0f2f5;
+    display: flex; align-items: center; justify-content: center; transition: all 0.3s;
+    .segment-label { font-size: 12px; color: #c0c4cc; }
+    &.active {
+      background: linear-gradient(135deg, #667eea, #764ba2); 
+      .segment-label { color: white; font-weight: 600; }
     }
   }
+}
 
-  .section-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: #333;
-    margin: 24px 0 20px 0;
-    padding-bottom: 12px;
-    border-bottom: 1px solid #f0f0f0;
+/* ===== 向导 ===== */
+.wizard-header {
+  text-align: center; margin-bottom: 8px;
+  h2 { margin: 0 0 8px; font-size: 22px; color: #303133; }
+  .wizard-subtitle { color: #909399; font-size: 14px; margin: 0; }
+}
+
+.step-bar {
+  display: flex; justify-content: space-between; position: relative; padding: 20px 0 30px; margin: 0 20px;
+  .step-line {
+    position: absolute; top: 34px; left: 30px; right: 30px; height: 3px; background: #e4e7ed; border-radius: 2px; z-index: 0;
+    .step-line-fill { height: 100%; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 2px; transition: width 0.4s ease; }
   }
-
-  .health-form {
-    :deep(.el-input-number) {
-      width: 100%;
+  .step-dot {
+    display: flex; flex-direction: column; align-items: center; z-index: 1; cursor: default;
+    .dot {
+      width: 32px; height: 32px; border-radius: 50%; background: #e4e7ed; color: #909399;
+      display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600;
+      transition: all 0.3s;
     }
-  }
-
-  .form-hint {
-    font-size: 12px;
-    color: #909399;
-    margin-top: 4px;
-  }
-
-  .bmi-calculator {
-    margin-top: 40px;
-
-    .bmi-result {
-      .result-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 16px;
-        padding: 32px;
-        color: white;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 24px;
-
-        &.underweight {
-          background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-        }
-        &.normal {
-          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        }
-        &.overweight {
-          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-        }
-        &.obese {
-          background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-        }
-
-        .result-value {
-          .value {
-            font-size: 56px;
-            font-weight: 700;
-            line-height: 1;
-          }
-          .unit {
-            font-size: 18px;
-            margin-left: 8px;
-            opacity: 0.9;
-          }
-        }
-
-        .result-status {
-          :deep(.el-tag) {
-            font-size: 18px;
-            padding: 12px 24px;
-            border: none;
-          }
-        }
-      }
-
-      .bmi-info {
-        h4 {
-          font-size: 16px;
-          font-weight: 600;
-          color: #333;
-          margin: 0 0 16px 0;
-        }
-
-        .info-grid {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 12px;
-          margin-bottom: 24px;
-
-          @media (max-width: 768px) {
-            grid-template-columns: repeat(2, 1fr);
-          }
-
-          .info-item {
-            background: #f5f7fa;
-            border-radius: 8px;
-            padding: 16px;
-            text-align: center;
-            transition: all 0.3s;
-
-            &.active {
-              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-              color: white;
-              transform: translateY(-4px);
-              box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-            }
-
-            .info-label {
-              font-size: 14px;
-              font-weight: 600;
-              margin-bottom: 8px;
-            }
-            .info-range {
-              font-size: 13px;
-              opacity: 0.8;
-            }
-          }
-        }
-
-        .health-advice {
-          :deep(.el-alert) {
-            border-radius: 12px;
-          }
-        }
-      }
+    .step-name { font-size: 12px; color: #909399; margin-top: 6px; }
+    &.active .dot { background: linear-gradient(135deg, #667eea, #764ba2); color: white; box-shadow: 0 2px 8px rgba(102,126,234,0.4); }
+    &.done { cursor: pointer;
+      .dot { background: #67c23a; color: white; }
+      .step-name { color: #67c23a; }
     }
   }
+}
 
-  .ideal-weight {
-    margin-top: 24px;
+.step-content { min-height: 300px; padding: 10px 0; }
 
-    h4 {
-      font-size: 16px;
-      font-weight: 600;
-      color: #333;
-      margin: 0 0 16px 0;
-    }
-
-    .weight-range {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 24px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border-radius: 16px;
-      padding: 32px;
-      color: white;
-      margin-bottom: 16px;
-
-      .range-item {
-        text-align: center;
-        .range-label {
-          font-size: 14px;
-          opacity: 0.9;
-          margin-bottom: 8px;
-        }
-        .range-value {
-          font-size: 32px;
-          font-weight: 700;
-        }
-      }
-
-      .range-divider {
-        font-size: 32px;
-        font-weight: 300;
-        opacity: 0.7;
-      }
-    }
-
-    .weight-tip {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 14px;
-      color: #909399;
-      padding: 12px 16px;
-      background: #f5f7fa;
-      border-radius: 8px;
-
-      .el-icon {
-        font-size: 16px;
-      }
-    }
+/* Gender select */
+.gender-select {
+  display: flex; gap: 16px; justify-content: center; margin-bottom: 24px;
+  .gender-card {
+    width: 140px; padding: 24px 16px; border-radius: 16px; text-align: center; cursor: pointer;
+    border: 2px solid #e4e7ed; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 8px;
+    .gender-icon { font-size: 40px; }
+    span:last-child { font-size: 15px; color: #606266; font-weight: 500; }
+    &:hover { border-color: #c0c4cc; background: #fafafa; }
+    &.selected { border-color: #667eea; background: linear-gradient(135deg, rgba(102,126,234,0.08), rgba(118,75,162,0.08)); box-shadow: 0 2px 12px rgba(102,126,234,0.2); }
   }
+}
 
-  .calorie-card {
-    margin-top: 24px;
-    text-align: center;
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    border-radius: 16px;
-    padding: 24px;
-    color: white;
-
-    h4 {
-      font-size: 16px;
-      margin: 0 0 12px;
-      opacity: 0.9;
+/* Input cards */
+.input-row {
+  display: flex; gap: 16px; margin-bottom: 16px;
+  &.two-col .input-card { flex: 1; }
+  .input-card {
+    flex: 1; background: #f9fafb; border-radius: 12px; padding: 14px 16px;
+    label { display: block; font-size: 13px; color: #606266; font-weight: 500; margin-bottom: 8px;
+      .optional { color: #c0c4cc; font-weight: 400; }
     }
-
-    .calorie-value {
-      font-size: 48px;
-      font-weight: 700;
-      span {
-        font-size: 18px;
-        opacity: 0.8;
-      }
-    }
+    .input-hint { font-size: 12px; color: #c0c4cc; margin-top: 4px; }
   }
+}
+
+/* BMI preview */
+.bmi-preview {
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  padding: 12px; border-radius: 10px; margin-top: 8px; background: #f5f7fa;
+  &.normal { background: rgba(103,194,58,0.08); }
+  &.underweight { background: rgba(144,147,153,0.08); }
+  &.overweight { background: rgba(230,162,60,0.08); }
+  &.obese { background: rgba(245,108,108,0.08); }
+  .preview-bmi { font-size: 16px; font-weight: 600; color: #303133; }
+}
+
+/* Activity cards */
+.activity-cards {
+  display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px;
+  .activity-card {
+    flex: 1; min-width: 120px; padding: 16px 10px; border-radius: 14px; text-align: center; cursor: pointer;
+    border: 2px solid #e4e7ed; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; gap: 4px;
+    .activity-emoji { font-size: 28px; }
+    .activity-name { font-size: 14px; font-weight: 600; color: #303133; }
+    .activity-desc { font-size: 11px; color: #909399; line-height: 1.3; }
+    &:hover { border-color: #c0c4cc; }
+    &.selected { border-color: #667eea; background: rgba(102,126,234,0.06); box-shadow: 0 2px 8px rgba(102,126,234,0.15); }
+  }
+}
+
+/* Chip groups */
+.chip-title {
+  font-size: 15px; color: #303133; margin: 0 0 12px; font-weight: 600;
+  .chip-hint { font-size: 12px; color: #c0c4cc; font-weight: 400; margin-left: 8px; }
+}
+
+.chip-group {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 24px;
+  .chip {
+    padding: 8px 18px; border-radius: 20px; font-size: 14px; cursor: pointer;
+    border: 1.5px solid #e4e7ed; color: #606266; background: white; transition: all 0.25s; user-select: none;
+    &:hover { border-color: #c0c4cc; background: #fafafa; }
+    &.selected { border-color: #667eea; color: #667eea; background: rgba(102,126,234,0.08); font-weight: 500; }
+    &.warning.selected { border-color: #e6a23c; color: #e6a23c; background: rgba(230,162,60,0.08); }
+    &.info.selected { border-color: #909399; color: #606266; background: rgba(144,147,153,0.08); }
+  }
+}
+
+/* Wizard footer */
+.wizard-footer {
+  display: flex; justify-content: center; gap: 12px; padding: 20px 0 10px;
+  border-top: 1px solid #f0f2f5; margin-top: 10px;
+}
+
+/* ===== 响应式 ===== */
+@media (max-width: 640px) {
+  .stat-cards { grid-template-columns: repeat(2, 1fr); }
+  .bmi-dashboard { flex-direction: column; text-align: center; }
+  .activity-cards { .activity-card { min-width: 100px; } }
+  .input-row.two-col { flex-direction: column; }
 }
 </style>
