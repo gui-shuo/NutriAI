@@ -420,7 +420,7 @@ async function deleteRecord(record: FoodRecord) {
   padding: 20rpx 30rpx;
   padding-bottom: 60rpx;
   min-height: 100vh;
-  background: #f5f5f5;
+  background: #fdfbf7;
 }
 
 /* Date Selector */
@@ -430,12 +430,18 @@ async function deleteRecord(record: FoodRecord) {
 .date-arrow {
   width: 64rpx;
   height: 64rpx;
-  border-radius: 50%;
-  background: #f5f6f7;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  background: #fdfbf7;
+  border: 2rpx solid #2d2d2d;
+  box-shadow: 2px 2px 0px 0px rgba(45, 45, 45, 0.1);
+}
+.date-arrow:active {
+  box-shadow: none;
+  transform: translate(2rpx, 2rpx);
 }
 .arrow-icon {
   font-size: 40rpx;
-  color: #666;
+  color: #2d2d2d;
   font-weight: bold;
 }
 .date-display {
@@ -443,31 +449,37 @@ async function deleteRecord(record: FoodRecord) {
 }
 .date-text {
   font-size: 32rpx;
-  font-weight: 600;
-  color: #333;
+  font-weight: 700;
+  color: #2d2d2d;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
 }
 .today-badge {
   font-size: 20rpx;
-  color: #07c160;
-  background: rgba(7,193,96,0.1);
+  color: #ff4d4d;
+  background: rgba(255, 77, 77, 0.1);
   padding: 4rpx 12rpx;
-  border-radius: 16rpx;
+  border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
+  border: 1rpx solid #ff4d4d;
 }
 
-/* Summary Card */
+/* Summary Card — sticky note */
 .summary-card {
   padding: 24rpx;
+  background: #fff9c4;
+  border: 2rpx solid #2d2d2d;
+  box-shadow: 4px 4px 0px 0px #2d2d2d;
 }
 .summary-header {
   margin-bottom: 20rpx;
 }
 .summary-title {
   font-size: 30rpx;
-  font-weight: 600;
+  font-weight: 700;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
 }
 .summary-cal {
   font-size: 24rpx;
-  color: #07c160;
+  color: #ff4d4d;
   font-weight: 500;
 }
 
@@ -479,36 +491,37 @@ async function deleteRecord(record: FoodRecord) {
 }
 .p-label {
   font-size: 24rpx;
-  color: #666;
+  color: #2d2d2d;
 }
 .p-value {
   font-size: 22rpx;
-  color: #999;
+  color: #5a5a5a;
 }
 .progress-bar {
   height: 12rpx;
-  background: #f0f0f0;
-  border-radius: 6rpx;
+  background: #e5e0d8;
+  border: 1rpx solid #2d2d2d;
+  border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
   margin-top: 8rpx;
   overflow: hidden;
 }
 .progress-fill {
   height: 100%;
-  border-radius: 6rpx;
+  border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
   transition: width 0.3s ease;
   min-width: 4rpx;
 }
 .calories-fill {
-  background: linear-gradient(90deg, #ff9800, #f44336);
+  background: #ff4d4d;
 }
 .protein-fill {
-  background: linear-gradient(90deg, #4caf50, #07c160);
+  background: #2d5da1;
 }
 .fat-fill {
-  background: linear-gradient(90deg, #ff9800, #ff5722);
+  background: #ff9800;
 }
 .carbs-fill {
-  background: linear-gradient(90deg, #2196f3, #03a9f4);
+  background: #4caf50;
 }
 
 /* Meal Section */
@@ -517,15 +530,16 @@ async function deleteRecord(record: FoodRecord) {
 }
 .meal-header {
   padding-bottom: 16rpx;
-  border-bottom: 1rpx solid #f5f5f5;
+  border-bottom: 2rpx dashed #e5e0d8;
 }
 .meal-icon {
   font-size: 36rpx;
 }
 .meal-name {
   font-size: 30rpx;
-  font-weight: 600;
-  color: #333;
+  font-weight: 700;
+  color: #2d2d2d;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
 }
 .meal-cal {
   font-size: 24rpx;
@@ -533,12 +547,13 @@ async function deleteRecord(record: FoodRecord) {
 .add-btn {
   width: 56rpx;
   height: 56rpx;
-  border-radius: 50%;
-  background: rgba(7,193,96,0.1);
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  background: rgba(255, 77, 77, 0.1);
+  border: 2rpx solid #ff4d4d;
 }
 .add-icon {
   font-size: 36rpx;
-  color: #07c160;
+  color: #ff4d4d;
   font-weight: bold;
 }
 
@@ -555,7 +570,7 @@ async function deleteRecord(record: FoodRecord) {
 }
 .food-item-content {
   padding: 18rpx 0;
-  border-bottom: 1rpx solid #fafafa;
+  border-bottom: 2rpx dashed #e5e0d8;
   background: #fff;
   position: relative;
   z-index: 1;
@@ -563,14 +578,14 @@ async function deleteRecord(record: FoodRecord) {
 }
 .food-name {
   font-size: 28rpx;
-  color: #333;
+  color: #2d2d2d;
 }
 .food-amount {
   font-size: 24rpx;
 }
 .food-cal {
   font-size: 26rpx;
-  color: #ff9800;
+  color: #ff4d4d;
   font-weight: 500;
 }
 
@@ -580,10 +595,11 @@ async function deleteRecord(record: FoodRecord) {
   top: 0;
   bottom: 0;
   width: 160rpx;
-  background: #ee0a24;
+  background: #ff4d4d;
   color: #fff;
   font-size: 26rpx;
   z-index: 0;
+  border: 2rpx solid #2d2d2d;
 }
 
 /* Add Dialog */
@@ -593,30 +609,32 @@ async function deleteRecord(record: FoodRecord) {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(45, 45, 45, 0.4);
   z-index: 1000;
   display: flex;
   align-items: flex-end;
 }
 .dialog-content {
   width: 100%;
-  background: #fff;
-  border-radius: 24rpx 24rpx 0 0;
+  background: #fdfbf7;
+  border-radius: 255px 15px 0 0 / 15px 225px 0 0;
+  border-top: 3rpx solid #2d2d2d;
   max-height: 85vh;
   overflow-y: auto;
   padding-bottom: env(safe-area-inset-bottom);
 }
 .dialog-header {
   padding: 28rpx 30rpx;
-  border-bottom: 1rpx solid #eee;
+  border-bottom: 2rpx dashed #e5e0d8;
 }
 .dialog-title {
   font-size: 32rpx;
-  font-weight: 600;
+  font-weight: 700;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
 }
 .dialog-close {
   font-size: 36rpx;
-  color: #999;
+  color: #5a5a5a;
   padding: 0 10rpx;
 }
 .dialog-body {
@@ -637,31 +655,35 @@ async function deleteRecord(record: FoodRecord) {
 }
 .meal-type-option {
   padding: 12rpx 20rpx;
-  border: 2rpx solid #eee;
-  border-radius: 12rpx;
+  border: 2rpx solid #2d2d2d;
+  border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
   font-size: 26rpx;
-  color: #666;
+  color: #5a5a5a;
   transition: all 0.2s;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 .meal-type-option.selected {
-  border-color: #07c160;
-  color: #07c160;
-  background: rgba(7,193,96,0.06);
+  border-color: #ff4d4d;
+  color: #ff4d4d;
+  background: rgba(255, 77, 77, 0.06);
+  box-shadow: 2px 2px 0px 0px rgba(45, 45, 45, 0.1);
 }
 
 .nutrition-input {
-  background: #f7f8fa;
-  border-radius: 12rpx;
+  background: #fdfbf7;
+  border: 2rpx solid #e5e0d8;
+  border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
   padding: 12rpx 16rpx;
 }
 .mini-label {
   display: block;
   font-size: 20rpx;
-  color: #999;
+  color: #5a5a5a;
   margin-bottom: 4rpx;
 }
 .nutrition-input input {
   height: 40rpx;
   font-size: 26rpx;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 </style>

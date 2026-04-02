@@ -382,7 +382,7 @@ function goVip() {
   padding: 20rpx 30rpx;
   padding-bottom: 40rpx;
   min-height: 100vh;
-  background: #f5f5f5;
+  background: #fdfbf7;
 }
 
 /* VIP Gate */
@@ -398,14 +398,15 @@ function goVip() {
 .vip-title {
   display: block;
   font-size: 36rpx;
-  font-weight: 600;
-  color: #333;
+  font-weight: 700;
+  color: #2d2d2d;
   margin-bottom: 16rpx;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
 }
 .vip-desc {
   display: block;
   font-size: 26rpx;
-  color: #999;
+  color: #5a5a5a;
   margin-bottom: 40rpx;
   line-height: 1.6;
 }
@@ -417,20 +418,23 @@ function goVip() {
 /* Tabs */
 .tab-bar {
   background: #fff;
-  border-radius: 16rpx;
+  border: 2rpx solid #2d2d2d;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
   margin-bottom: 20rpx;
   overflow: hidden;
+  box-shadow: 3px 3px 0px 0px rgba(45, 45, 45, 0.1);
 }
 .tab-item {
   text-align: center;
   padding: 24rpx 0;
   font-size: 28rpx;
-  color: #666;
+  color: #5a5a5a;
   position: relative;
   transition: all 0.2s;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 .tab-item.active {
-  color: #07c160;
+  color: #ff4d4d;
   font-weight: 600;
 }
 .tab-item.active::after {
@@ -440,16 +444,17 @@ function goVip() {
   left: 30%;
   right: 30%;
   height: 4rpx;
-  background: #07c160;
+  background: #ff4d4d;
   border-radius: 2rpx;
 }
 
 /* Form */
 .form-title {
   font-size: 32rpx;
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: 24rpx;
-  color: #333;
+  color: #2d2d2d;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
 }
 .radio-group {
   gap: 20rpx;
@@ -458,28 +463,30 @@ function goVip() {
 .radio-item {
   flex: 1;
   height: 72rpx;
-  border: 2rpx solid #ddd;
-  border-radius: 12rpx;
+  border: 2rpx solid #2d2d2d;
+  border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
   font-size: 28rpx;
-  color: #666;
+  color: #5a5a5a;
   transition: all 0.2s;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 .radio-item.selected {
-  border-color: #07c160;
-  background: rgba(7, 193, 96, 0.06);
-  color: #07c160;
+  border-color: #ff4d4d;
+  background: rgba(255, 77, 77, 0.06);
+  color: #ff4d4d;
   font-weight: 500;
+  box-shadow: 3px 3px 0px 0px rgba(45, 45, 45, 0.1);
 }
 .picker-display {
   margin-top: 8rpx;
   padding: 8rpx 0;
 }
 .placeholder {
-  color: #999;
+  color: rgba(45, 45, 45, 0.4);
 }
 .arrow {
   font-size: 32rpx;
-  color: #ccc;
+  color: #e5e0d8;
 }
 .special-textarea {
   width: 100%;
@@ -487,79 +494,99 @@ function goVip() {
   font-size: 28rpx;
   margin-top: 8rpx;
   line-height: 1.5;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 .generate-btn {
   margin-top: 30rpx;
 }
 
-/* Result */
+/* Result — calorie card as sticky note */
 .calorie-card {
-  background: linear-gradient(135deg, #07c160, #06ad56);
-  color: #fff;
+  background: #fff9c4;
+  border: 2rpx solid #2d2d2d;
+  box-shadow: 4px 4px 0px 0px #2d2d2d;
+  color: #2d2d2d;
 }
 .calorie-header {
   margin-bottom: 24rpx;
 }
 .calorie-label {
   font-size: 28rpx;
-  opacity: 0.9;
+  color: #2d2d2d;
+  opacity: 0.8;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
 }
 .calorie-value {
   font-size: 40rpx;
   font-weight: 700;
+  color: #ff4d4d;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
 }
 .nutrition-row {
   gap: 16rpx;
 }
 .nutrition-item {
   text-align: center;
-  background: rgba(255,255,255,0.15);
-  border-radius: 12rpx;
+  background: rgba(255, 255, 255, 0.5);
+  border: 2rpx solid #2d2d2d;
+  border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
   padding: 16rpx 0;
 }
 .n-value {
   display: block;
   font-size: 32rpx;
   font-weight: 600;
+  color: #2d2d2d;
 }
 .n-label {
   display: block;
   font-size: 22rpx;
-  opacity: 0.85;
+  color: #5a5a5a;
   margin-top: 4rpx;
 }
 
+/* Meal cards — sticky-note style */
 .meal-card {
   padding: 24rpx;
+  background: #fff9c4;
+  border: 2rpx solid #2d2d2d;
+  box-shadow: 3px 3px 0px 0px rgba(45, 45, 45, 0.1);
+}
+.meal-card:nth-child(odd) {
+  transform: rotate(-0.5deg);
+}
+.meal-card:nth-child(even) {
+  transform: rotate(0.5deg);
 }
 .meal-header {
   align-items: center;
   gap: 12rpx;
   margin-bottom: 20rpx;
   padding-bottom: 16rpx;
-  border-bottom: 1rpx solid #f0f0f0;
+  border-bottom: 2rpx dashed #e5e0d8;
 }
 .meal-icon {
   font-size: 36rpx;
 }
 .meal-name {
   font-size: 30rpx;
-  font-weight: 600;
+  font-weight: 700;
   flex: 1;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
 }
 .meal-calories {
   font-size: 26rpx;
 }
 .food-item {
   padding: 12rpx 0;
-  border-bottom: 1rpx solid #fafafa;
+  border-bottom: 2rpx dashed #e5e0d8;
 }
 .food-item:last-child {
   border-bottom: none;
 }
 .food-name {
   font-size: 28rpx;
-  color: #333;
+  color: #2d2d2d;
 }
 .food-amount {
   font-size: 24rpx;
@@ -575,14 +602,16 @@ function goVip() {
 .history-target {
   font-size: 30rpx;
   font-weight: 600;
-  color: #07c160;
+  color: #ff4d4d;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
 }
 .history-goal {
   font-size: 24rpx;
-  background: rgba(7,193,96,0.1);
-  color: #07c160;
+  background: rgba(255, 77, 77, 0.1);
+  color: #ff4d4d;
   padding: 4rpx 16rpx;
-  border-radius: 20rpx;
+  border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
+  border: 1rpx solid #ff4d4d;
 }
 .history-date {
   display: block;
@@ -601,7 +630,7 @@ function goVip() {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(45, 45, 45, 0.4);
   z-index: 999;
 }
 .loading-card {
@@ -612,8 +641,8 @@ function goVip() {
 .loading-spinner {
   width: 80rpx;
   height: 80rpx;
-  border: 6rpx solid #eee;
-  border-top-color: #07c160;
+  border: 6rpx solid #e5e0d8;
+  border-top-color: #ff4d4d;
   border-radius: 50%;
   margin: 0 auto 30rpx;
   animation: spin 0.8s linear infinite;
@@ -624,8 +653,9 @@ function goVip() {
 .loading-text {
   display: block;
   font-size: 30rpx;
-  color: #333;
+  color: #2d2d2d;
   margin-bottom: 12rpx;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 .loading-hint {
   display: block;
@@ -639,43 +669,48 @@ function goVip() {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(45, 45, 45, 0.4);
   z-index: 1000;
   display: flex;
   align-items: flex-end;
 }
 .picker-content {
   width: 100%;
-  background: #fff;
-  border-radius: 24rpx 24rpx 0 0;
+  background: #fdfbf7;
+  border-radius: 255px 15px 0 0 / 15px 225px 0 0;
+  border-top: 3rpx solid #2d2d2d;
   padding-bottom: env(safe-area-inset-bottom);
 }
 .picker-header {
   padding: 24rpx 30rpx;
-  border-bottom: 1rpx solid #eee;
+  border-bottom: 2rpx dashed #e5e0d8;
   font-size: 28rpx;
 }
 .picker-title {
-  font-weight: 600;
+  font-weight: 700;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
 }
 .picker-option {
   padding: 28rpx 30rpx;
   font-size: 30rpx;
-  border-bottom: 1rpx solid #f5f5f5;
+  border-bottom: 2rpx dashed #e5e0d8;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 .picker-option.selected {
-  color: #07c160;
+  color: #ff4d4d;
   font-weight: 500;
-  background: rgba(7,193,96,0.04);
+  background: rgba(255, 77, 77, 0.04);
 }
 .disclaimer-tip {
-  background: #fff3cd;
-  color: #856404;
-  border-radius: 12rpx;
+  background: #fff9c4;
+  color: #2d2d2d;
+  border: 2rpx solid #2d2d2d;
+  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px;
   padding: 14rpx 48rpx 14rpx 20rpx;
   font-size: 22rpx;
   margin-bottom: 20rpx;
   position: relative;
+  box-shadow: 3px 3px 0px 0px rgba(45, 45, 45, 0.1);
 }
 .disclaimer-tip .dismiss {
   position: absolute;
@@ -683,6 +718,6 @@ function goVip() {
   top: 50%;
   transform: translateY(-50%);
   font-size: 28rpx;
-  color: #999;
+  color: #5a5a5a;
 }
 </style>

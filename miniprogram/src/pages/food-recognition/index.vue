@@ -488,7 +488,7 @@ function sourceText(source: string): string {
   padding: 20rpx 30rpx;
   padding-bottom: 60rpx;
   min-height: 100vh;
-  background: #f5f5f5;
+  background: #fdfbf7;
 }
 
 .page-header {
@@ -498,7 +498,8 @@ function sourceText(source: string): string {
   display: block;
   font-size: 40rpx;
   font-weight: 700;
-  color: #333;
+  color: #2d2d2d;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
 }
 .page-desc {
   display: block;
@@ -509,30 +510,38 @@ function sourceText(source: string): string {
 /* Mode Tabs */
 .mode-tabs {
   background: #fff;
-  border-radius: 16rpx;
+  border: 2rpx solid #2d2d2d;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
   margin: 20rpx 0;
   overflow: hidden;
   padding: 6rpx;
+  box-shadow: 3px 3px 0px 0px rgba(45, 45, 45, 0.1);
 }
 .mode-tab {
   height: 80rpx;
   font-size: 28rpx;
-  color: #666;
-  border-radius: 12rpx;
+  color: #5a5a5a;
+  border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
   transition: all 0.2s;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 .mode-tab.active {
-  background: #07c160;
+  background: #ff4d4d;
   color: #fff;
   font-weight: 500;
+  border: 2rpx solid #2d2d2d;
+  box-shadow: 2px 2px 0px 0px rgba(45, 45, 45, 0.15);
 }
 
-/* Photo Section */
+/* Photo Section — dashed upload area */
 .photo-area {
   height: 400rpx;
   overflow: hidden;
   margin-bottom: 20rpx;
   cursor: pointer;
+  border-style: dashed;
+  border-width: 3rpx;
+  border-color: #2d2d2d;
 }
 .preview-image {
   width: 100%;
@@ -547,7 +556,8 @@ function sourceText(source: string): string {
 }
 .photo-hint {
   font-size: 28rpx;
-  color: #999;
+  color: #5a5a5a;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 .photo-actions {
   gap: 20rpx;
@@ -577,8 +587,8 @@ function sourceText(source: string): string {
 .loading-spinner {
   width: 60rpx;
   height: 60rpx;
-  border: 6rpx solid #eee;
-  border-top-color: #07c160;
+  border: 6rpx solid #e5e0d8;
+  border-top-color: #ff4d4d;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -587,7 +597,8 @@ function sourceText(source: string): string {
 }
 .loading-text {
   font-size: 28rpx;
-  color: #666;
+  color: #5a5a5a;
+  font-family: 'Patrick Hand', 'PingFang SC', cursive;
 }
 
 /* Result Count */
@@ -596,19 +607,21 @@ function sourceText(source: string): string {
 }
 .result-count-text {
   font-size: 26rpx;
-  color: #666;
+  color: #5a5a5a;
   font-weight: 500;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
 }
 
-/* Result Card */
+/* Result Card — sketchy */
 .result-card {
   padding: 30rpx;
   margin-bottom: 20rpx;
-  border: 4rpx solid transparent;
+  border: 3rpx solid transparent;
   transition: border-color 0.2s;
 }
 .result-card-selected {
-  border-color: #07c160;
+  border-color: #ff4d4d;
+  box-shadow: 4px 4px 0px 0px #2d2d2d;
 }
 
 .result-header {
@@ -622,7 +635,8 @@ function sourceText(source: string): string {
 .result-name {
   font-size: 36rpx;
   font-weight: 700;
-  color: #333;
+  color: #2d2d2d;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
 }
 .result-name-wrap {
   display: flex;
@@ -632,12 +646,13 @@ function sourceText(source: string): string {
 .category-badge {
   font-size: 20rpx;
   padding: 2rpx 12rpx;
-  border-radius: 8rpx;
+  border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
   font-weight: 500;
+  border: 1rpx solid #2d2d2d;
 }
 .category-dish {
-  background: #fff3e0;
-  color: #e65100;
+  background: #fff9c4;
+  color: #2d2d2d;
 }
 .category-fruit {
   background: #e8f5e9;
@@ -654,20 +669,21 @@ function sourceText(source: string): string {
   font-size: 22rpx;
   font-weight: 600;
   padding: 6rpx 16rpx;
-  border-radius: 20rpx;
+  border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
   flex-shrink: 0;
+  border: 1rpx solid #2d2d2d;
 }
 .confidence-high {
   background: #e8f5e9;
   color: #2e7d32;
 }
 .confidence-mid {
-  background: #fff3e0;
-  color: #e65100;
+  background: #fff9c4;
+  color: #2d2d2d;
 }
 .confidence-low {
-  background: #fce4ec;
-  color: #c62828;
+  background: #fff0f0;
+  color: #ff4d4d;
 }
 
 .nutrition-grid {
@@ -677,31 +693,36 @@ function sourceText(source: string): string {
   margin-top: 10rpx;
 }
 .nutrition-card {
-  background: #f8f9fa;
-  border-radius: 16rpx;
+  background: #fdfbf7;
+  border: 2rpx solid #2d2d2d;
+  border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
   padding: 20rpx 12rpx;
   text-align: center;
+  box-shadow: 2px 2px 0px 0px rgba(45, 45, 45, 0.08);
 }
 .calories-card {
   grid-column: span 3;
-  background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+  background: #fff9c4;
+  border: 2rpx solid #2d2d2d;
+  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
   gap: 12rpx;
   padding: 28rpx;
+  box-shadow: 3px 3px 0px 0px rgba(45, 45, 45, 0.1);
 }
 .calories-card .n-value {
   font-size: 48rpx;
-  color: #e65100;
+  color: #ff4d4d;
 }
 .calories-card .n-label {
-  color: #e65100;
+  color: #2d2d2d;
 }
 .calories-card .n-unit {
   font-size: 24rpx;
-  color: #e65100;
+  color: #2d2d2d;
   opacity: 0.8;
 }
 .n-icon {
@@ -713,25 +734,27 @@ function sourceText(source: string): string {
   display: block;
   font-size: 32rpx;
   font-weight: 700;
-  color: #333;
+  color: #2d2d2d;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
 }
 .n-label {
   display: block;
   font-size: 22rpx;
-  color: #999;
+  color: #5a5a5a;
   margin-top: 4rpx;
 }
 
-/* 营养子板块 */
+/* Nutrition sub-sections */
 .nutrition-sub-section {
   margin-top: 16rpx;
 }
 .sub-section-title {
   display: block;
   font-size: 24rpx;
-  font-weight: 600;
-  color: #555;
+  font-weight: 700;
+  color: #2d2d2d;
   margin-bottom: 10rpx;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', 'PingFang SC', cursive;
 }
 .nutrition-grid-sm {
   display: grid;
@@ -739,36 +762,37 @@ function sourceText(source: string): string {
   gap: 10rpx;
 }
 .n-item-sm {
-  background: #f8f9fa;
-  border-radius: 10rpx;
+  background: #fdfbf7;
+  border: 1rpx solid #e5e0d8;
+  border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
   padding: 12rpx 6rpx;
   text-align: center;
 }
 .n-sm-label {
   display: block;
   font-size: 20rpx;
-  color: #999;
+  color: #5a5a5a;
   margin-bottom: 4rpx;
 }
 .n-sm-value {
   display: block;
   font-size: 24rpx;
   font-weight: 600;
-  color: #333;
+  color: #2d2d2d;
 }
 .n-sm-unit {
   font-size: 18rpx;
   font-weight: normal;
-  color: #999;
+  color: #5a5a5a;
 }
 .data-source-row {
   margin-top: 14rpx;
   padding-top: 10rpx;
-  border-top: 1rpx solid #eee;
+  border-top: 2rpx dashed #e5e0d8;
 }
 .data-source-text {
   font-size: 22rpx;
-  color: #999;
+  color: #5a5a5a;
 }
 
 .record-btn-inline {
@@ -776,10 +800,6 @@ function sourceText(source: string): string {
   height: 72rpx;
   line-height: 72rpx;
   font-size: 26rpx;
-  background: #07c160;
-  color: #fff;
-  border: none;
-  border-radius: 12rpx;
 }
 
 /* Error */
@@ -790,7 +810,7 @@ function sourceText(source: string): string {
 .error-text {
   display: block;
   font-size: 30rpx;
-  color: #333;
+  color: #2d2d2d;
   margin-bottom: 8rpx;
 }
 .error-hint {
@@ -798,13 +818,15 @@ function sourceText(source: string): string {
   font-size: 24rpx;
 }
 .disclaimer-tip {
-  background: #fff3cd;
-  color: #856404;
-  border-radius: 12rpx;
+  background: #fff9c4;
+  color: #2d2d2d;
+  border: 2rpx solid #2d2d2d;
+  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px;
   padding: 14rpx 48rpx 14rpx 20rpx;
   font-size: 22rpx;
   margin-bottom: 20rpx;
   position: relative;
+  box-shadow: 3px 3px 0px 0px rgba(45, 45, 45, 0.1);
 }
 .disclaimer-tip .dismiss {
   position: absolute;
@@ -812,6 +834,6 @@ function sourceText(source: string): string {
   top: 50%;
   transform: translateY(-50%);
   font-size: 28rpx;
-  color: #999;
+  color: #5a5a5a;
 }
 </style>
