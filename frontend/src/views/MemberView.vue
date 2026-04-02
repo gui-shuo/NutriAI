@@ -113,7 +113,8 @@ onBeforeUnmount(() => {
 <style scoped lang="scss">
 .member-view {
   min-height: 100vh;
-  background: #f5f7fa;
+  background: #fdfbf7;
+  font-family: 'Patrick Hand', 'ZCOOL KuaiLe', cursive, sans-serif;
 }
 
 .top-nav {
@@ -121,7 +122,8 @@ onBeforeUnmount(() => {
   top: 0;
   z-index: 100;
   background: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border-bottom: 2.5px solid #2d2d2d;
+  box-shadow: 0 3px 0px 0px rgba(45, 45, 45, 0.08);
 }
 
 .nav-inner {
@@ -141,8 +143,9 @@ onBeforeUnmount(() => {
 
 .page-title {
   font-size: 17px;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
   font-weight: 600;
-  color: #1f2937;
+  color: #2d2d2d;
   margin: 0;
 }
 
@@ -153,20 +156,24 @@ onBeforeUnmount(() => {
 }
 
 .vip-status-banner {
-  background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
-  border: 1px solid #c8e6c9;
-  border-radius: 12px;
+  background: #fff;
+  border: 2.5px solid #2d2d2d;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  box-shadow: 4px 4px 0px 0px #2d2d2d;
   padding: 16px 20px;
   margin-bottom: 16px;
+  position: relative;
 
   &.is-vip {
-    background: linear-gradient(135deg, #e8eaf6 0%, #f3e5f5 100%);
-    border-color: #c5cae9;
+    background: #fff9c4;
+    border-color: #2d2d2d;
+    box-shadow: 4px 4px 0px 0px #ff4d4d;
   }
 
   &.loading-state {
-    background: linear-gradient(135deg, #e8e8e8, #f5f5f5) !important;
-    border-color: #ddd;
+    background: #e5e0d8 !important;
+    border-color: #2d2d2d;
+    box-shadow: 3px 3px 0px 0px rgba(45, 45, 45, 0.1);
   }
 
   .skeleton-pulse {
@@ -174,7 +181,8 @@ onBeforeUnmount(() => {
   }
 
   .skeleton-text {
-    color: #999;
+    color: #2d2d2d;
+    opacity: 0.5;
   }
 
   .banner-content {
@@ -196,13 +204,15 @@ onBeforeUnmount(() => {
   .vip-info {
     h3 {
       font-size: 16px;
+      font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
       font-weight: 600;
-      color: #1f2937;
+      color: #2d2d2d;
       margin: 0 0 2px;
     }
     p {
       font-size: 12px;
-      color: #6b7280;
+      color: #2d2d2d;
+      opacity: 0.6;
       margin: 0;
     }
   }
@@ -219,12 +229,14 @@ onBeforeUnmount(() => {
 
     .quota-label {
       font-size: 11px;
-      color: #9ca3af;
+      color: #2d2d2d;
+      opacity: 0.5;
     }
     .quota-value {
       font-size: 20px;
       font-weight: 700;
-      color: #667eea;
+      font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+      color: #2d5da1;
     }
   }
 }

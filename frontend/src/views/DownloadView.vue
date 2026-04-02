@@ -128,14 +128,34 @@ onMounted(loadData)
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
+  font-family: 'Patrick Hand', 'ZCOOL KuaiLe', cursive, sans-serif;
+  background: #fdfbf7;
+  min-height: 100vh;
 }
 
 .download-hero {
   text-align: center;
   padding: 60px 20px 40px;
-  background: linear-gradient(135deg, #f0fdf4, #ecfdf5, #dcfce7);
-  border-radius: 16px;
+  background: #fff;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  border: 2.5px solid #2d2d2d;
+  box-shadow: 4px 4px 0px 0px #2d2d2d;
   margin-bottom: 30px;
+  position: relative;
+}
+
+/* tape decoration on hero card */
+.download-hero::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-2deg);
+  width: 80px;
+  height: 24px;
+  background: rgba(255, 249, 196, 0.85);
+  border: 1.5px solid #e5e0d8;
+  z-index: 1;
 }
 
 .app-icon {
@@ -145,14 +165,16 @@ onMounted(loadData)
 
 .download-hero h1 {
   font-size: 32px;
-  color: #166534;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+  color: #2d2d2d;
   margin: 0 0 8px;
 }
 
 .subtitle {
-  color: #64748b;
+  color: #2d2d2d;
   font-size: 16px;
   margin-bottom: 24px;
+  opacity: 0.7;
 }
 
 .latest-info {
@@ -161,7 +183,8 @@ onMounted(loadData)
 
 .version-meta {
   margin-top: 12px;
-  color: #94a3b8;
+  color: #2d2d2d;
+  opacity: 0.5;
   font-size: 13px;
   display: flex;
   gap: 6px;
@@ -171,17 +194,20 @@ onMounted(loadData)
 .alt-access {
   margin-top: 24px;
   padding-top: 20px;
-  border-top: 1px solid #e2e8f0;
-  color: #64748b;
+  border-top: 2px dashed #e5e0d8;
+  color: #2d2d2d;
   font-size: 14px;
 }
 .alt-access a {
-  color: #22c55e;
+  color: #2d5da1;
   font-weight: 600;
   text-decoration: none;
+  text-decoration-style: wavy;
 }
 .alt-access a:hover {
   text-decoration: underline;
+  text-decoration-style: wavy;
+  text-decoration-color: #ff4d4d;
 }
 
 .update-log, .version-history {
@@ -190,21 +216,24 @@ onMounted(loadData)
 
 .update-log h2, .version-history h2 {
   font-size: 20px;
-  color: #1e293b;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+  color: #2d2d2d;
   margin-bottom: 16px;
 }
 
 .log-content {
-  background: #f8fafc;
-  border-radius: 8px;
+  background: #fff9c4;
+  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px;
+  border: 2px solid #2d2d2d;
+  box-shadow: 3px 3px 0px 0px rgba(45, 45, 45, 0.1);
   padding: 16px;
 }
 
 .log-content pre {
   margin: 0;
   white-space: pre-wrap;
-  font-family: inherit;
-  color: #475569;
+  font-family: 'Patrick Hand', cursive;
+  color: #2d2d2d;
   font-size: 14px;
   line-height: 1.6;
 }
@@ -221,32 +250,36 @@ onMounted(loadData)
   justify-content: space-between;
   padding: 16px;
   background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  transition: all 0.2s;
+  border: 2px solid #2d2d2d;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  box-shadow: 3px 3px 0px 0px rgba(45, 45, 45, 0.1);
+  transition: box-shadow 0.2s, transform 0.2s;
 }
 
 .version-card:hover {
-  border-color: #22c55e;
-  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.1);
+  box-shadow: 2px 2px 0px 0px #2d2d2d;
+  transform: translate(2px, 2px);
 }
 
 .version-card.latest {
-  border-color: #22c55e;
-  background: #f0fdf4;
+  border-color: #ff4d4d;
+  background: #fff9c4;
+  box-shadow: 4px 4px 0px 0px #ff4d4d;
 }
 
 .version-name {
   font-weight: 600;
   font-size: 16px;
-  color: #1e293b;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+  color: #2d2d2d;
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
 .version-desc {
-  color: #64748b;
+  color: #2d2d2d;
+  opacity: 0.6;
   font-size: 13px;
   margin-top: 4px;
   max-width: 500px;
@@ -257,7 +290,8 @@ onMounted(loadData)
 
 .version-info {
   margin-top: 6px;
-  color: #94a3b8;
+  color: #2d2d2d;
+  opacity: 0.45;
   font-size: 12px;
   display: flex;
   gap: 6px;

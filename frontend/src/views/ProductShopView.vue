@@ -740,12 +740,14 @@ function orderStatusText(s) {
 <style scoped lang="scss">
 .product-shop-view {
   min-height: 100vh;
-  background: #f5f7fa;
+  background: #fdfbf7;
+  font-family: 'Patrick Hand', 'ZCOOL KuaiLe', cursive, sans-serif;
 }
 
 .top-nav {
   background: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border-bottom: 2.5px solid #2d2d2d;
+  box-shadow: 0 3px 0px 0px rgba(45, 45, 45, 0.08);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -774,8 +776,9 @@ function orderStatusText(s) {
 
   .page-title {
     font-size: 18px;
+    font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
     font-weight: 600;
-    color: #1f2937;
+    color: #2d2d2d;
     margin: 0;
   }
 }
@@ -792,10 +795,18 @@ function orderStatusText(s) {
   margin: 0 auto 24px;
 
   .search-input {
+    :deep(.el-input__wrapper) {
+      border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+      border: 2px solid #2d2d2d;
+      box-shadow: 3px 3px 0px 0px rgba(45, 45, 45, 0.1);
+    }
     :deep(.el-input-group__append) {
-      background: var(--el-color-primary);
+      background: #ff4d4d;
       color: #fff;
-      border-color: var(--el-color-primary);
+      border-color: #2d2d2d;
+      border: 2px solid #2d2d2d;
+      border-left: none;
+      font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
     }
   }
 }
@@ -825,13 +836,32 @@ function orderStatusText(s) {
 }
 
 .product-card {
-  border-radius: 12px;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  border: 2.5px solid #2d2d2d;
+  box-shadow: 4px 4px 0px 0px #2d2d2d;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: box-shadow 0.2s, transform 0.2s;
   overflow: hidden;
+  background: #fff;
+  position: relative;
+
+  // tack decoration
+  &::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 12px;
+    width: 12px;
+    height: 12px;
+    background: #ff4d4d;
+    border: 2px solid #2d2d2d;
+    border-radius: 50%;
+    z-index: 2;
+  }
 
   &:hover {
-    transform: translateY(-4px);
+    box-shadow: 2px 2px 0px 0px #2d2d2d;
+    transform: translate(2px, 2px);
   }
 
   :deep(.el-card__body) {
@@ -842,7 +872,8 @@ function orderStatusText(s) {
     position: relative;
     height: 200px;
     overflow: hidden;
-    background: #f9fafb;
+    background: #fdfbf7;
+    border-bottom: 2px dashed #e5e0d8;
 
     img {
       width: 100%;
@@ -862,7 +893,9 @@ function orderStatusText(s) {
 
     .product-name {
       font-size: 15px;
+      font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
       font-weight: 600;
+      color: #2d2d2d;
       margin: 0 0 4px;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -871,7 +904,8 @@ function orderStatusText(s) {
 
     .product-brief {
       font-size: 13px;
-      color: #6b7280;
+      color: #2d2d2d;
+      opacity: 0.6;
       margin: 0 0 8px;
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -888,20 +922,31 @@ function orderStatusText(s) {
 
       .sales {
         font-size: 12px;
-        color: #9ca3af;
+        color: #2d2d2d;
+        opacity: 0.45;
       }
     }
 
     .product-price {
       margin-bottom: 10px;
+      // price tag as sticky note style
+      display: inline-block;
+      background: #fff9c4;
+      padding: 2px 10px;
+      border: 1.5px solid #2d2d2d;
+      border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
+      transform: rotate(-1deg);
+
       .sale-price {
         font-size: 20px;
         font-weight: 700;
-        color: #f56c6c;
+        font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+        color: #ff4d4d;
       }
       .orig-price {
         font-size: 13px;
-        color: #c0c4cc;
+        color: #2d2d2d;
+        opacity: 0.4;
         text-decoration: line-through;
         margin-left: 8px;
       }
@@ -909,6 +954,19 @@ function orderStatusText(s) {
 
     .product-actions {
       text-align: right;
+
+      :deep(.el-button) {
+        border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+        border: 2px solid #2d2d2d;
+        box-shadow: 3px 3px 0px 0px #2d2d2d;
+        font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+        transition: box-shadow 0.2s, transform 0.2s;
+
+        &:hover {
+          box-shadow: 1px 1px 0px 0px #2d2d2d;
+          transform: translate(2px, 2px);
+        }
+      }
     }
   }
 }
@@ -925,9 +983,10 @@ function orderStatusText(s) {
   .detail-img {
     width: 260px;
     min-width: 260px;
-    border-radius: 8px;
+    border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px;
+    border: 2px solid #2d2d2d;
     overflow: hidden;
-    background: #f9fafb;
+    background: #fdfbf7;
 
     img {
       width: 100%;
@@ -942,9 +1001,12 @@ function orderStatusText(s) {
     h2 {
       margin: 0 0 8px;
       font-size: 20px;
+      font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+      color: #2d2d2d;
     }
     .detail-brief {
-      color: #6b7280;
+      color: #2d2d2d;
+      opacity: 0.6;
       font-size: 14px;
       margin: 8px 0 12px;
       line-height: 1.5;
@@ -954,19 +1016,29 @@ function orderStatusText(s) {
       align-items: center;
       gap: 8px;
       margin-bottom: 12px;
-      color: #9ca3af;
+      color: #2d2d2d;
+      opacity: 0.5;
       font-size: 13px;
     }
     .detail-price {
       margin-bottom: 12px;
+      display: inline-block;
+      background: #fff9c4;
+      padding: 4px 14px;
+      border: 2px solid #2d2d2d;
+      border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
+      transform: rotate(-1deg);
+
       .sale-price {
         font-size: 28px;
         font-weight: 700;
-        color: #f56c6c;
+        font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+        color: #ff4d4d;
       }
       .orig-price {
         font-size: 15px;
-        color: #c0c4cc;
+        color: #2d2d2d;
+        opacity: 0.4;
         text-decoration: line-through;
         margin-left: 8px;
       }
@@ -984,7 +1056,8 @@ function orderStatusText(s) {
       display: flex;
       align-items: center;
       gap: 8px;
-      color: #6b7280;
+      color: #2d2d2d;
+      opacity: 0.7;
     }
   }
 }
@@ -995,12 +1068,14 @@ function orderStatusText(s) {
 
   h3 {
     font-size: 16px;
+    font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+    color: #2d2d2d;
     margin-bottom: 12px;
     padding-bottom: 8px;
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 2px dashed #e5e0d8;
   }
   p {
-    color: #4b5563;
+    color: #2d2d2d;
     line-height: 1.7;
     white-space: pre-wrap;
   }
@@ -1013,14 +1088,15 @@ function orderStatusText(s) {
     align-items: center;
     gap: 12px;
     padding: 12px 0;
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1.5px dashed #e5e0d8;
 
     .cart-img {
       width: 60px;
       height: 60px;
-      border-radius: 8px;
+      border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
+      border: 2px solid #2d2d2d;
       object-fit: cover;
-      background: #f9fafb;
+      background: #fdfbf7;
     }
 
     .cart-info {
@@ -1028,10 +1104,13 @@ function orderStatusText(s) {
       h4 {
         margin: 0 0 4px;
         font-size: 14px;
+        font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+        color: #2d2d2d;
       }
       .cart-price {
-        color: #f56c6c;
+        color: #ff4d4d;
         font-weight: 600;
+        font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
         display: block;
         margin-bottom: 4px;
       }
@@ -1041,7 +1120,7 @@ function orderStatusText(s) {
 
 .cart-summary {
   padding: 16px 0;
-  border-top: 2px solid #f3f4f6;
+  border-top: 2.5px solid #2d2d2d;
   margin-top: 16px;
 
   .cart-total {
@@ -1049,25 +1128,31 @@ function orderStatusText(s) {
     justify-content: space-between;
     margin-bottom: 12px;
     font-size: 16px;
+    color: #2d2d2d;
   }
 }
 
 .total-amount {
   font-size: 24px;
   font-weight: 700;
-  color: #f56c6c;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+  color: #ff4d4d;
 }
 
 // === 结算 ===
 .checkout-items {
-  background: #f9fafb;
+  background: #fff9c4;
   padding: 12px 16px;
-  border-radius: 8px;
+  border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
+  border: 2px solid #2d2d2d;
+  box-shadow: 3px 3px 0px 0px rgba(45, 45, 45, 0.1);
   margin-top: 16px;
 
   h4 {
     margin: 0 0 8px;
     font-size: 14px;
+    font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+    color: #2d2d2d;
   }
 
   .checkout-item {
@@ -1075,7 +1160,7 @@ function orderStatusText(s) {
     justify-content: space-between;
     padding: 4px 0;
     font-size: 13px;
-    color: #4b5563;
+    color: #2d2d2d;
   }
 }
 
@@ -1086,6 +1171,7 @@ function orderStatusText(s) {
   gap: 8px;
   margin-top: 12px;
   font-size: 15px;
+  color: #2d2d2d;
 }
 
 // === 已保存地址 ===
@@ -1098,7 +1184,9 @@ function orderStatusText(s) {
 
     .addr-title {
       font-weight: 600;
+      font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
       font-size: 15px;
+      color: #2d2d2d;
     }
   }
 
@@ -1112,29 +1200,34 @@ function orderStatusText(s) {
       display: flex;
       align-items: flex-start;
       padding: 10px 12px;
-      border: 1px solid #eee;
-      border-radius: 8px;
+      border: 2px solid #e5e0d8;
+      border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
       margin: 0;
       height: auto;
       width: 100%;
+      transition: all 0.2s;
 
       &:hover {
-        border-color: #409eff;
+        border-color: #2d2d2d;
+        box-shadow: 2px 2px 0px 0px rgba(45, 45, 45, 0.1);
       }
 
       .addr-name {
         font-weight: 600;
+        color: #2d2d2d;
         margin-right: 8px;
       }
 
       .addr-phone {
-        color: #666;
+        color: #2d2d2d;
+        opacity: 0.6;
         font-size: 13px;
         margin-right: 6px;
       }
 
       .addr-detail {
-        color: #888;
+        color: #2d2d2d;
+        opacity: 0.5;
         font-size: 13px;
       }
     }
@@ -1144,5 +1237,6 @@ function orderStatusText(s) {
 // === 订单 ===
 .order-item-name {
   font-size: 13px;
+  color: #2d2d2d;
 }
 </style>

@@ -286,7 +286,8 @@ onMounted(() => {
 <style scoped lang="scss">
 .feedback-view {
   min-height: 100vh;
-  background: #f5f7fa;
+  background: #fdfbf7;
+  font-family: 'Patrick Hand', 'ZCOOL KuaiLe', cursive, sans-serif;
 }
 
 .top-nav {
@@ -294,7 +295,8 @@ onMounted(() => {
   top: 0;
   z-index: 100;
   background: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border-bottom: 2.5px solid #2d2d2d;
+  box-shadow: 0 3px 0px 0px rgba(45, 45, 45, 0.08);
 }
 
 .nav-inner {
@@ -314,8 +316,9 @@ onMounted(() => {
 
 .page-title {
   font-size: 18px;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
   font-weight: 600;
-  color: #1f2937;
+  color: #2d2d2d;
   margin: 0;
 }
 
@@ -339,15 +342,17 @@ onMounted(() => {
 
 .section-title {
   font-size: 16px;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
   font-weight: 600;
-  color: #1f2937;
-  border-left: 3px solid #67c23a;
+  color: #2d2d2d;
+  border-left: 3px solid #ff4d4d;
   padding-left: 10px;
 }
 
 .section-hint {
   font-size: 12px;
-  color: #9ca3af;
+  color: #2d2d2d;
+  opacity: 0.5;
 }
 
 // 反馈类型选择
@@ -357,7 +362,7 @@ onMounted(() => {
   .type-label {
     font-size: 14px;
     font-weight: 500;
-    color: #1f2937;
+    color: #2d2d2d;
     margin-bottom: 10px;
   }
 
@@ -373,21 +378,22 @@ onMounted(() => {
     align-items: center;
     gap: 6px;
     padding: 14px 8px;
-    border-radius: 10px;
-    border: 2px solid #e5e7eb;
+    border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
+    border: 2px solid #e5e0d8;
     background: #fff;
     cursor: pointer;
     transition: all 0.25s;
 
     &:hover {
-      border-color: var(--accent);
+      border-color: #2d2d2d;
       transform: translateY(-2px);
+      box-shadow: 3px 3px 0px 0px rgba(45, 45, 45, 0.1);
     }
 
     &.active {
-      border-color: var(--accent);
-      background: color-mix(in srgb, var(--accent) 8%, white);
-      box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 20%, transparent);
+      border-color: #2d2d2d;
+      background: #fff9c4;
+      box-shadow: 3px 3px 0px 0px #2d2d2d;
     }
 
     .type-icon {
@@ -397,7 +403,7 @@ onMounted(() => {
     .type-name {
       font-size: 12px;
       font-weight: 500;
-      color: #4b5563;
+      color: #2d2d2d;
     }
   }
 }
@@ -405,7 +411,8 @@ onMounted(() => {
 .feedback-form {
   :deep(.el-form-item__label) {
     font-weight: 500;
-    color: #1f2937;
+    font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+    color: #2d2d2d;
   }
 }
 
@@ -414,13 +421,36 @@ onMounted(() => {
   height: 42px;
   font-size: 15px;
   font-weight: 600;
+  font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  border: 2.5px solid #2d2d2d;
+  box-shadow: 4px 4px 0px 0px #2d2d2d;
+  transition: box-shadow 0.2s, transform 0.2s;
+
+  &:hover {
+    box-shadow: 2px 2px 0px 0px #2d2d2d;
+    transform: translate(2px, 2px);
+  }
 }
 
 // 反馈历史
 .form-card,
 .history-card {
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  border: 2.5px solid #2d2d2d;
+  box-shadow: 4px 4px 0px 0px #2d2d2d;
+  background: #fff;
+
+  // notebook ruled-line effect
+  :deep(.el-card__body) {
+    background-image: repeating-linear-gradient(
+      transparent,
+      transparent 31px,
+      #e5e0d8 31px,
+      #e5e0d8 32px
+    );
+    background-position: 0 0;
+  }
 }
 
 .feedback-list {
@@ -431,14 +461,17 @@ onMounted(() => {
 
 .feedback-item {
   padding: 14px;
-  border-radius: 10px;
-  background: #f9fafb;
+  border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
+  background: #fdfbf7;
+  border: 1.5px dashed #e5e0d8;
   cursor: pointer;
   transition: all 0.2s;
 
   &:hover {
-    background: #f0f4ff;
+    background: #fff9c4;
+    border-color: #2d2d2d;
     transform: translateX(2px);
+    box-shadow: 2px 2px 0px 0px rgba(45, 45, 45, 0.1);
   }
 
   .item-header {
@@ -455,7 +488,7 @@ onMounted(() => {
       flex: 1;
       font-size: 14px;
       font-weight: 600;
-      color: #1f2937;
+      color: #2d2d2d;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -464,7 +497,8 @@ onMounted(() => {
 
   .item-content {
     font-size: 13px;
-    color: #6b7280;
+    color: #2d2d2d;
+    opacity: 0.6;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -476,13 +510,15 @@ onMounted(() => {
     justify-content: space-between;
     align-items: center;
     font-size: 12px;
-    color: #9ca3af;
+    color: #2d2d2d;
+    opacity: 0.45;
 
     .item-replied {
       display: flex;
       align-items: center;
       gap: 4px;
-      color: #67c23a;
+      color: #2d5da1;
+      opacity: 1;
     }
   }
 }
@@ -500,7 +536,7 @@ onMounted(() => {
     align-items: center;
     gap: 12px;
     padding: 10px 0;
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1.5px dashed #e5e0d8;
     font-size: 14px;
 
     &.vertical {
@@ -510,22 +546,25 @@ onMounted(() => {
 
     .detail-label {
       font-weight: 500;
-      color: #6b7280;
+      font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
+      color: #2d2d2d;
+      opacity: 0.6;
       min-width: 60px;
     }
 
     .detail-title {
       font-weight: 600;
-      color: #1f2937;
+      color: #2d2d2d;
     }
 
     .detail-text {
-      background: #f9fafb;
+      background: #fdfbf7;
       padding: 12px;
-      border-radius: 8px;
+      border-radius: 185px 10px 155px 10px / 10px 155px 10px 185px;
+      border: 1.5px dashed #e5e0d8;
       width: 100%;
       line-height: 1.8;
-      color: #4b5563;
+      color: #2d2d2d;
       white-space: pre-wrap;
     }
   }
@@ -534,31 +573,44 @@ onMounted(() => {
 .admin-reply-section {
   margin-top: 16px;
   padding: 16px;
-  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
-  border-radius: 10px;
-  border: 1px solid #bbf7d0;
+  background: #fff9c4;
+  border-radius: 15px 225px 15px 255px / 255px 15px 225px 15px;
+  border: 2px solid #2d2d2d;
+  box-shadow: 3px 3px 0px 0px rgba(45, 45, 45, 0.1);
+  position: relative;
+
+  // tack decoration
+  &::before {
+    content: '📌';
+    position: absolute;
+    top: -10px;
+    right: 16px;
+    font-size: 18px;
+  }
 
   .reply-header {
     display: flex;
     align-items: center;
     gap: 6px;
     font-size: 14px;
+    font-family: 'Kalam', 'ZCOOL KuaiLe', cursive;
     font-weight: 600;
-    color: #16a34a;
+    color: #2d5da1;
     margin-bottom: 8px;
   }
 
   .reply-content {
     font-size: 14px;
     line-height: 1.8;
-    color: #1f2937;
+    color: #2d2d2d;
     white-space: pre-wrap;
   }
 
   .reply-time {
     margin-top: 8px;
     font-size: 12px;
-    color: #9ca3af;
+    color: #2d2d2d;
+    opacity: 0.45;
   }
 }
 
