@@ -31,24 +31,15 @@ public class AdminAlertWebSocketHandler extends TextWebSocketHandler {
     
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        log.info("=== WebSocket连接请求 ===");
-        log.info("Session ID: {}", session.getId());
-        log.info("URI: {}", session.getUri());
-        log.info("Remote Address: {}", session.getRemoteAddress());
-        
         try {
             String token = getTokenFromSession(session);
-            log.info("Token extracted: {}", token != null ? "Yes" : "No");
             
             if (token == null) {
-                log.warn("❌ 未提供token，关闭连接");
                 session.close(CloseStatus.NOT_ACCEPTABLE.withReason("Token required"));
                 return;
             }
             
-            log.info("开始验证token...");
             if (!validateAdminToken(token)) {
-                log.warn("❌ 无效的管理员token，关闭连接");
                 session.close(CloseStatus.NOT_ACCEPTABLE.withReason("Invalid token or not admin"));
                 return;
             }
@@ -148,7 +139,7 @@ public class AdminAlertWebSocketHandler extends TextWebSocketHandler {
             String role = jwtUtil.getRoleFromToken(token);
             log.debug("Token角色: {}", role);
             
-            boolean isAdmin = "ADMIN".equals(role);
+            boolean isAdmin = "ADMIN".equals(role) || "SUPER_ADMIN".equals(role);
             if (!isAdmin) {
                 log.warn("Token验证失败：非管理员角色 ({})", role);
             }
