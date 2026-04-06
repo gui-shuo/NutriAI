@@ -400,7 +400,7 @@ a {
   min-width: 320px !important;
   max-width: 480px !important;
   border-radius: $radius-lg !important;
-  padding: 14px 24px !important;
+  padding: 16px 44px 16px 20px !important; /* extra right padding for close btn */
   font-family: $font-body !important;
   font-size: 14px !important;
   font-weight: 500 !important;
@@ -417,7 +417,11 @@ a {
   margin-right: 10px !important;
 }
 
+/* Close button — top-right corner */
 .el-message .el-message__closeBtn {
+  position: absolute !important;
+  top: 6px !important;
+  right: 10px !important;
   font-size: 14px !important;
   color: $muted-foreground !important;
   &:hover { color: $foreground !important; }
@@ -462,6 +466,89 @@ a {
 }
 .el-message--info .el-message__content { color: #3730A3 !important; }
 .el-message--info .el-message__icon { color: #6366F1 !important; }
+
+/* --- MessageBox (Confirm / Prompt dialogs) — Global Centered Minimalist Modern --- */
+.el-overlay .el-message-box,
+.el-message-box {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  margin: 0 !important;
+  width: 420px !important;
+  max-width: 90vw !important;
+  background: $card !important;
+  border-radius: $radius-xl !important;
+  border: 1px solid $border !important;
+  box-shadow: $shadow-xl !important;
+  font-family: $font-body !important;
+  overflow: hidden !important;
+}
+
+.el-message-box__header {
+  padding: 20px 20px 12px !important;
+  border-bottom: 1px solid $border !important;
+}
+
+.el-message-box__title {
+  font-size: 17px !important;
+  font-weight: 600 !important;
+  color: $foreground !important;
+  font-family: $font-display !important;
+}
+
+.el-message-box__headerbtn {
+  top: 16px !important;
+  right: 16px !important;
+  font-size: 16px !important;
+  .el-message-box__close {
+    color: $muted-foreground !important;
+    &:hover { color: $foreground !important; }
+  }
+}
+
+.el-message-box__content {
+  padding: 16px 20px !important;
+  color: $text-secondary !important;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+}
+
+.el-message-box__container .el-message-box__status {
+  font-size: 22px !important;
+  &.el-message-box-icon--warning { color: $warning-color !important; }
+  &.el-message-box-icon--success { color: $accent !important; }
+  &.el-message-box-icon--error { color: $error-color !important; }
+  &.el-message-box-icon--info { color: #6366F1 !important; }
+}
+
+.el-message-box__btns {
+  padding: 12px 20px 20px !important;
+  .el-button--primary {
+    background: $gradient-accent !important;
+    border: none !important;
+    border-radius: $radius-md !important;
+    font-weight: 500 !important;
+    &:hover { filter: brightness(1.05) !important; }
+  }
+  .el-button--default {
+    border-radius: $radius-md !important;
+    border-color: $border !important;
+    color: $text-secondary !important;
+    &:hover {
+      border-color: $accent !important;
+      color: $accent !important;
+    }
+  }
+}
+
+/* Also style prompt input */
+.el-message-box__input .el-input__inner {
+  border-radius: $radius-md !important;
+  border-color: $border !important;
+  font-family: $font-body !important;
+  &:focus { border-color: $accent !important; }
+}
 
 .el-notification {
 }
