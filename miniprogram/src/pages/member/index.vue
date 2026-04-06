@@ -1157,7 +1157,7 @@ onShow(() => {
   &.signed {
     background: $accent;
     color: #fff;
-    border-color: darken(#10B981, 10%);
+    border-color: #0d9668;
 
     .cal-day-num { color: #fff; }
     .cal-check {
