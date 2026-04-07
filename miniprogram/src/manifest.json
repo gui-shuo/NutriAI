@@ -65,13 +65,21 @@
             },
             "ios" : {
                 "dSYMs" : false
+            },
+            "sdkConfigs" : {
+                "oauth" : {
+                    "qq" : {
+                        "appid" : "1903726273"
+                    }
+                }
             }
         },
         "modules" : {
             "Camera" : {},
             "Barcode" : {},
             "Contacts" : {},
-            "Bluetooth" : {}
+            "Bluetooth" : {},
+            "OAuth" : {}
         },
         "statusbar" : {
             "immersed" : true

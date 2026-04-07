@@ -162,11 +162,55 @@ async function loadBindInfo() {
 async function handleBind(provider: 'wechat' | 'qq') {
   const loading = provider === 'wechat' ? bindingWechat : bindingQq
   loading.value = true
+
+  if (provider === 'qq') {
+    // #ifdef APP-PLUS
+    // APP端使用原生QQ SDK绑定
+    try {
+      const providers = await new Promise<any[]>((resolve, reject) => {
+        uni.getProvider({
+          service: 'oauth',
+          success: (res) => resolve(res.provider || []),
+          fail: reject
+        })
+      })
+      if (!providers.includes('qq')) {
+        uni.showToast({ title: '请先安装QQ', icon: 'none' })
+        return
+      }
+      const loginRes = await new Promise<any>((resolve, reject) => {
+        uni.login({
+          provider: 'qq',
+          success: resolve,
+          fail: reject
+        })
+      })
+      const accessToken = loginRes.authResult?.access_token
+      if (!accessToken) {
+        uni.showToast({ title: 'QQ授权失败', icon: 'none' })
+        return
+      }
+      const res = await socialAuthApi.bindQqToken(accessToken) as any
+      if (res.code === 200) {
+        uni.showToast({ title: 'QQ绑定成功', icon: 'success' })
+        await loadBindInfo()
+      } else {
+        uni.showToast({ title: res.message || 'QQ绑定失败', icon: 'none' })
+      }
+    } catch (e: any) {
+      const msg = e?.errMsg || e?.message || '操作失败'
+      if (!msg.includes('cancel')) {
+        uni.showToast({ title: 'QQ绑定失败', icon: 'none' })
+      }
+    } finally {
+      loading.value = false
+    }
+    return
+    // #endif
+  }
+
   try {
     let state = `h5_bind_${provider}`
-    // #ifdef APP-PLUS
-    state = `app_bind_${provider}`
-    // #endif
     const res = provider === 'wechat'
       ? await socialAuthApi.getWechatAuthUrl(state) as any
       : await socialAuthApi.getQqAuthUrl(state) as any
@@ -174,9 +218,6 @@ async function handleBind(provider: 'wechat' | 'qq') {
     if (res.code === 200 && res.data) {
       // #ifdef H5
       window.location.href = res.data
-      // #endif
-      // #ifdef APP-PLUS
-      plus.runtime.openURL(res.data)
       // #endif
     } else {
       uni.showToast({ title: res.message || '获取授权地址失败', icon: 'none' })

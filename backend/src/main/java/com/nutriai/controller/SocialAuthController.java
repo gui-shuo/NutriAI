@@ -67,6 +67,22 @@ public class SocialAuthController {
         return ApiResponse.success("QQ登录成功", response);
     }
 
+    /**
+     * QQ APP原生SDK登录（使用access_token）
+     */
+    @PostMapping("/qq/token-login")
+    public ApiResponse<LoginResponse> qqTokenLogin(
+            @RequestBody Map<String, String> body,
+            HttpServletRequest httpRequest) {
+        String accessToken = body.get("access_token");
+        if (accessToken == null || accessToken.isBlank()) {
+            return ApiResponse.error(400, "access_token不能为空");
+        }
+        String ip = getClientIp(httpRequest);
+        LoginResponse response = socialAuthService.qqTokenLogin(accessToken, ip);
+        return ApiResponse.success("QQ登录成功", response);
+    }
+
     // ==================== 绑定接口（需登录） ====================
 
     /**
@@ -99,6 +115,22 @@ public class SocialAuthController {
             HttpServletRequest request) {
         Long userId = (Long) request.getAttribute("userId");
         socialAuthService.bindQq(userId, body.get("code"), body.getOrDefault("state", ""));
+        return ApiResponse.success("QQ绑定成功", null);
+    }
+
+    /**
+     * QQ APP原生SDK绑定（使用access_token）
+     */
+    @PostMapping("/bind/qq-token")
+    public ApiResponse<Void> bindQqToken(
+            @RequestBody Map<String, String> body,
+            HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        String accessToken = body.get("access_token");
+        if (accessToken == null || accessToken.isBlank()) {
+            return ApiResponse.error(400, "access_token不能为空");
+        }
+        socialAuthService.qqTokenBind(userId, accessToken);
         return ApiResponse.success("QQ绑定成功", null);
     }
 

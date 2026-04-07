@@ -173,23 +173,62 @@ async function handleSocialLogin(provider: 'wechat' | 'qq') {
     uni.showToast({ title: '微信登录需企业身份认证，建议使用邮箱或QQ注册登录', icon: 'none', duration: 3000 })
     return
   }
+
+  // #ifdef APP-PLUS
+  // APP端使用原生QQ SDK登录
+  try {
+    uni.showLoading({ title: '正在登录...', mask: true })
+    const providers = await new Promise<any[]>((resolve, reject) => {
+      uni.getProvider({
+        service: 'oauth',
+        success: (res) => resolve(res.provider || []),
+        fail: reject
+      })
+    })
+    if (!providers.includes('qq')) {
+      uni.hideLoading()
+      uni.showToast({ title: '请先安装QQ', icon: 'none' })
+      return
+    }
+    const loginRes = await new Promise<any>((resolve, reject) => {
+      uni.login({
+        provider: 'qq',
+        success: resolve,
+        fail: reject
+      })
+    })
+    const accessToken = loginRes.authResult?.access_token
+    if (!accessToken) {
+      uni.hideLoading()
+      uni.showToast({ title: 'QQ授权失败', icon: 'none' })
+      return
+    }
+    const res = await socialAuthApi.qqTokenLogin(accessToken) as any
+    uni.hideLoading()
+    if (res.code === 200 && res.data) {
+      uni.setStorageSync('token', res.data.token)
+      uni.setStorageSync('user', JSON.stringify(res.data.user))
+      uni.showToast({ title: '登录成功', icon: 'success' })
+      setTimeout(() => uni.switchTab({ url: '/pages/index/index' }), 500)
+    } else {
+      uni.showToast({ title: res.message || 'QQ登录失败', icon: 'none' })
+    }
+  } catch (e: any) {
+    uni.hideLoading()
+    const msg = e?.errMsg || e?.message || '登录失败'
+    if (msg.includes('cancel')) return
+    uni.showToast({ title: 'QQ登录失败，请稍后重试', icon: 'none' })
+  }
+  return
+  // #endif
+
+  // #ifdef H5
   try {
     uni.showLoading({ title: '正在跳转...', mask: true })
-    let state = 'h5_login'
-    // #ifdef APP-PLUS
-    state = 'app_login'
-    // #endif
-    const res = await socialAuthApi.getQqAuthUrl(state) as any
+    const res = await socialAuthApi.getQqAuthUrl('h5_login') as any
     uni.hideLoading()
-
     if (res.code === 200 && res.data) {
-      const authUrl = res.data
-      // #ifdef H5
-      window.location.href = authUrl
-      // #endif
-      // #ifdef APP-PLUS
-      plus.runtime.openURL(authUrl)
-      // #endif
+      window.location.href = res.data
     } else {
       uni.showToast({ title: res.message || '获取授权地址失败', icon: 'none' })
     }
@@ -197,6 +236,7 @@ async function handleSocialLogin(provider: 'wechat' | 'qq') {
     uni.hideLoading()
     uni.showToast({ title: e?.message || '登录失败，请稍后重试', icon: 'none' })
   }
+  // #endif
 }
 
 function goTo(url: string) {

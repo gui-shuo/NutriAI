@@ -116,13 +116,9 @@
       <view class="scroll-bottom-anchor" :id="'msg-' + messages.length" />
     </scroll-view>
 
-    <!-- Quick Actions (collapsible, above input) -->
-    <view class="quick-actions-area" :style="{ bottom: inputBaseHeight + 'px', height: quickActionsExpanded ? '320px' : '48px' }" v-if="showQuickActions">
-      <view class="qa-header" @tap="quickActionsExpanded = !quickActionsExpanded">
-        <text class="qa-title">💡 快捷操作</text>
-        <text class="qa-toggle">{{ quickActionsExpanded ? '收起 ▲' : '展开 ▼' }}</text>
-      </view>
-      <view v-if="quickActionsExpanded" class="qa-sections">
+    <!-- Quick Actions Panel (above input, shown/hidden by toggle) -->
+    <view class="quick-actions-area" :style="{ bottom: inputBaseHeight + 'px' }" v-if="showQuickActions">
+      <view class="qa-sections">
         <view class="qa-section" v-for="section in quickActionSections" :key="section.title">
           <text class="qa-section-title">{{ section.icon }} {{ section.title }}</text>
           <view class="qa-btns">
@@ -376,7 +372,6 @@ const showFavoritesPopup = ref(false)
 
 // Quick actions
 const showQuickActions = ref(false)
-const quickActionsExpanded = ref(true)
 
 // Settings (persisted in localStorage)
 const settings = reactive({
@@ -407,7 +402,7 @@ const messageListTop = computed(() => {
 
 const bottomAreaHeight = computed(() => {
   let h = inputBaseHeight.value
-  if (showQuickActions.value) h += quickActionsExpanded.value ? 320 : 48
+  if (showQuickActions.value) h += 320
   return h
 })
 
@@ -674,7 +669,6 @@ function handleQuickAction(content: string) {
   if (isSending.value) return
   inputText.value = content
   showQuickActions.value = false
-  quickActionsExpanded.value = false
   nextTick(() => sendMessage())
 }
 
@@ -1314,30 +1308,13 @@ onUnmounted(() => {
   z-index: 99;
   background: $card;
   border-top: 1rpx solid $border;
+  max-height: 320px;
   overflow: hidden;
   box-sizing: border-box;
 }
-.qa-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 24rpx;
-  height: 48px;
-  min-height: 48px;
-  box-sizing: border-box;
-}
-.qa-title {
-  font-size: 26rpx;
-  font-weight: 600;
-  color: $foreground;
-}
-.qa-toggle {
-  font-size: 22rpx;
-  color: $accent;
-}
 .qa-sections {
-  padding: 0 24rpx 12rpx;
-  height: calc(100% - 48px);
+  padding: 12rpx 24rpx;
+  max-height: 320px;
   overflow-y: auto;
   box-sizing: border-box;
 }

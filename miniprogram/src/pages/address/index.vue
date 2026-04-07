@@ -67,10 +67,10 @@
             <input class="form-input" v-model="form.receiverPhone" placeholder="请输入联系电话" type="number" maxlength="11" />
           </view>
           <view class="form-group">
-            <text class="form-label">所在地区</text>
+            <text class="form-label">所在地区 <text class="required">*</text></text>
             <picker mode="region" :value="regionValue" @change="onRegionChange">
               <view class="region-picker">
-                <text :class="{ 'placeholder-text': !regionText }">{{ regionText || '选择省/市/区' }}</text>
+                <text :class="{ 'placeholder-text': !regionText }">{{ regionText || '请选择省/市/区' }}</text>
                 <text class="arrow">›</text>
               </view>
             </picker>
@@ -213,6 +213,9 @@ async function saveAddress() {
   }
   if (!form.value.receiverPhone.trim() || form.value.receiverPhone.length < 11) {
     return uni.showToast({ title: '请输入正确的手机号', icon: 'none' })
+  }
+  if (!form.value.province || !form.value.city) {
+    return uni.showToast({ title: '请选择所在地区', icon: 'none' })
   }
   if (!form.value.detailAddress.trim()) {
     return uni.showToast({ title: '请输入详细地址', icon: 'none' })

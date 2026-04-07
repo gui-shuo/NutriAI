@@ -1,0 +1,334 @@
+Android_SDK环境搭建
+1. 搭建开发环境
+以下以eclipse为开发的IDE进行范例说明（sdk3.5.12前支持maven）：
+（1）创建一个工程，并把open-sdk.jar（压缩包中文件名为：open_sdk_xxxx_lite.jar）文件拷贝到libs（或lib）目录下，如下图所示：
+
+æ­¤å¾åçaltå±æ§ä¸ºç©ºï¼æä»¶åä¸ºä¼ä¸å¾®ä¿¡æªå¾_0e5b5994-8667-4358-93e9-d4c438f4a7df.png
+
+（2）将open-sdk.jar加入编译路径中。
+在build.gradle中添加
+dependencies {
+compile fileTree(dir: 'libs', include: '*.jar')
+}
+（3）配置AndroidManifest；
+在应用的AndroidManifest.xml增加配置的<application>节点下增加以下配置（注：不配置将会导致无法调用API）；
+
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<application>
+ <activity
+       android:name="com.tencent.tauth.AuthActivity"
+       android:noHistory="true"
+       android:launchMode="singleTask" >
+    <intent-filter>
+           <action android:name="android.intent.action.VIEW" />
+           <category android:name="android.intent.category.DEFAULT" />
+           <category android:name="android.intent.category.BROWSABLE" />
+           <data android:scheme="tencent你的AppId" />
+    </intent-filter>
+ </activity>
+<activity
+       android:name="com.tencent.connect.common.AssistActivity"
+       android:configChanges="orientation|keyboardHidden|screenSize"
+       android:screenOrientation="behind" 
+android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+<application>
+通过以上两个步骤，工程就已经配置完成了。接下来就可以在代码里使用QQ互联的SDK进行开发了。
+
+2. 初始化SDK
+3.5.7版本新增接口提供用户设置是否已授权获取设备信息，在调用互联SDK相关功能接口之前，需要应用在确认用户已授权应用获取设备信息后，调用下面代码通知 SDK：
+
+Tencent.setIsPermissionGranted(true);
+
+如果未调用该接口或传参为false时，调用其它功能接口将直接返回失败。
+
+3.5.9版本中可以调用Tencent.setisPermissionGranted(true, Build.Model)传入Build.Model，传入后SDK内部不再自行获取。
+
+3. 创建实例
+Tencent是SDK的功能入口，所有的接口调用都得通过Tencent进行调用。因此，调用SDK，首先需要创建一个Tencent实例，其代码如下：
+
+@Override
+public void onCreate(Bundle savedInstanceState){
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_main);
+// Tencent类是SDK的主要实现类，开发者可通过Tencent类访问腾讯开放的OpenAPI。
+// 其中APP_ID是分配给第三方应用的appid，类型为String。
+// 其中Authorities为 Manifest文件中注册FileProvider时设置的authorities属性值 
+mTencent = Tencent.createInstance(APP_ID, this.getApplicationContext(), Authorities); 
+// 1.4版本:此处需新增参数，传入应用程序的全局context，可通过activity的getApplicationContext方法获取
+// 初始化视图
+initViews();
+}
+其中，如果你已经添加了”android.permission.INTERNET”和”android.permission.ACCESS_NETWORK_STATE”权限，则无需重复添加。
+而”你的AppId”则要替换成具体应用的AppId，例如你的AppId是”222222″，则<data>标签应该是这样的：
+
+<data android:scheme="tencent222222" />
+4. 实现回调
+所有的SDK接口调用，都会传入一个回调，用以接收SDK返回的调用结果。回调的主要接口有两种：
+（1） 实现回调 IUiListener
+调用SDK已经封装好的接口时，例如：登录、快速支付登录、应用分享、应用邀请等接口，需传入该回调的实例。
+IUiListener的实现示例代码如下：
+
+private class BaseUiListener implements IUiListener {
+@Override
+public void onComplete(JSONObject response) {
+mBaseMessageText.setText("onComplete:");
+mMessageText.setText(response.toString());
+doComplete(response);
+}
+protected void doComplete(JSONObject values) {
+}
+@Override
+public void onError(UiError e) {
+showResult("onError:", "code:" + e.errorCode + ", msg:"
++ e.errorMessage + ", detail:" + e.errorDetail);
+}
+@Override
+public void onCancel() {
+showResult("onCancel", "");
+}
+}
+（2） 实现回调 IRequestListener
+使用requestAsync、request等通用方法调用sdk未封装的接口时，例如上传图片、查看相册等，需传入该回调的实例。
+IRequestListener的实现示例代码如下：
+
+private class BaseApiListener implements IRequestListener {
+@Override
+public void onComplete(final JSONObject response, Object state) {
+showResult("IRequestListener.onComplete:", response.toString());
+doComplete(response, state);
+}
+protected void doComplete(JSONObject response, Object state) {
+}
+@Override
+public void onIOException(final IOException e, Object state) {
+showResult("IRequestListener.onIOException:", e.getMessage());
+}
+@Override
+public void onMalformedURLException(final MalformedURLException e,
+Object state) {
+showResult("IRequestListener.onMalformedURLException", e.toString());
+}
+@Override
+public void onJSONException(final JSONException e, Object state) {
+showResult("IRequestListener.onJSONException:", e.getMessage());
+}
+@Override
+public void onConnectTimeoutException(ConnectTimeoutException arg0,
+Object arg1) {
+// TODO Auto-generated method stub
+}
+@Override
+public void onSocketTimeoutException(SocketTimeoutException arg0,
+Object arg1) {
+// TODO Auto-generated method stub
+}
+//1.4版本中IRequestListener 新增两个异常
+@Override
+public void onNetworkUnavailableException(NetworkUnavailableException e, Object state){
+// 当前网络不可用时触发此异常
+}
+@Override
+public void onHttpStatusException(HttpStatusException e, Object state) {
+// http请求返回码非200时触发此异常
+}
+public void onUnknowException(Exception e, Object state) {
+// 出现未知错误时会触发此异常
+}
+}
+应用在调用SDK提供的接口时，将实现了对应回调接口的实例传入。当SDK的接口调用完成后，具体如登录、应用邀请和应用分享调用完成后，会回调传入的接口实例。
+（3） 特别注意：
+应用调用Andriod_SDK接口时，如果要成功接收到回调，需要在调用接口的Activity的onActivityResult方法中增加如下代码：
+
+@Override
+ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+       mTencent.onActivityResult(requestCode, resultCode, data);
+ }
+5. 调用QQ登录接口
+（1）QQ登录示例代码：
+代码中的listener是IUiListener的一个实例。
+
+public void login()
+{
+   mTencent = Tencent.createInstance(AppId, this.getApplicationContext(), Authorities);
+        if (!mTencent.isSessionValid())
+        {
+         mTencent.login(this, Scope, listener);
+        }
+} 
+注意：SDK内部采用弱引用的方式持有接口实例，因此在调用 Tencent.login() 时传入的 IUiListener 对象，应该定义为当前类的成员变量，避免用户拉起QQ的授权登录页面后，在登录页面停留较长时间后才进行授权时，SDK内部的弱引用被系统回收而导致回调没有被执行的问题。
+
+（2） 效果展示：
+
+如果用户手机上安装了最新版本的手机QQ，将会调用相应的客户端，通过SSO方式进行登录。此方式可以避免用户多次输入用户名和密码，提升用户的登录体验。
+授权完成后，界面会自动返回应用界面。用户在应用中进行后续操作。
+
+
+
+
+（3） 登录成功后获取的数据
+登录成功后调用public void onComplete(JSONObject arg0) 回传的JsonObject， 其中包含OpenId， AccessToken等重要数据。
+
+{
+"ret":0,
+"pay_token":"xxxxxxxxxxxxxxxx",
+"pf":"openmobile_android",
+"expires_in":"7776000",
+"openid":"xxxxxxxxxxxxxxxxxxx",
+"pfkey":"xxxxxxxxxxxxxxxxxxx",
+"msg":"sucess",
+"access_token":"xxxxxxxxxxxxxxxxxxxxx"
+}
+（4） 调用QQ注销接口
+
+    public void logout()
+    {
+   		mTencent.logout(this);
+    }
+
+注：3.5.9版本中SDK内部只会在首次调用SDK接口时调用系统接口获取设备中QQ/Tim的安装信息，并缓存在内存中提供后续接口使用。当用户在设备中未安装QQ/Tim时启动接入应用，SDK获取到设备中未安装QQ/Tim并缓存了查询结果，如果接入应用需要引导用户安装QQ/Tim时，需要接入应用在调用接口重置SDK缓存的安装信息, 保证SDK能够正确判断设备中是否已经安装QQ。可以调用 tencent.isQQInstalled()方法判断SDK内存缓存中QQ是否已经安装，调用Tencent.resetTargetAppInfoCache()方法重置内存缓存。
+6. 获取用户信息
+（1） 异步方式调用
+
+public void getUserInfo()
+    {
+    	mTencent.requestAsync(Constants.GRAPH_SIMPLE_USER_INFO, null,
+                Constants.HTTP_GET, new BaseApiListener("get_simple_userinfo", false), null);
+    }
+（2）同步方式调用
+注意：由于同步调用直接访问网络，是延时性操作，需要放入线程中执行。
+同步调用方式如下：
+
+ public void getUserInfoInThread()
+    {
+    	new Thread(){
+    		@Override
+    		public void run() {
+    	    	JSONObject json = mTencent.request(Constants.GRAPH_SIMPLE_USER_INFO, null,
+    	                Constants.HTTP_GET);
+    	    	System.out.println(json);
+    		}
+    	}.start();
+    }
+（3）用户信息详情：
+
+{
+    "is_yellow_year_vip": "0",
+    "ret": 0,
+    "figureurl_qq_1": "http://q.qlogo.cn/qqapp/222222/8C75BBE3DC6B0E9A64BD31449A3C8CB0/40",
+    "figureurl_qq_2": "http://q.qlogo.cn/qqapp/222222/8C75BBE3DC6B0E9A64BD31449A3C8CB0/100",
+    "nickname": "小罗",
+    "yellow_vip_level": "0",
+    "msg": "",
+    "figureurl_1": "http://qzapp.qlogo.cn/qzapp/222222/8C75BBE3DC6B0E9A64BD31449A3C8CB0/50",
+    "vip": "0",
+    "level": "0",
+    "figureurl_2": "http://qzapp.qlogo.cn/qzapp/222222/8C75BBE3DC6B0E9A64BD31449A3C8CB0/100",
+    "is_yellow_vip": "0",
+    "gender": "男",
+    "figureurl": "http://qzapp.qlogo.cn/qzapp/222222/8C75BBE3DC6B0E9A64BD31449A3C8CB0/30"
+}
+7. 业务自定义输出互联sdk日志
+定位问题，提供此接口让第三方应用可以自定义互联sdk日志的输出。
+Android_SDK功能列表
+模块	功能名称
+登录注销	登录/校验登录态
+Server-Side登录模式
+OEM应用市场登录/校验登录态
+注销
+校验token并统计DAU
+校验token
+支持第三方应用横屏下登录授权完成后恢复横屏
+支持屏蔽二维码登录Web页下载链接
+访问OpenApi接口	访问腾讯OpenApi接口
+分享到QQ和QQ空间	分享消息到QQ（无需QQ登录）
+分享到QQ空间（无需QQ登录）
+分享功能存储权限适配
+解析游戏组队透传的参数
+设置QQ头像与图片收藏	设置QQ头像（废弃）
+设置QQ头像
+设置动态头像
+设置QQ表情
+小程序/小游戏 ( QQ8.1.8)	唤起小程序/小游戏
+授权管理	跳转到手Q的应用授权详情页
+其他能力	当前会话是否有效
+获取APPID
+获取AccessToken
+获取token过期时间
+获取登录用户openid
+设置token和过期时间
+设置OpenId
+判断是否登录且获取OpenId
+获取Token对象
+是否支持SSO登录
+是否支持分享到QQ
+是否支持分享到QQ空间
+保存Session会话信息
+读取session
+初始化session
+获取用户信息接口
+业务自定义输出互联sdk日志
+隐私权限	设置用户是否已授权获取设备信息
+获取用户是否已授权获取设备信息
+重置QQ/TIM安装信息内存缓存
+Android_SDK常见问题
+1. 返回码说明
+使用SDK时，所有结果都会通过回调返回给应用。在回调的结果中，会包含每次调用结果的返回码。正常情况下返回码为0，表示调用成功。如果返回码不为0，说明调用出错，需要根据返回码的值来定位错误原因。
+常用返回码与错误信息的对照，如下表所示：
+
+返回码<	含义说明
+-30001	由于网络质量抖动引起，如果持续时间较长，或发生概率比较高，请直接联系技术支持（联系方式： toddzhao@tencent.com）。
+100030	用户未对应用进行授权，需要引导用户重新登录授权，并且在登录的Scope参数里，加上相应的API名称（请参考API列表）。
+所有的API都必需经过QQ互联对应用授权），用户对应用授权后才可以调用。
+100014	access_token过期，目前支持的access_token有效期为60天，需要重新走登录流程，获取新的access_token。
+后期也可以使用Refresh Token来获取新的access_token（该功能即将上线）
+100015	access_token失效。要重新走登录流程，获取新的access_token。
+产生该错误有两个原因：
+1. 用户在QQ空间里取消了对应用的授权，会导致当前保存到应用里的AccessToken被废除掉。
+2. 用户在不同的设备上进行了QQ登录，导致在原来设备上的保存的AccessToken被废除掉。
+100016	access_token校验失败。建议先重新走登录流程来换取新的access_token，使用新的access_token仍然无法通过校验，请通过企业QQ联系技术支持（号码：800030681。直接在QQ的“查找联系人”中输入号码即可开始对话）。
+更多返回码与错误信息的对照说明，请参考《公共返回码说明》文档。
+
+2. 混淆说明
+如果应用需要混淆代码，为了保证SDK的正常使用，建议不要混淆SDK的jar包，如果仍要混淆，需要在混淆规则中加上下面几行配置：
+
+-keep class * extends android.app.Dialog
+编译时请选择Android SDK API Level 17或以上的版本，否则可能会导致混淆失败，出现下面的错误：
+混淆错误
+
+3. 授权相关
+应用调用OpenAPI时，需要哪些授权？
+应用调用OpenAPI时，需要有相应的授权后才能调用，授权包括：
+(1) 应用调用OpenAPI的授权。
+有些OpenAPI仅对可信赖的合作应用开放，调用这些OpenAPI时需要提交申请以获得访问权限。需要申请授权的API信息，请参见《API列表》。
+(2) 登录用户对应用的授权
+如果应用调用接口是返回100030的错误信息，说明应用有该OpenAPI的调用权限，但并未申请用户授权。请重新引导该用户走登录授权流程，并在scope参数里加上需要用户进行授权的OpenAPI。如果无法确认有多少OpenAPI需要用户授权，可以直接在scope参数里填写”all”来表示需要用户授权所有OpenAPI。
+
+4. Andriod_SDK_相关问题
+4.1 只有java开发的应用可以使用本SDK吗？非原生开发的应用可以使用吗？
+目前我们提供了Android的SDK，只有java开发的应用可以使用。
+非原生开发的应用不可以使用本SDK（非原生开发应用：没有使用android sdk和java语言开发的应用，例如使用flash air技术开发的app，通过工具转换成android apk的应用）。
+
+4.2 调用发送分享和应用分享有什么区别？
+发送分享指的是V1.2版本的旧接口addShare，使用此接口不能@好友；V1.6新增的应用分享接口可以@好友。
+
+4.3 如何获取Android app包名？
+包名又称Package Name，是应用程序在android系统中的唯一ID标识，获取方法如下：
+（1） 打开Eclipse，导入app 的工程，打开AndroidManifest.xml文件，展现如下：
+android_sdk_1_4_pic_5.png
+其中，Package选项后面的com.yourcompan.yourappname就是包名，不同的app，packagename是不一样的。
+（2） 如果是通过文本形式打开的AndroidManifext.xml，展现如下：
+android_sdk_1_4_pic_4.jpg
+同样，package字段后面填写的值 com.yourcompan.yourappname 也是包名。
+
+4.4 如何获取Android应用的APK文件签名？
+（1）在您的android设备上安装最新版本的获取签名应用「应用下载」
+（2）打开获取签名应用
+请在您的android设备上打开应用列表，找到名为「Application Manage」的应用，并点击运行。
+sign_android_01.jpg
+（3）找到您开发的应用，获取APK文件签名
+sign_android_01.jpg
+
+4.5 在Android11上，第三方应用分享自己专属目录下的文件失败是什么原因？
+第三方应用把图片放到自己的专属目录里，然后以文件路径形式调用QQ互联SDK来向QQ分享。在Android11上，QQ无法访问别的应用的专属目录，导致显示图片失败。
+QQ互联SDK3.3.8版本支持通过FilePorvider分享文件到手Q。通过FilePorvider, 第三方应用可以赋予手Q读取分享的文件的权限。即便手Q在无SD卡权限的情况下，也可以访问第三方应用分享的图片。

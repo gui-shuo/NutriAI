@@ -230,6 +230,88 @@ public class SocialAuthService {
         return buildLoginResponse(user, ipAddress);
     }
 
+    /**
+     * QQ APP原生SDK登录（使用access_token而非code）
+     */
+    @Transactional
+    @SuppressWarnings("unchecked")
+    public LoginResponse qqTokenLogin(String accessToken, String ipAddress) {
+        // 1. 用access_token获取OpenID
+        String openIdUrl = String.format(
+            "https://graph.qq.com/oauth2.0/me?access_token=%s&fmt=json", accessToken
+        );
+        Map<String, Object> openIdResp = callApi(openIdUrl, "QQ APP OpenID");
+        String openId = (String) openIdResp.get("openid");
+        if (openId == null || openId.isBlank()) {
+            throw new BusinessException(500, "QQ登录失败: 无法获取openid");
+        }
+        String clientId = (String) openIdResp.get("client_id");
+
+        // 2. 获取用户信息
+        String consumerKey = (clientId != null && !clientId.isBlank()) ? clientId : getQqId("app_");
+        String userInfoUrl = String.format(
+            "https://graph.qq.com/user/get_user_info?access_token=%s&oauth_consumer_key=%s&openid=%s",
+            accessToken, consumerKey, openId
+        );
+        Map<String, Object> userInfoResp = callApi(userInfoUrl, "QQ APP用户信息");
+        String nickname = (String) userInfoResp.getOrDefault("nickname", "QQ用户");
+        String avatar = (String) userInfoResp.getOrDefault("figureurl_qq_2", "");
+        if (avatar != null && avatar.startsWith("http://")) {
+            avatar = avatar.replaceFirst("http://", "https://");
+        }
+
+        // 3. 查找或创建用户
+        User user = userRepository.findByQqOpenId(openId).orElse(null);
+        if (user == null) {
+            String autoUsername = "qq_" + UUID.randomUUID().toString().substring(0, 12);
+            user = User.builder()
+                    .username(autoUsername)
+                    .password(passwordEncoder.encode(UUID.randomUUID().toString()))
+                    .qqOpenId(openId)
+                    .nickname(nickname)
+                    .avatar(avatar.isEmpty() ? null : avatar)
+                    .role("USER")
+                    .status("ACTIVE")
+                    .build();
+            userRepository.save(user);
+            log.info("QQ APP原生登录注册: openId={}, username={}", openId, autoUsername);
+        }
+
+        return buildLoginResponse(user, ipAddress);
+    }
+
+    /**
+     * QQ APP原生SDK绑定（使用access_token而非code）
+     */
+    @Transactional
+    @SuppressWarnings("unchecked")
+    public void qqTokenBind(Long userId, String accessToken) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(BusinessException.Auth::userNotFound);
+
+        if (user.getQqOpenId() != null && !user.getQqOpenId().isBlank()) {
+            throw new BusinessException(400, "已绑定QQ账号，请先解绑");
+        }
+
+        // 用access_token获取OpenID
+        String openIdUrl = String.format(
+            "https://graph.qq.com/oauth2.0/me?access_token=%s&fmt=json", accessToken
+        );
+        Map<String, Object> openIdResp = callApi(openIdUrl, "QQ APP绑定OpenID");
+        String openId = (String) openIdResp.get("openid");
+        if (openId == null || openId.isBlank()) {
+            throw new BusinessException(500, "获取QQ openid失败");
+        }
+
+        if (userRepository.findByQqOpenId(openId).isPresent()) {
+            throw new BusinessException(400, "该QQ号已绑定其他账号，请先注销该账号后再绑定");
+        }
+
+        user.setQqOpenId(openId);
+        userRepository.save(user);
+        log.info("用户APP原生绑定QQ: userId={}, openId={}", userId, openId);
+    }
+
     // ==================== 账号绑定 ====================
 
     /**

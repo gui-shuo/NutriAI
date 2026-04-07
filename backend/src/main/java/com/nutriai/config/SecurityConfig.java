@@ -75,7 +75,8 @@ public class SecurityConfig {
                                 "/auth/social/wechat/auth-url",  // 微信授权URL（公开）
                                 "/auth/social/qq/auth-url",  // QQ授权URL（公开）
                                 "/auth/social/wechat/login",  // 微信登录（公开）
-                                "/auth/social/qq/login"  // QQ登录（公开）
+                                "/auth/social/qq/login",  // QQ登录（公开）
+                                "/auth/social/qq/token-login"  // QQ APP原生登录（公开）
                         ).permitAll()
                         
                         // 其他所有请求都需要认证

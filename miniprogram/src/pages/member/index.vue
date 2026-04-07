@@ -385,30 +385,6 @@
       </view>
     </view>
 
-    <!-- ==================== VIP Benefits Comparison ==================== -->
-    <view class="card">
-      <view class="card-header-row" @tap="showBenefitsCompare = !showBenefitsCompare">
-        <text class="card-title-text">🏆 VIP权益对比</text>
-        <text class="toggle-text">{{ showBenefitsCompare ? '收起 ▲' : '展开 ▼' }}</text>
-      </view>
-      <view v-if="showBenefitsCompare" class="benefits-compare">
-        <!-- Table Header -->
-        <view class="compare-row compare-header">
-          <text class="compare-cell name-cell">权益项目</text>
-          <text class="compare-cell">免费版</text>
-          <text class="compare-cell vip-cell">VIP版</text>
-        </view>
-        <view v-for="(item, i) in benefitsCompareData" :key="i" class="compare-row">
-          <view class="compare-cell name-cell">
-            <text class="compare-icon">{{ item.icon }}</text>
-            <text>{{ item.name }}</text>
-          </view>
-          <text class="compare-cell free-val">{{ item.free }}</text>
-          <text class="compare-cell vip-val">{{ item.vip }}</text>
-        </view>
-      </view>
-    </view>
-
     <!-- ==================== Order History ==================== -->
     <view v-if="isVip" class="card">
       <view class="card-header-row" @tap="toggleOrderHistory">
@@ -495,7 +471,6 @@ const invitationCode = ref('')
 const invitationRecords = ref<any[]>([])
 
 // UI toggles
-const showBenefitsCompare = ref(false)
 const showOrders = ref(false)
 const orders = ref<any[]>([])
 const ordersLoading = ref(false)
@@ -557,18 +532,6 @@ const invitationLink = computed(() => {
   return `https://nutriai.itshuo.me/register?code=${invitationCode.value}`
   // #endif
 })
-
-// ========== Benefits Comparison Data ==========
-const benefitsCompareData = [
-  { icon: '🤖', name: 'AI对话', free: '3次/天', vip: '无限次' },
-  { icon: '📋', name: '饮食计划', free: '1次/天', vip: '无限次' },
-  { icon: '📷', name: '食物识别', free: '5次/天', vip: '无限次' },
-  { icon: '👩‍⚕️', name: '专属客服', free: '❌', vip: '✅ 优先' },
-  { icon: '🛒', name: '商城折扣', free: '❌', vip: '✅ 专属折扣' },
-  { icon: '📊', name: '深度报告', free: '❌', vip: '✅ 周/月报' },
-  { icon: '🎯', name: '个性推荐', free: '基础', vip: '深度定制' },
-  { icon: '🏅', name: '成长加速', free: '1x', vip: '2x 加速' }
-]
 
 // ========== Data Loading ==========
 async function loadMemberInfo() {
@@ -1974,62 +1937,6 @@ onShow(() => {
 }
 
 /* ============ Benefits Comparison ============ */
-.benefits-compare {
-  margin-top: 8rpx;
-}
-
-.compare-row {
-  display: flex;
-  align-items: center;
-  border-bottom: 1rpx solid $border;
-
-  &.compare-header {
-    background: $muted;
-    border-radius: $radius-md $radius-md 0 0;
-    font-weight: 600;
-    font-size: 22rpx;
-    color: $foreground;
-  }
-
-  &:last-child { border-bottom: none; }
-}
-
-.compare-cell {
-  flex: 1;
-  padding: 16rpx 12rpx;
-  font-size: 22rpx;
-  text-align: center;
-  color: $muted-foreground;
-
-  &.name-cell {
-    flex: 1.5;
-    text-align: left;
-    display: flex;
-    align-items: center;
-    gap: 8rpx;
-    color: $foreground;
-    font-weight: 500;
-  }
-
-  &.vip-cell {
-    color: #F59E0B;
-    font-weight: 600;
-  }
-
-  &.vip-val {
-    color: $accent;
-    font-weight: 600;
-  }
-
-  &.free-val {
-    color: $muted-foreground;
-  }
-}
-
-.compare-icon {
-  font-size: 28rpx;
-}
-
 /* ============ Order History ============ */
 .order-list {
   margin-top: 8rpx;
