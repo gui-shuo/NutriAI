@@ -83,6 +83,11 @@ onMounted(async () => {
       }
       if (response.data.code === 200) {
         ElMessage.success('绑定成功！')
+        if (window.opener) {
+          window.opener.postMessage({ type: 'qq-bind-success' }, window.location.origin)
+          window.close()
+          return
+        }
         router.push('/profile')
       } else {
         throw new Error(response.data.message || '绑定失败')
@@ -131,6 +136,13 @@ onMounted(async () => {
       authStore.setRefreshToken(loginData.refreshToken)
       authStore.setUser(loginData.userInfo)
 
+      // 弹窗模式：通知父窗口并关闭
+      if (window.opener) {
+        window.opener.postMessage({ type: 'qq-login-success' }, window.location.origin)
+        window.close()
+        return
+      }
+
       ElMessage.success('登录成功！')
       router.push('/')
     } else {
@@ -139,6 +151,8 @@ onMounted(async () => {
   } catch (e) {
     error.value = true
     statusMsg.value = e.response?.data?.message || e.message || '登录失败'
+
+    // 弹窗模式下绑定成功也需通知父窗口
   } finally {
     loading.value = false
   }

@@ -87,7 +87,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { socialAuthApi } from '@/services/socialAuth'
 import { ElMessage } from 'element-plus'
@@ -100,6 +100,21 @@ const userEmail = computed(() => authStore.user?.email)
 const bindInfo = reactive({
   wechatBound: false,
   qqBound: false
+})
+
+// 监听QQ绑定弹窗回调
+const handleQqBindMessage = (event) => {
+  if (event.origin !== window.location.origin) return
+  if (event.data?.type === 'qq-bind-success') {
+    ElMessage.success('QQ账号绑定成功！')
+    loadBindInfo()
+  }
+}
+onMounted(() => {
+  window.addEventListener('message', handleQqBindMessage)
+})
+onUnmounted(() => {
+  window.removeEventListener('message', handleQqBindMessage)
 })
 
 const loadBindInfo = async () => {
@@ -126,7 +141,11 @@ const handleBind = async (provider) => {
       response = await socialAuthApi.getQqAuthUrl('bind')
     }
     if (response?.data?.code === 200 && response.data.data) {
-      window.location.href = response.data.data
+      const authUrl = response.data.data
+      const qqWin = window.open(authUrl, 'QQLogin', 'width=800,height=600,menubar=0,scrollbars=1,resizable=1,status=1,titlebar=0,toolbar=0,location=1')
+      if (!qqWin || qqWin.closed) {
+        window.location.href = authUrl
+      }
     } else {
       ElMessage.warning(response?.data?.message || '该功能暂未开通，请联系管理员配置')
     }

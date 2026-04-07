@@ -126,7 +126,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { Loading } from '@element-plus/icons-vue'
 import { useAuthStore } from '@/stores/auth'
@@ -137,6 +137,22 @@ import message from '@/utils/message'
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
+
+// 监听QQ登录弹窗回调
+const handleQqLoginMessage = (event) => {
+  if (event.origin !== window.location.origin) return
+  if (event.data?.type === 'qq-login-success') {
+    // 弹窗中已完成token存储，刷新页面获取用户状态
+    router.push('/')
+    router.go(0)
+  }
+}
+onMounted(() => {
+  window.addEventListener('message', handleQqLoginMessage)
+})
+onUnmounted(() => {
+  window.removeEventListener('message', handleQqLoginMessage)
+})
 
 // 表单引用
 const loginFormRef = ref()
@@ -312,7 +328,13 @@ const handleSocialLogin = async (provider) => {
       response = await socialAuthApi.getQqAuthUrl('login')
     }
     if (response?.data?.code === 200 && response.data.data) {
-      window.location.href = response.data.data
+      // QQ互联官方建议使用 window.open 弹窗方式打开授权页
+      const authUrl = response.data.data
+      const qqWin = window.open(authUrl, 'QQLogin', 'width=800,height=600,menubar=0,scrollbars=1,resizable=1,status=1,titlebar=0,toolbar=0,location=1')
+      if (!qqWin || qqWin.closed) {
+        // 弹窗被拦截，降级为当前窗口跳转
+        window.location.href = authUrl
+      }
     } else {
       message.warning(response?.data?.message || '该登录方式暂未开通，请使用账号密码登录')
     }
