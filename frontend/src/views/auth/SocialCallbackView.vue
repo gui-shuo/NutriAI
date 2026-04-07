@@ -96,7 +96,7 @@ onMounted(async () => {
       response = await socialAuthApi.wechatLogin(code)
     } else if (provider === 'qq') {
       statusMsg.value = '正在通过QQ登录...'
-      response = await socialAuthApi.qqLogin(code)
+      response = await socialAuthApi.qqLogin(code, stateStr)
     } else {
       throw new Error('未知的登录方式')
     }

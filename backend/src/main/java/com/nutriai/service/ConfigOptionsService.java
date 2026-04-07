@@ -86,8 +86,10 @@ public class ConfigOptionsService {
         options.add(text("mail.nickname", "发件人昵称", "邮件发件人显示名称", "邮件", "NutriAI饮食规划助手"));
 
         // ─── 社交登录 ───
-        options.add(text("qq.app_id", "QQ AppID", "QQ互联应用ID", "社交登录", ""));
-        options.add(select("qq.app_key", "QQ AppKey", "QQ互联应用密钥", "社交登录", ""));
+        options.add(text("qq.web_id", "QQ Web端AppID", "QQ互联网站应用ID(Web/H5)", "社交登录", ""));
+        options.add(select("qq.web_key", "QQ Web端AppKey", "QQ互联网站应用密钥(Web/H5)", "社交登录", ""));
+        options.add(text("qq.app_id", "QQ APP端AppID", "QQ互联移动应用ID(APP)", "社交登录", ""));
+        options.add(select("qq.app_key", "QQ APP端AppKey", "QQ互联移动应用密钥(APP)", "社交登录", ""));
         options.add(text("wx.miniapp_appid", "微信小程序AppID", "微信小程序应用ID", "社交登录", ""));
         options.add(select("wx.miniapp_secret", "微信小程序Secret", "微信小程序应用密钥", "社交登录", ""));
 

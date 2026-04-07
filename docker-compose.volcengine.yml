@@ -75,6 +75,8 @@ services:
       EPAY_RETURN_URL: ${EPAY_RETURN_URL:-}
       WX_MINIAPP_APPID: ${WX_MINIAPP_APPID:-wxcf557b14e389275f}
       WX_MINIAPP_SECRET: ${WX_MINIAPP_SECRET:-}
+      QQ_WEB_ID: ${QQ_WEB_ID:-}
+      QQ_WEB_KEY: ${QQ_WEB_KEY:-}
       QQ_APP_ID: ${QQ_APP_ID:-}
       QQ_APP_KEY: ${QQ_APP_KEY:-}
       # 针对 2C2G 低配服务器优化 JVM 参数

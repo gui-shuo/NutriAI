@@ -17,4 +17,9 @@ public class SocialLoginRequest {
      */
     @NotBlank(message = "平台类型不能为空")
     private String provider;
+
+    /**
+     * OAuth state参数，用于区分平台来源(app_login, h5_login, login等)
+     */
+    private String state;
 }

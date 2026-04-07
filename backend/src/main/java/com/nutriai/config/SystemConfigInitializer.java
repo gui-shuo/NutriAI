@@ -108,8 +108,10 @@ public class SystemConfigInitializer implements ApplicationRunner {
         add(list, "mail.nickname",       env("MAIL_NICKNAME", "NutriAI饮食规划助手"),      "string", "发件人昵称",               "邮件",   false);
 
         // ─── 社交登录 ───
-        add(list, "qq.app_id",           env("QQ_APP_ID", ""),                            "string", "QQ登录 AppID",             "社交登录", false);
-        add(list, "qq.app_key",          env("QQ_APP_KEY", ""),                           "string", "QQ登录 AppKey",            "社交登录", false);
+        add(list, "qq.web_id",           env("QQ_WEB_ID", ""),                            "string", "QQ登录 Web端AppID",        "社交登录", false);
+        add(list, "qq.web_key",          env("QQ_WEB_KEY", ""),                           "string", "QQ登录 Web端AppKey",       "社交登录", false);
+        add(list, "qq.app_id",           env("QQ_APP_ID", ""),                            "string", "QQ登录 APP端AppID",        "社交登录", false);
+        add(list, "qq.app_key",          env("QQ_APP_KEY", ""),                           "string", "QQ登录 APP端AppKey",       "社交登录", false);
         add(list, "wx.miniapp_appid",    env("WX_MINIAPP_APPID", ""),                     "string", "微信小程序 AppID",         "社交登录", false);
         add(list, "wx.miniapp_secret",   env("WX_MINIAPP_SECRET", ""),                    "string", "微信小程序 Secret",        "社交登录", false);
 

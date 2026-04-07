@@ -129,10 +129,10 @@ export const socialAuthApi = {
   getWechatAuthUrl: (state = 'login') => request({ url: `/auth/social/wechat/auth-url?state=${state}` }),
   getQqAuthUrl: (state = 'login') => request({ url: `/auth/social/qq/auth-url?state=${state}` }),
   wechatLogin: (code: string) => request({ url: '/auth/social/wechat/login', method: 'POST', data: { code, provider: 'wechat' } }),
-  qqLogin: (code: string) => request({ url: '/auth/social/qq/login', method: 'POST', data: { code, provider: 'qq' } }),
+  qqLogin: (code: string, state = '') => request({ url: '/auth/social/qq/login', method: 'POST', data: { code, provider: 'qq', state } }),
   getBindInfo: () => request({ url: '/auth/social/bindinfo' }),
   bindWechat: (code: string) => request({ url: '/auth/social/bind/wechat', method: 'POST', data: { code } }),
-  bindQq: (code: string) => request({ url: '/auth/social/bind/qq', method: 'POST', data: { code } }),
+  bindQq: (code: string, state = '') => request({ url: '/auth/social/bind/qq', method: 'POST', data: { code, state } }),
   unbindWechat: () => request({ url: '/auth/social/unbind/wechat', method: 'DELETE' }),
   unbindQq: () => request({ url: '/auth/social/unbind/qq', method: 'DELETE' })
 }

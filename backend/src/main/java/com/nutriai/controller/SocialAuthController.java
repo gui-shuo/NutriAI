@@ -62,7 +62,8 @@ public class SocialAuthController {
             @Valid @RequestBody SocialLoginRequest request,
             HttpServletRequest httpRequest) {
         String ip = getClientIp(httpRequest);
-        LoginResponse response = socialAuthService.qqLogin(request.getCode(), ip);
+        String state = request.getState();
+        LoginResponse response = socialAuthService.qqLogin(request.getCode(), ip, state);
         return ApiResponse.success("QQ登录成功", response);
     }
 
@@ -97,7 +98,7 @@ public class SocialAuthController {
             @RequestBody Map<String, String> body,
             HttpServletRequest request) {
         Long userId = (Long) request.getAttribute("userId");
-        socialAuthService.bindQq(userId, body.get("code"));
+        socialAuthService.bindQq(userId, body.get("code"), body.getOrDefault("state", ""));
         return ApiResponse.success("QQ绑定成功", null);
     }
 

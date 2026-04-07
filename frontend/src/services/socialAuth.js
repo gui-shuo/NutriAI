@@ -20,8 +20,8 @@ export const socialAuthApi = {
   },
 
   // QQ登录
-  qqLogin(code) {
-    return api.post('/auth/social/qq/login', { code, provider: 'qq' })
+  qqLogin(code, state = 'login') {
+    return api.post('/auth/social/qq/login', { code, provider: 'qq', state })
   },
 
   // 获取绑定状态

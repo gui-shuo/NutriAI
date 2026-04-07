@@ -68,6 +68,8 @@ services:
       EPAY_MAPI_URL: ${EPAY_MAPI_URL}
       EPAY_NOTIFY_URL: ${EPAY_NOTIFY_URL:-}
       EPAY_RETURN_URL: ${EPAY_RETURN_URL:-}
+      QQ_WEB_ID: ${QQ_WEB_ID:-}
+      QQ_WEB_KEY: ${QQ_WEB_KEY:-}
       QQ_APP_ID: ${QQ_APP_ID:-}
       QQ_APP_KEY: ${QQ_APP_KEY:-}
       WX_MINIAPP_APPID: ${WX_MINIAPP_APPID:-wxcf557b14e389275f}

@@ -40,7 +40,14 @@ public class SocialAuthService {
     @Value("${social.wechat.app-secret:}")
     private String wxWebAppSecret;
 
-    // QQ互联
+    // QQ互联 - Web端 (网站应用)
+    @Value("${social.qq.web-id:}")
+    private String qqWebId;
+
+    @Value("${social.qq.web-key:}")
+    private String qqWebKey;
+
+    // QQ互联 - APP端 (移动应用)
     @Value("${social.qq.app-id:}")
     private String qqAppId;
 
@@ -124,16 +131,32 @@ public class SocialAuthService {
 
     // ==================== QQ OAuth2登录 ====================
 
+    /** 根据state前缀选择QQ凭据：app_开头用移动应用凭据，其他用网站应用凭据 */
+    private String getQqId(String state) {
+        if (state != null && state.startsWith("app_") && qqAppId != null && !qqAppId.isBlank()) {
+            return qqAppId;
+        }
+        return (qqWebId != null && !qqWebId.isBlank()) ? qqWebId : qqAppId;
+    }
+
+    private String getQqKey(String state) {
+        if (state != null && state.startsWith("app_") && qqAppKey != null && !qqAppKey.isBlank()) {
+            return qqAppKey;
+        }
+        return (qqWebKey != null && !qqWebKey.isBlank()) ? qqWebKey : qqAppKey;
+    }
+
     /**
      * 获取QQ授权URL
      */
     public String getQqAuthUrl(String state) {
-        if (qqAppId == null || qqAppId.isBlank()) {
+        String clientId = getQqId(state);
+        if (clientId == null || clientId.isBlank()) {
             throw new BusinessException(500, "QQ互联配置未完成");
         }
         return String.format(
             "https://graph.qq.com/oauth2.0/authorize?response_type=code&client_id=%s&redirect_uri=%s&state=%s&scope=get_user_info",
-            qqAppId, qqRedirectUri, state
+            clientId, qqRedirectUri, state
         );
     }
 
@@ -142,15 +165,17 @@ public class SocialAuthService {
      */
     @Transactional
     @SuppressWarnings("unchecked")
-    public LoginResponse qqLogin(String code, String ipAddress) {
-        if (qqAppId == null || qqAppId.isBlank()) {
+    public LoginResponse qqLogin(String code, String ipAddress, String state) {
+        String clientId = getQqId(state);
+        String clientSecret = getQqKey(state);
+        if (clientId == null || clientId.isBlank()) {
             throw new BusinessException(500, "QQ互联配置未完成，请联系管理员");
         }
 
         // 1. code换取access_token
         String tokenUrl = String.format(
             "https://graph.qq.com/oauth2.0/token?grant_type=authorization_code&client_id=%s&client_secret=%s&code=%s&redirect_uri=%s&fmt=json",
-            qqAppId, qqAppKey, code, qqRedirectUri
+            clientId, clientSecret, code, qqRedirectUri
         );
         Map<String, Object> tokenResp = callApi(tokenUrl, "QQ");
         String accessToken = (String) tokenResp.get("access_token");
@@ -171,12 +196,11 @@ public class SocialAuthService {
         // 3. 获取用户信息
         String userInfoUrl = String.format(
             "https://graph.qq.com/user/get_user_info?access_token=%s&oauth_consumer_key=%s&openid=%s",
-            accessToken, qqAppId, openId
+            accessToken, clientId, openId
         );
         Map<String, Object> userInfoResp = callApi(userInfoUrl, "QQ用户信息");
         String nickname = (String) userInfoResp.getOrDefault("nickname", "QQ用户");
         String avatar = (String) userInfoResp.getOrDefault("figureurl_qq_2", "");
-        // Ensure avatar URL uses HTTPS for mixed-content safety
         if (avatar != null && avatar.startsWith("http://")) {
             avatar = avatar.replaceFirst("http://", "https://");
         }
@@ -195,7 +219,7 @@ public class SocialAuthService {
                     .status("ACTIVE")
                     .build();
             userRepository.save(user);
-            log.info("QQ用户自动注册: openId={}, username={}", openId, autoUsername);
+            log.info("QQ用户自动注册: openId={}, username={}, platform={}", openId, autoUsername, state);
         }
 
         return buildLoginResponse(user, ipAddress);
@@ -260,8 +284,10 @@ public class SocialAuthService {
      */
     @Transactional
     @SuppressWarnings("unchecked")
-    public void bindQq(Long userId, String code) {
-        if (qqAppId == null || qqAppId.isBlank()) {
+    public void bindQq(Long userId, String code, String state) {
+        String clientId = getQqId(state);
+        String clientSecret = getQqKey(state);
+        if (clientId == null || clientId.isBlank()) {
             throw new BusinessException(500, "QQ互联配置未完成");
         }
 
@@ -275,7 +301,7 @@ public class SocialAuthService {
         // 用code换取access_token
         String tokenUrl = String.format(
             "https://graph.qq.com/oauth2.0/token?grant_type=authorization_code&client_id=%s&client_secret=%s&code=%s&redirect_uri=%s&fmt=json",
-            qqAppId, qqAppKey, code, qqRedirectUri
+            clientId, clientSecret, code, qqRedirectUri
         );
         Map<String, Object> tokenResp = callApi(tokenUrl, "QQ绑定");
         String accessToken = (String) tokenResp.get("access_token");
