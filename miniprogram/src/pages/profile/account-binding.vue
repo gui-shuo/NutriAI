@@ -165,44 +165,50 @@ async function handleBind(provider: 'wechat' | 'qq') {
 
   if (provider === 'qq') {
     // #ifdef APP-PLUS
-    // APP端使用原生QQ SDK绑定
+    // APP端使用内嵌WebView进行QQ OAuth绑定，使用和网页端相同的QQ_WEB_ID
     try {
-      const providers = await new Promise<any[]>((resolve, reject) => {
-        uni.getProvider({
-          service: 'oauth',
-          success: (res) => resolve(res.provider || []),
-          fail: reject
-        })
-      })
-      if (!providers.includes('qq')) {
-        uni.showToast({ title: '请先安装QQ', icon: 'none' })
+      const urlRes = await socialAuthApi.getQqAuthUrl('bind_qq') as any
+      if (urlRes.code !== 200 || !urlRes.data) {
+        uni.showToast({ title: urlRes.message || '获取授权地址失败', icon: 'none' })
         return
       }
-      const loginRes = await new Promise<any>((resolve, reject) => {
-        uni.login({
-          provider: 'qq',
-          success: resolve,
-          fail: reject
-        })
+      const authUrl = urlRes.data
+      const redirectHost = 'nutriai.itshuo.me'
+      const wv = plus.webview.create(authUrl, 'qq-auth-bind', {
+        titleNView: {
+          titleText: 'QQ绑定',
+          backgroundColor: '#10B981',
+          titleColor: '#ffffff',
+          autoBackButton: true
+        },
+        backButtonAutoControl: 'close'
+      } as any)
+      let handled = false
+      const checkUrl = () => {
+        if (handled) return
+        try {
+          const url = wv.getURL()
+          if (url && url.includes(redirectHost) && url.includes('/auth/callback/') && url.includes('code=')) {
+            handled = true
+            const match = url.match(/[?&]code=([^&]+)/)
+            const stateMatch = url.match(/[?&]state=([^&]+)/)
+            const code = match ? decodeURIComponent(match[1]) : ''
+            const state = stateMatch ? decodeURIComponent(stateMatch[1]) : 'bind_qq'
+            wv.close('auto')
+            if (code) {
+              handleQqCodeBind(code, state)
+            }
+          }
+        } catch {}
+      }
+      const pollTimer = setInterval(checkUrl, 300)
+      wv.addEventListener('close', () => {
+        clearInterval(pollTimer)
+        loading.value = false
       })
-      const accessToken = loginRes.authResult?.access_token
-      if (!accessToken) {
-        uni.showToast({ title: 'QQ授权失败', icon: 'none' })
-        return
-      }
-      const res = await socialAuthApi.bindQqToken(accessToken) as any
-      if (res.code === 200) {
-        uni.showToast({ title: 'QQ绑定成功', icon: 'success' })
-        await loadBindInfo()
-      } else {
-        uni.showToast({ title: res.message || 'QQ绑定失败', icon: 'none' })
-      }
+      wv.show('slide-in-right')
     } catch (e: any) {
-      const msg = e?.errMsg || e?.message || '操作失败'
-      if (!msg.includes('cancel')) {
-        uni.showToast({ title: 'QQ绑定失败', icon: 'none' })
-      }
-    } finally {
+      uni.showToast({ title: 'QQ绑定失败，请稍后重试', icon: 'none' })
       loading.value = false
     }
     return
@@ -226,6 +232,24 @@ async function handleBind(provider: 'wechat' | 'qq') {
     uni.showToast({ title: e?.message || '操作失败', icon: 'none' })
   } finally {
     loading.value = false
+  }
+}
+
+// APP端QQ授权码绑定
+async function handleQqCodeBind(code: string, state: string) {
+  try {
+    uni.showLoading({ title: '正在绑定...', mask: true })
+    const res = await socialAuthApi.bindQq(code, state) as any
+    uni.hideLoading()
+    if (res.code === 200) {
+      uni.showToast({ title: 'QQ绑定成功', icon: 'success' })
+      await loadBindInfo()
+    } else {
+      uni.showToast({ title: res.message || 'QQ绑定失败', icon: 'none' })
+    }
+  } catch (e: any) {
+    uni.hideLoading()
+    uni.showToast({ title: e?.message || 'QQ绑定失败', icon: 'none' })
   }
 }
 

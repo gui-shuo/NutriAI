@@ -979,6 +979,7 @@ onLoad(() => {
 onShow(() => {
   pageVisible = true
   if (!connected.value && !isConnecting.value && getToken()) {
+    reconnectAttempts = 0
     connectWebSocket()
   }
 })
