@@ -77,5 +77,5 @@ export const useUserStore = defineStore('user', () => {
     } catch {}
   }
 
-  return { userInfo, isLoggedIn, isAdmin, login, register, logout, restore, fetchUserInfo }
+  return { userInfo, isLoggedIn, isAdmin, login, register, logout, restore, fetchUserInfo, _saveLogin }
 })

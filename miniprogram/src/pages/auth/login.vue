@@ -206,8 +206,7 @@ async function handleSocialLogin(provider: 'wechat' | 'qq') {
     const res = await socialAuthApi.qqTokenLogin(accessToken) as any
     uni.hideLoading()
     if (res.code === 200 && res.data) {
-      uni.setStorageSync('token', res.data.token)
-      uni.setStorageSync('user', JSON.stringify(res.data.user))
+      userStore._saveLogin(res.data)
       uni.showToast({ title: '登录成功', icon: 'success' })
       setTimeout(() => uni.switchTab({ url: '/pages/index/index' }), 500)
     } else {
