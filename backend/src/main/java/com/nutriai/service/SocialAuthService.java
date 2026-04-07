@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
@@ -154,9 +156,10 @@ public class SocialAuthService {
         if (clientId == null || clientId.isBlank()) {
             throw new BusinessException(500, "QQ互联配置未完成");
         }
+        String encodedRedirect = URLEncoder.encode(qqRedirectUri, StandardCharsets.UTF_8);
         return String.format(
             "https://graph.qq.com/oauth2.0/authorize?response_type=code&client_id=%s&redirect_uri=%s&state=%s&scope=get_user_info",
-            clientId, qqRedirectUri, state
+            clientId, encodedRedirect, state
         );
     }
 
@@ -175,7 +178,7 @@ public class SocialAuthService {
         // 1. code换取access_token
         String tokenUrl = String.format(
             "https://graph.qq.com/oauth2.0/token?grant_type=authorization_code&client_id=%s&client_secret=%s&code=%s&redirect_uri=%s&fmt=json",
-            clientId, clientSecret, code, qqRedirectUri
+            clientId, clientSecret, code, URLEncoder.encode(qqRedirectUri, StandardCharsets.UTF_8)
         );
         Map<String, Object> tokenResp = callApi(tokenUrl, "QQ");
         String accessToken = (String) tokenResp.get("access_token");
@@ -301,7 +304,7 @@ public class SocialAuthService {
         // 用code换取access_token
         String tokenUrl = String.format(
             "https://graph.qq.com/oauth2.0/token?grant_type=authorization_code&client_id=%s&client_secret=%s&code=%s&redirect_uri=%s&fmt=json",
-            clientId, clientSecret, code, qqRedirectUri
+            clientId, clientSecret, code, URLEncoder.encode(qqRedirectUri, StandardCharsets.UTF_8)
         );
         Map<String, Object> tokenResp = callApi(tokenUrl, "QQ绑定");
         String accessToken = (String) tokenResp.get("access_token");
