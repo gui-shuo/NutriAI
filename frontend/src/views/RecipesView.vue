@@ -284,35 +284,27 @@
         </div>
       </div>
 
-      <!-- Corpus Grid -->
+      <!-- Corpus List (compact) -->
       <section class="recipes-section">
         <div v-if="corpusLoading" class="loading-container">
-          <el-skeleton :rows="3" animated />
-          <el-skeleton :rows="3" animated />
+          <el-skeleton :rows="5" animated />
         </div>
         <div v-else-if="corpusRecipes.length === 0" class="empty-container">
           <el-empty description="没有找到相关食谱，试试其他关键词" />
         </div>
-        <div v-else class="recipe-grid">
+        <div v-else class="corpus-list">
           <div
             v-for="recipe in corpusRecipes"
             :key="'corpus-' + recipe.id"
-            class="recipe-card corpus-card"
+            class="corpus-item"
             @click="openCorpusDetail(recipe)"
           >
-            <div class="card-image">
-              <div class="image-placeholder corpus-placeholder">
-                <span class="corpus-emoji">{{ getCategoryEmoji(recipe.category) }}</span>
-              </div>
-              <span class="badge-category">{{ corpusCategoryMap[recipe.category] || '其他' }}</span>
+            <span class="corpus-item-emoji">{{ getCategoryEmoji(recipe.category) }}</span>
+            <div class="corpus-item-body">
+              <span class="corpus-item-name">{{ recipe.name }}</span>
+              <span v-if="recipe.dish" class="corpus-item-dish">{{ recipe.dish }}</span>
             </div>
-            <div class="card-body">
-              <h3 class="card-title">{{ recipe.name }}</h3>
-              <p class="card-desc">{{ truncate(recipe.description, 60) }}</p>
-              <div class="card-meta">
-                <span v-if="recipe.author" class="meta-item">👨‍🍳 {{ recipe.author }}</span>
-              </div>
-            </div>
+            <el-tag size="small" type="info" round>{{ corpusCategoryMap[recipe.category] || '其他' }}</el-tag>
           </div>
         </div>
       </section>
@@ -322,10 +314,12 @@
         <el-pagination
           v-model:current-page="corpusPage"
           :page-size="corpusPageSize"
-          :total="Math.min(corpusTotal, 10000)"
-          layout="prev, pager, next, jumper"
+          :total="corpusTotal"
+          :page-sizes="[50, 100]"
+          layout="total, prev, pager, next, sizes, jumper"
           background
           @current-change="loadCorpus"
+          @size-change="handleCorpusSizeChange"
         />
         <p class="corpus-total-info">共 {{ formatCount(corpusRealTotal) }} 道食谱</p>
       </div>
@@ -757,7 +751,7 @@ const corpusCategory = ref('')
 const corpusRecipes = ref([])
 const corpusLoading = ref(false)
 const corpusPage = ref(1)
-const corpusPageSize = 20
+const corpusPageSize = ref(50)
 const corpusTotal = ref(0)
 const corpusRealTotal = ref(0)
 const corpusDetailVisible = ref(false)
@@ -1041,7 +1035,7 @@ function setCorpusCategory(val) {
 async function loadCorpus() {
   corpusLoading.value = true
   try {
-    const params = { page: corpusPage.value, size: corpusPageSize }
+    const params = { page: corpusPage.value, size: corpusPageSize.value }
     if (corpusKeyword.value) params.keyword = corpusKeyword.value
     if (corpusCategory.value) params.category = corpusCategory.value
     const res = await api.get('/recipes/corpus', { params })
@@ -1056,6 +1050,12 @@ async function loadCorpus() {
   } finally {
     corpusLoading.value = false
   }
+}
+
+function handleCorpusSizeChange(newSize) {
+  corpusPageSize.value = newSize
+  corpusPage.value = 1
+  loadCorpus()
 }
 
 async function loadCorpusCategories() {
@@ -1853,16 +1853,60 @@ onMounted(() => {
   }
 }
 
-/* ─── Corpus Styles ─────────────────────────────── */
-.corpus-card {
-  .corpus-placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, rgba($accent, 0.08), rgba($accent, 0.03));
+/* ─── Corpus Compact List ──────────────────────── */
+.corpus-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: $card;
+  border-radius: $radius-lg;
+  border: 1px solid $border;
+  overflow: hidden;
+}
+
+.corpus-item {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: 10px $spacing-md;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-bottom: 1px solid rgba($border, 0.5);
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: rgba($accent, 0.04); }
+
+  .corpus-item-emoji {
+    font-size: 20px;
+    flex-shrink: 0;
+    width: 28px;
+    text-align: center;
   }
-  .corpus-emoji {
-    font-size: 42px;
+
+  .corpus-item-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    gap: $spacing-sm;
+  }
+
+  .corpus-item-name {
+    font-weight: 500;
+    font-size: 14px;
+    color: $foreground;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .corpus-item-dish {
+    font-size: 12px;
+    color: rgba($foreground, 0.45);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 1;
   }
 }
 

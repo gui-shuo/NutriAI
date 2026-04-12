@@ -37,17 +37,23 @@ public class KnowledgeBaseService {
 
     /**
      * 搜索食谱语料库（分页）
+     * 无筛选浏览用缓存总数避免COUNT(*)，分类用索引计数，关键词搜索保留上限
      */
     public Page<RecipeCorpus> searchCorpus(String keyword, String category, int page, int size) {
         int safePage = Math.max(page - 1, 0);
         Pageable pageable = PageRequest.of(safePage, size);
         if (keyword != null && !keyword.isBlank()) {
+            // 关键词LIKE搜索，COUNT上限5万（LIKE无索引，深分页较慢）
             return recipeCorpusRepository.searchPagedCapped(keyword.trim(), pageable);
         }
         if (category != null && !category.isBlank()) {
-            return recipeCorpusRepository.findByCategoryCapped(category, pageable);
+            // 分类有索引，用真实COUNT
+            return recipeCorpusRepository.findByCategoryReal(category, pageable);
         }
-        return recipeCorpusRepository.findAllCapped(pageable);
+        // 无筛选浏览：用缓存总数构建Page，避免COUNT(*)
+        refreshCacheIfNeeded();
+        List<RecipeCorpus> content = recipeCorpusRepository.findPageOrderById(pageable);
+        return new org.springframework.data.domain.PageImpl<>(content, pageable, cachedCorpusCount.get());
     }
 
     /**

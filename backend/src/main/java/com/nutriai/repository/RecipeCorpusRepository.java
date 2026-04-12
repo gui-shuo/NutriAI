@@ -21,22 +21,21 @@ public interface RecipeCorpusRepository extends JpaRepository<RecipeCorpus, Long
            nativeQuery = true)
     List<RecipeCorpus> searchByName(@Param("keyword") String keyword, @Param("limit") int limit);
 
-    // Browsing queries with capped count to avoid slow COUNT(*) on 1.5M+ rows.
-    // Data queries use ORDER BY id for index-based pagination.
-    // Count queries return a capped estimate to keep pagination fast.
+    // === Optimized browsing queries ===
 
-    @Query(value = "SELECT * FROM recipe_corpus ORDER BY id",
-           countQuery = "SELECT 10000",
-           nativeQuery = true)
-    Page<RecipeCorpus> findAllCapped(Pageable pageable);
+    // No filter: data only (count provided by cached total)
+    @Query(value = "SELECT * FROM recipe_corpus ORDER BY id", nativeQuery = true)
+    List<RecipeCorpus> findPageOrderById(Pageable pageable);
 
+    // Category filter: real count (category column is indexed)
     @Query(value = "SELECT * FROM recipe_corpus WHERE category = :category ORDER BY id",
-           countQuery = "SELECT LEAST(10000, (SELECT COUNT(*) FROM recipe_corpus WHERE category = :category))",
+           countQuery = "SELECT COUNT(*) FROM recipe_corpus WHERE category = :category",
            nativeQuery = true)
-    Page<RecipeCorpus> findByCategoryCapped(@Param("category") String category, Pageable pageable);
+    Page<RecipeCorpus> findByCategoryReal(@Param("category") String category, Pageable pageable);
 
+    // Keyword search: capped count (LIKE is not indexed, limit deep pagination)
     @Query(value = "SELECT * FROM recipe_corpus WHERE name LIKE CONCAT('%', :keyword, '%') OR dish LIKE CONCAT('%', :keyword, '%') ORDER BY id",
-           countQuery = "SELECT LEAST(10000, (SELECT COUNT(*) FROM (SELECT 1 FROM recipe_corpus WHERE name LIKE CONCAT('%', :keyword, '%') OR dish LIKE CONCAT('%', :keyword, '%') LIMIT 10000) t))",
+           countQuery = "SELECT LEAST(50000, (SELECT COUNT(*) FROM (SELECT 1 FROM recipe_corpus WHERE name LIKE CONCAT('%', :keyword, '%') OR dish LIKE CONCAT('%', :keyword, '%') LIMIT 50000) t))",
            nativeQuery = true)
     Page<RecipeCorpus> searchPagedCapped(@Param("keyword") String keyword, Pageable pageable);
 

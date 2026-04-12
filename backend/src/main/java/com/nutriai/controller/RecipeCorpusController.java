@@ -30,7 +30,7 @@ public class RecipeCorpusController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int size) {
         
-        if (size > 50) size = 50;
+        if (size > 100) size = 100;
         Page<RecipeCorpus> result = knowledgeBaseService.searchCorpus(keyword, category, page, size);
         return ApiResponse.success("获取成功", result);
     }
