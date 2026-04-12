@@ -27,4 +27,5 @@ public class SystemAnnouncementDTO {
     private String createdByName;   // 创建人姓名（关联查询）
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Boolean isRead;         // 当前用户是否已读
 }

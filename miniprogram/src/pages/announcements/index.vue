@@ -1,6 +1,10 @@
 <template>
   <view class="page">
-    <!-- Pull to refresh handled by onPullDownRefresh -->
+    <!-- Mark all read button -->
+    <view v-if="hasUnread" class="mark-all-bar" @tap="markAllRead">
+      <text class="mark-all-text">全部标记已读</text>
+    </view>
+
     <view v-if="loading && !announcements.length" class="loading-state">
       <text class="text-secondary">加载中...</text>
     </view>
@@ -10,11 +14,12 @@
         v-for="item in announcements"
         :key="item.id"
         class="announcement-card"
-        :class="{ important: item.priority === 'HIGH' || item.priority === 'IMPORTANT' }"
-        @tap="toggleExpand(item.id)"
+        :class="{ important: item.priority === 'HIGH' || item.priority === 'IMPORTANT', unread: !item.isRead }"
+        @tap="toggleExpand(item)"
       >
         <view class="announcement-header">
           <view class="title-row">
+            <view v-if="!item.isRead" class="unread-dot" />
             <view
               v-if="item.priority === 'HIGH' || item.priority === 'IMPORTANT'"
               class="priority-badge"
@@ -23,9 +28,12 @@
             </view>
             <text class="announcement-title">{{ item.title }}</text>
           </view>
-          <text class="announcement-date text-sm text-secondary">
-            {{ formatTime(item.publishedAt || item.createdAt) }}
-          </text>
+          <view class="date-row">
+            <text class="announcement-date text-sm text-secondary">
+              {{ formatTime(item.publishedAt || item.createdAt) }}
+            </text>
+            <text v-if="item.isRead" class="read-tag">已读</text>
+          </view>
         </view>
 
         <!-- Preview (collapsed) -->
@@ -63,7 +71,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { onPullDownRefresh, onReachBottom } from '@dcloudio/uni-app'
 import { announcementApi } from '@/services/api'
 import { formatTime } from '@/utils/common'
@@ -76,13 +84,38 @@ const pageSize = 10
 const hasMore = ref(true)
 const expandedId = ref<number | null>(null)
 
+const hasUnread = computed(() => announcements.value.some(a => !a.isRead))
+
 function truncateText(text: string, max: number) {
   if (!text || text.length <= max) return text
   return text.substring(0, max) + '...'
 }
 
-function toggleExpand(id: number) {
-  expandedId.value = expandedId.value === id ? null : id
+function toggleExpand(item: any) {
+  if (expandedId.value === item.id) {
+    expandedId.value = null
+  } else {
+    expandedId.value = item.id
+    // 展开时自动标记已读
+    if (!item.isRead) {
+      markRead(item)
+    }
+  }
+}
+
+async function markRead(item: any) {
+  try {
+    await announcementApi.markRead(item.id)
+    item.isRead = true
+  } catch {}
+}
+
+async function markAllRead() {
+  try {
+    await announcementApi.markAllRead()
+    announcements.value.forEach(a => { a.isRead = true })
+    uni.showToast({ title: '已全部标记为已读', icon: 'success' })
+  } catch {}
 }
 
 async function loadAnnouncements(isRefresh = false) {
@@ -163,6 +196,45 @@ onMounted(() => {
   &.important {
     border-left: 6rpx solid $accent;
   }
+
+  &.unread {
+    border-left: 6rpx solid $accent;
+    background: rgba(16, 185, 129, 0.04);
+  }
+}
+
+.unread-dot {
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+  background: $accent;
+  flex-shrink: 0;
+}
+
+.date-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.read-tag {
+  font-size: 22rpx;
+  color: $muted-foreground;
+}
+
+.mark-all-bar {
+  text-align: center;
+  padding: 16rpx 24rpx;
+  margin: 0 24rpx 16rpx;
+  background: $card;
+  border-radius: $radius-lg;
+  border: 1rpx solid $border;
+}
+
+.mark-all-text {
+  color: $accent;
+  font-size: 26rpx;
+  font-weight: 600;
 }
 
 .announcement-header {

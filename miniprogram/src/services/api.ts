@@ -144,7 +144,10 @@ export const socialAuthApi = {
 
 // ============ Announcements ============
 export const announcementApi = {
-  getList: (params?: any) => request({ url: '/announcements', data: params })
+  getList: (params?: any) => request({ url: '/announcements', data: params }),
+  getUnreadCount: () => request({ url: '/announcements/unread-count' }),
+  markRead: (id: number) => request({ url: `/announcements/${id}/read`, method: 'POST' }),
+  markAllRead: () => request({ url: '/announcements/read-all', method: 'POST' }),
 }
 
 // ============ Constants ============

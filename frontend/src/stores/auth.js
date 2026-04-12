@@ -150,6 +150,18 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  // 从服务器刷新用户信息（角色等变更后无需重新登录）
+  const fetchUserInfo = async () => {
+    try {
+      const res = await api.get('/user/profile')
+      if (res.data.code === 200 && res.data.data) {
+        setUser(res.data.data)
+      }
+    } catch (e) {
+      console.error('Failed to fetch user info:', e)
+    }
+  }
+
   const checkAuth = () => {
     return isLoggedIn.value
   }
@@ -196,6 +208,7 @@ export const useAuthStore = defineStore('auth', () => {
     refreshAccessToken,
     updateUserInfo,
     fetchPermissions,
+    fetchUserInfo,
     checkAuth
   }
 })

@@ -9,10 +9,12 @@
             <span class="logo-text font-display gradient-text">{{ siteName }}</span>
           </div>
           <div class="nav-buttons">
-            <el-button link @click="goToAnnouncements">
-              <el-icon><Bell /></el-icon>
-              公告
-            </el-button>
+            <el-badge :value="unreadCount" :hidden="unreadCount === 0" :max="99" class="announcement-badge">
+              <el-button link @click="goToAnnouncements">
+                <el-icon><Bell /></el-icon>
+                公告
+              </el-button>
+            </el-badge>
             <el-button v-if="!isLoggedIn" type="primary" @click="goToLogin"> 登录 </el-button>
             <el-button v-if="!isLoggedIn" @click="goToRegister"> 注册 </el-button>
             <el-dropdown v-if="isLoggedIn" @command="handleCommand">
@@ -201,9 +203,10 @@
 </template>
 
 <script setup>
-import { computed, onMounted, onUnmounted } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import api from '@/services/api'
 import { ElMessage as message } from 'element-plus'
 import {
   Bell,
@@ -236,6 +239,17 @@ const isLoggedIn = computed(() => authStore.isLoggedIn)
 const userName = computed(() => authStore.user?.username || '用户')
 const isAdmin = computed(() => authStore.isAdmin)
 const isNutritionist = computed(() => authStore.isNutritionist)
+const unreadCount = ref(0)
+
+// 获取未读公告数
+const fetchUnreadCount = async () => {
+  try {
+    const { data } = await api.get('/announcements/unread-count')
+    if (data.code === 200) {
+      unreadCount.value = data.data?.count || 0
+    }
+  } catch {}
+}
 
 // 页面加载时获取配置
 let stopAutoRefresh = null
@@ -243,8 +257,11 @@ onMounted(async () => {
   await loadConfig()
   applyConfig()
 
-  // 可选：每分钟自动刷新配置
-  // stopAutoRefresh = startAutoRefresh(60000)
+  // 登录用户刷新角色信息和未读公告数
+  if (authStore.isLoggedIn) {
+    authStore.fetchUserInfo()
+    fetchUnreadCount()
+  }
 })
 
 onUnmounted(() => {

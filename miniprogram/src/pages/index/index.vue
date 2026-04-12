@@ -6,6 +6,7 @@
         <text class="nav-title">NutriAI</text>
         <view class="nav-bell" @tap="goTo('/pages/announcements/index')">
           <text class="bell-icon">🔔</text>
+          <view v-if="unreadCount > 0" class="unread-badge">{{ unreadCount > 99 ? '99+' : unreadCount }}</view>
         </view>
       </view>
     </view>
@@ -105,12 +106,24 @@ import { onShow } from '@dcloudio/uni-app'
 import { useUserStore } from '@/stores/user'
 import { useAppStore } from '@/stores/app'
 import { defaultAvatar } from '@/utils/common'
+import { announcementApi } from '@/services/api'
 
 const userStore = useUserStore()
 const appStore = useAppStore()
 
 const statusBarHeight = ref(0)
 const navBarTotalHeight = ref(0)
+const unreadCount = ref(0)
+
+const fetchUnreadCount = async () => {
+  if (!userStore.isLoggedIn) return
+  try {
+    const res = await announcementApi.getUnreadCount()
+    if (res.code === 200) {
+      unreadCount.value = res.data?.count || 0
+    }
+  } catch {}
+}
 
 const greetingText = computed(() => {
   const h = new Date().getHours()
@@ -147,6 +160,7 @@ onShow(() => {
 
   userStore.restore()
   appStore.fetchConfig()
+  fetchUnreadCount()
 })
 
 function handleGreetingTap() {
@@ -200,8 +214,22 @@ function goTo(url: string) {
   display: flex; align-items: center; justify-content: center;
   background: rgba(255,255,255,0.15);
   border-radius: 50%;
+  position: relative;
 }
 .bell-icon { font-size: 36rpx; }
+.unread-badge {
+  position: absolute;
+  top: -6rpx; right: -10rpx;
+  min-width: 32rpx; height: 32rpx;
+  line-height: 32rpx;
+  padding: 0 8rpx;
+  background: #EF4444;
+  color: #fff;
+  font-size: 20rpx;
+  border-radius: 16rpx;
+  text-align: center;
+  font-weight: bold;
+}
 
 .content {
   padding: 0 0 48rpx;

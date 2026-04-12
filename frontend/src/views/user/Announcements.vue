@@ -1,7 +1,12 @@
 <template>
   <div class="announcements-page">
     <div class="page-header">
-      <el-button :icon="ArrowLeft" @click="router.push('/')">返回首页</el-button>
+      <div class="header-actions">
+        <el-button :icon="ArrowLeft" @click="router.push('/')">返回首页</el-button>
+        <el-button v-if="hasUnread" type="primary" plain size="small" @click="markAllRead">
+          全部标记已读
+        </el-button>
+      </div>
       <h1>系统公告</h1>
       <p class="subtitle">查看最新的系统通知和公告信息</p>
     </div>
@@ -14,10 +19,11 @@
         v-for="announcement in announcements"
         :key="announcement.id"
         class="announcement-card"
-        :class="`type-${announcement.type}`"
+        :class="[`type-${announcement.type}`, { unread: !announcement.isRead }]"
       >
         <div class="card-header">
           <div class="header-left">
+            <span v-if="!announcement.isRead" class="unread-dot" />
             <el-tag :type="getTypeTag(announcement.type)" size="large" effect="dark">
               {{ getTypeLabel(announcement.type) }}
             </el-tag>
@@ -26,6 +32,14 @@
             </h3>
           </div>
           <div class="header-right">
+            <el-button
+              v-if="!announcement.isRead"
+              type="primary"
+              link
+              size="small"
+              @click="markRead(announcement)"
+            >标记已读</el-button>
+            <span v-else class="read-tag">已读</span>
             <span class="date">{{ formatDate(announcement.createdAt) }}</span>
           </div>
         </div>
@@ -62,7 +76,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Clock, ArrowLeft } from '@element-plus/icons-vue'
@@ -75,6 +89,8 @@ const announcements = ref([])
 const currentPage = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
+
+const hasUnread = computed(() => announcements.value.some(a => !a.isRead))
 
 // 加载公告列表
 const loadAnnouncements = async () => {
@@ -96,6 +112,23 @@ const loadAnnouncements = async () => {
   } finally {
     loading.value = false
   }
+}
+
+// 标记单条已读
+const markRead = async (announcement) => {
+  try {
+    await api.post(`/announcements/${announcement.id}/read`)
+    announcement.isRead = true
+  } catch {}
+}
+
+// 全部标记已读
+const markAllRead = async () => {
+  try {
+    await api.post('/announcements/read-all')
+    announcements.value.forEach(a => { a.isRead = true })
+    ElMessage.success('已全部标记为已读')
+  } catch {}
 }
 
 // 获取类型标签
@@ -147,6 +180,13 @@ onMounted(() => {
 .page-header {
   text-align: center;
   margin-bottom: 40px;
+}
+
+.header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
 }
 
 .page-header h1 {
@@ -281,6 +321,25 @@ onMounted(() => {
   margin-top: 32px;
   display: flex;
   justify-content: center;
+}
+
+.announcement-card.unread {
+  border-left: 3px solid var(--accent, #10B981);
+  background: #f0fdf4;
+}
+
+.unread-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent, #10B981);
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.read-tag {
+  color: #94a3b8;
+  font-size: 12px;
 }
 
 @media (max-width: 768px) {
