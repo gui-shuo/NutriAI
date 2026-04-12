@@ -12,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -27,18 +29,25 @@ public class KnowledgeBaseService {
     private final RecipeCorpusRepository recipeCorpusRepository;
     private final FoodNutritionKbRepository foodNutritionKbRepository;
 
+    // Cache for expensive queries (refreshed every 30 min)
+    private final AtomicLong cachedCorpusCount = new AtomicLong(-1);
+    private final AtomicReference<List<String>> cachedCategories = new AtomicReference<>();
+    private volatile long cacheTimestamp = 0;
+    private static final long CACHE_TTL_MS = 30 * 60 * 1000;
+
     /**
      * 搜索食谱语料库（分页）
      */
     public Page<RecipeCorpus> searchCorpus(String keyword, String category, int page, int size) {
-        Pageable pageable = PageRequest.of(page - 1, size);
+        int safePage = Math.max(page - 1, 0);
+        Pageable pageable = PageRequest.of(safePage, size);
         if (keyword != null && !keyword.isBlank()) {
-            return recipeCorpusRepository.searchPaged(keyword.trim(), pageable);
+            return recipeCorpusRepository.searchPagedCapped(keyword.trim(), pageable);
         }
         if (category != null && !category.isBlank()) {
-            return recipeCorpusRepository.findByCategoryPaged(category, pageable);
+            return recipeCorpusRepository.findByCategoryCapped(category, pageable);
         }
-        return recipeCorpusRepository.findAll(pageable);
+        return recipeCorpusRepository.findAllCapped(pageable);
     }
 
     /**
@@ -49,17 +58,34 @@ public class KnowledgeBaseService {
     }
 
     /**
-     * 获取所有分类
+     * 获取所有分类（带缓存）
      */
     public List<String> getCorpusCategories() {
-        return recipeCorpusRepository.findAllCategories();
+        refreshCacheIfNeeded();
+        List<String> cached = cachedCategories.get();
+        return cached != null ? cached : List.of();
     }
 
     /**
-     * 获取语料库总量
+     * 获取语料库总量（带缓存）
      */
     public long getCorpusCount() {
-        return recipeCorpusRepository.countAll();
+        refreshCacheIfNeeded();
+        return cachedCorpusCount.get();
+    }
+
+    private void refreshCacheIfNeeded() {
+        long now = System.currentTimeMillis();
+        if (now - cacheTimestamp > CACHE_TTL_MS || cachedCorpusCount.get() < 0) {
+            try {
+                cachedCorpusCount.set(recipeCorpusRepository.countAll());
+                cachedCategories.set(recipeCorpusRepository.findAllCategories());
+                cacheTimestamp = now;
+                log.info("知识库缓存已刷新: total={}, categories={}", cachedCorpusCount.get(), cachedCategories.get().size());
+            } catch (Exception e) {
+                log.warn("刷新知识库缓存失败: {}", e.getMessage());
+            }
+        }
     }
 
     /**
