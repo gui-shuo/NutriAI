@@ -18,6 +18,7 @@ export const useUserStore = defineStore('user', () => {
   const token = ref(getToken())
   const isLoggedIn = computed(() => !!token.value && !!userInfo.value)
   const isAdmin = computed(() => userInfo.value?.role === 'ADMIN')
+  const isNutritionist = computed(() => userInfo.value?.role === 'NUTRITIONIST')
 
   function _saveLogin(data: any) {
     setToken(data.accessToken)
@@ -77,5 +78,5 @@ export const useUserStore = defineStore('user', () => {
     } catch {}
   }
 
-  return { userInfo, isLoggedIn, isAdmin, login, register, logout, restore, fetchUserInfo, _saveLogin }
+  return { userInfo, isLoggedIn, isAdmin, isNutritionist, login, register, logout, restore, fetchUserInfo, _saveLogin }
 })

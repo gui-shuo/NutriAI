@@ -81,10 +81,10 @@
       <!-- QQ Web Verify Banner -->
       <div v-if="bindInfo.qqNeedWebVerify" class="verify-banner">
         <div class="verify-content">
-          <span class="verify-icon">🔐</span>
+          <span class="verify-icon">💡</span>
           <div class="verify-text">
-            <div class="verify-title">需要Web端QQ验证</div>
-            <div class="verify-desc">首次在网页端使用，为了安全请点击上方"Web验证"按钮用QQ登录验证身份</div>
+            <div class="verify-title">Web端QQ登录验证</div>
+            <div class="verify-desc">检测到您的QQ账号尚未在网页端验证绑定。如需在网页端使用QQ登录，请点击上方"Web验证"按钮完成QQ身份验证，验证一次后即可长期使用QQ登录网页端。</div>
           </div>
         </div>
       </div>

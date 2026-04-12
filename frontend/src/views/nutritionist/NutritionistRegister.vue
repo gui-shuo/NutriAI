@@ -102,6 +102,7 @@
               action="#"
               :auto-upload="false"
               :on-change="handleCertUpload"
+              :on-remove="handleCertRemove"
               :file-list="certFiles"
               list-type="picture-card"
               accept="image/*"
@@ -251,9 +252,50 @@ const sendEmailCode = async () => {
   }
 }
 
-const handleCertUpload = (file) => {
-  // 将文件转为base64 URL预览（实际场景应上传到COS）
-  certFiles.value = [...certFiles.value]
+const handleCertUpload = async (uploadFile) => {
+  const file = uploadFile.raw
+  if (!file) return
+
+  // Validate file size
+  if (file.size > 5 * 1024 * 1024) {
+    message.error('图片大小不能超过5MB')
+    certFiles.value = certFiles.value.filter(f => f.uid !== uploadFile.uid)
+    return
+  }
+
+  // Validate file type
+  if (!['image/jpeg', 'image/png', 'image/jpg', 'image/gif'].includes(file.type)) {
+    message.error('仅支持jpg/png/gif格式')
+    certFiles.value = certFiles.value.filter(f => f.uid !== uploadFile.uid)
+    return
+  }
+
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+    const res = await api.post('/auth/upload-certificate', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 60000
+    })
+    if (res.data.code === 200 && res.data.data) {
+      form.certificateUrls.push(res.data.data)
+      message.success('证书图片上传成功')
+    } else {
+      message.error(res.data.message || '上传失败')
+      certFiles.value = certFiles.value.filter(f => f.uid !== uploadFile.uid)
+    }
+  } catch (e) {
+    message.error('上传失败，请重试')
+    certFiles.value = certFiles.value.filter(f => f.uid !== uploadFile.uid)
+  }
+}
+
+const handleCertRemove = (uploadFile) => {
+  const index = certFiles.value.findIndex(f => f.uid === uploadFile.uid)
+  if (index !== -1) {
+    certFiles.value.splice(index, 1)
+    form.certificateUrls.splice(index, 1)
+  }
 }
 
 const nextStep = async () => {

@@ -121,6 +121,16 @@ public class OssService {
     }
 
     /**
+     * 上传资质证书图片
+     */
+    public String uploadCertificate(MultipartFile file) {
+        validateFile(file);
+        String extension = getFileExtension(file.getOriginalFilename());
+        String key = "certificates/cert_" + UUID.randomUUID() + "." + extension;
+        return uploadToCos(file, key);
+    }
+
+    /**
      * 上传文件到腾讯云COS
      */
     private String uploadToCos(MultipartFile file, String key) {

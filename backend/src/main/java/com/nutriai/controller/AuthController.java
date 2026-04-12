@@ -3,11 +3,13 @@ package com.nutriai.controller;
 import com.nutriai.common.ApiResponse;
 import com.nutriai.dto.auth.*;
 import com.nutriai.service.AuthService;
+import com.nutriai.service.OssService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 认证控制器
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     
     private final AuthService authService;
+    private final OssService ossService;
     
     /**
      * 用户注册
@@ -151,6 +154,15 @@ public class AuthController {
         ApiResponse<Void> response = ApiResponse.success();
         response.setMessage("营养师注册申请已提交，请等待管理员审核");
         return response;
+    }
+
+    /**
+     * 上传资质证书图片（公开接口，用于营养师注册）
+     */
+    @PostMapping("/upload-certificate")
+    public ApiResponse<String> uploadCertificate(@RequestParam("file") MultipartFile file) {
+        String url = ossService.uploadCertificate(file);
+        return ApiResponse.success("上传成功", url);
     }
 
     /**

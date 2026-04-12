@@ -34,6 +34,18 @@
         </view>
       </view>
 
+      <!-- 营养师工作台入口 -->
+      <view v-if="userStore.isLoggedIn && userStore.isNutritionist" class="nutritionist-entry" @tap="goTo('/pages/consultation/index')">
+        <view class="nutri-entry-left">
+          <text class="nutri-entry-icon">🩺</text>
+          <view class="nutri-entry-text">
+            <text class="nutri-entry-title">营养师工作台</text>
+            <text class="nutri-entry-desc">查看咨询消息，管理您的客户</text>
+          </view>
+        </view>
+        <text class="nutri-entry-arrow">›</text>
+      </view>
+
       <!-- Quick Actions - horizontal scroll -->
       <view class="quick-section">
         <text class="section-label">快捷功能</text>
@@ -247,6 +259,44 @@ function goTo(url: string) {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* 营养师工作台入口 */
+.nutritionist-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 24rpx 32rpx;
+  padding: 28rpx 32rpx;
+  background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
+  border-radius: 24rpx;
+  border: 2rpx solid #A7F3D0;
+}
+.nutri-entry-left {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+.nutri-entry-icon {
+  font-size: 48rpx;
+}
+.nutri-entry-title {
+  display: block;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #065F46;
+  font-family: 'Calistoga', Georgia, 'PingFang SC', serif;
+}
+.nutri-entry-desc {
+  display: block;
+  font-size: 24rpx;
+  color: #047857;
+  margin-top: 4rpx;
+}
+.nutri-entry-arrow {
+  font-size: 40rpx;
+  color: #10B981;
+  font-weight: 700;
 }
 
 /* Quick Actions */
