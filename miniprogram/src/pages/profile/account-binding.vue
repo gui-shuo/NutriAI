@@ -22,33 +22,41 @@
       </view>
     </view>
 
+    <!-- #ifdef APP-PLUS -->
     <!-- QQ APP Verify Banner -->
     <view v-if="bindInfo.qqNeedAppVerify" class="card verify-banner">
       <view class="verify-content">
         <text class="verify-icon">💡</text>
         <view class="verify-text">
           <text class="verify-title">APP端QQ登录验证</text>
-          <text class="verify-desc">检测到您的QQ账号尚未在APP端验证绑定。如需在APP端使用QQ登录，请点击下方按钮完成QQ身份验证，验证一次后即可长期使用QQ登录APP。</text>
+          <text class="verify-desc">{{ bindInfo.qqBound
+            ? '检测到您的QQ账号尚未在APP端验证绑定。如需在APP端使用QQ登录，请点击下方按钮完成身份验证，验证一次后即可长期使用。'
+            : '绑定QQ后即可使用QQ快速登录APP端。请点击下方按钮，通过QQ授权完成绑定。' }}</text>
         </view>
       </view>
       <button class="btn-verify" @tap="handleQqAppVerify" :loading="verifyingQq">
-        QQ验证
+        {{ bindInfo.qqBound ? 'QQ验证' : '绑定QQ' }}
       </button>
     </view>
+    <!-- #endif -->
 
+    <!-- #ifdef H5 -->
     <!-- QQ Web Verify Banner (H5) -->
     <view v-if="bindInfo.qqNeedWebVerify" class="card verify-banner">
       <view class="verify-content">
         <text class="verify-icon">💡</text>
         <view class="verify-text">
           <text class="verify-title">Web端QQ登录验证</text>
-          <text class="verify-desc">检测到您的QQ账号尚未在网页端验证绑定。如需在网页端使用QQ登录，请点击下方按钮完成QQ身份验证，验证一次后即可长期使用QQ登录网页端。</text>
+          <text class="verify-desc">{{ bindInfo.qqBound
+            ? '检测到您的QQ账号尚未在网页端验证绑定。如需在网页端使用QQ登录，请点击下方按钮完成身份验证，验证一次后即可长期使用。'
+            : '绑定QQ后即可使用QQ快速登录网页端。请点击下方按钮，通过QQ授权完成绑定。' }}</text>
         </view>
       </view>
       <button class="btn-verify" @tap="handleBind('qq')">
-        QQ验证
+        {{ bindInfo.qqBound ? 'QQ验证' : '绑定QQ' }}
       </button>
     </view>
+    <!-- #endif -->
 
     <!-- Social Accounts -->
     <view class="card">

@@ -363,8 +363,9 @@ public class SocialAuthService {
         boolean hasWebQq = user.getQqOpenId() != null && !user.getQqOpenId().isBlank();
         boolean hasAppQq = user.getQqAppOpenId() != null && !user.getQqAppOpenId().isBlank();
         boolean qqBound = hasWebQq || hasAppQq;
-        boolean qqNeedAppVerify = hasWebQq && !hasAppQq;
-        boolean qqNeedWebVerify = hasAppQq && !hasWebQq;
+        // 缺少对应端openId时提示验证，包括两端都没有的情况
+        boolean qqNeedAppVerify = !hasAppQq;
+        boolean qqNeedWebVerify = !hasWebQq;
         return SocialBindInfo.builder()
                 .wechatBound(user.getWxOpenId() != null && !user.getWxOpenId().isBlank())
                 .wechatNickname(user.getWxOpenId() != null ? "已绑定" : null)

@@ -63,14 +63,11 @@
         </div>
         <template v-if="bindInfo.qqNeedWebVerify">
           <el-button type="warning" size="small" @click="handleBind('qq')">
-            Web验证
+            {{ bindInfo.qqBound ? 'Web验证' : '绑定QQ' }}
           </el-button>
         </template>
         <template v-else>
-          <el-button v-if="!bindInfo.qqBound" type="primary" size="small" @click="handleBind('qq')">
-            绑定
-          </el-button>
-          <el-popconfirm v-else title="解绑后将无法使用QQ登录此账号，确定解绑？" @confirm="handleUnbind('qq')">
+          <el-popconfirm title="解绑后将无法使用QQ登录此账号，确定解绑？" @confirm="handleUnbind('qq')">
             <template #reference>
               <el-button type="danger" size="small" plain>解绑</el-button>
             </template>
@@ -84,7 +81,11 @@
           <span class="verify-icon">💡</span>
           <div class="verify-text">
             <div class="verify-title">Web端QQ登录验证</div>
-            <div class="verify-desc">检测到您的QQ账号尚未在网页端验证绑定。如需在网页端使用QQ登录，请点击上方"Web验证"按钮完成QQ身份验证，验证一次后即可长期使用QQ登录网页端。</div>
+            <div class="verify-desc">
+              {{ bindInfo.qqBound
+                ? '检测到您的QQ账号尚未在网页端验证绑定。如需在网页端使用QQ登录，请点击上方"Web验证"按钮完成身份验证，验证一次后即可长期使用。'
+                : '绑定QQ后即可使用QQ快速登录网页端。请点击上方"绑定QQ"按钮，通过QQ授权完成绑定。' }}
+            </div>
           </div>
         </div>
       </div>
