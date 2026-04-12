@@ -32,7 +32,7 @@
         @click="switchMainTab('corpus')"
       >
         📚 食谱大全
-        <span v-if="corpusTotal > 0" class="corpus-count">{{ formatCount(corpusTotal) }}</span>
+        <span v-if="corpusRealTotal > 0" class="corpus-count">{{ formatCount(corpusRealTotal) }}</span>
       </span>
     </div>
 
@@ -327,7 +327,7 @@
           background
           @current-change="loadCorpus"
         />
-        <p class="corpus-total-info">共 {{ formatCount(corpusTotal) }} 道食谱</p>
+        <p class="corpus-total-info">共 {{ formatCount(corpusRealTotal) }} 道食谱</p>
       </div>
     </template>
 
@@ -759,6 +759,7 @@ const corpusLoading = ref(false)
 const corpusPage = ref(1)
 const corpusPageSize = 20
 const corpusTotal = ref(0)
+const corpusRealTotal = ref(0)
 const corpusDetailVisible = ref(false)
 const corpusDetailData = ref(null)
 
@@ -1061,7 +1062,7 @@ async function loadCorpusCategories() {
   try {
     const res = await api.get('/recipes/corpus/categories')
     if (res.data.code === 200) {
-      corpusTotal.value = res.data.data.total || corpusTotal.value
+      corpusRealTotal.value = res.data.data.total || corpusRealTotal.value
     }
   } catch { /* silent */ }
 }

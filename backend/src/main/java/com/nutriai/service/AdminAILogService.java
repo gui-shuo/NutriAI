@@ -38,7 +38,7 @@ public class AdminAILogService {
                                            LocalDateTime startDate, LocalDateTime endDate) {
         log.info("查询AI日志: page={}, size={}, userId={}, status={}", page, size, userId, status);
         
-        Pageable pageable = PageRequest.of(page - 1, size);
+        Pageable pageable = PageRequest.of(Math.max(page - 1, 0), size);
         
         Page<AIChatLog> logPage = chatLogRepository.findByConditions(userId, status, startDate, endDate, pageable);
         

@@ -39,7 +39,7 @@ public class AnnouncementService {
      * 获取公开的公告列表（分页），含已读状态
      */
     public Page<SystemAnnouncementDTO> getPublicAnnouncements(int page, int size, Long userId) {
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "priority", "createdAt"));
+        Pageable pageable = PageRequest.of(Math.max(page - 1, 0), size, Sort.by(Sort.Direction.DESC, "priority", "createdAt"));
         
         Page<SystemAnnouncement> announcementPage = announcementRepository
                 .findByIsActiveTrueOrderByPriorityDescCreatedAtDesc(pageable);

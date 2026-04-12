@@ -39,7 +39,7 @@ public class AdminUserService {
      * 分页查询用户列表
      */
     public Page<UserManagementDTO> getUserList(int page, int size, String keyword, String status, String memberLevel) {
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Pageable pageable = PageRequest.of(Math.max(page - 1, 0), size, Sort.by(Sort.Direction.DESC, "createdAt"));
         
         Page<User> userPage;
         

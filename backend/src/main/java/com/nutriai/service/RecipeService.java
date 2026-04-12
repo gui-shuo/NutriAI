@@ -103,7 +103,7 @@ public class RecipeService {
      * 获取用户收藏列表
      */
     public Page<RecipeFavorite> getUserFavorites(Long userId, int page, int size) {
-        return favoriteRepository.findByUserIdOrderByCreatedAtDesc(userId, PageRequest.of(page - 1, size));
+        return favoriteRepository.findByUserIdOrderByCreatedAtDesc(userId, PageRequest.of(Math.max(page - 1, 0), size));
     }
 
     /**
@@ -136,7 +136,7 @@ public class RecipeService {
     // ========== Admin Methods ==========
 
     public Page<Recipe> adminListRecipes(int page, int size) {
-        Page<Recipe> result = recipeRepository.findAllByOrderByCreatedAtDesc(PageRequest.of(page - 1, size));
+        Page<Recipe> result = recipeRepository.findAllByOrderByCreatedAtDesc(PageRequest.of(Math.max(page - 1, 0), size));
         result.getContent().forEach(this::clearLazyCollections);
         return result;
     }
@@ -237,7 +237,7 @@ public class RecipeService {
         } else {
             sortObj = Sort.by(Sort.Direction.DESC, "createdAt");
         }
-        return PageRequest.of(page - 1, size, sortObj);
+        return PageRequest.of(Math.max(page - 1, 0), size, sortObj);
     }
 
     private String blankToNull(String s) {
