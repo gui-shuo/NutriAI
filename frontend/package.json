@@ -13,7 +13,7 @@
   "dependencies": {
     "@tencentcloud/chat": "^3.6.6",
     "@vueuse/core": "^10.5.0",
-    "axios": "^1.5.0",
+    "axios": "^1.15.0",
     "dayjs": "^1.11.10",
     "dompurify": "^3.3.0",
     "echarts": "^6.0.0",
@@ -28,7 +28,7 @@
     "vue-router": "^4.2.4"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^4.4.0",
+    "@vitejs/plugin-vue": "^6.0.6",
     "autoprefixer": "^10.4.16",
     "eslint": "^8.50.0",
     "eslint-config-prettier": "^10.1.8",
@@ -41,7 +41,7 @@
     "unplugin-auto-import": "^0.16.6",
     "unplugin-element-plus": "^0.8.0",
     "unplugin-vue-components": "^0.25.2",
-    "vite": "^4.4.9"
+    "vite": "^8.0.8"
   },
   "engines": {
     "node": ">=18.0.0",
