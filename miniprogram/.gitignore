@@ -12,8 +12,13 @@ node_modules
 dist
 *.local
 
+# Build output
+unpackage
+dist-dev
+
 # Editor directories and files
 .idea
+.hbuilderx
 *.suo
 *.ntvs*
 *.njsproj

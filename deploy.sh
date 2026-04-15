@@ -96,20 +96,57 @@ docker_login() {
     log_ok "Docker Hub 登录成功"
 }
 
+# ---- 生成时间戳标签 ----
+generate_tag() {
+    echo "v$(date +%Y%m%d%H%M)"
+}
+
+# ---- 更新 docker-compose 文件中的镜像标签 ----
+update_compose_tags() {
+    local tag="$1"
+    log_info "更新 docker-compose 文件中的镜像标签为 ${tag}..."
+    for f in docker-compose.local.yml docker-compose.volcengine.yml; do
+        if [ -f "$f" ]; then
+            sed -i "s|${BACKEND_IMAGE}:[^ ]*|${BACKEND_IMAGE}:${tag}|g" "$f"
+            sed -i "s|${FRONTEND_IMAGE}:[^ ]*|${FRONTEND_IMAGE}:${tag}|g" "$f"
+            log_ok "已更新 $f"
+        fi
+    done
+}
+
 # ---- 构建镜像 ----
 do_build() {
     log_info "========== 构建 Docker 镜像 =========="
 
+    IMAGE_TAG=$(generate_tag)
+    log_info "镜像标签: ${IMAGE_TAG}"
+
     log_info "构建后端镜像..."
-    docker build -t "${BACKEND_IMAGE}:latest" ./backend
+    docker build -t "${BACKEND_IMAGE}:${IMAGE_TAG}" ./backend
     log_ok "后端镜像构建完成"
 
     log_info "构建前端镜像..."
-    docker build -t "${FRONTEND_IMAGE}:latest" ./frontend
+    docker build -t "${FRONTEND_IMAGE}:${IMAGE_TAG}" ./frontend
     log_ok "前端镜像构建完成"
 
-    log_ok "所有镜像构建完成"
+    # 更新 docker-compose 文件
+    update_compose_tags "${IMAGE_TAG}"
+
+    log_ok "所有镜像构建完成 (标签: ${IMAGE_TAG})"
     docker images | grep -E "(nutriai-backend|nutriai-frontend)" | head -5
+
+    # 保存标签供后续步骤使用
+    echo "${IMAGE_TAG}" > /tmp/nutriai_image_tag
+}
+
+# ---- 获取当前镜像标签 ----
+get_current_tag() {
+    if [ -f /tmp/nutriai_image_tag ]; then
+        cat /tmp/nutriai_image_tag
+    else
+        # 从 docker-compose.volcengine.yml 提取当前标签
+        grep -oP "${BACKEND_IMAGE}:\K[^ ]+" docker-compose.volcengine.yml 2>/dev/null || echo "unknown"
+    fi
 }
 
 # ---- 推送镜像 ----
@@ -117,21 +154,27 @@ do_push() {
     log_info "========== 推送镜像到 Docker Hub =========="
     docker_login
 
+    IMAGE_TAG=$(get_current_tag)
+    log_info "推送标签: ${IMAGE_TAG}"
+
     log_info "推送后端镜像..."
-    docker push "${BACKEND_IMAGE}:latest"
+    docker push "${BACKEND_IMAGE}:${IMAGE_TAG}"
     log_ok "后端镜像推送完成"
 
     log_info "推送前端镜像..."
-    docker push "${FRONTEND_IMAGE}:latest"
+    docker push "${FRONTEND_IMAGE}:${IMAGE_TAG}"
     log_ok "前端镜像推送完成"
 
-    log_ok "所有镜像推送完成"
+    log_ok "所有镜像推送完成 (标签: ${IMAGE_TAG})"
 }
 
 # ---- 部署到火山引擎 ----
 do_deploy() {
     log_info "========== 部署到火山引擎 =========="
     setup_ssh_key
+
+    IMAGE_TAG=$(get_current_tag)
+    log_info "部署标签: ${IMAGE_TAG}"
 
     # 创建部署目录
     ve_ssh "mkdir -p ${VE_DEPLOY_DIR}/releases"
@@ -171,18 +214,26 @@ with open('/tmp/ve_env', 'w') as f:
     ve_ssh "
         cd ${VE_DEPLOY_DIR}
 
-        echo '>>> 拉取最新镜像...'
-        docker pull ${BACKEND_IMAGE}:latest
-        docker pull ${FRONTEND_IMAGE}:latest
+        echo '>>> 拉取镜像 (标签: ${IMAGE_TAG})...'
+        for i in 1 2 3; do
+            docker pull ${BACKEND_IMAGE}:${IMAGE_TAG} && break
+            echo \"拉取后端镜像失败，第\${i}次重试...\"
+            sleep 5
+        done
+        for i in 1 2 3; do
+            docker pull ${FRONTEND_IMAGE}:${IMAGE_TAG} && break
+            echo \"拉取前端镜像失败，第\${i}次重试...\"
+            sleep 5
+        done
 
         echo '>>> 停止旧容器...'
         docker compose down --remove-orphans 2>/dev/null || true
 
-        echo '>>> 清理旧镜像...'
-        docker image prune -f 2>/dev/null || true
-
         echo '>>> 启动新容器...'
         docker compose up -d
+
+        echo '>>> 清理悬空镜像...'
+        docker image prune -f 2>/dev/null || true
 
         echo '>>> 等待服务启动...'
         sleep 10
@@ -191,7 +242,7 @@ with open('/tmp/ve_env', 'w') as f:
         docker compose ps
     "
 
-    log_ok "部署完成！"
+    log_ok "部署完成！(标签: ${IMAGE_TAG})"
 }
 
 # ---- 查看状态 ----
