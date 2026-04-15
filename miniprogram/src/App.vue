@@ -89,12 +89,9 @@ onShow(() => {
 </script>
 
 <style>
-/* Minimalist Modern Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Calistoga&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-
 page {
   background-color: #FAFAFA;
-  font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font-family: 'PingFang SC', 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   font-size: 28rpx;
   color: #0F172A;
   line-height: 1.6;
@@ -102,29 +99,13 @@ page {
   min-width: 0;
 }
 
-/* Global box-sizing reset for H5 */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-/* H5 inputs: prevent overflow */
-uni-input,
-uni-textarea,
-input,
-textarea {
-  max-width: 100%;
-  box-sizing: border-box;
-}
-
-/* H5: center content on wide screens */
-uni-page-body {
-  width: 100%;
-  max-width: 960px;
-  margin: 0 auto;
-  overflow-x: hidden;
-}
+/* #ifdef H5 */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+page { font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+*, *::before, *::after { box-sizing: border-box; }
+uni-input, uni-textarea, input, textarea { max-width: 100%; box-sizing: border-box; }
+uni-page-body { width: 100%; max-width: 960px; margin: 0 auto; overflow-x: hidden; }
+/* #endif */
 
 .container {
   padding: 20rpx 30rpx;
@@ -177,10 +158,12 @@ uni-page-body {
   font-size: 32rpx;
   font-weight: 600;
   text-align: center;
-  font-family: 'Inter', 'PingFang SC', sans-serif;
+  font-family: 'PingFang SC', sans-serif;
   box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
 }
+/* #ifdef H5 */
 .btn-primary::after { border: none; }
+/* #endif */
 .btn-primary:active {
   box-shadow: 0 2px 6px rgba(16, 185, 129, 0.15);
   transform: translateY(1px);
@@ -197,7 +180,7 @@ uni-page-body {
   line-height: 88rpx;
   font-size: 32rpx;
   text-align: center;
-  font-family: 'Inter', 'PingFang SC', sans-serif;
+  font-family: 'PingFang SC', sans-serif;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 .btn-outline:active {
@@ -216,7 +199,7 @@ uni-page-body {
   line-height: 88rpx;
   font-size: 32rpx;
   text-align: center;
-  font-family: 'Inter', 'PingFang SC', sans-serif;
+  font-family: 'PingFang SC', sans-serif;
   box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
 }
 .btn-accent:active {
@@ -243,7 +226,7 @@ uni-page-body {
 .input-group input {
   height: 48rpx;
   font-size: 28rpx;
-  font-family: 'Inter', 'PingFang SC', sans-serif;
+  font-family: 'PingFang SC', sans-serif;
   color: #0F172A;
   width: 100%;
   box-sizing: border-box;
@@ -292,15 +275,22 @@ uni-page-body {
 
 /* Heading utility */
 .font-heading {
-  font-family: 'Calistoga', Georgia, 'PingFang SC', serif;
+  font-family: 'PingFang SC', Georgia, serif;
 }
 
-/* Gradient text */
+/* Gradient text — H5 only, mini-program uses plain color */
+/* #ifdef H5 */
 .gradient-text {
   background: linear-gradient(135deg, #10B981, #34D399);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+/* #endif */
+/* #ifndef H5 */
+.gradient-text {
+  color: #10B981;
+}
+/* #endif */
 
 /* Section badge */
 .section-badge {
@@ -308,7 +298,7 @@ uni-page-body {
   align-items: center;
   gap: 8rpx;
   padding: 4rpx 20rpx;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Menlo', 'Courier New', monospace;
   font-size: 22rpx;
   font-weight: 500;
   letter-spacing: 0.05em;
@@ -348,12 +338,13 @@ uni-page-body {
 
 /* Section title */
 .section-title {
-  font-family: 'Calistoga', Georgia, 'PingFang SC', serif;
+  font-family: 'PingFang SC', Georgia, serif;
   font-size: 36rpx;
   color: #0F172A;
   position: relative;
   display: inline-block;
 }
+/* #ifdef H5 */
 .section-title::after {
   content: '';
   position: absolute;
@@ -364,6 +355,7 @@ uni-page-body {
   background: linear-gradient(135deg, #10B981, #34D399);
   border-radius: 4rpx;
 }
+/* #endif */
 
 /* Inverted section */
 .section-inverted {
@@ -372,13 +364,18 @@ uni-page-body {
   position: relative;
   overflow: hidden;
 }
+/* #ifdef H5 */
 .section-inverted::before {
   content: '';
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background-image: radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
   background-size: 20px 20px;
   pointer-events: none;
 }
+/* #endif */
 </style>
 

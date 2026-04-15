@@ -84,9 +84,13 @@ function request<T = any>(options: RequestOptions): Promise<ApiResponse<T>> {
       method,
       data,
       header,
-      timeout: 30000,
+      timeout: 15000,
       success: async (res: any) => {
         if (showLoading) uni.hideLoading()
+        if (!res || typeof res.statusCode === 'undefined') {
+          reject(new Error('请求异常'))
+          return
+        }
         // Skip token refresh for auth endpoints — they don't use tokens
         const isAuthUrl = url.includes('/auth/')
         if (!isAuthUrl && (res.statusCode === 401 || res.statusCode === 403)) {
@@ -119,7 +123,7 @@ function request<T = any>(options: RequestOptions): Promise<ApiResponse<T>> {
       },
       fail: (err) => {
         if (showLoading) uni.hideLoading()
-        const msg = '网络连接失败，请检查网络'
+        const msg = err?.errMsg || '网络连接失败，请检查网络'
         if (showError) uni.showToast({ title: msg, icon: 'none' })
         reject(new Error(msg))
       }

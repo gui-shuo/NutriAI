@@ -659,7 +659,7 @@ onLoad(() => {
 /* ===== Rating Popup ===== */
 .popup-mask {
   position: fixed;
-  inset: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   background: rgba(15, 23, 42, 0.5);
   z-index: 200;
   display: flex;

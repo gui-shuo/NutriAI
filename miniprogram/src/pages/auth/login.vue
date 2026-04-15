@@ -298,9 +298,7 @@ function goTo(url: string) {
 .app-name {
   font-size: 48rpx;
   font-weight: 700;
-  background: $gradient-accent;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #10B981;
   letter-spacing: 4rpx;
   font-family: 'Calistoga', Georgia, 'PingFang SC', serif;
 }

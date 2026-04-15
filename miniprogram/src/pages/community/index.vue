@@ -486,7 +486,7 @@ onReachBottom(() => {
   height: 80rpx;
   border-radius: $radius-full;
   background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(4px);
+  background-color: rgba(0, 0, 0, 0.5);
   color: #fff;
   font-size: 36rpx;
   display: flex;

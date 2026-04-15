@@ -790,7 +790,7 @@ onUnmounted(() => {
   margin: 0 24rpx 24rpx;
   padding: 24rpx 16rpx;
   border-radius: $radius-xl;
-  backdrop-filter: blur(8px);
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .stat-item {

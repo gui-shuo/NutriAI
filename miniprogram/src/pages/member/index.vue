@@ -969,7 +969,7 @@ onShow(() => {
   border-radius: $radius-lg;
   padding: 20rpx 24rpx;
   margin-bottom: 20rpx;
-  backdrop-filter: blur(4px);
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .vip-detail-item {
