@@ -9,6 +9,19 @@
 
     <!-- Login Form -->
     <view class="form-section">
+      <!-- #ifdef MP-WEIXIN -->
+      <button class="wx-login-btn" @tap="handleWxLogin" :loading="loginLoading" :disabled="loginLoading">
+        <text class="wx-icon">💬</text>
+        <text>微信一键登录</text>
+      </button>
+
+      <view class="divider-row">
+        <view class="divider-line" />
+        <text class="divider-text">其他登录方式</text>
+        <view class="divider-line" />
+      </view>
+      <!-- #endif -->
+
       <view class="input-group">
         <text class="input-label">邮箱</text>
         <input
@@ -76,6 +89,7 @@
         <text class="legal-link" @tap="goTo('/pages/legal/index?type=privacy')">《隐私政策》</text>
       </view>
 
+      <!-- #ifndef MP-WEIXIN -->
       <!-- Social Login Divider -->
       <view class="divider-row">
         <view class="divider-line" />
@@ -85,15 +99,12 @@
 
       <!-- Social Login Buttons -->
       <view class="social-row">
-        <view class="social-btn wechat-btn" @tap="handleSocialLogin('wechat')">
-          <text class="social-icon">💬</text>
-          <text class="social-label">微信登录</text>
-        </view>
         <view class="social-btn qq-btn" @tap="handleSocialLogin('qq')">
           <text class="social-icon">🐧</text>
           <text class="social-label">QQ登录</text>
         </view>
       </view>
+      <!-- #endif -->
     </view>
   </view>
 </template>
@@ -168,14 +179,40 @@ async function handleLogin() {
   }
 }
 
-async function handleSocialLogin(provider: 'wechat' | 'qq') {
-  if (provider === 'wechat') {
-    uni.showToast({ title: '微信登录需企业身份认证，建议使用邮箱或QQ注册登录', icon: 'none', duration: 3000 })
-    return
-  }
+// #ifdef MP-WEIXIN
+async function handleWxLogin() {
+  try {
+    loginLoading.value = true
+    const { code } = await new Promise<{ code: string }>((resolve, reject) => {
+      uni.login({
+        provider: 'weixin',
+        success: (res) => resolve({ code: res.code }),
+        fail: (err) => reject(err)
+      })
+    })
 
+    const res = await authApi.wxLogin(code)
+    if (res.code === 200 && res.data) {
+      userStore._saveLogin(res.data)
+      uni.showToast({ title: '登录成功', icon: 'success' })
+      setTimeout(() => {
+        uni.switchTab({ url: '/pages/index/index' })
+      }, 800)
+    } else {
+      uni.showToast({ title: res.message || '微信登录失败', icon: 'none' })
+    }
+  } catch (e: any) {
+    console.error('WeChat login error:', e)
+    uni.showToast({ title: '微信登录失败，请重试', icon: 'none' })
+  } finally {
+    loginLoading.value = false
+  }
+}
+// #endif
+
+// #ifndef MP-WEIXIN
+async function handleSocialLogin(provider: 'qq') {
   // #ifdef APP-PLUS
-  // APP端：使用原生QQ SDK登录（QQ_APP_ID），通过access_token换取用户信息
   try {
     uni.showLoading({ title: '正在登录...', mask: true })
     const services = await new Promise<any[]>((resolve, reject) => {
@@ -199,7 +236,6 @@ async function handleSocialLogin(provider: 'wechat' | 'qq') {
       return
     }
 
-    // 使用access_token调用后端qqTokenLogin
     const res = await socialAuthApi.qqTokenLogin(authResult.access_token) as any
     uni.hideLoading()
     if (res.code === 200 && res.data) {
@@ -233,6 +269,7 @@ async function handleSocialLogin(provider: 'wechat' | 'qq') {
   }
   // #endif
 }
+// #endif
 
 function goTo(url: string) {
   uni.navigateTo({ url })
@@ -418,6 +455,41 @@ function goTo(url: string) {
   white-space: nowrap;
 }
 
+/* WeChat One-Click Login */
+.wx-login-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+  width: 100%;
+  height: 96rpx;
+  background: #07C160;
+  color: #fff;
+  font-size: 34rpx;
+  font-weight: 600;
+  border-radius: $radius-xl;
+  border: none;
+  margin-bottom: 32rpx;
+  box-shadow: 0 4px 14px rgba(7, 193, 96, 0.3);
+
+  &::after {
+    border: none;
+  }
+
+  &:active {
+    opacity: 0.9;
+    transform: translateY(1px);
+  }
+
+  &[disabled] {
+    opacity: 0.6;
+  }
+}
+
+.wx-icon {
+  font-size: 40rpx;
+}
+
 .social-row {
   display: flex;
   justify-content: center;
@@ -450,11 +522,6 @@ function goTo(url: string) {
 .social-label {
   font-size: 22rpx;
   color: $muted-foreground;
-}
-
-.wechat-btn {
-  background: #f0faf3;
-  border-color: $border;
 }
 
 .qq-btn {

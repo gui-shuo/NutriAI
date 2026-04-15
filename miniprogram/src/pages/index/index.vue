@@ -11,102 +11,85 @@
       </view>
     </view>
 
-    <view class="content" :style="{ paddingTop: navBarTotalHeight + 'px' }">
-      <!-- Hero Greeting with gradient background -->
-      <view class="hero-section" @tap="handleGreetingTap">
+    <scroll-view class="content" scroll-y :style="{ paddingTop: navBarTotalHeight + 'px' }">
+      <!-- Hero Banner -->
+      <view class="hero-banner">
         <view class="hero-bg" />
         <view class="hero-inner">
-          <view class="hero-left">
-            <image
-              v-if="userStore.isLoggedIn"
-              class="hero-avatar"
-              :src="defaultAvatar(userStore.userInfo?.avatar)"
-              mode="aspectFill"
-            />
-            <view v-else class="hero-avatar-placeholder">👤</view>
-          </view>
-          <view class="hero-right">
-            <text class="hero-greeting" v-if="userStore.isLoggedIn">
-              {{ greetingText }}, {{ userStore.userInfo?.nickname || userStore.userInfo?.username }}
-            </text>
-            <text class="hero-greeting" v-else>{{ greetingText }}, 请登录</text>
-            <text class="hero-sub">{{ appStore.config.siteDescription || '智能营养，科学饮食' }}</text>
+          <text class="hero-title">科学抗炎 · 营养定制</text>
+          <text class="hero-desc">专注抗炎营养餐研发，科学配比，新鲜现做</text>
+          <view class="hero-btn" @tap="goToMeals">
+            <text class="hero-btn-text">立即点餐</text>
           </view>
         </view>
       </view>
 
-      <!-- 营养师工作台入口 -->
-      <view v-if="userStore.isLoggedIn && userStore.isNutritionist" class="nutritionist-entry" @tap="goTo('/pages/consultation/index')">
-        <view class="nutri-entry-left">
-          <text class="nutri-entry-icon">🩺</text>
-          <view class="nutri-entry-text">
-            <text class="nutri-entry-title">营养师工作台</text>
-            <text class="nutri-entry-desc">查看咨询消息，管理您的客户</text>
-          </view>
+      <!-- Today's Recommended Meals -->
+      <view class="section">
+        <view class="section-header">
+          <text class="section-title">🍱 今日推荐</text>
+          <text class="section-more" @tap="goToMeals">更多 ›</text>
         </view>
-        <text class="nutri-entry-arrow">›</text>
-      </view>
-
-      <!-- Quick Actions - horizontal scroll -->
-      <view class="quick-section">
-        <text class="section-label">快捷功能</text>
-        <scroll-view class="quick-scroll" scroll-x :show-scrollbar="false">
-          <view class="quick-list">
-            <view
-              v-for="item in quickActions"
-              :key="item.label"
-              class="quick-item"
-              @tap="handleFeatureTap(item)"
-            >
-              <view class="quick-icon-wrap" :style="{ background: item.bg }">
-                <text class="quick-icon">{{ item.icon }}</text>
-              </view>
-              <text class="quick-label">{{ item.label }}</text>
+        <scroll-view class="meal-scroll" scroll-x :show-scrollbar="false">
+          <view class="meal-card" v-for="meal in featuredMeals" :key="meal.id" @tap="goToMealDetail(meal.id)">
+            <image class="meal-img" :src="meal.imageUrl || '/static/images/meal-placeholder.png'" mode="aspectFill" />
+            <view class="meal-tags">
+              <text class="meal-tag" v-for="tag in (meal.tags || []).slice(0, 2)" :key="tag">{{ tag }}</text>
+            </view>
+            <text class="meal-name">{{ meal.name }}</text>
+            <view class="meal-bottom">
+              <text class="meal-price">¥{{ meal.price }}</text>
+              <text class="meal-cal">{{ meal.calories }}kcal</text>
             </view>
           </view>
         </scroll-view>
       </view>
 
-      <!-- Feature Grid - 2 columns -->
-      <view class="section-header">
-        <text class="section-label">全部功能</text>
-      </view>
-      <view class="feature-grid">
-        <view
-          v-for="item in features"
-          :key="item.label"
-          class="feature-card"
-          @tap="handleFeatureTap(item)"
-        >
-          <view class="feature-icon-wrap" :style="{ background: item.bg }">
-            <text class="feature-icon">{{ item.icon }}</text>
+      <!-- Featured Products -->
+      <view class="section">
+        <view class="section-header">
+          <text class="section-title">🛍 营养好物</text>
+          <text class="section-more" @tap="goToShop">更多 ›</text>
+        </view>
+        <scroll-view class="product-scroll" scroll-x :show-scrollbar="false">
+          <view class="prod-card" v-for="prod in featuredProducts" :key="prod.id" @tap="goToProductDetail(prod.id)">
+            <image class="prod-img" :src="prod.imageUrl || prod.image || '/static/images/product-placeholder.png'" mode="aspectFill" />
+            <text class="prod-name">{{ prod.name }}</text>
+            <text class="prod-price">¥{{ formatPrice(prod.salePrice || prod.price) }}</text>
           </view>
-          <view class="feature-info">
-            <view class="feature-title-row">
-              <text class="feature-title">{{ item.label }}</text>
-              <text v-if="item.badge" class="vip-badge">VIP</text>
+        </scroll-view>
+      </view>
+
+      <!-- Quick Features Grid -->
+      <view class="section">
+        <view class="section-header">
+          <text class="section-title">✨ 更多服务</text>
+        </view>
+        <view class="feature-grid">
+          <view class="feature-item" v-for="f in features" :key="f.label" @tap="handleFeatureTap(f)">
+            <view class="feature-icon-box" :style="{ background: f.bg }">
+              <text class="feature-icon">{{ f.icon }}</text>
             </view>
-            <text class="feature-desc">{{ item.desc }}</text>
+            <text class="feature-label">{{ f.label }}</text>
           </view>
         </view>
       </view>
 
-      <!-- App Footer -->
+      <!-- Footer -->
       <view class="app-footer">
-        <text class="footer-text" v-if="appStore.config.siteDescription">{{ appStore.config.siteDescription }}</text>
-        <text class="footer-copy" v-if="appStore.config.copyright">{{ appStore.config.copyright }}</text>
+        <text class="footer-text">{{ appStore.config.siteDescription || '智能营养，科学饮食' }}</text>
+        <text class="footer-copy">{{ appStore.config.copyright || '© NutriAI' }}</text>
       </view>
-    </view>
+    </scroll-view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { useUserStore } from '@/stores/user'
 import { useAppStore } from '@/stores/app'
-import { defaultAvatar } from '@/utils/common'
-import { announcementApi } from '@/services/api'
+import { mealApi, productApi, announcementApi } from '@/services/api'
 
 const userStore = useUserStore()
 const appStore = useAppStore()
@@ -115,7 +98,53 @@ const statusBarHeight = ref(0)
 const navBarTotalHeight = ref(0)
 const unreadCount = ref(0)
 
-const fetchUnreadCount = async () => {
+const mockMeals = [
+  { id: 1, name: '地中海抗炎沙拉', price: '28.00', calories: 380, tags: ['抗炎', '低GI'], imageUrl: '' },
+  { id: 2, name: '三文鱼藜麦碗', price: '42.00', calories: 520, tags: ['高蛋白', '抗炎'], imageUrl: '' },
+  { id: 3, name: '姜黄鸡胸套餐', price: '35.00', calories: 450, tags: ['抗炎', '增肌'], imageUrl: '' }
+]
+
+const mockProducts = [
+  { id: 1, name: '深海鱼油 Omega-3', price: '128.00', imageUrl: '' },
+  { id: 2, name: '有机姜黄粉', price: '68.00', imageUrl: '' },
+  { id: 3, name: '益生菌冻干粉', price: '98.00', imageUrl: '' }
+]
+
+const featuredMeals = ref<any[]>(mockMeals)
+const featuredProducts = ref<any[]>(mockProducts)
+
+const features = [
+  { icon: '🤖', label: 'AI营养师', path: '/pages/ai-chat/index', isTab: true, bg: 'rgba(16,185,129,0.1)' },
+  { icon: '📸', label: '食物识别', path: '/pages/food-recognition/index', bg: 'rgba(59,130,246,0.1)' },
+  { icon: '📋', label: '饮食计划', path: '/pages/diet-plan/index', bg: 'rgba(139,92,246,0.1)' },
+  { icon: '📝', label: '饮食记录', path: '/pages/food-records/index', bg: 'rgba(245,158,11,0.1)' },
+  { icon: '👨‍⚕️', label: '营养咨询', path: '/pages/consultation/index', bg: 'rgba(236,72,153,0.1)' },
+  { icon: '🍳', label: '食谱库', path: '/pages/recipes/index', bg: 'rgba(244,63,94,0.1)' }
+]
+
+async function fetchFeaturedMeals() {
+  try {
+    const res = await mealApi.getList({ page: 1, size: 3, recommended: true })
+    if (res.code === 200 && res.data?.records?.length) {
+      featuredMeals.value = res.data.records
+    }
+  } catch {
+    // keep mock data
+  }
+}
+
+async function fetchFeaturedProducts() {
+  try {
+    const res = await productApi.getRecommended()
+    if (res.code === 200 && res.data?.length) {
+      featuredProducts.value = res.data
+    }
+  } catch {
+    // keep mock data
+  }
+}
+
+async function fetchUnreadCount() {
   if (!userStore.isLoggedIn) return
   try {
     const res = await announcementApi.getUnreadCount()
@@ -125,50 +154,25 @@ const fetchUnreadCount = async () => {
   } catch {}
 }
 
-const greetingText = computed(() => {
-  const h = new Date().getHours()
-  if (h < 6) return '夜深了'
-  if (h < 11) return '早上好'
-  if (h < 14) return '中午好'
-  if (h < 18) return '下午好'
-  return '晚上好'
-})
+function formatPrice(val: any) {
+  const n = Number(val)
+  return isNaN(n) ? val : n.toFixed(2)
+}
 
-const quickActions = [
-  { icon: '🤖', label: 'AI对话', path: '/pages/ai-chat/index', isTab: true, bg: 'rgba(16,185,129,0.1)' },
-  { icon: '📸', label: '识别食物', path: '/pages/food-recognition/index', bg: 'rgba(59,130,246,0.1)' },
-  { icon: '📋', label: '饮食计划', path: '/pages/diet-plan/index', badge: 'VIP', bg: 'rgba(139,92,246,0.1)' },
-  { icon: '📝', label: '饮食记录', path: '/pages/food-records/index', bg: 'rgba(245,158,11,0.1)' },
-]
+function goToMeals() {
+  uni.switchTab({ url: '/pages/meal-order/index' })
+}
 
-const features = [
-  { icon: '🤖', label: 'AI营养师', desc: '智能对话，个性化建议', path: '/pages/ai-chat/index', isTab: true, bg: 'linear-gradient(135deg, #10B981, #34D399)' },
-  { icon: '📸', label: 'AI食物识别', desc: '拍照识别营养成分', path: '/pages/food-recognition/index', bg: 'linear-gradient(135deg, #3B82F6, #60A5FA)' },
-  { icon: '📋', label: 'AI饮食计划', desc: '定制专属饮食方案', path: '/pages/diet-plan/index', badge: 'VIP', bg: 'linear-gradient(135deg, #8B5CF6, #A78BFA)' },
-  { icon: '📝', label: '饮食记录', desc: '记录每日饮食摄入', path: '/pages/food-records/index', bg: 'linear-gradient(135deg, #F59E0B, #FBBF24)' },
-  { icon: '👨‍⚕️', label: '营养师咨询', desc: '专业营养师在线答疑', path: '/pages/consultation/index', bg: 'linear-gradient(135deg, #EC4899, #F472B6)' },
-  { icon: '🍳', label: '食谱库', desc: '探索数百个营养食谱', path: '/pages/recipes/index', bg: 'linear-gradient(135deg, #F43F5E, #FB7185)' },
-  { icon: '🥗', label: '营养餐计划', desc: '科学配餐方案推荐', path: '/pages/meal-plans/index', bg: 'linear-gradient(135deg, #F97316, #FB923C)' },
-  { icon: '🌐', label: '营养圈', desc: '社区交流与分享', path: '/pages/community/index', isTab: true, bg: 'linear-gradient(135deg, #6366F1, #818CF8)' },
-  { icon: '🛒', label: '营养商城', desc: '精选营养品推荐', path: '/pages/product-shop/index', bg: 'linear-gradient(135deg, #14B8A6, #5EEAD4)' },
-  { icon: '📢', label: '系统公告', desc: '最新通知和活动', path: '/pages/announcements/index', bg: 'linear-gradient(135deg, #EF4444, #F87171)' },
-  { icon: '💬', label: '意见反馈', desc: '帮助我们改进产品', path: '/pages/feedback/index', bg: 'linear-gradient(135deg, #64748B, #94A3B8)' }
-]
+function goToMealDetail(id: number | string) {
+  uni.navigateTo({ url: `/pages/meal-order/detail?id=${id}` })
+}
 
-onShow(() => {
-  const sysInfo = uni.getSystemInfoSync()
-  statusBarHeight.value = sysInfo.statusBarHeight || 0
-  navBarTotalHeight.value = statusBarHeight.value + 44
+function goToShop() {
+  uni.switchTab({ url: '/pages/product-shop/index' })
+}
 
-  userStore.restore()
-  appStore.fetchConfig()
-  fetchUnreadCount()
-})
-
-function handleGreetingTap() {
-  if (!userStore.isLoggedIn) {
-    uni.navigateTo({ url: '/pages/auth/login' })
-  }
+function goToProductDetail(id: number | string) {
+  uni.navigateTo({ url: `/pages/product-shop/detail?id=${id}` })
 }
 
 function handleFeatureTap(item: { path: string; isTab?: boolean }) {
@@ -182,6 +186,18 @@ function handleFeatureTap(item: { path: string; isTab?: boolean }) {
 function goTo(url: string) {
   uni.navigateTo({ url })
 }
+
+onShow(() => {
+  const sysInfo = uni.getSystemInfoSync()
+  statusBarHeight.value = sysInfo.statusBarHeight || 0
+  navBarTotalHeight.value = statusBarHeight.value + 44
+
+  userStore.restore()
+  appStore.fetchConfig()
+  fetchUnreadCount()
+  fetchFeaturedMeals()
+  fetchFeaturedProducts()
+})
 </script>
 
 <style scoped lang="scss">
@@ -234,11 +250,12 @@ function goTo(url: string) {
 }
 
 .content {
-  padding: 0 0 48rpx;
+  height: 100vh;
+  padding-bottom: 48rpx;
 }
 
-/* Hero Section */
-.hero-section {
+/* Hero Banner */
+.hero-banner {
   position: relative;
   margin: 0 0 32rpx;
   overflow: hidden;
@@ -252,201 +269,200 @@ function goTo(url: string) {
 .hero-inner {
   position: relative;
   display: flex;
-  align-items: center;
-  padding: 40rpx 32rpx 48rpx;
-}
-.hero-avatar, .hero-avatar-placeholder {
-  width: 108rpx; height: 108rpx;
-  border-radius: 50%;
-  margin-right: 28rpx;
-  border: 4rpx solid rgba(255,255,255,0.6);
-  flex-shrink: 0;
-}
-.hero-avatar-placeholder {
-  background: rgba(255,255,255,0.2);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 52rpx;
-}
-.hero-right {
-  display: flex;
   flex-direction: column;
-  flex: 1;
-  min-width: 0;
+  align-items: center;
+  padding: 56rpx 40rpx 64rpx;
+  text-align: center;
 }
-.hero-greeting {
-  font-size: 36rpx;
+.hero-title {
+  font-size: 44rpx;
   font-weight: 700;
   color: #fff;
-  margin-bottom: 8rpx;
+  letter-spacing: 4rpx;
+  margin-bottom: 16rpx;
   font-family: 'Calistoga', Georgia, 'PingFang SC', serif;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
-.hero-sub {
-  font-size: 24rpx;
-  color: rgba(255,255,255,0.8);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.hero-desc {
+  font-size: 26rpx;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: 36rpx;
+  line-height: 1.6;
+}
+.hero-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  padding: 18rpx 56rpx;
+  border-radius: $radius-full;
+  box-shadow: $shadow-md;
+}
+.hero-btn-text {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: $accent;
 }
 
-/* 营养师工作台入口 */
-.nutritionist-entry {
+/* Section */
+.section {
+  margin-bottom: 36rpx;
+}
+.section-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 24rpx 32rpx;
-  padding: 28rpx 32rpx;
-  background: linear-gradient(135deg, #ECFDF5, #D1FAE5);
-  border-radius: 24rpx;
-  border: 2rpx solid #A7F3D0;
-}
-.nutri-entry-left {
-  display: flex;
-  align-items: center;
-  gap: 20rpx;
-}
-.nutri-entry-icon {
-  font-size: 48rpx;
-}
-.nutri-entry-title {
-  display: block;
-  font-size: 30rpx;
-  font-weight: 600;
-  color: #065F46;
-  font-family: 'Calistoga', Georgia, 'PingFang SC', serif;
-}
-.nutri-entry-desc {
-  display: block;
-  font-size: 24rpx;
-  color: #047857;
-  margin-top: 4rpx;
-}
-.nutri-entry-arrow {
-  font-size: 40rpx;
-  color: #10B981;
-  font-weight: 700;
-}
-
-/* Quick Actions */
-.quick-section {
   padding: 0 32rpx;
-  margin-bottom: 36rpx;
+  margin-bottom: 20rpx;
 }
-.section-label {
-  display: block;
-  font-size: 30rpx;
+.section-title {
+  font-size: 32rpx;
   font-weight: 600;
   color: $foreground;
-  margin-bottom: 20rpx;
-  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
-.quick-scroll {
+.section-more {
+  font-size: 26rpx;
+  color: $accent;
+  font-weight: 500;
+}
+
+/* Meal Scroll */
+.meal-scroll {
+  white-space: nowrap;
+  padding-left: 32rpx;
+}
+.meal-card {
+  display: inline-flex;
+  flex-direction: column;
+  width: 320rpx;
+  margin-right: 24rpx;
+  background: $card;
+  border-radius: $radius-xl;
+  overflow: hidden;
+  border: 1rpx solid $border;
+  box-shadow: $shadow-sm;
+  vertical-align: top;
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+.meal-img {
+  width: 320rpx;
+  height: 200rpx;
+  background: $muted;
+}
+.meal-tags {
+  display: flex;
+  gap: 10rpx;
+  padding: 16rpx 20rpx 0;
+}
+.meal-tag {
+  font-size: 20rpx;
+  color: $accent;
+  background: rgba(16,185,129,0.1);
+  padding: 4rpx 14rpx;
+  border-radius: $radius-full;
+  font-weight: 500;
+}
+.meal-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: $foreground;
+  padding: 10rpx 20rpx 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
-.quick-list {
-  display: inline-flex;
-  gap: 24rpx;
-  padding-bottom: 8rpx;
-}
-.quick-item {
+.meal-bottom {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  width: 136rpx;
-
-  &:active { opacity: 0.7; }
+  justify-content: space-between;
+  padding: 10rpx 20rpx 20rpx;
 }
-.quick-icon-wrap {
-  width: 100rpx; height: 100rpx;
+.meal-price {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #EF4444;
+}
+.meal-cal {
+  font-size: 22rpx;
+  color: $muted-foreground;
+}
+
+/* Product Scroll */
+.product-scroll {
+  white-space: nowrap;
+  padding-left: 32rpx;
+}
+.prod-card {
+  display: inline-flex;
+  flex-direction: column;
+  width: 260rpx;
+  margin-right: 24rpx;
+  background: $card;
   border-radius: $radius-xl;
-  display: flex; align-items: center; justify-content: center;
-  margin-bottom: 12rpx;
-}
-.quick-icon { font-size: 44rpx; }
-.quick-label {
-  font-size: 24rpx;
-  color: $foreground;
-  font-weight: 500;
-  text-align: center;
-}
+  overflow: hidden;
+  border: 1rpx solid $border;
+  box-shadow: $shadow-sm;
+  vertical-align: top;
 
-/* Section Header */
-.section-header {
-  padding: 0 32rpx;
-  margin-bottom: 4rpx;
+  &:active {
+    transform: scale(0.98);
+  }
+}
+.prod-img {
+  width: 260rpx;
+  height: 200rpx;
+  background: $muted;
+}
+.prod-name {
+  font-size: 26rpx;
+  font-weight: 500;
+  color: $foreground;
+  padding: 16rpx 16rpx 6rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.prod-price {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #EF4444;
+  padding: 0 16rpx 20rpx;
 }
 
 /* Feature Grid */
 .feature-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  padding: 0 24rpx;
-  gap: 20rpx;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24rpx;
+  padding: 0 32rpx;
 }
-.feature-card {
-  background: $card;
-  border-radius: $radius-xl;
-  padding: 28rpx 24rpx;
-  border: 1rpx solid $border;
-  box-shadow: $shadow-sm;
+.feature-item {
   display: flex;
   flex-direction: column;
-  gap: 16rpx;
-  transition: transform 0.15s, box-shadow 0.15s;
-  min-width: 0;
-  overflow: hidden;
+  align-items: center;
+  gap: 12rpx;
 
-  &:active {
-    transform: translateY(2rpx);
-    box-shadow: none;
-  }
+  &:active { opacity: 0.7; }
 }
-.feature-icon-wrap {
-  width: 80rpx; height: 80rpx;
-  border-radius: $radius-lg;
+.feature-icon-box {
+  width: 96rpx; height: 96rpx;
+  border-radius: $radius-xl;
   display: flex; align-items: center; justify-content: center;
 }
-.feature-icon { font-size: 40rpx; }
-.feature-info {
-  display: flex;
-  flex-direction: column;
-  gap: 6rpx;
-}
-.feature-title-row {
-  display: flex;
-  align-items: center;
-  gap: 10rpx;
-}
-.feature-title {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: $foreground;
-  font-family: 'Inter', 'PingFang SC', sans-serif;
-}
-.vip-badge {
-  font-size: 18rpx;
-  color: #fff;
-  background: $gradient-accent;
-  padding: 2rpx 12rpx;
-  border-radius: $radius-full;
+.feature-icon { font-size: 44rpx; }
+.feature-label {
+  font-size: 24rpx;
   font-weight: 500;
-  font-family: 'JetBrains Mono', monospace;
-  letter-spacing: 0.05em;
-}
-.feature-desc {
-  font-size: 22rpx;
-  color: $muted-foreground;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  color: $foreground;
+  text-align: center;
 }
 
 /* Footer */
 .app-footer {
   text-align: center;
-  padding: 48rpx 32rpx 24rpx;
+  padding: 48rpx 32rpx 120rpx;
   margin-top: 16rpx;
 }
 .footer-text {

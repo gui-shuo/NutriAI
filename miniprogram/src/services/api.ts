@@ -143,6 +143,42 @@ export const mealPlanApi = {
   getRatings: (id: number | string, params?: any) => request({ url: `/meal-plans/${id}/ratings`, data: params }),
 }
 
+// ============ Meal Ordering (营养餐) ============
+export const mealApi = {
+  getList: (params?: any) => request({ url: '/meals', data: params }),
+  getDetail: (id: number | string) => request({ url: `/meals/${id}` }),
+  getCategories: () => request({ url: '/meals/categories' }),
+  getRecommended: () => request({ url: '/meals/recommended' }),
+  createOrder: (data: any) => request({ url: '/meals/orders', method: 'POST', data }),
+  getOrders: (params?: any) => request({ url: '/meals/orders', data: params }),
+  getOrderDetail: (orderNo: string) => request({ url: `/meals/orders/${orderNo}` }),
+  cancelOrder: (orderNo: string) => request({ url: `/meals/orders/${orderNo}/cancel`, method: 'POST' }),
+  simulatePay: (orderNo: string) => request({ url: `/meals/orders/${orderNo}/simulate-pay`, method: 'POST' })
+}
+
+// ============ Admin APIs ============
+export const adminApi = {
+  // Meal management
+  getMeals: (params?: any) => request({ url: '/admin/shop/meals', data: params }),
+  createMeal: (data: any) => request({ url: '/admin/shop/meals', method: 'POST', data }),
+  updateMeal: (id: number, data: any) => request({ url: `/admin/shop/meals/${id}`, method: 'PUT', data }),
+  deleteMeal: (id: number) => request({ url: `/admin/shop/meals/${id}`, method: 'DELETE' }),
+  toggleMealStatus: (id: number) => request({ url: `/admin/shop/meals/${id}/toggle-status`, method: 'PUT' }),
+  // Product management
+  getProducts: (params?: any) => request({ url: '/admin/shop/products', data: params }),
+  createProduct: (data: any) => request({ url: '/admin/shop/products', method: 'POST', data }),
+  updateProduct: (id: number, data: any) => request({ url: `/admin/shop/products/${id}`, method: 'PUT', data }),
+  deleteProduct: (id: number) => request({ url: `/admin/shop/products/${id}`, method: 'DELETE' }),
+  toggleProductStatus: (id: number) => request({ url: `/admin/shop/products/${id}/toggle-status`, method: 'PUT' }),
+  // Order management
+  getOrders: (params?: any) => request({ url: '/admin/shop/orders', data: params }),
+  updateOrderStatus: (orderNo: string, data: any) => request({ url: `/admin/shop/orders/${orderNo}/status`, method: 'PUT', data }),
+  // Dashboard
+  getDashboard: () => request({ url: '/admin/shop/dashboard' }),
+  // Upload
+  uploadImage: (filePath: string) => uploadFile({ url: '/admin/shop/upload', filePath, name: 'file' })
+}
+
 // ============ Feedback ============
 export const feedbackApi = {
   submit: (data: any) => request({ url: '/feedback', method: 'POST', data }),

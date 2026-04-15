@@ -29,7 +29,14 @@
     { "path": "pages/recipes/index", "style": { "navigationBarTitleText": "食谱库" } },
     { "path": "pages/recipes/detail", "style": { "navigationBarTitleText": "食谱详情" } },
     { "path": "pages/meal-plans/index", "style": { "navigationBarTitleText": "营养餐计划" } },
-    { "path": "pages/meal-plans/detail", "style": { "navigationBarTitleText": "餐计划详情" } }
+    { "path": "pages/meal-plans/detail", "style": { "navigationBarTitleText": "餐计划详情" } },
+    { "path": "pages/meal-order/index", "style": { "navigationBarTitleText": "营养餐列表", "navigationStyle": "custom" } },
+    { "path": "pages/meal-order/detail", "style": { "navigationBarTitleText": "营养餐详情" } },
+    { "path": "pages/meal-order/checkout", "style": { "navigationBarTitleText": "营养餐下单" } },
+    { "path": "pages/admin/index", "style": { "navigationBarTitleText": "管理后台" } },
+    { "path": "pages/admin/meals", "style": { "navigationBarTitleText": "营养餐管理" } },
+    { "path": "pages/admin/products", "style": { "navigationBarTitleText": "产品管理" } },
+    { "path": "pages/admin/orders", "style": { "navigationBarTitleText": "订单管理" } }
   ],
   "globalStyle": {
     "navigationBarTextStyle": "white",
@@ -51,22 +58,22 @@
         "selectedIconPath": "static/icons/home-active.png"
       },
       {
-        "pagePath": "pages/community/index",
-        "text": "营养圈",
-        "iconPath": "static/icons/community.png",
-        "selectedIconPath": "static/icons/community-active.png"
+        "pagePath": "pages/meal-order/index",
+        "text": "营养餐",
+        "iconPath": "static/icons/meal.png",
+        "selectedIconPath": "static/icons/meal-active.png"
+      },
+      {
+        "pagePath": "pages/product-shop/index",
+        "text": "商城",
+        "iconPath": "static/icons/shop.png",
+        "selectedIconPath": "static/icons/shop-active.png"
       },
       {
         "pagePath": "pages/ai-chat/index",
-        "text": "AI营养师",
+        "text": "AI助手",
         "iconPath": "static/icons/ai.png",
         "selectedIconPath": "static/icons/ai-active.png"
-      },
-      {
-        "pagePath": "pages/member/index",
-        "text": "会员",
-        "iconPath": "static/icons/member.png",
-        "selectedIconPath": "static/icons/member-active.png"
       },
       {
         "pagePath": "pages/profile/index",
