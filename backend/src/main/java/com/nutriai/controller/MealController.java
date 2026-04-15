@@ -97,13 +97,15 @@ public class MealController {
             }
         }
 
-        String fulfillmentType = body.get("fulfillmentType") != null ? body.get("fulfillmentType").toString() : "PICKUP";
-        String pickupTime = body.get("pickupTime") != null ? body.get("pickupTime").toString() : null;
-        String pickupLocation = body.get("pickupLocation") != null ? body.get("pickupLocation").toString() : null;
-        String receiverName = body.get("receiverName") != null ? body.get("receiverName").toString() : "";
-        String receiverPhone = body.get("receiverPhone") != null ? body.get("receiverPhone").toString() : "";
-        String receiverAddress = body.get("receiverAddress") != null ? body.get("receiverAddress").toString() : "";
-        String remark = body.get("remark") != null ? body.get("remark").toString() : "";
+        String fulfillmentType = getStringField(body, "fulfillmentType", "deliveryMethod", "PICKUP");
+        if ("pickup".equalsIgnoreCase(fulfillmentType)) fulfillmentType = "PICKUP";
+        else if ("delivery".equalsIgnoreCase(fulfillmentType)) fulfillmentType = "DELIVERY";
+        String pickupTime = getStringField(body, "pickupTime", null, null);
+        String pickupLocation = getStringField(body, "pickupLocation", null, null);
+        String receiverName = getStringField(body, "receiverName", null, "");
+        String receiverPhone = getStringField(body, "receiverPhone", "phone", "");
+        String receiverAddress = getStringField(body, "receiverAddress", "address", "");
+        String remark = getStringField(body, "remark", "notes", "");
 
         return ApiResponse.success(mealService.createOrder(userId, items, fulfillmentType,
                 pickupTime, pickupLocation, receiverName, receiverPhone, receiverAddress, remark));
@@ -158,5 +160,11 @@ public class MealController {
 
     private Long getUserId(HttpServletRequest request) {
         return (Long) request.getAttribute("userId");
+    }
+
+    private String getStringField(Map<String, Object> body, String primary, String fallback, String defaultVal) {
+        Object val = body.get(primary);
+        if (val == null && fallback != null) val = body.get(fallback);
+        return val != null ? val.toString() : defaultVal;
     }
 }

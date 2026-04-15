@@ -87,8 +87,13 @@ public class MealService {
         List<Map<String, Object>> orderItems = new ArrayList<>();
 
         for (Map<String, Object> item : items) {
-            Long mealItemId = Long.valueOf(item.get("mealItemId").toString());
-            int quantity = Integer.parseInt(item.get("quantity").toString());
+            Object idObj = item.get("mealItemId") != null ? item.get("mealItemId") : item.get("mealId");
+            if (idObj == null) {
+                throw new BusinessException("订单商品缺少餐品ID");
+            }
+            Long mealItemId = Long.valueOf(idObj.toString());
+            Object qtyObj = item.get("quantity");
+            int quantity = qtyObj != null ? Integer.parseInt(qtyObj.toString()) : 1;
 
             MealItem mealItem = mealItemRepository.findById(mealItemId)
                     .orElseThrow(() -> new BusinessException("餐品不存在: " + mealItemId));
