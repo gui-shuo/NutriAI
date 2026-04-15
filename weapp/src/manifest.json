@@ -1,0 +1,43 @@
+{
+  "name": "NutriAI营养助手",
+  "appid": "",
+  "description": "抗炎营养餐订购 · 营养产品商城 · 营养健康社区",
+  "versionName": "1.0.0",
+  "versionCode": "100",
+  "transformPx": false,
+  "app-plus": {},
+  "h5": {
+    "title": "NutriAI营养助手",
+    "router": {
+      "mode": "hash",
+      "base": "/"
+    },
+    "devServer": {
+      "port": 5173,
+      "proxy": {
+        "/api": {
+          "target": "http://localhost:8080",
+          "changeOrigin": true
+        }
+      }
+    }
+  },
+  "mp-weixin": {
+    "appid": "",
+    "setting": {
+      "urlCheck": false,
+      "es6": true,
+      "postcss": true,
+      "minified": true,
+      "newFeature": true
+    },
+    "usingComponents": true,
+    "permission": {
+      "scope.userLocation": {
+        "desc": "用于获取您的收货地址定位"
+      }
+    },
+    "requiredPrivateInfos": ["chooseAddress", "getLocation"],
+    "lazyCodeLoading": "requiredComponents"
+  }
+}

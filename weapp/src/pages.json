@@ -1,0 +1,70 @@
+{
+  "pages": [
+    { "path": "pages/index/index", "style": { "navigationStyle": "custom" } },
+    { "path": "pages/meals/index", "style": { "navigationBarTitleText": "抗炎营养餐" } },
+    { "path": "pages/meals/detail", "style": { "navigationBarTitleText": "套餐详情" } },
+    { "path": "pages/shop/index", "style": { "navigationBarTitleText": "营养商城" } },
+    { "path": "pages/shop/detail", "style": { "navigationBarTitleText": "商品详情" } },
+    { "path": "pages/cart/index", "style": { "navigationBarTitleText": "购物车" } },
+    { "path": "pages/circle/index", "style": { "navigationBarTitleText": "营养圈" } },
+    { "path": "pages/circle/detail", "style": { "navigationBarTitleText": "动态详情" } },
+    { "path": "pages/circle/create", "style": { "navigationBarTitleText": "发布动态" } },
+    { "path": "pages/profile/index", "style": { "navigationStyle": "custom" } },
+    { "path": "pages/profile/orders", "style": { "navigationBarTitleText": "我的订单" } },
+    { "path": "pages/profile/settings", "style": { "navigationBarTitleText": "账号设置" } },
+    { "path": "pages/address/index", "style": { "navigationBarTitleText": "收货地址" } },
+    { "path": "pages/address/edit", "style": { "navigationBarTitleText": "编辑地址" } },
+    { "path": "pages/order/confirm", "style": { "navigationBarTitleText": "确认订单" } },
+    { "path": "pages/order/result", "style": { "navigationBarTitleText": "订单结果" } },
+    { "path": "pages/auth/login", "style": { "navigationBarTitleText": "登录" } },
+    { "path": "pages/auth/register", "style": { "navigationBarTitleText": "注册" } }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "NutriAI",
+    "navigationBarBackgroundColor": "#10B981",
+    "backgroundColor": "#F5F7FA",
+    "backgroundTextStyle": "dark",
+    "enablePullDownRefresh": false,
+    "rpxCalcMaxDeviceWidth": 750,
+    "rpxCalcBaseDeviceWidth": 375
+  },
+  "tabBar": {
+    "color": "#94A3B8",
+    "selectedColor": "#10B981",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "static/icons/tab-home.png",
+        "selectedIconPath": "static/icons/tab-home-active.png"
+      },
+      {
+        "pagePath": "pages/meals/index",
+        "text": "营养餐",
+        "iconPath": "static/icons/tab-meal.png",
+        "selectedIconPath": "static/icons/tab-meal-active.png"
+      },
+      {
+        "pagePath": "pages/shop/index",
+        "text": "商城",
+        "iconPath": "static/icons/tab-shop.png",
+        "selectedIconPath": "static/icons/tab-shop-active.png"
+      },
+      {
+        "pagePath": "pages/circle/index",
+        "text": "营养圈",
+        "iconPath": "static/icons/tab-circle.png",
+        "selectedIconPath": "static/icons/tab-circle-active.png"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的",
+        "iconPath": "static/icons/tab-profile.png",
+        "selectedIconPath": "static/icons/tab-profile-active.png"
+      }
+    ]
+  }
+}
