@@ -1,33 +1,43 @@
-import TencentCloudChat from '@tencentcloud/chat'
-
 /**
  * 腾讯云即时通信IM服务 (UniApp版本)
- * 用于H5和APP端的营养师咨询实时消息
+ * 用于营养师咨询实时消息，按需加载避免影响启动速度
  */
 
+let TencentCloudChat: any = null
 let chat: any = null
 let currentUserId: string | null = null
 let messageCallback: ((msg: any) => void) | null = null
 let readyResolve: (() => void) | null = null
 let readyPromise: Promise<void> | null = null
 
+function loadSDK() {
+  if (!TencentCloudChat) {
+    // 使用require延迟加载，避免被Vite打包进vendor.js影响启动速度
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const mod = require('@tencentcloud/chat')
+    TencentCloudChat = mod.default || mod
+  }
+  return TencentCloudChat
+}
+
 /** 初始化TIM SDK */
-export function initTim(sdkAppId: number) {
+export async function initTim(sdkAppId: number) {
   if (chat) return chat
 
-  chat = TencentCloudChat.create({ SDKAppID: sdkAppId })
+  const SDK = loadSDK()
+  chat = SDK.create({ SDKAppID: sdkAppId })
   chat.setLogLevel(1)
 
   readyPromise = new Promise<void>(resolve => {
     readyResolve = resolve
   })
 
-  chat.on(TencentCloudChat.EVENT.SDK_READY, () => {
+  chat.on(SDK.EVENT.SDK_READY, () => {
     console.log('[TIM] SDK就绪')
     readyResolve?.()
   })
 
-  chat.on(TencentCloudChat.EVENT.MESSAGE_RECEIVED, (event: any) => {
+  chat.on(SDK.EVENT.MESSAGE_RECEIVED, (event: any) => {
     const messages = event.data
     if (messageCallback) {
       messages.forEach((msg: any) => {
@@ -92,7 +102,7 @@ export function getOrderNoFromMessage(msg: any): string | null {
 
 /** 从TIM消息提取文本 */
 export function getTextFromMessage(msg: any): string {
-  if (msg.type === TencentCloudChat.TYPES.MSG_TEXT) {
+  if (msg.type === 'TIMTextElem' || msg.payload?.text !== undefined) {
     return msg.payload?.text || ''
   }
   return '[不支持的消息类型]'

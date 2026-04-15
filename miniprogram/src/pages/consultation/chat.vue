@@ -171,7 +171,7 @@ async function initImConnection() {
 
     const { sdkAppId, userId, userSig, peerUserId } = res.data
 
-    initTim(sdkAppId)
+    await initTim(sdkAppId)
     await loginTim(userId, userSig)
 
     onMessageReceived((msg: any) => {
