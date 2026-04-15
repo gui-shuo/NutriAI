@@ -53,6 +53,6 @@ export function defaultAvatar(avatar?: string): string {
 
 // rpx 转 px
 export function rpx2px(rpx: number): number {
-  const { windowWidth } = uni.getSystemInfoSync()
+  const { windowWidth } = uni.getWindowInfo()
   return (rpx / 750) * windowWidth
 }

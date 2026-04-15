@@ -165,13 +165,13 @@ export const adminApi = {
   createMeal: (data: any) => request({ url: '/admin/meals', method: 'POST', data }),
   updateMeal: (id: number, data: any) => request({ url: `/admin/meals/${id}`, method: 'PUT', data }),
   deleteMeal: (id: number) => request({ url: `/admin/meals/${id}`, method: 'DELETE' }),
-  toggleMealStatus: (id: number) => request({ url: `/admin/meals/${id}/status`, method: 'PUT' }),
+  toggleMealStatus: (id: number, data: any) => request({ url: `/admin/meals/${id}/status`, method: 'PUT', data }),
   // Product management
   getProducts: (params?: any) => request({ url: '/admin/products', data: params }),
   createProduct: (data: any) => request({ url: '/admin/products', method: 'POST', data }),
   updateProduct: (id: number, data: any) => request({ url: `/admin/products/${id}`, method: 'PUT', data }),
   deleteProduct: (id: number) => request({ url: `/admin/products/${id}`, method: 'DELETE' }),
-  toggleProductStatus: (id: number) => request({ url: `/admin/products/${id}/status`, method: 'PUT' }),
+  toggleProductStatus: (id: number, data: any) => request({ url: `/admin/products/${id}/status`, method: 'PUT', data }),
   // Order management
   getMealOrders: (params?: any) => request({ url: '/admin/meal-orders', data: params }),
   updateMealOrderStatus: (orderNo: string, data: any) => request({ url: `/admin/meal-orders/${orderNo}/status`, method: 'PUT', data }),

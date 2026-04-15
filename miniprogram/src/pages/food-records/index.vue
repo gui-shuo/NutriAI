@@ -773,8 +773,8 @@ function drawRing(canvasId: string, percent: number, color: string) {
   if (!ctx) return
 
   // Calculate actual pixel size from rpx (100rpx canvas)
-  const sysInfo = uni.getSystemInfoSync()
-  const pxSize = Math.round(100 * sysInfo.windowWidth / 750)
+  const windowInfo = uni.getWindowInfo()
+  const pxSize = Math.round(100 * windowInfo.windowWidth / 750)
   const center = pxSize / 2
   const lineWidth = Math.max(4, Math.round(pxSize * 0.12))
   const radius = center - lineWidth - 2
@@ -1143,11 +1143,13 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
 }
 .dialog-content {
   width: 100%;
+  max-width: 750rpx;
   background: $card;
   border-radius: $radius-2xl $radius-2xl 0 0;
   max-height: 85vh;
   overflow-y: auto;
   padding-bottom: env(safe-area-inset-bottom);
+  box-sizing: border-box;
 }
 .dialog-header {
   padding: 28rpx 30rpx;

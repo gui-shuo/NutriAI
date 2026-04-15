@@ -800,6 +800,7 @@ onShow(() => {
   padding: 40rpx;
   width: 85%;
   max-width: 600rpx;
+  box-sizing: border-box;
 }
 
 .dialog-title {

@@ -267,10 +267,11 @@ async function saveMeal() {
 
 async function toggleStatus(meal: any) {
   try {
-    const res = await adminApi.toggleMealStatus(meal.id)
+    const newStatus = !meal.isAvailable
+    const res = await adminApi.toggleMealStatus(meal.id, { isAvailable: newStatus })
     if (res.code === 200) {
-      meal.isAvailable = !meal.isAvailable
-      uni.showToast({ title: meal.isAvailable ? '已上架' : '已下架', icon: 'success' })
+      meal.isAvailable = newStatus
+      uni.showToast({ title: newStatus ? '已上架' : '已下架', icon: 'success' })
     }
   } catch {}
 }
@@ -478,11 +479,13 @@ onShow(() => {
 
 .sheet {
   width: 100%;
+  max-width: 750rpx;
   max-height: 85vh;
   background: $card;
   border-radius: $radius-2xl $radius-2xl 0 0;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 }
 
 .sheet-header {
@@ -509,6 +512,7 @@ onShow(() => {
   flex: 1;
   padding: 32rpx;
   max-height: 70vh;
+  box-sizing: border-box;
 }
 
 .form-group {

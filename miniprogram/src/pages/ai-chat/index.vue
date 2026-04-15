@@ -116,34 +116,8 @@
       <view class="scroll-bottom-anchor" :id="'msg-' + messages.length" />
     </scroll-view>
 
-    <!-- Quick Actions Panel (above input, shown/hidden by toggle) -->
-    <view class="quick-actions-area" :style="{ bottom: inputBaseHeight + 'px' }" v-if="showQuickActions">
-      <view class="qa-sections">
-        <view class="qa-section" v-for="section in quickActionSections" :key="section.title">
-          <text class="qa-section-title">{{ section.icon }} {{ section.title }}</text>
-          <view class="qa-btns">
-            <view
-              class="qa-btn"
-              v-for="item in section.items"
-              :key="item.label"
-              :class="{ disabled: isSending }"
-              @tap="handleQuickAction(item.content)"
-            >
-              <text class="qa-btn-icon">{{ item.icon }}</text>
-              <text class="qa-btn-text">{{ item.label }}</text>
-            </view>
-          </view>
-        </view>
-      </view>
-    </view>
-
     <!-- Bottom Input Area -->
     <view class="input-area">
-      <view class="input-top-row">
-        <view class="qa-toggle-btn" @tap="showQuickActions = !showQuickActions">
-          <text>{{ showQuickActions ? '💡' : '💡' }}</text>
-        </view>
-      </view>
       <view class="input-row">
         <input
           class="chat-input"
@@ -370,9 +344,6 @@ const showSettingsPopup = ref(false)
 const showHistoryPopup = ref(false)
 const showFavoritesPopup = ref(false)
 
-// Quick actions
-const showQuickActions = ref(false)
-
 // Settings (persisted in localStorage)
 const settings = reactive({
   temperature: 0.7,
@@ -401,9 +372,7 @@ const messageListTop = computed(() => {
 })
 
 const bottomAreaHeight = computed(() => {
-  let h = inputBaseHeight.value
-  if (showQuickActions.value) h += 320
-  return h
+  return inputBaseHeight.value
 })
 
 const waitingHintText = computed(() => {
@@ -412,46 +381,6 @@ const waitingHintText = computed(() => {
   if (waitingSeconds.value >= 15) return '🧠 AI正在深度思考，请耐心等待...'
   return '⏳ 网络响应中，请稍候...'
 })
-
-// ─── Quick Action Data ───
-const quickActionSections = [
-  {
-    title: '常用问题', icon: '❓',
-    items: [
-      { icon: '👋', label: '你能帮我做什么？', content: '你能帮我做什么？' },
-      { icon: '📊', label: '查看营养数据', content: '如何查看我的营养摄入数据？' },
-      { icon: '🎯', label: '设置饮食目标', content: '如何设置我的饮食目标？' },
-      { icon: '💡', label: '营养饮食建议', content: '给我一些营养饮食的建议' }
-    ]
-  },
-  {
-    title: '食物分析', icon: '🍎',
-    items: [
-      { icon: '🍎', label: '分析苹果', content: '帮我分析一下苹果的营养成分' },
-      { icon: '🥗', label: '分析沙拉', content: '帮我分析一下蔬菜沙拉的营养价值' },
-      { icon: '🍗', label: '分析鸡胸肉', content: '鸡胸肉有什么营养？适合减肥吃吗？' },
-      { icon: '🥛', label: '对比牛奶', content: '纯牛奶和酸奶哪个更好？' }
-    ]
-  },
-  {
-    title: '饮食计划', icon: '📅',
-    items: [
-      { icon: '📅', label: '今日饮食', content: '帮我制定今天的饮食计划' },
-      { icon: '🗓️', label: '一周计划', content: '帮我制定一周的营养饮食计划' },
-      { icon: '💪', label: '增肌计划', content: '帮我制定增肌饮食计划' },
-      { icon: '⚖️', label: '减脂计划', content: '帮我制定减脂饮食计划' }
-    ]
-  },
-  {
-    title: '营养建议', icon: '✨',
-    items: [
-      { icon: '🏃', label: '运动建议', content: '给我一些适合的运动建议' },
-      { icon: '💧', label: '饮水提醒', content: '每天应该喝多少水？' },
-      { icon: '😴', label: '睡眠建议', content: '如何改善睡眠质量？' },
-      { icon: '🧘', label: '减压方法', content: '有什么减压的方法推荐吗？' }
-    ]
-  }
-]
 
 // ─── ID generation ───
 function genId(): string {
@@ -662,14 +591,6 @@ function handleClearConversation() {
       }
     }
   })
-}
-
-// ─── Quick Action ───
-function handleQuickAction(content: string) {
-  if (isSending.value) return
-  inputText.value = content
-  showQuickActions.value = false
-  nextTick(() => sendMessage())
 }
 
 // ─── WebSocket ───
@@ -952,26 +873,24 @@ function goBack() {
 // ─── Lifecycle ───
 onLoad(() => {
   if (!checkLogin()) return
-  const sysInfo = uni.getSystemInfoSync()
+  const windowInfo = uni.getWindowInfo()
   // #ifdef APP-PLUS
-  statusBarHeight.value = sysInfo.statusBarHeight || 44
+  statusBarHeight.value = windowInfo.statusBarHeight || 44
   // #endif
   // #ifdef H5
   statusBarHeight.value = 0
   // #endif
   // #ifdef MP
-  statusBarHeight.value = sysInfo.statusBarHeight || 20
+  statusBarHeight.value = windowInfo.statusBarHeight || 20
   // #endif
   navHeight.value = statusBarHeight.value + 44
-  const tabBarHeight = sysInfo.windowBottom || 50
-  inputBaseHeight.value = 110 + tabBarHeight + (sysInfo.safeAreaInsets?.bottom || 0)
+  const tabBarHeight = windowInfo.windowBottom || 50
+  const safeBottom = windowInfo.safeArea ? (windowInfo.screenHeight - windowInfo.safeArea.bottom) : 0
+  inputBaseHeight.value = 110 + tabBarHeight + safeBottom
 
   loadSettings()
   loadHistoryList()
   loadFavorites()
-
-  // Show quick actions on first load if no messages
-  showQuickActions.value = true
 
   connectWebSocket()
 })
@@ -1302,81 +1221,16 @@ onUnmounted(() => {
 }
 .scroll-bottom-anchor { height: 2rpx; }
 
-/* ─── Quick Actions ─── */
-.quick-actions-area {
-  position: fixed;
-  left: 0; right: 0;
-  z-index: 99;
-  background: $card;
-  border-top: 1rpx solid $border;
-  max-height: 320px;
-  overflow: hidden;
-  box-sizing: border-box;
-  margin-bottom: -1rpx;
-}
-.qa-sections {
-  padding: 12rpx 24rpx;
-  max-height: 320px;
-  overflow-y: auto;
-  box-sizing: border-box;
-}
-.qa-section { margin-bottom: 16rpx; }
-.qa-section-title {
-  font-size: 24rpx;
-  font-weight: 600;
-  color: $foreground;
-  margin-bottom: 10rpx;
-  display: block;
-}
-.qa-btns {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12rpx;
-}
-.qa-btn {
-  display: flex;
-  align-items: center;
-  gap: 6rpx;
-  padding: 12rpx 18rpx;
-  background: $muted;
-  border: 1rpx solid $border;
-  border-radius: $radius-lg;
-  &:active:not(.disabled) {
-    border-color: $accent;
-    background: rgba(16, 185, 129, 0.06);
-  }
-  &.disabled { opacity: 0.5; }
-}
-.qa-btn-icon { font-size: 26rpx; }
-.qa-btn-text {
-  font-size: 22rpx;
-  color: $foreground;
-  white-space: nowrap;
-}
-
 /* ─── Input Area ─── */
 .input-area {
   position: fixed;
   bottom: var(--window-bottom, 0);
   left: 0; right: 0;
   background: $card;
-  padding: 8rpx 24rpx;
+  padding: 12rpx 24rpx;
   padding-bottom: calc(12rpx + env(safe-area-inset-bottom));
   border-top: 1rpx solid $border;
   z-index: 100;
-}
-.input-top-row {
-  display: flex;
-  justify-content: flex-start;
-  padding-bottom: 6rpx;
-}
-.qa-toggle-btn {
-  padding: 4rpx 14rpx;
-  border-radius: $radius-full;
-  background: $muted;
-  border: 1rpx solid $border;
-  &:active { opacity: 0.7; }
-  text { font-size: 24rpx; }
 }
 .input-row {
   display: flex;

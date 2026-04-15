@@ -241,10 +241,11 @@ async function saveProduct() {
 
 async function toggleStatus(product: any) {
   try {
-    const res = await adminApi.toggleProductStatus(product.id)
+    const newStatus = product.status === 'ON_SALE' ? 'OFF_SALE' : 'ON_SALE'
+    const res = await adminApi.toggleProductStatus(product.id, { status: newStatus })
     if (res.code === 200) {
-      product.status = product.status === 'ON_SALE' ? 'OFF_SALE' : 'ON_SALE'
-      uni.showToast({ title: product.status === 'ON_SALE' ? '已上架' : '已下架', icon: 'success' })
+      product.status = newStatus
+      uni.showToast({ title: newStatus === 'ON_SALE' ? '已上架' : '已下架', icon: 'success' })
     }
   } catch {}
 }
@@ -452,11 +453,13 @@ onShow(() => {
 
 .sheet {
   width: 100%;
+  max-width: 750rpx;
   max-height: 85vh;
   background: $card;
   border-radius: $radius-2xl $radius-2xl 0 0;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 }
 
 .sheet-header {
@@ -483,6 +486,7 @@ onShow(() => {
   flex: 1;
   padding: 32rpx;
   max-height: 70vh;
+  box-sizing: border-box;
 }
 
 .form-group {

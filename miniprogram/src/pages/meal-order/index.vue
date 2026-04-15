@@ -227,8 +227,8 @@ async function fetchMeals() {
 }
 
 onShow(() => {
-  const sysInfo = uni.getSystemInfoSync()
-  statusBarHeight.value = sysInfo.statusBarHeight || 0
+  const windowInfo = uni.getWindowInfo()
+  statusBarHeight.value = windowInfo.statusBarHeight || 0
   navBarTotalHeight.value = statusBarHeight.value + 44
 
   fetchMeals()
