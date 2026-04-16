@@ -129,7 +129,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Search, Refresh, ArrowDown } from '@element-plus/icons-vue'
-import axios from 'axios'
+import api from '@/services/api'
 
 const list = ref([])
 const loading = ref(false)
@@ -179,13 +179,13 @@ async function fetchList() {
     const params = { page: page.value - 1, size: pageSize }
     if (filterStatus.value) params.status = filterStatus.value
     if (keyword.value) params.keyword = keyword.value
-    const res = await axios.get('/api/admin/meal-orders', { params })
+    const res = await api.get('/admin/meal-orders', { params })
     const data = res.data?.data
     list.value = data?.content || []
     total.value = data?.totalElements || 0
 
     // fetch stats
-    const sr = await axios.get('/api/admin/meal-orders/stats')
+    const sr = await api.get('/admin/meal-orders/stats')
     if (sr.data?.data) {
       statsData.value = sr.data.data
     }
@@ -212,7 +212,7 @@ async function submitVerify() {
   if (!inputCode.value) return ElMessage.warning('请输入取餐码')
   verifying.value = true
   try {
-    const res = await axios.post(`/api/admin/meal-orders/verify-pickup`, {
+    const res = await api.post(`/admin/meal-orders/verify-pickup`, {
       pickupCode: inputCode.value
     })
     if (res.data?.code === 200) {
@@ -231,7 +231,7 @@ async function submitVerify() {
 
 async function updateStatus(row, newStatus) {
   try {
-    await axios.put(`/api/admin/meal-orders/${row.orderNo}/status`, { status: newStatus })
+    await api.put(`/admin/meal-orders/${row.orderNo}/status`, { status: newStatus })
     ElMessage.success('状态更新成功')
     fetchList()
   } catch (e) {

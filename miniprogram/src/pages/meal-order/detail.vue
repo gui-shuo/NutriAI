@@ -151,10 +151,12 @@ async function fetchDetail(id: string) {
     if (res.code === 200 && res.data) {
       meal.value = res.data
     } else {
-      meal.value = mockMeals[id] || mockMeals['1']
+      uni.showToast({ title: res.message || '餐品不存在', icon: 'none' })
+      setTimeout(() => uni.navigateBack(), 1200)
     }
   } catch {
-    meal.value = mockMeals[id] || mockMeals['1']
+    uni.showToast({ title: '加载失败，请重试', icon: 'none' })
+    setTimeout(() => uni.navigateBack(), 1200)
   } finally {
     loading.value = false
   }

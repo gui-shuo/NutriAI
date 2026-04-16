@@ -272,9 +272,9 @@ async function confirmReceive(orderNo: string) {
 
 function goShop() {
   if (orderType.value === 'meals') {
-    uni.switchTab({ url: '/pages/meals/index' })
+    uni.switchTab({ url: '/pages/meal-order/index' })
   } else {
-    uni.navigateTo({ url: '/pages/product-shop/index' })
+    uni.switchTab({ url: '/pages/product-shop/index' })
   }
 }
 

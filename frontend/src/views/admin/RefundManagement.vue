@@ -100,7 +100,7 @@
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Search, Refresh } from '@element-plus/icons-vue'
-import axios from 'axios'
+import api from '@/services/api'
 
 const list = ref([])
 const loading = ref(false)
@@ -134,7 +134,7 @@ async function fetchList() {
     const params = { page: page.value - 1, size: pageSize }
     if (filterStatus.value) params.status = filterStatus.value
     if (keyword.value) params.keyword = keyword.value
-    const res = await axios.get('/api/admin/refunds', { params })
+    const res = await api.get('/admin/refunds', { params })
     const data = res.data?.data
     list.value = data?.content || []
     total.value = data?.totalElements || 0
@@ -144,7 +144,7 @@ async function fetchList() {
 
 async function handleApprove(row) {
   try {
-    await axios.post(`/api/admin/refunds/${row.id}/approve`, { remark: '审核通过' })
+    await api.post(`/admin/refunds/${row.id}/approve`, { remark: '审核通过' })
     ElMessage.success('已批准退款')
     fetchList()
   } catch (e) {
@@ -162,7 +162,7 @@ async function submitReject() {
   if (!rejectRemark.value.trim()) return ElMessage.warning('请填写拒绝原因')
   processing.value = true
   try {
-    await axios.post(`/api/admin/refunds/${current.value.id}/reject`, { remark: rejectRemark.value })
+    await api.post(`/admin/refunds/${current.value.id}/reject`, { remark: rejectRemark.value })
     ElMessage.success('已拒绝退款申请')
     rejectVisible.value = false
     fetchList()
@@ -173,7 +173,7 @@ async function submitReject() {
 
 async function handleComplete(row) {
   try {
-    await axios.post(`/api/admin/refunds/${row.id}/complete`)
+    await api.post(`/admin/refunds/${row.id}/complete`)
     ElMessage.success('退款已完成')
     fetchList()
   } catch (e) {

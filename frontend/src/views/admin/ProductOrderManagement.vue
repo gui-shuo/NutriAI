@@ -134,7 +134,7 @@
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Search, Refresh, ArrowDown } from '@element-plus/icons-vue'
-import axios from 'axios'
+import api from '@/services/api'
 
 const list = ref([])
 const loading = ref(false)
@@ -178,7 +178,7 @@ async function fetchList() {
     const params = { page: page.value - 1, size: pageSize }
     if (filterStatus.value) params.status = filterStatus.value
     if (keyword.value) params.keyword = keyword.value
-    const res = await axios.get('/api/admin/product-orders', { params })
+    const res = await api.get('/admin/product-orders', { params })
     const data = res.data?.data
     list.value = data?.content || []
     total.value = data?.totalElements || 0
@@ -204,7 +204,7 @@ async function submitShip() {
   if (!shipForm.value.trackingNo.trim()) return ElMessage.warning('请填写快递单号')
   shipping.value = true
   try {
-    await axios.put(`/api/admin/product-orders/${current.value.orderNo}/status`, {
+    await api.put(`/admin/product-orders/${current.value.orderNo}/status`, {
       status: 'SHIPPED',
       trackingCompany: shipForm.value.trackingCompany,
       trackingNo: shipForm.value.trackingNo
@@ -221,7 +221,7 @@ async function submitShip() {
 
 async function handleAction(row, cmd) {
   try {
-    await axios.put(`/api/admin/product-orders/${row.orderNo}/status`, { status: cmd })
+    await api.put(`/admin/product-orders/${row.orderNo}/status`, { status: cmd })
     ElMessage.success('操作成功')
     fetchList()
   } catch (e) {

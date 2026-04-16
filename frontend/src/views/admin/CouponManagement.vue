@@ -135,7 +135,7 @@
 import { ref, onMounted, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Search, Plus } from '@element-plus/icons-vue'
-import axios from 'axios'
+import api from '@/services/api'
 
 const list = ref([])
 const loading = ref(false)
@@ -182,7 +182,7 @@ async function fetchList() {
     const params = { page: page.value - 1, size: pageSize }
     if (keyword.value) params.keyword = keyword.value
     if (filterType.value) params.type = filterType.value
-    const res = await axios.get('/api/admin/coupons', { params })
+    const res = await api.get('/admin/coupons', { params })
     const data = res.data?.data
     list.value = data?.content || []
     total.value = data?.totalElements || 0
@@ -207,9 +207,9 @@ async function submitForm() {
   saving.value = true
   try {
     if (isEdit.value) {
-      await axios.put(`/api/admin/coupons/${form.value.id}`, form.value)
+      await api.put(`/admin/coupons/${form.value.id}`, form.value)
     } else {
-      await axios.post('/api/admin/coupons', form.value)
+      await api.post('/admin/coupons', form.value)
     }
     ElMessage.success(isEdit.value ? '更新成功' : '创建成功')
     formVisible.value = false
@@ -221,7 +221,7 @@ async function submitForm() {
 
 async function toggleActive(row) {
   try {
-    await axios.put(`/api/admin/coupons/${row.id}/toggle`)
+    await api.put(`/admin/coupons/${row.id}/toggle`)
   } catch (e) {
     row.isActive = !row.isActive
     ElMessage.error('操作失败')
@@ -230,7 +230,7 @@ async function toggleActive(row) {
 
 async function handleDelete(id) {
   try {
-    await axios.delete(`/api/admin/coupons/${id}`)
+    await api.delete(`/admin/coupons/${id}`)
     ElMessage.success('已删除')
     fetchList()
   } catch (e) {

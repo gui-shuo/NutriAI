@@ -208,7 +208,7 @@ async function fetchMeals() {
   try {
     const res = await mealApi.getList({ page: 0, size: 20 })
     const list = res.data?.content || res.data?.records || (Array.isArray(res.data) ? res.data : [])
-    if (res.code === 200 && list.length) {
+    if (res.code === 200) {
       meals.value = list.map((m: any) => ({
         ...m,
         price: m.salePrice || m.sale_price || m.price,
@@ -216,11 +216,9 @@ async function fetchMeals() {
         description: m.brief || m.description,
         tags: m.tags || []
       }))
-    } else {
-      meals.value = mockMeals
     }
   } catch {
-    meals.value = mockMeals
+    // silent fail — keep previous data
   } finally {
     loading.value = false
   }

@@ -88,10 +88,16 @@ const routes = [
     meta: { requiresAuth: true, title: '食谱库' }
   },
   {
+    path: '/meals',
+    name: 'AntiInflammatoryMeals',
+    component: () => import('@/views/AntiInflammatoryMealsView.vue'),
+    meta: { requiresAuth: true, title: '抗炎营养餐' }
+  },
+  {
     path: '/meal-plans',
     name: 'MealPlans',
     component: () => import('@/views/MealPlansView.vue'),
-    meta: { requiresAuth: true, title: '抗炎营养餐' }
+    meta: { requiresAuth: true, title: '营养餐计划' }
   },
   {
     path: '/product-shop',

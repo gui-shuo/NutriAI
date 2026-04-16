@@ -26,8 +26,8 @@
           <view class="item-info">
             <view class="item-name-row">
               <text class="item-name">{{ product.name }}</text>
-              <view class="status-tag" :class="product.status === 'ON_SALE' ? 'on' : 'off'">
-                {{ product.status === 'ON_SALE' ? '上架' : '下架' }}
+              <view class="status-tag" :class="(product.status === 'ON_SALE' || product.status === 'ACTIVE') ? 'on' : 'off'">
+                {{ (product.status === 'ON_SALE' || product.status === 'ACTIVE') ? '上架' : '下架' }}
               </view>
             </view>
             <text class="item-meta">¥{{ product.price }} · 库存 {{ product.stock || 0 }}</text>
@@ -36,7 +36,7 @@
         </view>
         <view class="item-actions">
           <view class="act-btn" @tap="openForm(product)">编辑</view>
-          <view class="act-btn" @tap="toggleStatus(product)">{{ product.status === 'ON_SALE' ? '下架' : '上架' }}</view>
+          <view class="act-btn" @tap="toggleStatus(product)">{{ (product.status === 'ON_SALE' || product.status === 'ACTIVE') ? '下架' : '上架' }}</view>
           <view class="act-btn danger" @tap="handleDelete(product)">删除</view>
         </view>
       </view>
@@ -241,11 +241,12 @@ async function saveProduct() {
 
 async function toggleStatus(product: any) {
   try {
-    const newStatus = product.status === 'ON_SALE' ? 'OFF_SALE' : 'ON_SALE'
+    const isOnSale = product.status === 'ON_SALE' || product.status === 'ACTIVE'
+    const newStatus = isOnSale ? 'INACTIVE' : 'ACTIVE'
     const res = await adminApi.toggleProductStatus(product.id, { status: newStatus })
     if (res.code === 200) {
       product.status = newStatus
-      uni.showToast({ title: newStatus === 'ON_SALE' ? '已上架' : '已下架', icon: 'success' })
+      uni.showToast({ title: newStatus === 'ACTIVE' ? '已上架' : '已下架', icon: 'success' })
     }
   } catch {}
 }
