@@ -5,15 +5,19 @@ import com.nutriai.entity.MealItem;
 import com.nutriai.entity.MealOrder;
 import com.nutriai.entity.Nutritionist;
 import com.nutriai.entity.NutritionProduct;
+import com.nutriai.entity.ProductOrder;
 import com.nutriai.repository.MealItemRepository;
 import com.nutriai.repository.MealOrderRepository;
 import com.nutriai.repository.NutritionistRepository;
 import com.nutriai.repository.NutritionProductRepository;
+import com.nutriai.repository.ProductOrderRepository;
 import com.nutriai.service.MealService;
+import com.nutriai.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +37,9 @@ public class AdminShopController {
     private final NutritionProductRepository productRepository;
     private final MealItemRepository mealItemRepository;
     private final MealOrderRepository mealOrderRepository;
+    private final ProductOrderRepository productOrderRepository;
     private final MealService mealService;
+    private final ProductService productService;
 
     // ==================== 营养师管理 ====================
 
@@ -316,5 +322,57 @@ public class AdminShopController {
             return ResponseEntity.badRequest().body(ApiResponse.error(400, "缺少取餐码"));
         }
         return ResponseEntity.ok(ApiResponse.success("核验成功", mealService.verifyPickupCode(pickupCode.trim())));
+    }
+
+    // ==================== 产品订单管理 ====================
+
+    @GetMapping("/product-orders")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<Page<ProductOrder>>> getProductOrders(
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<ProductOrder> result = productOrderRepository.adminSearch(
+                (status != null && status.isBlank()) ? null : status,
+                (keyword != null && keyword.isBlank()) ? null : keyword,
+                PageRequest.of(page, size, Sort.by("createdAt").descending()));
+        return ResponseEntity.ok(ApiResponse.success(result));
+    }
+
+    @GetMapping("/product-orders/{orderNo}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<ProductOrder>> getProductOrder(@PathVariable String orderNo) {
+        ProductOrder order = productOrderRepository.findByOrderNo(orderNo)
+                .orElseThrow(() -> new RuntimeException("订单不存在"));
+        return ResponseEntity.ok(ApiResponse.success(order));
+    }
+
+    @PutMapping("/product-orders/{orderNo}/ship")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<ProductOrder>> shipOrder(
+            @PathVariable String orderNo, @RequestBody Map<String, String> body) {
+        String company = body.get("shippingCompany");
+        String trackingNo = body.get("trackingNo");
+        return ResponseEntity.ok(ApiResponse.success("发货成功",
+                productService.shipOrder(orderNo, company, trackingNo)));
+    }
+
+    @PutMapping("/product-orders/{orderNo}/status")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<ProductOrder>> updateProductOrderStatus(
+            @PathVariable String orderNo, @RequestBody Map<String, String> body) {
+        String newStatus = body.get("status");
+        if (newStatus == null || newStatus.isBlank()) {
+            return ResponseEntity.badRequest().body(ApiResponse.error(400, "缺少status参数"));
+        }
+        return ResponseEntity.ok(ApiResponse.success("更新成功",
+                productService.adminUpdateOrderStatus(orderNo, newStatus)));
+    }
+
+    @GetMapping("/product-orders/stats")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getProductOrderStats() {
+        return ResponseEntity.ok(ApiResponse.success(productService.getOrderStats()));
     }
 }

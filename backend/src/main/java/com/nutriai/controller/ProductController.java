@@ -148,15 +148,27 @@ public class ProductController {
     }
 
     /**
-     * 获取订单历史
+     * 用户取消订单
+     */
+    @PostMapping("/orders/{orderNo}/cancel")
+    public ApiResponse<ProductOrder> cancelOrder(
+            @PathVariable String orderNo,
+            HttpServletRequest request) {
+        Long userId = getUserId(request);
+        return ApiResponse.success(productService.cancelOrder(userId, orderNo));
+    }
+
+    /**
+     * 获取订单历史（支持状态过滤）
      */
     @GetMapping("/orders")
     public ApiResponse<Page<ProductOrder>> getOrderHistory(
+            @RequestParam(required = false) String status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             HttpServletRequest request) {
         Long userId = getUserId(request);
-        return ApiResponse.success(productService.getOrderHistory(userId, page, size));
+        return ApiResponse.success(productService.getOrderHistory(userId, status, page, size));
     }
 
     private Long getUserId(HttpServletRequest request) {

@@ -88,11 +88,25 @@
         <text class="menu-text">我的营养餐</text>
         <text class="menu-arrow">›</text>
       </view>
+      <view class="menu-item" @tap="navigateTo('/pages/profile/my-product-orders')">
+        <view class="menu-icon-wrap" style="background: rgba(59,130,246,0.1)">
+          <text class="menu-icon">🛍</text>
+        </view>
+        <text class="menu-text">产品订单</text>
+        <text class="menu-arrow">›</text>
+      </view>
       <view class="menu-item" @tap="navigateTo('/pages/profile/my-orders')">
         <view class="menu-icon-wrap" style="background: rgba(20,184,166,0.1)">
           <text class="menu-icon">📦</text>
         </view>
         <text class="menu-text">我的订单</text>
+        <text class="menu-arrow">›</text>
+      </view>
+      <view class="menu-item" @tap="navigateTo('/pages/profile/coupons')">
+        <view class="menu-icon-wrap" style="background: rgba(239,68,68,0.1)">
+          <text class="menu-icon">🏷</text>
+        </view>
+        <text class="menu-text">我的优惠券</text>
         <text class="menu-arrow">›</text>
       </view>
       <view class="menu-item" @tap="navigateTo('/pages/address/index')">

@@ -99,6 +99,15 @@ public class MealOrder {
     @Column(name = "remark", length = 500)
     private String remark;
 
+    /** 使用的优惠券ID */
+    @Column(name = "coupon_id")
+    private Long couponId;
+
+    /** 优惠金额 */
+    @Column(name = "discount_amount", precision = 10, scale = 2)
+    @Builder.Default
+    private BigDecimal discountAmount = BigDecimal.ZERO;
+
     /** 微信支付交易号 */
     @Column(name = "wx_transaction_id", length = 64)
     private String wxTransactionId;

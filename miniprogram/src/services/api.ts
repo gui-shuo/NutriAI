@@ -67,8 +67,11 @@ export const productApi = {
   getCategories: () => request({ url: '/products/categories' }),
   createOrder: (data: any) => request({ url: '/products/orders', method: 'POST', data }),
   getOrders: (params?: any) => request({ url: '/products/orders', data: params }),
+  getMyOrders: (params?: any) => request({ url: '/products/orders', data: params }),
   simulatePay: (orderNo: string) => request({ url: `/products/orders/${orderNo}/simulate-pay`, method: 'POST' }),
   confirmReceive: (orderNo: string) => request({ url: `/products/orders/${orderNo}/confirm-receive`, method: 'POST' }),
+  confirmReceipt: (orderNo: string) => request({ url: `/products/orders/${orderNo}/confirm-receive`, method: 'POST' }),
+  cancelOrder: (orderNo: string) => request({ url: `/products/orders/${orderNo}/cancel`, method: 'POST' }),
   simulateRefund: (orderNo: string) => request({ url: `/products/orders/${orderNo}/simulate-refund`, method: 'POST' })
 }
 
@@ -176,8 +179,22 @@ export const adminApi = {
   getMealOrders: (params?: any) => request({ url: '/admin/meal-orders', data: params }),
   updateMealOrderStatus: (orderNo: string, data: any) => request({ url: `/admin/meal-orders/${orderNo}/status`, method: 'PUT', data }),
   getMealOrderStats: () => request({ url: '/admin/meal-orders/stats' }),
-  getProductOrders: (params?: any) => request({ url: '/products/orders', data: params }),
-  verifyPickupCode: (pickupCode: string) => request({ url: '/admin/meal-orders/verify-pickup', method: 'POST', data: { pickupCode } }),
+  getProductOrders: (params?: any) => request({ url: '/admin/product-orders', data: params }),
+  getAdminProductOrder: (orderNo: string) => request({ url: `/admin/product-orders/${orderNo}` }),
+  shipProductOrder: (orderNo: string, data: any) => request({ url: `/admin/product-orders/${orderNo}/ship`, method: 'PUT', data }),
+  updateProductOrderStatus: (orderNo: string, data: any) => request({ url: `/admin/product-orders/${orderNo}/status`, method: 'PUT', data }),
+  getProductOrderStats: () => request({ url: '/admin/product-orders/stats' }),
+  // Coupon admin
+  getCoupons: (params?: any) => request({ url: '/admin/coupons', data: params }),
+  createCoupon: (data: any) => request({ url: '/admin/coupons', method: 'POST', data }),
+  updateCoupon: (id: number, data: any) => request({ url: `/admin/coupons/${id}`, method: 'PUT', data }),
+  toggleCoupon: (id: number, data: any) => request({ url: `/admin/coupons/${id}/toggle`, method: 'PUT', data }),
+  deleteCoupon: (id: number) => request({ url: `/admin/coupons/${id}`, method: 'DELETE' }),
+  // Refund admin
+  getRefunds: (params?: any) => request({ url: '/admin/refunds', data: params }),
+  approveRefund: (id: number, data: any) => request({ url: `/admin/refunds/${id}/approve`, method: 'POST', data }),
+  rejectRefund: (id: number, data: any) => request({ url: `/admin/refunds/${id}/reject`, method: 'POST', data }),
+  completeRefund: (id: number) => request({ url: `/admin/refunds/${id}/complete`, method: 'POST' }),
   // Upload
   uploadImage: (filePath: string) => uploadFile({ url: '/community/upload', filePath, name: 'file' })
 }
@@ -213,6 +230,50 @@ export const socialAuthApi = {
   bindEmail: (email: string, code: string) => request({ url: '/auth/social/bind-email', method: 'POST', data: { email, code } }),
   sendMergeCode: (email: string) => request({ url: '/auth/social/merge/send-code', method: 'POST', data: { email } }),
   mergeToEmail: (email: string, code: string) => request({ url: '/auth/social/merge/confirm', method: 'POST', data: { email, code } }),
+}
+
+// ============ Cart ============
+export const cartApi = {
+  getCart: () => request({ url: '/cart' }),
+  getCount: () => request({ url: '/cart/count' }),
+  addItem: (data: { itemType: string; itemId: number; quantity?: number }) =>
+    request({ url: '/cart/add', method: 'POST', data }),
+  updateQuantity: (id: number, quantity: number) =>
+    request({ url: `/cart/${id}/quantity`, method: 'PUT', data: { quantity } }),
+  updateSelected: (id: number, selected: boolean) =>
+    request({ url: `/cart/${id}/select`, method: 'PUT', data: { selected } }),
+  selectAll: (selected: boolean) =>
+    request({ url: '/cart/select-all', method: 'PUT', data: { selected } }),
+  removeItem: (id: number) => request({ url: `/cart/${id}`, method: 'DELETE' }),
+  removeBatch: (ids: number[]) => request({ url: '/cart/batch', method: 'DELETE', data: { ids } }),
+  clearCart: () => request({ url: '/cart/clear', method: 'DELETE' })
+}
+
+// ============ Coupon ============
+export const couponApi = {
+  getMyCoupons: (status?: string) => request({ url: `/coupons/my${status ? `?status=${status}` : ''}` }),
+  getAvailable: (type?: string) => request({ url: `/coupons/available${type ? `?type=${type}` : ''}` }),
+  claim: (couponId: number) => request({ url: `/coupons/${couponId}/claim`, method: 'POST' }),
+  claimByCode: (code: string) => request({ url: '/coupons/claim-by-code', method: 'POST', data: { code } })
+}
+
+// ============ Refund ============
+export const refundApi = {
+  apply: (data: any) => request({ url: '/refunds', method: 'POST', data }),
+  getMyRefunds: (params?: any) => request({ url: '/refunds/my', data: params })
+}
+
+// ============ Product Orders (User) ============
+export const productOrderApi = {
+  getOrders: (params?: any) => request({ url: '/products/orders', data: params }),
+  getOrder: (orderNo: string) => request({ url: `/products/orders/${orderNo}` }),
+  createOrder: (data: any) => request({ url: '/products/orders', method: 'POST', data }),
+  cancelOrder: (orderNo: string, reason?: string) =>
+    request({ url: `/products/orders/${orderNo}/cancel`, method: 'POST', data: { reason } }),
+  confirmReceive: (orderNo: string) =>
+    request({ url: `/products/orders/${orderNo}/confirm`, method: 'POST' }),
+  simulatePay: (orderNo: string) =>
+    request({ url: `/products/orders/${orderNo}/simulate-pay`, method: 'POST' })
 }
 
 // ============ Announcements ============

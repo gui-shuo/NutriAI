@@ -91,7 +91,7 @@ public class ProductService {
             NutritionProduct product = productRepository.findById(productId)
                     .orElseThrow(() -> new BusinessException("产品不存在: " + productId));
 
-            if (!"ACTIVE".equals(product.getStatus())) {
+            if (!"ACTIVE".equals(product.getStatus()) && !"ON_SALE".equals(product.getStatus())) {
                 throw new BusinessException("产品已下架: " + product.getName());
             }
 
@@ -269,10 +269,44 @@ public class ProductService {
     }
 
     /**
-     * 获取用户订单历史
+     * 获取用户订单历史（支持状态过滤）
      */
-    public Page<ProductOrder> getOrderHistory(Long userId, int page, int size) {
+    public Page<ProductOrder> getOrderHistory(Long userId, String status, int page, int size) {
+        if (status != null && !status.isEmpty()) {
+            return orderRepository.findByUserIdAndOrderStatusOrderByCreatedAtDesc(userId, status, PageRequest.of(page, size));
+        }
         return orderRepository.findByUserIdOrderByCreatedAtDesc(userId, PageRequest.of(page, size));
+    }
+
+    /**
+     * 用户取消订单
+     */
+    @Transactional
+    public ProductOrder cancelOrder(Long userId, String orderNo) {
+        ProductOrder order = orderRepository.findByOrderNo(orderNo)
+                .orElseThrow(() -> new BusinessException("订单不存在"));
+        if (!order.getUserId().equals(userId)) {
+            throw new BusinessException("无权操作该订单");
+        }
+        if (!"PENDING_PAYMENT".equals(order.getOrderStatus()) && !"PAID".equals(order.getOrderStatus())) {
+            throw new BusinessException("当前订单状态不可取消");
+        }
+        order.setOrderStatus("CANCELLED");
+        order.setCancelReason("用户主动取消");
+        order.setCancelledAt(LocalDateTime.now());
+        // 恢复库存
+        for (Map<String, Object> item : order.getItems()) {
+            try {
+                Long productId = Long.valueOf(item.get("productId").toString());
+                int quantity = Integer.parseInt(item.get("quantity").toString());
+                NutritionProduct product = productRepository.findById(productId).orElse(null);
+                if (product != null) {
+                    product.setStock(product.getStock() + quantity);
+                    productRepository.save(product);
+                }
+            } catch (Exception ignored) {}
+        }
+        return orderRepository.save(order);
     }
 
     /**
@@ -285,10 +319,84 @@ public class ProductService {
             expired.forEach(o -> {
                 o.setPaymentStatus("EXPIRED");
                 o.setOrderStatus("CANCELLED");
+                o.setCancelReason("超时未支付自动取消");
+                o.setCancelledAt(LocalDateTime.now());
             });
             orderRepository.saveAll(expired);
             log.info("自动取消超时产品订单 {} 笔", expired.size());
         }
+    }
+
+    /**
+     * 15天自动确认收货
+     */
+    @Scheduled(cron = "0 0 2 * * *")
+    public void autoConfirmReceipt() {
+        LocalDateTime cutoff = LocalDateTime.now().minusDays(15);
+        List<ProductOrder> orders = orderRepository.findShippedBeforeCutoff(cutoff);
+        if (!orders.isEmpty()) {
+            orders.forEach(o -> {
+                o.setOrderStatus("COMPLETED");
+                o.setCompletedAt(LocalDateTime.now());
+            });
+            orderRepository.saveAll(orders);
+            log.info("自动确认收货 {} 笔产品订单", orders.size());
+        }
+    }
+
+    /**
+     * 管理员发货
+     */
+    @Transactional
+    public ProductOrder shipOrder(String orderNo, String shippingCompany, String trackingNo) {
+        ProductOrder order = orderRepository.findByOrderNo(orderNo)
+                .orElseThrow(() -> new BusinessException("订单不存在"));
+        if (!"PAID".equals(order.getOrderStatus())) {
+            throw new BusinessException("订单状态不允许发货，当前状态: " + order.getOrderStatus());
+        }
+        order.setOrderStatus("SHIPPED");
+        order.setShippedAt(LocalDateTime.now());
+        order.setShippingCompany(shippingCompany);
+        order.setTrackingNo(trackingNo);
+        order.setAutoConfirmAt(LocalDateTime.now().plusDays(15));
+        orderRepository.save(order);
+        log.info("管理员发货: orderNo={}, company={}, trackingNo={}", orderNo, shippingCompany, trackingNo);
+        return order;
+    }
+
+    /**
+     * 管理员更新订单状态
+     */
+    @Transactional
+    public ProductOrder adminUpdateOrderStatus(String orderNo, String newStatus) {
+        ProductOrder order = orderRepository.findByOrderNo(orderNo)
+                .orElseThrow(() -> new BusinessException("订单不存在"));
+        order.setOrderStatus(newStatus);
+        if ("COMPLETED".equals(newStatus) && order.getCompletedAt() == null) {
+            order.setCompletedAt(LocalDateTime.now());
+        }
+        if ("CANCELLED".equals(newStatus) && order.getCancelledAt() == null) {
+            order.setCancelledAt(LocalDateTime.now());
+        }
+        return orderRepository.save(order);
+    }
+
+    /**
+     * 产品订单统计
+     */
+    public Map<String, Object> getOrderStats() {
+        Map<String, Object> stats = new LinkedHashMap<>();
+        stats.put("totalOrders", orderRepository.count());
+        stats.put("pendingPayment", orderRepository.countByOrderStatus("PENDING_PAYMENT"));
+        stats.put("paid", orderRepository.countByOrderStatus("PAID"));
+        stats.put("shipped", orderRepository.countByOrderStatus("SHIPPED"));
+        stats.put("completed", orderRepository.countByOrderStatus("COMPLETED"));
+        stats.put("cancelled", orderRepository.countByOrderStatus("CANCELLED"));
+
+        LocalDateTime monthStart = LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
+        BigDecimal monthRevenue = orderRepository.sumRevenueByPeriod(monthStart, LocalDateTime.now());
+        stats.put("monthRevenue", monthRevenue != null ? monthRevenue : BigDecimal.ZERO);
+        return stats;
     }
 
     private String generateOrderNo(String prefix) {

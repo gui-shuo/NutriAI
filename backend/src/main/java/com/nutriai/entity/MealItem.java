@@ -135,6 +135,12 @@ public class MealItem {
     @Builder.Default
     private Integer sortOrder = 0;
 
+    /** 乐观锁 */
+    @Version
+    @Column(name = "version")
+    @Builder.Default
+    private Integer version = 0;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

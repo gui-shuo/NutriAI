@@ -57,8 +57,38 @@
           <text class="action-icon">📦</text>
         </view>
         <view class="action-info">
-          <text class="action-title">订单管理</text>
-          <text class="action-desc">查看处理所有订单</text>
+          <text class="action-title">营养餐订单</text>
+          <text class="action-desc">查看处理营养餐订单</text>
+        </view>
+        <text class="action-arrow">›</text>
+      </view>
+      <view class="action-item" @tap="goTo('/pages/admin/product-orders')">
+        <view class="action-icon-wrap" style="background: rgba(139,92,246,0.1)">
+          <text class="action-icon">🛒</text>
+        </view>
+        <view class="action-info">
+          <text class="action-title">产品订单</text>
+          <text class="action-desc">发货、退款、产品订单管理</text>
+        </view>
+        <text class="action-arrow">›</text>
+      </view>
+      <view class="action-item" @tap="goTo('/pages/admin/coupons')">
+        <view class="action-icon-wrap" style="background: rgba(239,68,68,0.1)">
+          <text class="action-icon">🏷</text>
+        </view>
+        <view class="action-info">
+          <text class="action-title">优惠券管理</text>
+          <text class="action-desc">创建和管理优惠券活动</text>
+        </view>
+        <text class="action-arrow">›</text>
+      </view>
+      <view class="action-item" @tap="goTo('/pages/admin/refunds')">
+        <view class="action-icon-wrap" style="background: rgba(245,158,11,0.1)">
+          <text class="action-icon">↩️</text>
+        </view>
+        <view class="action-info">
+          <text class="action-title">退款管理</text>
+          <text class="action-desc">审核和处理退款申请</text>
         </view>
         <text class="action-arrow">›</text>
       </view>

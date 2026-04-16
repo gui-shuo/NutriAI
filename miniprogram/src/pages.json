@@ -36,7 +36,15 @@
     { "path": "pages/admin/index", "style": { "navigationBarTitleText": "管理后台" } },
     { "path": "pages/admin/meals", "style": { "navigationBarTitleText": "营养餐管理" } },
     { "path": "pages/admin/products", "style": { "navigationBarTitleText": "产品管理" } },
-    { "path": "pages/admin/orders", "style": { "navigationBarTitleText": "订单管理" } }
+    { "path": "pages/admin/orders", "style": { "navigationBarTitleText": "订单管理" } },
+    { "path": "pages/admin/product-orders", "style": { "navigationBarTitleText": "产品订单管理" } },
+    { "path": "pages/admin/coupons", "style": { "navigationBarTitleText": "优惠券管理" } },
+    { "path": "pages/admin/refunds", "style": { "navigationBarTitleText": "退款管理" } },
+    { "path": "pages/cart/index", "style": { "navigationBarTitleText": "购物车" } },
+    { "path": "pages/product-shop/checkout", "style": { "navigationBarTitleText": "确认订单" } },
+    { "path": "pages/profile/my-product-orders", "style": { "navigationBarTitleText": "我的产品订单" } },
+    { "path": "pages/profile/refunds", "style": { "navigationBarTitleText": "退款申请" } },
+    { "path": "pages/profile/coupons", "style": { "navigationBarTitleText": "我的优惠券" } }
   ],
   "globalStyle": {
     "navigationBarTextStyle": "white",

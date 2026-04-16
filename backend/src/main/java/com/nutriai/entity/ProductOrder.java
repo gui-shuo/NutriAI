@@ -88,6 +88,28 @@ public class ProductOrder {
     @Column(name = "remark", length = 500)
     private String remark;
 
+    /** 使用的优惠券ID */
+    @Column(name = "coupon_id")
+    private Long couponId;
+
+    /** 优惠金额 */
+    @Column(name = "discount_amount", precision = 10, scale = 2)
+    @Builder.Default
+    private BigDecimal discountAmount = BigDecimal.ZERO;
+
+    /** 配送方式: EXPRESS=快递 PICKUP=自提 */
+    @Column(name = "fulfillment_type", length = 20)
+    @Builder.Default
+    private String fulfillmentType = "EXPRESS";
+
+    /** 自提码（自提时使用） */
+    @Column(name = "pickup_code", length = 6)
+    private String pickupCode;
+
+    /** 物流公司 */
+    @Column(name = "shipping_company", length = 50)
+    private String shippingCompany;
+
     /** 订单超时时间 */
     @Column(name = "expire_time")
     private LocalDateTime expireTime;
@@ -103,6 +125,18 @@ public class ProductOrder {
     /** 完成时间 */
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
+
+    /** 取消原因 */
+    @Column(name = "cancel_reason", length = 200)
+    private String cancelReason;
+
+    /** 取消时间 */
+    @Column(name = "cancelled_at")
+    private LocalDateTime cancelledAt;
+
+    /** 自动确认收货时间 */
+    @Column(name = "auto_confirm_at")
+    private LocalDateTime autoConfirmAt;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
