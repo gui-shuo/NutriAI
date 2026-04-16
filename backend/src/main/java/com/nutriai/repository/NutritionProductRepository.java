@@ -9,9 +9,13 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Collection;
 
 @Repository
 public interface NutritionProductRepository extends JpaRepository<NutritionProduct, Long> {
+
+    /** 低库存预警查询 */
+    Page<NutritionProduct> findByStockLessThanEqualAndStatusIn(int stock, Collection<String> statuses, Pageable pageable);
 
     // User-facing: treat both "ON_SALE" and legacy "ACTIVE" as available
     @Query("SELECT p FROM NutritionProduct p WHERE p.status IN ('ON_SALE', 'ACTIVE') ORDER BY p.sortOrder ASC")

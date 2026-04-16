@@ -262,6 +262,30 @@ const routes = [
         name: 'AdminMealPlans',
         component: () => import('@/views/admin/MealPlanManagement.vue'),
         meta: { title: '营养餐管理' }
+      },
+      {
+        path: 'meal-orders',
+        name: 'AdminMealOrders',
+        component: () => import('@/views/admin/MealOrderManagement.vue'),
+        meta: { title: '营养餐订单' }
+      },
+      {
+        path: 'product-orders',
+        name: 'AdminProductOrders',
+        component: () => import('@/views/admin/ProductOrderManagement.vue'),
+        meta: { title: '产品订单' }
+      },
+      {
+        path: 'coupons',
+        name: 'AdminCoupons',
+        component: () => import('@/views/admin/CouponManagement.vue'),
+        meta: { title: '优惠券管理' }
+      },
+      {
+        path: 'refunds',
+        name: 'AdminRefunds',
+        component: () => import('@/views/admin/RefundManagement.vue'),
+        meta: { title: '退款管理' }
       }
     ]
   },

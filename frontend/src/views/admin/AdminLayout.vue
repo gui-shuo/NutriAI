@@ -47,6 +47,22 @@
             <el-icon><ShoppingCart /></el-icon>
             <span>产品管理</span>
           </el-menu-item>
+          <el-menu-item index="/admin/meal-orders">
+            <el-icon><List /></el-icon>
+            <span>营养餐订单</span>
+          </el-menu-item>
+          <el-menu-item index="/admin/product-orders">
+            <el-icon><Document /></el-icon>
+            <span>产品订单</span>
+          </el-menu-item>
+          <el-menu-item index="/admin/coupons">
+            <el-icon><Ticket /></el-icon>
+            <span>优惠券管理</span>
+          </el-menu-item>
+          <el-menu-item index="/admin/refunds">
+            <el-icon><RefreshLeft /></el-icon>
+            <span>退款管理</span>
+          </el-menu-item>
           <el-menu-item index="/admin/app-versions">
             <el-icon><Download /></el-icon>
             <span>APP版本</span>
@@ -102,7 +118,11 @@ import {
   ShoppingCart,
   Download,
   Food,
-  Calendar
+  Calendar,
+  List,
+  Document,
+  Ticket,
+  RefreshLeft
 } from '@element-plus/icons-vue'
 import AlertNotification from '@/components/admin/AlertNotification.vue'
 import { useAuthStore } from '@/stores/auth'
