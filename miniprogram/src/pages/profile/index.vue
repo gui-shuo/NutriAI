@@ -662,7 +662,6 @@ onUnmounted(() => {
   min-height: 100vh;
   background: $background;
   padding-bottom: 30rpx;
-  font-family: 'Inter', sans-serif;
 }
 
 /* ============ Header ============ */
@@ -676,12 +675,12 @@ onUnmounted(() => {
   top: 0; left: 0; right: 0;
   height: 100%;
   background: $gradient-accent;
-  border-radius: 0 0 40rpx 40rpx;
+  border-radius: 0 0 48rpx 48rpx;
 }
 
 .header-inner {
   position: relative;
-  padding: 48rpx 32rpx 24rpx;
+  padding: 56rpx 32rpx 28rpx;
   display: flex;
   align-items: center;
 }
@@ -693,22 +692,24 @@ onUnmounted(() => {
 }
 
 .avatar {
-  width: 120rpx;
-  height: 120rpx;
+  width: 128rpx;
+  height: 128rpx;
   border-radius: $radius-full;
-  border: 4rpx solid rgba(255, 255, 255, 0.3);
+  border: 6rpx solid #fff;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.12);
 }
 
 .avatar-edit {
   position: absolute;
-  bottom: 0; right: 0;
-  background: rgba(0, 0, 0, 0.4);
+  bottom: 4rpx; right: 4rpx;
+  background: #fff;
   border-radius: $radius-full;
-  width: 36rpx; height: 36rpx;
+  width: 40rpx; height: 40rpx;
   font-size: 20rpx;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
 }
 
 .user-meta {
@@ -726,27 +727,26 @@ onUnmounted(() => {
   font-size: 36rpx;
   font-weight: 700;
   color: #fff;
-  font-family: 'Calistoga', cursive;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .vip-badge-tag {
-  background: rgba(255, 255, 255, 0.2);
-  color: #fff;
+  background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+  color: #92400E;
   font-size: 20rpx;
-  padding: 4rpx 14rpx;
+  padding: 4rpx 16rpx;
   border-radius: $radius-full;
   font-weight: 700;
   letter-spacing: 2rpx;
-  font-family: 'JetBrains Mono', monospace;
   flex-shrink: 0;
+  box-shadow: 0 2rpx 6rpx rgba(146, 64, 14, 0.15);
 }
 
 .username {
-  color: rgba(255, 255, 255, 0.8);
-  margin-top: 4rpx;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 6rpx;
   display: block;
   font-size: 24rpx;
 }
@@ -762,15 +762,15 @@ onUnmounted(() => {
 }
 
 .edit-btn {
-  color: #fff;
+  color: $accent;
   font-size: 24rpx;
-  background: rgba(255, 255, 255, 0.15);
-  padding: 8rpx 20rpx;
+  background: #fff;
+  padding: 10rpx 28rpx;
   border-radius: $radius-full;
-  border: 2rpx solid rgba(255, 255, 255, 0.3);
-  font-family: 'Inter', sans-serif;
   flex-shrink: 0;
   white-space: nowrap;
+  font-weight: 500;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
 }
 
 /* ============ Stats Row ============ */
@@ -779,11 +779,11 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  background: rgba(255, 255, 255, 0.15);
-  margin: 0 24rpx 24rpx;
-  padding: 24rpx 16rpx;
+  background: #fff;
+  margin: -16rpx 32rpx 24rpx;
+  padding: 28rpx 16rpx;
   border-radius: $radius-xl;
-  background-color: rgba(0, 0, 0, 0.5);
+  box-shadow: $shadow-md;
 }
 
 .stat-item {
@@ -794,59 +794,79 @@ onUnmounted(() => {
 }
 
 .stat-value {
-  font-size: 26rpx;
+  font-size: 28rpx;
   font-weight: 700;
-  color: #fff;
-  font-family: 'JetBrains Mono', monospace;
+  color: $accent;
 }
 
 .stat-label {
   font-size: 22rpx;
-  color: rgba(255, 255, 255, 0.75);
-  margin-top: 4rpx;
+  color: $muted-foreground;
+  margin-top: 6rpx;
 }
 
 .stat-divider {
   width: 1rpx;
-  height: 40rpx;
-  background: rgba(255, 255, 255, 0.25);
+  height: 48rpx;
+  background: $border;
 }
 
 /* ============ Sections ============ */
 .section-label {
   font-size: 26rpx;
   font-weight: 600;
-  color: $muted-foreground;
-  padding: 24rpx 32rpx 8rpx;
-  font-family: 'Inter', sans-serif;
+  color: $foreground;
+  padding: 28rpx 32rpx 10rpx;
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 6rpx;
+    height: 28rpx;
+    border-radius: 3rpx;
+    background: $gradient-accent;
+  }
 }
 
 .card {
   background: $card;
   border-radius: $radius-xl;
-  margin: 8rpx 24rpx 0;
-  border: 1rpx solid $border;
+  margin: 8rpx 32rpx 0;
   box-shadow: $shadow-sm;
 }
 
 .menu-card {
   padding: 0;
+  overflow: hidden;
 }
 
 .menu-item {
   display: flex;
   align-items: center;
-  padding: 26rpx 28rpx;
-  border-bottom: 1rpx solid rgba(226, 232, 240, 0.6);
+  padding: 28rpx 28rpx;
   position: relative;
 
-  &:last-child { border-bottom: none; }
-  &:active { background: $muted; }
+  &:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 100rpx;
+    right: 28rpx;
+    bottom: 0;
+    height: 1rpx;
+    background: $border;
+  }
+
+  &:active {
+    background: $muted;
+  }
 }
 
 .menu-icon-wrap {
-  width: 64rpx; height: 64rpx;
-  border-radius: $radius-lg;
+  width: 68rpx; height: 68rpx;
+  border-radius: 20rpx;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -860,7 +880,6 @@ onUnmounted(() => {
   flex: 1;
   font-size: 28rpx;
   color: $foreground;
-  font-family: 'Inter', sans-serif;
 }
 
 .danger-text { color: $uni-error; }
@@ -873,33 +892,34 @@ onUnmounted(() => {
 
 .menu-badge {
   font-size: 22rpx;
-  color: $accent;
-  background: rgba(16, 185, 129, 0.08);
-  padding: 4rpx 12rpx;
+  color: #059669;
+  background: #ECFDF5;
+  padding: 4rpx 14rpx;
   border-radius: $radius-full;
+  font-weight: 500;
 }
 
 .menu-arrow {
   font-size: 32rpx;
-  color: $border;
+  color: $muted-foreground;
+  opacity: 0.5;
 }
 
 /* ============ Logout ============ */
 .logout-wrap {
-  padding: 40rpx 24rpx 20rpx;
+  padding: 40rpx 32rpx 20rpx;
 }
 
 .btn-logout {
   background: $card;
   color: $uni-error;
-  border: 1rpx solid $border;
   border-radius: $radius-xl;
   height: 88rpx;
   line-height: 88rpx;
   font-size: 30rpx;
   text-align: center;
   box-shadow: $shadow-sm;
-  font-family: 'Inter', sans-serif;
+  font-weight: 500;
 }
 
 .btn-logout::after { border: none; }
@@ -908,7 +928,7 @@ onUnmounted(() => {
 .sheet-mask {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(15, 23, 42, 0.5);
+  background: rgba(15, 23, 42, 0.45);
   z-index: 999;
   display: flex;
   align-items: flex-end;
@@ -917,7 +937,7 @@ onUnmounted(() => {
 
 .sheet {
   background: $card;
-  border-radius: $radius-2xl $radius-2xl 0 0;
+  border-radius: $radius-xl $radius-xl 0 0;
   width: 100%;
   max-width: 750rpx;
   max-height: 85vh;
@@ -941,8 +961,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 32rpx 32rpx 20rpx;
-  border-bottom: 1rpx solid $border;
+  padding: 36rpx 32rpx 24rpx;
   flex-shrink: 0;
 }
 
@@ -950,13 +969,19 @@ onUnmounted(() => {
   font-size: 34rpx;
   font-weight: 700;
   color: $foreground;
-  font-family: 'Calistoga', cursive;
 }
 
 .sheet-close {
   font-size: 36rpx;
   color: $muted-foreground;
   padding: 8rpx;
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $muted;
+  border-radius: $radius-full;
 }
 
 .sheet-body {
@@ -984,8 +1009,8 @@ onUnmounted(() => {
 }
 
 .form-input {
-  background: $muted;
-  border: 1rpx solid $border;
+  background: #F0F4F8;
+  border: none;
   border-radius: $radius-lg;
   padding: 20rpx 24rpx;
   font-size: 28rpx;
@@ -994,15 +1019,14 @@ onUnmounted(() => {
   max-width: 100%;
   min-height: 80rpx;
   box-sizing: border-box;
-  font-family: 'Inter', sans-serif;
   display: block;
   position: relative;
   z-index: 1;
 }
 
 .form-textarea {
-  background: $muted;
-  border: 1rpx solid $border;
+  background: #F0F4F8;
+  border: none;
   border-radius: $radius-lg;
   padding: 20rpx 24rpx;
   font-size: 28rpx;
@@ -1011,7 +1035,6 @@ onUnmounted(() => {
   max-width: 100%;
   min-height: 120rpx;
   box-sizing: border-box;
-  font-family: 'Inter', sans-serif;
   display: block;
   position: relative;
   z-index: 1;
@@ -1033,18 +1056,17 @@ onUnmounted(() => {
   flex: 1;
   text-align: center;
   padding: 16rpx 0;
-  border-radius: $radius-lg;
-  background: $muted;
-  border: 2rpx solid $border;
+  border-radius: $radius-full;
+  background: #F0F4F8;
   font-size: 28rpx;
-  color: $foreground;
+  color: $muted-foreground;
   transition: all 0.2s;
 
   &.active {
-    background: rgba(16, 185, 129, 0.1);
-    border-color: $accent;
-    color: $accent;
+    background: $gradient-accent;
+    color: #fff;
     font-weight: 600;
+    box-shadow: $shadow-accent;
   }
 }
 
@@ -1065,13 +1087,14 @@ onUnmounted(() => {
 .flex-1 { flex: 1; }
 
 .send-code-btn {
-  background: $accent;
+  background: $gradient-accent;
   color: #fff;
   font-size: 24rpx;
   padding: 16rpx 24rpx;
-  border-radius: $radius-lg;
+  border-radius: $radius-full;
   white-space: nowrap;
   flex-shrink: 0;
+  box-shadow: $shadow-accent;
 }
 
 /* Password strength */
@@ -1112,15 +1135,15 @@ onUnmounted(() => {
   margin-top: 16rpx;
   height: 88rpx;
   line-height: 88rpx;
-  border-radius: $radius-xl;
+  border-radius: $radius-full;
   font-size: 30rpx;
   border: none;
-  font-family: 'Inter', sans-serif;
   width: 100%;
+  font-weight: 600;
 }
 
 .btn-primary {
-  background: $accent;
+  background: $gradient-accent;
   color: #fff;
   box-shadow: $shadow-accent;
 }
@@ -1130,18 +1153,18 @@ onUnmounted(() => {
 .btn-danger {
   background: $uni-error;
   color: #fff;
-  &[disabled] { opacity: 0.4; }
+  box-shadow: 0 4rpx 16rpx rgba(239, 68, 68, 0.3);
+  &[disabled] { opacity: 0.4; box-shadow: none; }
 }
 
 .btn-danger::after { border: none; }
 
 /* ============ Delete account ============ */
 .delete-warning {
-  background: #FEF2F2;
+  background: #FEF7F7;
   border-radius: $radius-lg;
-  padding: 24rpx;
+  padding: 28rpx;
   margin-bottom: 24rpx;
-  border: 1rpx solid rgba(239, 68, 68, 0.2);
 }
 
 .warning-text {
@@ -1156,7 +1179,7 @@ onUnmounted(() => {
   display: block;
   font-size: 24rpx;
   color: $foreground;
-  opacity: 0.7;
+  opacity: 0.65;
   line-height: 1.8;
 }
 
@@ -1169,14 +1192,14 @@ onUnmounted(() => {
 
 .checkbox-icon {
   font-size: 36rpx;
-  color: $border;
+  color: $muted-foreground;
   &.checked { color: $uni-error; }
 }
 
 .checkbox-text {
   font-size: 24rpx;
   color: $foreground;
-  opacity: 0.7;
+  opacity: 0.65;
   flex: 1;
   line-height: 1.6;
 }
@@ -1189,28 +1212,38 @@ onUnmounted(() => {
   flex-direction: column;
   align-items: center;
   text-align: center;
+  padding-top: 16rpx;
 }
 
 .about-logo {
-  font-size: 80rpx;
-  margin-bottom: 16rpx;
+  font-size: 96rpx;
+  margin-bottom: 20rpx;
+  width: 140rpx;
+  height: 140rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ECFDF5;
+  border-radius: $radius-full;
 }
 
 .about-name {
-  font-size: 32rpx;
+  font-size: 34rpx;
   font-weight: 700;
   color: $foreground;
-  font-family: 'Calistoga', cursive;
 }
 
 .about-version {
   margin-top: 8rpx;
   font-size: 24rpx;
   color: $muted-foreground;
+  background: $muted;
+  padding: 4rpx 20rpx;
+  border-radius: $radius-full;
 }
 
 .about-desc {
-  margin-top: 20rpx;
+  margin-top: 24rpx;
   font-size: 26rpx;
   line-height: 1.8;
   color: $muted-foreground;

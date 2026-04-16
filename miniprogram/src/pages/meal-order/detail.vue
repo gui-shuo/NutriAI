@@ -166,7 +166,7 @@ async function fetchDetail(id: string) {
 <style scoped lang="scss">
 .page {
   min-height: 100vh;
-  background: $background;
+  background: #F5F7FA;
 }
 
 .loading-page {
@@ -177,13 +177,13 @@ async function fetchDetail(id: string) {
 }
 .loading-text {
   font-size: 28rpx;
-  color: $muted-foreground;
+  color: #8896AB;
 }
 
 .hero-img {
   width: 100%;
   height: 480rpx;
-  background: $muted;
+  background: #F0F4F8;
 }
 
 .info-section {
@@ -199,7 +199,7 @@ async function fetchDetail(id: string) {
 .meal-name {
   font-size: 40rpx;
   font-weight: 700;
-  color: $foreground;
+  color: #1A1A2E;
   flex: 1;
   margin-right: 16rpx;
 }
@@ -218,34 +218,34 @@ async function fetchDetail(id: string) {
 }
 .tag {
   font-size: 22rpx;
-  color: $accent;
-  background: rgba(16,185,129,0.1);
+  color: #059669;
+  background: #ECFDF5;
   padding: 6rpx 18rpx;
-  border-radius: $radius-full;
+  border-radius: 48rpx;
   font-weight: 500;
 }
 
 .meal-desc {
   font-size: 28rpx;
-  color: $muted-foreground;
+  color: #8896AB;
   line-height: 1.7;
   margin-bottom: 32rpx;
 }
 
 /* Nutrition Card */
 .nutrition-card {
-  background: $card;
-  border-radius: $radius-xl;
+  background: #fff;
+  border-radius: 24rpx;
   padding: 28rpx;
   margin-bottom: 24rpx;
-  border: 1rpx solid $border;
-  box-shadow: $shadow-sm;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04);
+  border-top: 6rpx solid #10B981;
 }
 .card-title {
   display: block;
   font-size: 30rpx;
   font-weight: 600;
-  color: $foreground;
+  color: #1A1A2E;
   margin-bottom: 20rpx;
 }
 .nutrition-grid {
@@ -263,25 +263,24 @@ async function fetchDetail(id: string) {
 .nutrition-val {
   font-size: 34rpx;
   font-weight: 700;
-  color: $accent;
+  color: #10B981;
 }
 .nutrition-label {
   font-size: 22rpx;
-  color: $muted-foreground;
+  color: #8896AB;
 }
 
 /* Info Card */
 .info-card {
-  background: $card;
-  border-radius: $radius-xl;
+  background: #fff;
+  border-radius: 24rpx;
   padding: 28rpx;
   margin-bottom: 24rpx;
-  border: 1rpx solid $border;
-  box-shadow: $shadow-sm;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04);
 }
 .card-text {
   font-size: 26rpx;
-  color: $muted-foreground;
+  color: #8896AB;
   line-height: 1.6;
 }
 
@@ -292,10 +291,10 @@ async function fetchDetail(id: string) {
 }
 .ingredient {
   font-size: 24rpx;
-  color: $foreground;
-  background: $muted;
+  color: #1A1A2E;
+  background: #F0F4F8;
   padding: 8rpx 20rpx;
-  border-radius: $radius-full;
+  border-radius: 48rpx;
 }
 
 /* Bottom Bar */
@@ -305,10 +304,10 @@ async function fetchDetail(id: string) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: $card;
+  background: #fff;
   padding: 20rpx 32rpx;
   padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
-  box-shadow: 0 -4rpx 16rpx rgba(0,0,0,0.08);
+  box-shadow: 0 -4rpx 20rpx rgba(0,0,0,0.06);
   z-index: 999;
 }
 
@@ -320,24 +319,23 @@ async function fetchDetail(id: string) {
 .qty-btn {
   width: 60rpx; height: 60rpx;
   border-radius: 50%;
-  background: $muted;
+  background: #F0F4F8;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1rpx solid $border;
 
   &:active { opacity: 0.7; }
 }
 .qty-btn-text {
   font-size: 36rpx;
   font-weight: 600;
-  color: $foreground;
+  color: #1A1A2E;
   line-height: 1;
 }
 .qty-val {
   font-size: 34rpx;
   font-weight: 600;
-  color: $foreground;
+  color: #1A1A2E;
   min-width: 48rpx;
   text-align: center;
 }
@@ -345,10 +343,11 @@ async function fetchDetail(id: string) {
 .add-cart-btn {
   flex: 1;
   margin-left: 32rpx;
-  background: $accent;
+  background: linear-gradient(135deg, #10B981, #059669);
   padding: 22rpx 0;
-  border-radius: $radius-full;
+  border-radius: 48rpx;
   text-align: center;
+  box-shadow: 0 4rpx 16rpx rgba(16,185,129,0.3);
 
   &:active { opacity: 0.8; }
 }

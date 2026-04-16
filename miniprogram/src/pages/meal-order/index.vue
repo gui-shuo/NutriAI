@@ -237,7 +237,7 @@ onShow(() => {
 <style scoped lang="scss">
 .page {
   min-height: 100vh;
-  background: $background;
+  background: #F5F7FA;
 }
 
 /* Nav Bar */
@@ -245,7 +245,8 @@ onShow(() => {
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 999;
-  background: $gradient-accent;
+  background: #fff;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04);
 }
 .nav-bar-content {
   display: flex;
@@ -257,13 +258,13 @@ onShow(() => {
 .nav-title {
   font-size: 36rpx;
   font-weight: 700;
-  color: #fff;
+  color: #10B981;
   letter-spacing: 2rpx;
 }
 .nav-search {
   width: 64rpx; height: 64rpx;
   display: flex; align-items: center; justify-content: center;
-  background: rgba(255,255,255,0.15);
+  background: #F0F4F8;
   border-radius: 50%;
 }
 .search-icon { font-size: 32rpx; }
@@ -273,9 +274,9 @@ onShow(() => {
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 1000;
-  background: $card;
+  background: #fff;
   padding-bottom: 16rpx;
-  box-shadow: $shadow-md;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.06);
 }
 .search-bar {
   display: flex;
@@ -286,15 +287,15 @@ onShow(() => {
 .search-input {
   flex: 1;
   height: 72rpx;
-  background: $muted;
-  border-radius: $radius-full;
+  background: #F0F4F8;
+  border-radius: 48rpx;
   padding: 0 28rpx;
   font-size: 28rpx;
-  color: $foreground;
+  color: #1A1A2E;
 }
 .search-cancel {
   font-size: 28rpx;
-  color: $accent;
+  color: #10B981;
   font-weight: 500;
 }
 
@@ -306,25 +307,24 @@ onShow(() => {
 .category-scroll {
   white-space: nowrap;
   padding: 20rpx 0;
-  background: $card;
-  border-bottom: 1rpx solid $border;
+  background: #fff;
 }
 .category-list {
   display: inline-flex;
-  padding: 0 24rpx;
+  padding: 0 32rpx;
   gap: 16rpx;
 }
 .category-tab {
-  padding: 12rpx 28rpx;
-  border-radius: $radius-full;
+  padding: 14rpx 32rpx;
+  border-radius: 48rpx;
   font-size: 26rpx;
-  color: $muted-foreground;
-  background: $muted;
+  color: #8896AB;
+  background: #F0F4F8;
   font-weight: 500;
   flex-shrink: 0;
 
   &.active {
-    background: $accent;
+    background: linear-gradient(135deg, #10B981, #059669);
     color: #fff;
   }
 
@@ -338,31 +338,30 @@ onShow(() => {
 }
 .loading-text {
   font-size: 28rpx;
-  color: $muted-foreground;
+  color: #8896AB;
 }
 
 /* Meal List */
 .meal-list {
-  padding: 24rpx 24rpx 0;
+  padding: 24rpx 32rpx 0;
 }
 .meal-card {
   display: flex;
-  background: $card;
-  border-radius: $radius-xl;
+  background: #fff;
+  border-radius: 24rpx;
   overflow: hidden;
   margin-bottom: 24rpx;
-  border: 1rpx solid $border;
-  box-shadow: $shadow-sm;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04);
 
   &:active {
     transform: scale(0.99);
   }
 }
 .meal-img {
-  width: 240rpx;
-  height: 240rpx;
+  width: 260rpx;
+  height: 260rpx;
   flex-shrink: 0;
-  background: $muted;
+  background: #F0F4F8;
 }
 .meal-info {
   flex: 1;
@@ -375,14 +374,14 @@ onShow(() => {
 .meal-name {
   font-size: 30rpx;
   font-weight: 600;
-  color: $foreground;
+  color: #1A1A2E;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .meal-desc {
   font-size: 24rpx;
-  color: $muted-foreground;
+  color: #8896AB;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -396,10 +395,10 @@ onShow(() => {
 }
 .meal-tag {
   font-size: 20rpx;
-  color: $accent;
-  background: rgba(16,185,129,0.1);
+  color: #059669;
+  background: #ECFDF5;
   padding: 4rpx 14rpx;
-  border-radius: $radius-full;
+  border-radius: 48rpx;
   font-weight: 500;
 }
 .meal-row {
@@ -420,15 +419,16 @@ onShow(() => {
 }
 .meal-cal {
   font-size: 22rpx;
-  color: $muted-foreground;
+  color: #8896AB;
 }
 .add-btn {
   width: 56rpx; height: 56rpx;
-  background: $accent;
+  background: linear-gradient(135deg, #10B981, #059669);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 4rpx 12rpx rgba(16,185,129,0.3);
 
   &:active { opacity: 0.8; }
 }
@@ -451,7 +451,7 @@ onShow(() => {
 }
 .empty-text {
   font-size: 28rpx;
-  color: $muted-foreground;
+  color: #8896AB;
 }
 
 /* Cart Bar */
@@ -461,10 +461,10 @@ onShow(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: $card;
+  background: #fff;
   padding: 20rpx 32rpx;
   padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
-  box-shadow: 0 -4rpx 16rpx rgba(0,0,0,0.08);
+  box-shadow: 0 -4rpx 20rpx rgba(0,0,0,0.06);
   z-index: 999;
 }
 .cart-left {
@@ -494,12 +494,13 @@ onShow(() => {
 .cart-total {
   font-size: 36rpx;
   font-weight: 700;
-  color: $foreground;
+  color: #1A1A2E;
 }
 .cart-btn {
-  background: $accent;
+  background: linear-gradient(135deg, #10B981, #059669);
   padding: 18rpx 48rpx;
-  border-radius: $radius-full;
+  border-radius: 48rpx;
+  box-shadow: 0 4rpx 16rpx rgba(16,185,129,0.3);
 
   &:active { opacity: 0.8; }
 }

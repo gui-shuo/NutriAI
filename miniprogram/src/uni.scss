@@ -1,17 +1,17 @@
 /**
- * NutriAI Minimalist Modern Design — SCSS Variables
- * Clean, professional design tokens for uni-app
+ * NutriAI Design System v2 — SCSS Variables
+ * Clean, modern health-brand tokens for uni-app
  */
 
 /* ============ Core Palette ============ */
-$background: #FAFAFA;
-$foreground: #0F172A;
-$muted: #F1F5F9;
-$muted-foreground: #64748B;
+$background: #F5F7FA;
+$foreground: #1A1A2E;
+$muted: #F0F4F8;
+$muted-foreground: #8896AB;
 $accent: #10B981;
-$accent-secondary: #34D399;
+$accent-secondary: #059669;
 $accent-foreground: #FFFFFF;
-$border: #E2E8F0;
+$border: #EAEFF5;
 $card: #FFFFFF;
 
 /* ============ NutriAI Theme Variables ============ */
@@ -63,14 +63,14 @@ $uni-border-radius-base: $radius-md;
 $uni-border-radius-lg: $radius-lg;
 $uni-border-radius-circle: 50%;
 
-/* Shadows — layered, modern */
-$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
-$shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
-$shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.08);
-$shadow-accent: 0 4px 14px rgba(16, 185, 129, 0.25);
+/* Shadows — softer, modern */
+$shadow-sm: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+$shadow-md: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+$shadow-lg: 0 8rpx 24rpx rgba(0, 0, 0, 0.08);
+$shadow-accent: 0 8rpx 24rpx rgba(16, 185, 129, 0.3);
 
 /* Gradient */
-$gradient-accent: linear-gradient(135deg, $accent, $accent-secondary);
+$gradient-accent: linear-gradient(135deg, #10B981, #059669);
 
 /* Spacing */
 $uni-spacing-row-sm: 5px;

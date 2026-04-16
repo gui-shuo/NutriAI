@@ -217,24 +217,23 @@ onShow(() => {
 <style scoped lang="scss">
 .page {
   min-height: 100vh;
-  background: $background;
-  padding: 24rpx;
+  background: #F5F7FA;
+  padding: 32rpx;
 }
 
 .section {
-  background: $card;
-  border-radius: $radius-xl;
+  background: #fff;
+  border-radius: 24rpx;
   padding: 28rpx;
   margin-bottom: 24rpx;
-  border: 1rpx solid $border;
-  box-shadow: $shadow-sm;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04);
 }
 
 .section-title {
   display: block;
   font-size: 30rpx;
   font-weight: 600;
-  color: $foreground;
+  color: #1A1A2E;
   margin-bottom: 24rpx;
 }
 
@@ -248,7 +247,7 @@ onShow(() => {
   display: flex;
   gap: 20rpx;
   padding-bottom: 20rpx;
-  border-bottom: 1rpx solid $border;
+  border-bottom: 1rpx solid #EAEFF5;
 
   &:last-child {
     border-bottom: none;
@@ -257,8 +256,8 @@ onShow(() => {
 }
 .item-img {
   width: 140rpx; height: 140rpx;
-  border-radius: $radius-lg;
-  background: $muted;
+  border-radius: 16rpx;
+  background: #F0F4F8;
   flex-shrink: 0;
 }
 .item-info {
@@ -270,7 +269,7 @@ onShow(() => {
 .item-name {
   font-size: 28rpx;
   font-weight: 600;
-  color: $foreground;
+  color: #1A1A2E;
 }
 .item-row {
   display: flex;
@@ -290,24 +289,23 @@ onShow(() => {
 .qty-btn {
   width: 48rpx; height: 48rpx;
   border-radius: 50%;
-  background: $muted;
+  background: #F0F4F8;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1rpx solid $border;
 
   &:active { opacity: 0.7; }
 }
 .qty-btn-text {
   font-size: 28rpx;
   font-weight: 600;
-  color: $foreground;
+  color: #1A1A2E;
   line-height: 1;
 }
 .qty-val {
   font-size: 28rpx;
   font-weight: 600;
-  color: $foreground;
+  color: #1A1A2E;
   min-width: 40rpx;
   text-align: center;
 }
@@ -318,7 +316,7 @@ onShow(() => {
 }
 .empty-text {
   font-size: 28rpx;
-  color: $muted-foreground;
+  color: #8896AB;
 }
 
 /* Delivery Method */
@@ -332,13 +330,13 @@ onShow(() => {
   align-items: center;
   gap: 16rpx;
   padding: 24rpx;
-  border-radius: $radius-xl;
-  background: $muted;
+  border-radius: 24rpx;
+  background: #F0F4F8;
   border: 2rpx solid transparent;
 
   &.active {
-    border-color: $accent;
-    background: rgba(16,185,129,0.05);
+    border-color: #10B981;
+    background: #ECFDF5;
   }
 
   &.disabled {
@@ -355,11 +353,11 @@ onShow(() => {
 .method-label {
   font-size: 28rpx;
   font-weight: 500;
-  color: $foreground;
+  color: #1A1A2E;
 }
 .method-tip {
   font-size: 22rpx;
-  color: $muted-foreground;
+  color: #8896AB;
   margin-top: 4rpx;
 }
 
@@ -373,14 +371,14 @@ onShow(() => {
 }
 .time-slot {
   padding: 16rpx 32rpx;
-  border-radius: $radius-full;
-  background: $muted;
+  border-radius: 48rpx;
+  background: #F0F4F8;
   font-size: 26rpx;
-  color: $muted-foreground;
+  color: #8896AB;
   font-weight: 500;
 
   &.active {
-    background: $accent;
+    background: linear-gradient(135deg, #10B981, #059669);
     color: #fff;
   }
 
@@ -391,13 +389,12 @@ onShow(() => {
 .notes-input {
   width: 100%;
   height: 160rpx;
-  background: $muted;
-  border-radius: $radius-lg;
+  background: #F0F4F8;
+  border-radius: 16rpx;
   padding: 20rpx;
   font-size: 26rpx;
-  color: $foreground;
+  color: #1A1A2E;
   box-sizing: border-box;
-  border: 1rpx solid $border;
 }
 
 /* Bottom Bar */
@@ -407,10 +404,10 @@ onShow(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: $card;
+  background: #fff;
   padding: 20rpx 32rpx;
   padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
-  box-shadow: 0 -4rpx 16rpx rgba(0,0,0,0.08);
+  box-shadow: 0 -4rpx 20rpx rgba(0,0,0,0.06);
   z-index: 999;
 }
 .total-section {
@@ -420,7 +417,7 @@ onShow(() => {
 }
 .total-label {
   font-size: 26rpx;
-  color: $muted-foreground;
+  color: #8896AB;
 }
 .total-price {
   font-size: 40rpx;
@@ -429,12 +426,13 @@ onShow(() => {
 }
 .total-count {
   font-size: 22rpx;
-  color: $muted-foreground;
+  color: #8896AB;
 }
 .submit-btn {
-  background: $accent;
+  background: linear-gradient(135deg, #10B981, #059669);
   padding: 22rpx 48rpx;
-  border-radius: $radius-full;
+  border-radius: 48rpx;
+  box-shadow: 0 4rpx 16rpx rgba(16,185,129,0.3);
 
   &:active { opacity: 0.8; }
 

@@ -820,7 +820,7 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
 .date-selector {
   padding: 16rpx 20rpx;
   background: #fff;
-  border-radius: 24rpx;
+  border-radius: $radius-xl;
   box-shadow: $shadow-sm;
 }
 .date-arrow {
@@ -862,8 +862,8 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
 .summary-card {
   padding: 28rpx;
   background: #fff;
-  box-shadow: $shadow-sm;
-  border-radius: 24rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  border-radius: $radius-xl;
   color: $foreground;
 }
 .summary-header {
@@ -883,7 +883,6 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
 /* Macro ring charts */
 .macro-rings {
   margin-bottom: 24rpx;
-  padding: 16rpx 0;
   background: $gradient-accent;
   border-radius: $radius-lg;
   padding: 20rpx 0;
@@ -1000,8 +999,8 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
 .meal-section {
   padding: 24rpx;
   background: #fff;
-  border-radius: 24rpx;
-  box-shadow: $shadow-sm;
+  border-radius: $radius-xl;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
 }
 .meal-header {
   padding-bottom: 16rpx;
@@ -1067,7 +1066,7 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
   justify-content: center;
   height: 72rpx;
   padding: 0 48rpx;
-  border-radius: 48rpx;
+  border-radius: $radius-full;
   background: $gradient-accent;
   box-shadow: $shadow-accent;
 }
@@ -1076,10 +1075,17 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
 .food-item {
   position: relative;
   overflow: hidden;
+  margin-bottom: 12rpx;
+  border-radius: $radius-lg;
+}
+.food-item:last-child {
+  margin-bottom: 0;
 }
 .food-item-content {
-  padding: 20rpx 0;
+  padding: 20rpx 16rpx;
   background: #fff;
+  border-radius: $radius-lg;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
   position: relative;
   z-index: 1;
   transition: transform 0.15s ease;
@@ -1103,7 +1109,7 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
 }
 .food-cal {
   font-size: 26rpx;
-  color: #EF4444;
+  color: $accent;
   font-weight: 600;
 }
 .food-macros-hint {
@@ -1118,7 +1124,7 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
   top: 0;
   bottom: 0;
   width: 160rpx;
-  background: #EF4444;
+  background: $uni-error;
   color: #fff;
   font-size: 26rpx;
   z-index: 0;
@@ -1132,7 +1138,7 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(15, 23, 42, 0.5);
+  background: rgba(15, 23, 42, 0.45);
   z-index: 1000;
   display: flex;
   align-items: flex-end;
@@ -1141,12 +1147,12 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
   width: 100%;
   max-width: 750rpx;
   background: #fff;
-  border-radius: 24rpx 24rpx 0 0;
+  border-radius: $radius-xl $radius-xl 0 0;
   max-height: 85vh;
   overflow-y: auto;
   padding-bottom: env(safe-area-inset-bottom);
   box-sizing: border-box;
-  box-shadow: $shadow-lg;
+  box-shadow: $shadow-md;
 }
 .dialog-header {
   padding: 28rpx 30rpx;
@@ -1154,7 +1160,7 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
   top: 0;
   background: #fff;
   z-index: 10;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.03);
+  border-bottom: 1rpx solid $border;
 }
 .dialog-title {
   font-size: 32rpx;
@@ -1174,12 +1180,12 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
 }
 .dialog-footer {
   padding: 16rpx 30rpx 20rpx;
-  box-shadow: 0 -2rpx 8rpx rgba(0, 0, 0, 0.03);
+  border-top: 1rpx solid $border;
 }
 .save-btn {
   height: 84rpx;
   line-height: 84rpx;
-  border-radius: 48rpx;
+  border-radius: $radius-full;
   background: $gradient-accent;
   box-shadow: $shadow-accent;
 }
@@ -1213,7 +1219,7 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
 .detail-cal {
   font-size: 36rpx;
   font-weight: 700;
-  color: #EF4444;
+  color: $accent;
   white-space: nowrap;
 }
 .detail-section {
@@ -1333,7 +1339,7 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
 .btn-outline {
   height: 80rpx;
   line-height: 80rpx;
-  border-radius: $radius-lg;
+  border-radius: $radius-full;
   background: #fff;
   color: $foreground;
   font-size: 28rpx;
@@ -1351,9 +1357,8 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
 .photo-upload-btn {
   flex-direction: column;
   padding: 24rpx;
-  border: 2rpx dashed $border;
   border-radius: $radius-lg;
-  background: rgba($accent, 0.03);
+  background: $muted;
   gap: 8rpx;
 }
 .photo-upload-icon {
@@ -1385,7 +1390,7 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
 }
 .recognize-error {
   font-size: 24rpx;
-  color: #EF4444;
+  color: $uni-error;
   margin-top: 8rpx;
 }
 </style>

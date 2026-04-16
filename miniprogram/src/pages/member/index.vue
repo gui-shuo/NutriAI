@@ -874,7 +874,7 @@ onShow(() => {
 
   &.vip-active {
     background: linear-gradient(135deg, #FEF3C7, #FDE68A);
-    color: $foreground;
+    color: #92400E;
     padding-bottom: 30rpx;
   }
 
@@ -883,7 +883,7 @@ onShow(() => {
   }
 
   &.vip-loading {
-    background: #fff;
+    background: $card;
     color: $foreground;
   }
 }
@@ -985,7 +985,7 @@ onShow(() => {
   font-weight: 600;
 
   &.gold {
-    color: #B45309;
+    color: #92400E;
   }
 }
 
@@ -1003,21 +1003,21 @@ onShow(() => {
 .progress-bar-bg {
   height: 12rpx;
   background: rgba(0, 0, 0, 0.08);
-  border-radius: 99px;
+  border-radius: $radius-full;
   overflow: hidden;
 }
 
 .progress-bar-fill {
   height: 100%;
   background: $gradient-accent;
-  border-radius: 99px;
+  border-radius: $radius-full;
   transition: width 0.5s;
 }
 
 /* ============ Card Layout ============ */
 .card {
-  background: #fff;
-  border-radius: 24rpx;
+  background: $card;
+  border-radius: $radius-2xl;
   margin: 24rpx 32rpx;
   padding: 30rpx;
   box-shadow: $shadow-sm;
@@ -1133,7 +1133,7 @@ onShow(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border-radius: $radius-sm;
+  border-radius: $radius-lg;
   background: $muted;
   transition: all 0.2s;
 
@@ -1142,20 +1142,32 @@ onShow(() => {
   }
 
   &.signed {
-    background: $accent;
-    color: #fff;
-    box-shadow: 0 2rpx 8rpx rgba(16, 185, 129, 0.3);
+    background: $card;
+    box-shadow: $shadow-sm;
 
-    .cal-day-num { color: #fff; }
+    .cal-day-num {
+      color: $accent;
+      font-weight: 600;
+    }
+
     .cal-check {
       font-size: 14rpx;
-      color: rgba(255, 255, 255, 0.9);
+      color: $accent;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 6rpx;
+      width: 10rpx;
+      height: 10rpx;
+      border-radius: 50%;
+      background: $accent;
     }
   }
 
   &.today {
     background: #ECFDF5;
-    color: $accent;
 
     .cal-day-num {
       color: $accent;
@@ -1280,7 +1292,7 @@ onShow(() => {
 }
 
 .btn-outline {
-  background: #fff;
+  background: $card;
   color: $accent;
   box-shadow: $shadow-sm;
 }
@@ -1428,7 +1440,7 @@ onShow(() => {
   .skeleton-card {
     flex: 1;
     background: $muted;
-    border-radius: 24rpx;
+    border-radius: $radius-2xl;
     padding: 24rpx;
     animation: pulse 1.5s ease-in-out infinite;
   }
@@ -1455,12 +1467,13 @@ onShow(() => {
 
 .plan-card {
   min-width: 0;
-  border-radius: 24rpx;
+  border-radius: $radius-2xl;
   padding: 24rpx 16rpx;
   text-align: center;
   position: relative;
+  overflow: hidden;
   transition: all 0.2s;
-  background: #fff;
+  background: $card;
   box-shadow: $shadow-sm;
 
   &.selected {
@@ -1470,7 +1483,17 @@ onShow(() => {
 
   &.recommended {
     box-shadow: 0 4rpx 20rpx rgba(16, 185, 129, 0.2);
-    border-left: 6rpx solid $accent;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6rpx;
+      background: $gradient-accent;
+      border-radius: $radius-2xl $radius-2xl 0 0;
+    }
   }
 }
 
@@ -1592,7 +1615,7 @@ onShow(() => {
 .pay-type-option {
   font-size: 24rpx;
   padding: 10rpx 24rpx;
-  background: #fff;
+  background: $card;
   color: $muted-foreground;
   transition: all 0.2s;
 
@@ -1643,8 +1666,8 @@ onShow(() => {
 }
 
 .modal-content {
-  background: #fff;
-  border-radius: 24rpx;
+  background: $card;
+  border-radius: $radius-2xl;
   width: 100%;
   max-width: 620rpx;
   max-height: 80vh;

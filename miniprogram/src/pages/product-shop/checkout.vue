@@ -361,16 +361,17 @@ onMounted(() => {
 .checkout-page {
   min-height: 100vh;
   background: $background;
-  padding: 20rpx;
-  padding-bottom: 140rpx;
+  padding: 24rpx 32rpx;
+  padding-bottom: 160rpx;
 }
 
+/* ── Section Cards ── */
 .section {
   background: $card;
-  border-radius: 16rpx;
-  padding: 24rpx 28rpx;
-  margin-bottom: 20rpx;
-  border: 1rpx solid $border;
+  border-radius: $radius-xl;
+  padding: 28rpx 28rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
 }
 
 .section-header {
@@ -382,7 +383,7 @@ onMounted(() => {
 
 .section-title {
   font-size: 28rpx;
-  font-weight: 600;
+  font-weight: 700;
   color: $foreground;
   display: block;
   margin-bottom: 16rpx;
@@ -391,21 +392,25 @@ onMounted(() => {
 .link-btn {
   font-size: 26rpx;
   color: $accent;
+  font-weight: 600;
 }
 
+/* ── Address Cards ── */
 .addr-card {
   display: flex;
   align-items: flex-start;
-  padding: 16rpx;
-  border-radius: 12rpx;
-  border: 2rpx solid $border;
-  margin-bottom: 12rpx;
+  padding: 20rpx;
+  border-radius: $radius-lg;
+  background: $muted;
+  margin-bottom: 16rpx;
   gap: 16rpx;
+  border-left: 6rpx solid transparent;
+  transition: all 0.2s;
 }
 
 .addr-card.selected {
-  border-color: $accent;
-  background: rgba(16, 185, 129, 0.04);
+  background: #ECFDF5;
+  border-left-color: $accent;
 }
 
 .addr-radio {
@@ -414,16 +419,19 @@ onMounted(() => {
 }
 
 .radio {
-  width: 36rpx;
-  height: 36rpx;
+  width: 40rpx;
+  height: 40rpx;
   border-radius: 50%;
-  border: 2rpx solid $border;
+  border: 3rpx solid $border;
+  background: #fff;
+  transition: all 0.2s;
 }
 
 .radio.checked {
-  background: $accent;
-  border-color: $accent;
+  background: $gradient-accent;
+  border-color: transparent;
   position: relative;
+  box-shadow: 0 2rpx 8rpx rgba(16, 185, 129, 0.25);
 }
 
 .radio.checked::after {
@@ -435,7 +443,7 @@ onMounted(() => {
   width: 14rpx;
   height: 14rpx;
   border-radius: 50%;
-  background: white;
+  background: #fff;
 }
 
 .addr-info {
@@ -446,55 +454,63 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 12rpx;
-  margin-bottom: 6rpx;
+  margin-bottom: 8rpx;
 }
 
 .addr-name {
   font-size: 28rpx;
-  font-weight: 600;
+  font-weight: 700;
   color: $foreground;
 }
 
 .addr-phone {
   font-size: 26rpx;
-  color: #64748b;
+  color: $muted-foreground;
 }
 
 .default-tag {
   font-size: 20rpx;
-  color: $accent;
-  background: rgba(16, 185, 129, 0.1);
-  padding: 2rpx 10rpx;
-  border-radius: 20rpx;
+  color: #059669;
+  background: #ECFDF5;
+  padding: 4rpx 14rpx;
+  border-radius: $radius-full;
+  font-weight: 500;
 }
 
 .addr-detail {
   font-size: 26rpx;
-  color: #64748b;
+  color: $muted-foreground;
+  line-height: 1.5;
 }
 
 .manual-toggle {
   margin-top: 16rpx;
   font-size: 26rpx;
   color: $accent;
+  font-weight: 600;
 }
 
+/* ── Manual Form ── */
 .manual-form {
-  margin-top: 12rpx;
+  margin-top: 16rpx;
 }
 
 .form-item {
   display: flex;
   align-items: center;
-  padding: 16rpx 0;
-  border-bottom: 1rpx solid $border;
+  padding: 20rpx 0;
+
+  & + .form-item {
+    border-top: 1rpx solid $border;
+  }
 }
 
 .form-label {
   font-size: 26rpx;
-  color: #64748b;
-  width: 100rpx;
+  color: $muted-foreground;
+  width: 110rpx;
   flex-shrink: 0;
+  font-weight: 500;
 }
 
 .form-input {
@@ -508,87 +524,106 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 12rpx;
-  margin-top: 16rpx;
+  margin-top: 20rpx;
 }
 
 .checkbox-sm {
-  width: 32rpx;
-  height: 32rpx;
-  border-radius: 6rpx;
-  border: 2rpx solid $border;
+  width: 36rpx;
+  height: 36rpx;
+  border-radius: 8rpx;
+  border: 3rpx solid $border;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: #fff;
+  transition: all 0.2s;
 }
 
 .checkbox-sm.checked {
   background: $accent;
-  border-color: $accent;
+  border-color: transparent;
 }
 
 .check-icon-sm {
-  color: white;
+  color: #fff;
   font-size: 22rpx;
+  font-weight: 700;
 }
 
 .save-addr-label {
   font-size: 26rpx;
-  color: #64748b;
+  color: $muted-foreground;
 }
 
+/* ── Order Items ── */
 .order-item {
   display: flex;
   align-items: center;
-  gap: 16rpx;
-  padding: 12rpx 0;
-  border-bottom: 1rpx solid $border;
+  gap: 20rpx;
+  padding: 16rpx 0;
+
+  & + .order-item {
+    border-top: 1rpx solid $border;
+  }
 }
 
 .order-item:last-child {
-  border-bottom: none;
+  padding-bottom: 0;
 }
 
 .item-image {
-  width: 100rpx;
-  height: 100rpx;
-  border-radius: 10rpx;
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: $radius-lg;
   flex-shrink: 0;
+  background: $muted;
 }
 
 .item-info {
   flex: 1;
+  min-width: 0;
 }
 
 .item-name {
   font-size: 28rpx;
+  font-weight: 600;
   color: $foreground;
   display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.5;
 }
 
 .item-row {
   display: flex;
   align-items: center;
   gap: 12rpx;
-  margin-top: 8rpx;
+  margin-top: 10rpx;
 }
 
 .item-price {
-  font-size: 26rpx;
-  color: #ef4444;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: $uni-error;
 }
 
 .item-qty {
   font-size: 24rpx;
-  color: #94a3b8;
+  color: $muted-foreground;
+  background: $muted;
+  padding: 2rpx 12rpx;
+  border-radius: $radius-full;
 }
 
 .item-subtotal {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: #ef4444;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: $uni-error;
   flex-shrink: 0;
 }
 
+/* ── Coupon ── */
 .coupon-row {
   display: flex;
   align-items: center;
@@ -603,66 +638,84 @@ onMounted(() => {
 
 .coupon-selected {
   font-size: 26rpx;
-  color: #ef4444;
-  font-weight: 600;
+  color: $uni-error;
+  font-weight: 700;
+  background: rgba(239, 68, 68, 0.06);
+  padding: 4rpx 16rpx;
+  border-radius: $radius-full;
 }
 
 .coupon-none {
   font-size: 26rpx;
-  color: #94a3b8;
+  color: $muted-foreground;
 }
 
 .arrow {
   font-size: 30rpx;
-  color: #94a3b8;
+  color: $muted-foreground;
 }
 
+/* ── Notes ── */
 .notes-input {
   width: 100%;
   min-height: 120rpx;
   font-size: 26rpx;
   color: $foreground;
-  background: $background;
-  border-radius: 10rpx;
-  padding: 16rpx;
+  background: $muted;
+  border-radius: $radius-lg;
+  padding: 20rpx;
   box-sizing: border-box;
 }
 
+/* ── Price Summary ── */
 .price-summary {
   .price-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10rpx 0;
+    padding: 12rpx 0;
   }
+
   .price-label {
     font-size: 26rpx;
-    color: #64748b;
+    color: $muted-foreground;
   }
+
   .price-value {
     font-size: 26rpx;
     color: $foreground;
+    font-weight: 500;
   }
+
   .price-value.discount {
-    color: #ef4444;
+    color: $uni-error;
+    font-weight: 600;
   }
+
   .divider {
     height: 1rpx;
     background: $border;
-    margin: 12rpx 0;
+    margin: 16rpx 0;
   }
+
   .total-row {
-    .price-label.total, .price-value.total {
-      font-size: 30rpx;
+    padding-top: 16rpx;
+
+    .price-label.total {
+      font-size: 32rpx;
       font-weight: 700;
       color: $foreground;
     }
+
     .price-value.total {
-      color: #ef4444;
+      font-size: 36rpx;
+      font-weight: 700;
+      color: $uni-error;
     }
   }
 }
 
+/* ── Bottom Bar ── */
 .bottom-bar {
   position: fixed;
   bottom: 0;
@@ -671,10 +724,10 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20rpx 24rpx;
+  padding: 20rpx 32rpx;
   padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
   background: $card;
-  border-top: 1rpx solid $border;
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.06);
 }
 
 .bottom-total {
@@ -684,28 +737,36 @@ onMounted(() => {
 
 .total-label {
   font-size: 26rpx;
-  color: #64748b;
+  color: $muted-foreground;
 }
 
 .total-price {
-  font-size: 36rpx;
+  font-size: 40rpx;
   font-weight: 700;
-  color: #ef4444;
+  color: $uni-error;
 }
 
 .submit-btn {
-  background: $accent;
-  color: white;
+  background: $gradient-accent;
+  color: #fff;
   font-size: 30rpx;
-  font-weight: 600;
-  padding: 22rpx 48rpx;
-  border-radius: 40rpx;
+  font-weight: 700;
+  padding: 24rpx 56rpx;
+  border-radius: $radius-full;
+  box-shadow: 0 4rpx 16rpx rgba(16, 185, 129, 0.3);
+  transition: opacity 0.15s;
+
+  &:active {
+    opacity: 0.85;
+  }
 }
 
 .submit-btn.disabled {
   background: #cbd5e1;
+  box-shadow: none;
 }
 
+/* ── Coupon Modal ── */
 .coupon-modal {
   position: fixed;
   inset: 0;
@@ -715,7 +776,7 @@ onMounted(() => {
 .modal-mask {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.45);
 }
 
 .modal-body {
@@ -723,71 +784,82 @@ onMounted(() => {
   bottom: 0;
   left: 0;
   right: 0;
-  background: white;
-  border-radius: 24rpx 24rpx 0 0;
+  background: $card;
+  border-radius: 32rpx 32rpx 0 0;
   max-height: 70vh;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
   overflow-x: hidden;
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 32rpx 32rpx 20rpx;
-  border-bottom: 1rpx solid $border;
+  padding: 36rpx 32rpx 24rpx;
 }
 
 .modal-title {
   font-size: 32rpx;
-  font-weight: 600;
+  font-weight: 700;
   color: $foreground;
 }
 
 .modal-close {
-  font-size: 30rpx;
-  color: #94a3b8;
-  padding: 8rpx;
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  color: $muted-foreground;
+  background: $muted;
+  border-radius: 50%;
 }
 
 .coupon-no-use {
   padding: 24rpx 32rpx;
   font-size: 28rpx;
-  color: #64748b;
-  border-bottom: 1rpx solid $border;
+  color: $muted-foreground;
+  background: $muted;
+  margin: 0 24rpx 16rpx;
+  border-radius: $radius-lg;
+  text-align: center;
 }
 
 .coupon-list {
   flex: 1;
-  padding: 16rpx 24rpx;
+  padding: 8rpx 24rpx 24rpx;
 }
 
 .coupon-item {
   display: flex;
   align-items: center;
-  padding: 20rpx;
-  border: 2rpx solid $border;
-  border-radius: 16rpx;
+  padding: 24rpx;
+  background: $card;
+  border-radius: $radius-xl;
   margin-bottom: 16rpx;
   gap: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  transition: all 0.2s;
 }
 
 .coupon-item.selected {
-  border-color: $accent;
-  background: rgba(16, 185, 129, 0.04);
+  background: #ECFDF5;
+  box-shadow: 0 0 0 3rpx $accent;
 }
 
 .coupon-amount {
-  background: #ef4444;
-  color: white;
-  padding: 16rpx;
-  border-radius: 12rpx;
+  background: $gradient-accent;
+  color: #fff;
+  padding: 20rpx 8rpx;
+  border-radius: $radius-lg;
   font-size: 32rpx;
   font-weight: 700;
   text-align: center;
-  min-width: 100rpx;
+  min-width: 120rpx;
 }
 
 .coupon-info {
@@ -796,33 +868,35 @@ onMounted(() => {
 
 .coupon-name {
   font-size: 28rpx;
-  font-weight: 600;
+  font-weight: 700;
   color: $foreground;
   display: block;
+  margin-bottom: 4rpx;
 }
 
 .coupon-cond {
   font-size: 24rpx;
-  color: #94a3b8;
+  color: $muted-foreground;
   display: block;
+  margin-bottom: 2rpx;
 }
 
 .coupon-exp {
   font-size: 22rpx;
-  color: #94a3b8;
+  color: $muted-foreground;
   display: block;
 }
 
 .check-mark {
   color: $accent;
-  font-size: 32rpx;
+  font-size: 36rpx;
   font-weight: 700;
 }
 
 .empty-coupons {
   text-align: center;
-  padding: 40rpx;
-  color: #94a3b8;
+  padding: 60rpx 40rpx;
+  color: $muted-foreground;
   font-size: 26rpx;
 }
 </style>

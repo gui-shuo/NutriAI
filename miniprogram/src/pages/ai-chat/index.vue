@@ -930,8 +930,8 @@ onUnmounted(() => {
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 100;
-  background: #fff;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  background: $card;
+  box-shadow: $shadow-sm;
 }
 .nav-bar-inner {
   height: 88rpx;
@@ -996,7 +996,7 @@ onUnmounted(() => {
   position: fixed;
   left: 32rpx; right: 32rpx;
   z-index: 90;
-  background: #ECFDF5;
+  background: rgba(16, 185, 129, 0.06);
   color: $foreground;
   font-size: 22rpx;
   text-align: center;
@@ -1019,8 +1019,8 @@ onUnmounted(() => {
   position: fixed;
   left: 32rpx; right: 32rpx;
   z-index: 89;
-  background: rgba(239, 68, 68, 0.08);
-  color: #EF4444;
+  background: rgba(239, 68, 68, 0.06);
+  color: $uni-error;
   font-size: 22rpx;
   padding: 8rpx 24rpx;
   display: flex;
@@ -1031,11 +1031,11 @@ onUnmounted(() => {
   box-shadow: $shadow-sm;
 }
 .conn-bar.connecting {
-  background: rgba(245, 158, 11, 0.08);
+  background: rgba(245, 158, 11, 0.06);
   color: #F59E0B;
 }
 .conn-bar.conn-ok {
-  background: #ECFDF5;
+  background: rgba(16, 185, 129, 0.06);
   color: $accent;
 }
 .conn-text { font-size: 22rpx; }
@@ -1053,7 +1053,7 @@ onUnmounted(() => {
   align-items: center;
   padding: 80rpx 40rpx;
   margin: 32rpx;
-  background: #fff;
+  background: $card;
   border-radius: 24rpx;
   box-shadow: $shadow-sm;
   animation: fadeInUp 0.4s ease-out;
@@ -1108,7 +1108,7 @@ onUnmounted(() => {
   box-shadow: $shadow-sm;
 }
 .avatar-ai {
-  background: #fff;
+  background: $card;
   margin-right: 14rpx;
 }
 .avatar-user {
@@ -1129,17 +1129,17 @@ onUnmounted(() => {
   word-break: break-word;
 }
 .bubble-ai {
-  background: #fff;
-  border-top-left-radius: $radius-sm;
+  background: $card;
+  border-top-left-radius: 6rpx;
   box-shadow: $shadow-sm;
 }
 .bubble-user {
   max-width: 72%;
   background: $gradient-accent;
-  border-top-right-radius: $radius-sm;
+  border-top-right-radius: 6rpx;
   box-shadow: $shadow-accent;
 }
-.bubble-user .bubble-text { color: #fff; }
+.bubble-user .bubble-text { color: $accent-foreground; }
 .bubble-text {
   font-size: 30rpx;
   line-height: 1.6;
@@ -1226,7 +1226,7 @@ onUnmounted(() => {
   position: fixed;
   bottom: var(--window-bottom, 0);
   left: 0; right: 0;
-  background: #fff;
+  background: $card;
   padding: 16rpx 32rpx;
   padding-bottom: calc(16rpx + env(safe-area-inset-bottom));
   box-shadow: 0 -2rpx 12rpx rgba(0, 0, 0, 0.04);
@@ -1266,7 +1266,7 @@ onUnmounted(() => {
 .send-btn-active {
   background: $gradient-accent;
   box-shadow: $shadow-accent;
-  text { color: #fff; }
+  text { color: $accent-foreground; }
   &:active { opacity: 0.9; transform: translateY(1px); }
 }
 
@@ -1275,7 +1275,7 @@ onUnmounted(() => {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
   z-index: 200;
-  background: rgba(15, 23, 42, 0.5);
+  background: rgba(15, 23, 42, 0.45);
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -1284,7 +1284,7 @@ onUnmounted(() => {
 .popup-panel {
   width: 100%;
   max-height: 70vh;
-  background: #fff;
+  background: $card;
   border-radius: 24rpx 24rpx 0 0;
   box-shadow: $shadow-lg;
   display: flex;
@@ -1328,7 +1328,7 @@ onUnmounted(() => {
 .popup-btn-primary {
   background: $gradient-accent;
   box-shadow: $shadow-accent;
-  text { color: #fff; }
+  text { color: $accent-foreground; }
   &:active { opacity: 0.9; }
 }
 .popup-btn-sm {
@@ -1375,7 +1375,6 @@ onUnmounted(() => {
   max-height: 60vh;
 }
 .history-item {
-  padding: 20rpx 0;
   position: relative;
   margin-bottom: 12rpx;
   background: $muted;
@@ -1419,7 +1418,7 @@ onUnmounted(() => {
   top: 20rpx;
   text {
     font-size: 22rpx;
-    color: #EF4444;
+    color: $uni-error;
     font-weight: 500;
   }
   &:active { opacity: 0.6; }

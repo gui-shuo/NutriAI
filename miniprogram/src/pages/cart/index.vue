@@ -252,16 +252,17 @@ onMounted(loadCart)
 .cart-page {
   min-height: 100vh;
   background: $background;
-  padding-bottom: 120rpx;
+  padding-bottom: 140rpx;
 }
 
+/* ── Header ── */
 .cart-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 48rpx 32rpx 24rpx;
   background: $card;
-  border-bottom: 1rpx solid $border;
+  box-shadow: $shadow-sm;
 }
 
 .header-title {
@@ -273,89 +274,117 @@ onMounted(loadCart)
 .edit-btn {
   font-size: 28rpx;
   color: $accent;
+  font-weight: 600;
 }
 
+/* ── Empty State ── */
 .empty-cart {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 160rpx;
-  gap: 20rpx;
+  padding-top: 200rpx;
+  gap: 16rpx;
 }
 
 .empty-icon {
-  font-size: 96rpx;
+  font-size: 120rpx;
+  margin-bottom: 16rpx;
 }
 
 .empty-text {
   font-size: 34rpx;
-  font-weight: 600;
+  font-weight: 700;
   color: $foreground;
 }
 
 .empty-sub {
   font-size: 26rpx;
-  color: #94a3b8;
+  color: $muted-foreground;
 }
 
 .empty-btn {
-  margin-top: 24rpx;
-  padding: 20rpx 60rpx;
-  border-radius: 40rpx;
+  margin-top: 32rpx;
+  padding: 22rpx 72rpx;
+  border-radius: $radius-full;
+  background: $gradient-accent;
+  color: #fff;
+  font-size: 28rpx;
+  font-weight: 600;
+  box-shadow: 0 4rpx 16rpx rgba(16, 185, 129, 0.3);
 }
 
+/* ── Cart List ── */
 .cart-list {
   height: calc(100vh - 200rpx);
+  padding: 8rpx 0;
 }
 
+/* ── Cart Item Card ── */
 .cart-item {
   display: flex;
   align-items: center;
   background: $card;
-  margin: 16rpx 24rpx;
-  border-radius: 16rpx;
-  padding: 20rpx;
-  gap: 16rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.05);
+  margin: 24rpx 32rpx;
+  border-radius: $radius-xl;
+  padding: 24rpx;
+  gap: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+  transition: opacity 0.2s;
 }
 
 .item-invalid {
-  opacity: 0.5;
+  opacity: 0.45;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: $radius-xl;
+    pointer-events: none;
+  }
 }
 
+/* ── Checkbox ── */
 .item-check {
   flex-shrink: 0;
 }
 
 .checkbox {
-  width: 40rpx;
-  height: 40rpx;
+  width: 44rpx;
+  height: 44rpx;
   border-radius: 50%;
-  border: 2rpx solid $border;
+  border: 3rpx solid $border;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: white;
+  background: #fff;
+  transition: all 0.2s;
 }
 
 .checkbox.checked {
-  background: $accent;
-  border-color: $accent;
+  background: $gradient-accent;
+  border-color: transparent;
+  box-shadow: 0 2rpx 8rpx rgba(16, 185, 129, 0.25);
 }
 
 .check-icon {
-  color: white;
+  color: #fff;
   font-size: 24rpx;
   font-weight: 700;
 }
 
+/* ── Item Image ── */
 .item-image {
-  width: 120rpx;
-  height: 120rpx;
-  border-radius: 12rpx;
+  width: 128rpx;
+  height: 128rpx;
+  border-radius: $radius-lg;
   flex-shrink: 0;
+  background: $muted;
 }
 
+/* ── Item Info ── */
 .item-info {
   flex: 1;
   min-width: 0;
@@ -369,26 +398,29 @@ onMounted(loadCart)
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  line-height: 1.5;
 }
 
 .item-type-tag {
   font-size: 22rpx;
-  color: $accent;
-  background: rgba(16, 185, 129, 0.1);
-  padding: 2rpx 10rpx;
-  border-radius: 20rpx;
+  color: #059669;
+  background: #ECFDF5;
+  padding: 4rpx 14rpx;
+  border-radius: $radius-full;
   display: inline-block;
-  margin: 6rpx 0;
+  margin: 8rpx 4rpx 8rpx 0;
+  font-weight: 500;
 }
 
 .invalid-tag {
   font-size: 22rpx;
-  color: #ef4444;
-  background: rgba(239, 68, 68, 0.1);
-  padding: 2rpx 10rpx;
-  border-radius: 20rpx;
+  color: $uni-error;
+  background: rgba(239, 68, 68, 0.08);
+  padding: 4rpx 14rpx;
+  border-radius: $radius-full;
   display: inline-block;
-  margin: 6rpx 0;
+  margin: 8rpx 0;
+  font-weight: 500;
 }
 
 .item-bottom {
@@ -396,11 +428,12 @@ onMounted(loadCart)
 }
 
 .item-price {
-  font-size: 30rpx;
+  font-size: 32rpx;
   font-weight: 700;
-  color: #ef4444;
+  color: $uni-error;
 }
 
+/* ── Quantity Controls ── */
 .item-right {
   flex-shrink: 0;
 }
@@ -408,46 +441,53 @@ onMounted(loadCart)
 .qty-ctrl {
   display: flex;
   align-items: center;
-  gap: 12rpx;
+  gap: 8rpx;
 }
 
 .qty-btn {
-  width: 48rpx;
-  height: 48rpx;
+  width: 52rpx;
+  height: 52rpx;
   border-radius: 50%;
-  border: 2rpx solid $border;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 32rpx;
   color: $foreground;
-  background: white;
+  background: $muted;
+  transition: background 0.15s;
+
+  &:active {
+    background: darken(#F0F4F8, 6%);
+  }
 }
 
 .qty-num {
   font-size: 28rpx;
   font-weight: 600;
   color: $foreground;
-  min-width: 40rpx;
+  min-width: 48rpx;
   text-align: center;
 }
 
 .del-btn {
-  padding: 8rpx 16rpx;
+  padding: 12rpx 16rpx;
 }
 
 .del-icon {
   font-size: 36rpx;
 }
 
+/* ── Invalid Notice ── */
 .invalid-notice {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16rpx 32rpx;
-  background: rgba(239, 68, 68, 0.05);
+  margin: 0 32rpx 24rpx;
+  padding: 20rpx 24rpx;
+  background: rgba(239, 68, 68, 0.06);
+  border-radius: $radius-lg;
   font-size: 26rpx;
-  color: #ef4444;
+  color: $uni-error;
 }
 
 .clean-btn {
@@ -455,6 +495,7 @@ onMounted(loadCart)
   font-weight: 600;
 }
 
+/* ── Bottom Bar ── */
 .cart-bottom {
   position: fixed;
   bottom: 0;
@@ -462,9 +503,9 @@ onMounted(loadCart)
   right: 0;
   display: flex;
   align-items: center;
-  padding: 20rpx 24rpx;
+  padding: 20rpx 32rpx;
   background: $card;
-  border-top: 1rpx solid $border;
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.06);
   gap: 16rpx;
   padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
 }
@@ -478,6 +519,7 @@ onMounted(loadCart)
 .select-all-text {
   font-size: 26rpx;
   color: $foreground;
+  font-weight: 500;
 }
 
 .total-area {
@@ -493,31 +535,34 @@ onMounted(loadCart)
 
 .total-label {
   font-size: 26rpx;
-  color: #64748b;
+  color: $muted-foreground;
 }
 
 .total-price {
-  font-size: 36rpx;
+  font-size: 38rpx;
   font-weight: 700;
-  color: #ef4444;
+  color: $uni-error;
 }
 
 .selected-count {
   font-size: 22rpx;
-  color: #94a3b8;
+  color: $muted-foreground;
+  margin-top: 2rpx;
 }
 
 .checkout-btn {
-  background: $accent;
-  color: white;
+  background: $gradient-accent;
+  color: #fff;
   font-size: 28rpx;
   font-weight: 600;
-  padding: 20rpx 36rpx;
-  border-radius: 40rpx;
+  padding: 22rpx 40rpx;
+  border-radius: $radius-full;
   white-space: nowrap;
+  box-shadow: 0 4rpx 16rpx rgba(16, 185, 129, 0.3);
 }
 
 .checkout-btn.disabled {
   background: #cbd5e1;
+  box-shadow: none;
 }
 </style>
