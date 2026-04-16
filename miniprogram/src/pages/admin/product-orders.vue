@@ -75,7 +75,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
+import { onShow } from '@dcloudio/uni-app'
 import { adminApi } from '@/services/api'
 
 const statusOptions = [
@@ -207,13 +208,16 @@ function formatDate(dt: string) {
   return dt.substring(0, 16).replace('T', ' ')
 }
 
-onMounted(loadOrders)
+onShow(loadOrders)
 </script>
 
 <style lang="scss" scoped>
 .admin-page {
   min-height: 100vh;
   background: $background;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .filter-bar {
@@ -270,6 +274,9 @@ onMounted(loadOrders)
 .order-no {
   font-size: 24rpx;
   color: #94a3b8;
+  word-break: break-all;
+  flex: 1;
+  margin-right: 12rpx;
 }
 
 .status-badge {
@@ -298,6 +305,7 @@ onMounted(loadOrders)
   font-size: 26rpx;
   color: $foreground;
   display: block;
+  word-break: break-all;
 }
 
 .info-row.time {
@@ -349,6 +357,8 @@ onMounted(loadOrders)
   right: 0;
   background: white;
   border-radius: 24rpx 24rpx 0 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .modal-header {

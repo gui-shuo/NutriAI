@@ -22,7 +22,7 @@ services:
       - nutriai-network
 
   backend:
-    image: heyitshuo/nutriai-backend:v202604161440
+    image: heyitshuo/nutriai-backend:v202604161719
     container_name: nutriai-backend
     restart: always
     depends_on:
@@ -98,7 +98,7 @@ services:
       - nutriai-network
 
   frontend:
-    image: heyitshuo/nutriai-frontend:v202604161440
+    image: heyitshuo/nutriai-frontend:v202604161719
     container_name: nutriai-frontend
     restart: always
     depends_on:

@@ -448,12 +448,15 @@ onShow(() => {
 
 .modal-content {
   width: 100%;
+  max-width: 100vw;
   max-height: 90vh;
   background: $card;
   border-radius: $radius-2xl $radius-2xl 0 0;
   display: flex;
   flex-direction: column;
   box-shadow: $shadow-lg;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .modal-header {

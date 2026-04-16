@@ -64,7 +64,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
+import { onShow } from '@dcloudio/uni-app'
 import { adminApi } from '@/services/api'
 
 const statusOptions = [
@@ -178,7 +179,7 @@ function formatDate(dt: string) {
   return dt.substring(0, 16).replace('T', ' ')
 }
 
-onMounted(loadRefunds)
+onShow(loadRefunds)
 </script>
 
 <style lang="scss" scoped>
@@ -318,6 +319,8 @@ onMounted(loadRefunds)
   right: 0;
   background: white;
   border-radius: 24rpx 24rpx 0 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .modal-header {

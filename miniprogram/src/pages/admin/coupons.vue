@@ -14,23 +14,23 @@
       <view class="coupon-card" v-for="coupon in coupons" :key="coupon.id">
         <view class="card-header">
           <view class="coupon-amount-badge">
-            <text v-if="coupon.couponType === 'REDUCE'">减¥{{ coupon.discountValue }}</text>
+            <text v-if="coupon.type === 'REDUCE'">减¥{{ coupon.discountValue }}</text>
             <text v-else>{{ (coupon.discountValue * 10).toFixed(1) }}折</text>
           </view>
-          <view class="coupon-status" :class="{ active: coupon.active }">
-            {{ coupon.active ? '启用' : '停用' }}
+          <view class="coupon-status" :class="{ active: coupon.isActive }">
+            {{ coupon.isActive ? '启用' : '停用' }}
           </view>
         </view>
         <text class="coupon-name">{{ coupon.name }}</text>
         <view class="coupon-meta">
           <text>满 ¥{{ coupon.minOrderAmount }} 可用</text>
           <text v-if="coupon.maxDiscountAmount">最高减¥{{ coupon.maxDiscountAmount }}</text>
-          <text>已领 {{ coupon.claimedCount || 0 }}/{{ coupon.totalCount }}</text>
+          <text>已领 {{ coupon.usedCount || 0 }}/{{ coupon.totalCount === -1 ? '不限' : coupon.totalCount }}</text>
         </view>
         <view class="coupon-time">{{ formatDate(coupon.startTime) }} - {{ formatDate(coupon.endTime) }}</view>
         <view class="card-actions">
           <view class="action-btn" @tap="openEdit(coupon)">编辑</view>
-          <view class="action-btn" @tap="toggleStatus(coupon)">{{ coupon.active ? '停用' : '启用' }}</view>
+          <view class="action-btn" @tap="toggleStatus(coupon)">{{ coupon.isActive ? '停用' : '启用' }}</view>
           <view class="action-btn danger" @tap="deleteCoupon(coupon)">删除</view>
         </view>
       </view>
@@ -56,10 +56,10 @@
             </picker>
           </view>
           <view class="form-item">
-            <text class="form-label">{{ form.couponType === 'REDUCE' ? '减免金额' : '折扣值(如0.2=八折)' }}</text>
+            <text class="form-label">{{ form.type === 'REDUCE' ? '减免金额' : '折扣值(如0.8=八折)' }}</text>
             <input class="form-input" v-model="form.discountValue" type="digit" placeholder="折扣值" />
           </view>
-          <view class="form-item" v-if="form.couponType === 'DISCOUNT'">
+          <view class="form-item" v-if="form.type === 'DISCOUNT'">
             <text class="form-label">最高减免</text>
             <input class="form-input" v-model="form.maxDiscountAmount" type="digit" placeholder="不限填0" />
           </view>
@@ -88,6 +88,16 @@
             </picker>
           </view>
           <view class="form-item">
+            <text class="form-label">适用范围</text>
+            <picker :value="scopeIndex" :range="scopeOptions" range-key="label" @change="onScopeChange">
+              <view class="picker-value">{{ scopeOptions[scopeIndex].label }} ›</view>
+            </picker>
+          </view>
+          <view class="form-item">
+            <text class="form-label">有效天数</text>
+            <input class="form-input" v-model="form.validDays" type="number" placeholder="领取后有效天数" />
+          </view>
+          <view class="form-item">
             <text class="form-label">描述</text>
             <input class="form-input" v-model="form.description" placeholder="优惠券描述（可选）" />
           </view>
@@ -102,7 +112,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
+import { onShow } from '@dcloudio/uni-app'
 import { adminApi } from '@/services/api'
 
 const coupons = ref<any[]>([])
@@ -116,18 +127,27 @@ const typeOptions = [
 ]
 const typeIndex = ref(0)
 
+const scopeOptions = [
+  { label: '全场通用', value: 'ALL' },
+  { label: '仅营养餐', value: 'MEAL' },
+  { label: '仅产品', value: 'PRODUCT' }
+]
+const scopeIndex = ref(0)
+
 const defaultForm = () => ({
   name: '',
-  couponType: 'REDUCE',
+  type: 'REDUCE',
   discountValue: '',
   maxDiscountAmount: '',
   minOrderAmount: '0',
+  applicableType: 'ALL',
   totalCount: '',
   perUserLimit: '1',
+  validDays: '30',
   startTime: '',
   endTime: '',
   description: '',
-  active: true
+  isActive: true
 })
 
 const form = ref<any>(defaultForm())
@@ -154,13 +174,19 @@ function openCreate() {
 function openEdit(coupon: any) {
   editTarget.value = coupon
   form.value = { ...coupon, startTime: coupon.startTime?.substring(0, 10), endTime: coupon.endTime?.substring(0, 10) }
-  typeIndex.value = typeOptions.findIndex(t => t.value === coupon.couponType) || 0
+  typeIndex.value = Math.max(0, typeOptions.findIndex(t => t.value === coupon.type))
+  scopeIndex.value = Math.max(0, scopeOptions.findIndex(s => s.value === coupon.applicableType))
   showModal.value = true
 }
 
 function onTypeChange(e: any) {
   typeIndex.value = Number(e.detail.value)
-  form.value.couponType = typeOptions[typeIndex.value].value
+  form.value.type = typeOptions[typeIndex.value].value
+}
+
+function onScopeChange(e: any) {
+  scopeIndex.value = Number(e.detail.value)
+  form.value.applicableType = scopeOptions[scopeIndex.value].value
 }
 
 async function saveCoupon() {
@@ -168,15 +194,20 @@ async function saveCoupon() {
   if (!form.value.discountValue) return uni.showToast({ title: '请填写折扣值', icon: 'none' })
   if (!form.value.totalCount) return uni.showToast({ title: '请填写发放总量', icon: 'none' })
 
-  const payload = {
-    ...form.value,
+  const payload: any = {
+    name: form.value.name,
+    type: form.value.type,
     discountValue: parseFloat(form.value.discountValue),
     maxDiscountAmount: form.value.maxDiscountAmount ? parseFloat(form.value.maxDiscountAmount) : null,
     minOrderAmount: parseFloat(form.value.minOrderAmount || '0'),
+    applicableType: form.value.applicableType || 'ALL',
     totalCount: parseInt(form.value.totalCount),
     perUserLimit: parseInt(form.value.perUserLimit || '1'),
+    validDays: parseInt(form.value.validDays || '30'),
     startTime: form.value.startTime ? form.value.startTime + 'T00:00:00' : null,
-    endTime: form.value.endTime ? form.value.endTime + 'T23:59:59' : null
+    endTime: form.value.endTime ? form.value.endTime + 'T23:59:59' : null,
+    description: form.value.description || null,
+    isActive: form.value.isActive !== false
   }
 
   try {
@@ -195,9 +226,9 @@ async function saveCoupon() {
 
 async function toggleStatus(coupon: any) {
   try {
-    await adminApi.toggleCoupon(coupon.id, { active: !coupon.active })
-    coupon.active = !coupon.active
-    uni.showToast({ title: coupon.active ? '已启用' : '已停用', icon: 'success' })
+    await adminApi.toggleCoupon(coupon.id, { active: !coupon.isActive })
+    coupon.isActive = !coupon.isActive
+    uni.showToast({ title: coupon.isActive ? '已启用' : '已停用', icon: 'success' })
   } catch (e: any) {
     uni.showToast({ title: e?.message || '操作失败', icon: 'none' })
   }
@@ -225,7 +256,7 @@ function formatDate(dt: string) {
   return dt.substring(0, 10)
 }
 
-onMounted(loadCoupons)
+onShow(loadCoupons)
 </script>
 
 <style lang="scss" scoped>
@@ -372,6 +403,8 @@ onMounted(loadCoupons)
   max-height: 85vh;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .modal-header {

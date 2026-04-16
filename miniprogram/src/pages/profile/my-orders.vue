@@ -71,7 +71,7 @@
         <view class="order-actions flex">
           <button v-if="order.orderStatus === 'PENDING_PAYMENT'" class="btn-small btn-pay" @tap="payMealOrder(order.orderNo)">立即支付</button>
           <button v-if="order.orderStatus === 'PENDING_PAYMENT'" class="btn-small btn-cancel" @tap="cancelMealOrder(order.orderNo)">取消订单</button>
-          <button v-if="['PAID','PREPARING','READY'].includes(order.orderStatus)" class="btn-small btn-cancel" @tap="openRefundModal(order)">申请退款</button>
+          <button v-if="canRefund(order)" class="btn-small btn-cancel" @tap="openRefundModal(order)">申请退款</button>
           <button v-if="['PICKED_UP','DELIVERED','COMPLETED'].includes(order.orderStatus)" class="btn-small btn-confirm" @tap="buyAgain(order)">再次购买</button>
         </view>
       </view>
@@ -106,12 +106,13 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { onShow, onLoad, onReachBottom } from '@dcloudio/uni-app'
+import { onShow, onReachBottom } from '@dcloudio/uni-app'
 import { mealApi, refundApi } from '@/services/api'
 import { checkLogin, formatTime } from '@/utils/common'
 
 const activeTab = ref('all')
 const orders = ref<any[]>([])
+const refundMap = ref<Record<string, any>>({})
 const loading = ref(false)
 const page = ref(1)
 const noMore = ref(false)
@@ -124,11 +125,18 @@ const mealTabs = [
   { label: '待支付', value: 'pending' },
   { label: '备餐中', value: 'preparing' },
   { label: '待取餐', value: 'ready' },
-  { label: '已完成', value: 'completed' }
+  { label: '已完成', value: 'completed' },
+  { label: '退款/售后', value: 'refund' }
 ]
 
 const filteredOrders = computed(() => {
   if (activeTab.value === 'all') return orders.value
+  if (activeTab.value === 'refund') {
+    return orders.value.filter(o => {
+      const r = refundMap.value[o.orderNo]
+      return r && ['PENDING', 'APPROVED', 'PROCESSING'].includes(r.status)
+    })
+  }
   const mealStatusMap: Record<string, string[]> = {
     pending: ['PENDING_PAYMENT'],
     preparing: ['PREPARING', 'PAID'],
@@ -148,6 +156,12 @@ function isPaidMealOrder(order: any) {
 }
 
 function getStatusText(order: any) {
+  const r = refundMap.value[order.orderNo]
+  if (r) {
+    const rMap: Record<string, string> = { PENDING: '退款申请中', APPROVED: '退款审批通过', PROCESSING: '退款处理中', COMPLETED: '已退款', REJECTED: '退款被拒绝' }
+    if (['PENDING', 'APPROVED', 'PROCESSING'].includes(r.status)) return rMap[r.status] || '退款中'
+    if (r.status === 'COMPLETED') return '已退款'
+  }
   const map: Record<string, string> = {
     PENDING_PAYMENT: '待支付', PAID: '已支付', PREPARING: '备餐中',
     READY: '待取餐', PICKED_UP: '已取餐', DELIVERED: '已配送',
@@ -157,6 +171,9 @@ function getStatusText(order: any) {
 }
 
 function getStatusClass(order: any) {
+  const r = refundMap.value[order.orderNo]
+  if (r && ['PENDING', 'APPROVED', 'PROCESSING'].includes(r.status)) return 'status-refunding'
+  if (r && r.status === 'COMPLETED') return 'status-cancelled'
   const status = order.orderStatus
   if (status === 'PENDING_PAYMENT') return 'status-pending'
   if (['PAID', 'PREPARING'].includes(status)) return 'status-active'
@@ -173,12 +190,21 @@ async function loadOrders(reset = false) {
   if (reset) { page.value = 1; noMore.value = false; orders.value = [] }
   loading.value = true
   try {
-    const res = await mealApi.getOrders({ page: page.value - 1, size: 20 })
+    const [res, refundRes] = await Promise.all([
+      mealApi.getOrders({ page: page.value - 1, size: 20 }),
+      reset ? refundApi.getMyRefunds({ page: 0, size: 100 }) : Promise.resolve(null)
+    ])
     if (res.code === 200) {
       const list = res.data?.content || res.data?.records || res.data?.list || res.data || []
       orders.value = reset ? list : [...orders.value, ...list]
       if (list.length < 20) noMore.value = true
       else page.value++
+    }
+    if (refundRes && refundRes.code === 200) {
+      const refunds = refundRes.data?.content || refundRes.data || []
+      const map: Record<string, any> = {}
+      refunds.forEach((r: any) => { if (r.orderType === 'MEAL') map[r.orderNo] = r })
+      refundMap.value = map
     }
   } catch {} finally {
     loading.value = false
@@ -213,14 +239,17 @@ async function cancelMealOrder(orderNo: string) {
   })
 }
 
-async function applyRefund(orderNo: string) {
-  // kept for compatibility but not called directly
-}
-
 function openRefundModal(order: any) {
   refundTargetOrder.value = order
   refundReason.value = ''
   showRefundModal.value = true
+}
+
+function canRefund(order: any): boolean {
+  if (!['PAID', 'PREPARING', 'READY'].includes(order.orderStatus)) return false
+  const r = refundMap.value[order.orderNo]
+  if (r && ['PENDING', 'APPROVED', 'PROCESSING'].includes(r.status)) return false
+  return true
 }
 
 async function submitRefund() {
@@ -255,8 +284,6 @@ function buyAgain(order: any) {
 function goShop() {
   uni.switchTab({ url: '/pages/meal-order/index' })
 }
-
-onLoad(() => {})
 
 onShow(() => {
   if (checkLogin()) loadOrders(true)
@@ -364,6 +391,7 @@ onReachBottom(() => {
 .status-active { color: $accent; }
 .status-done { color: $uni-success; }
 .status-cancelled { color: $muted-foreground; }
+.status-refunding { color: #e67e22; }
 
 .order-item {
   padding: 12rpx 0;
@@ -521,6 +549,8 @@ onReachBottom(() => {
   right: 0;
   background: white;
   border-radius: 24rpx 24rpx 0 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .modal-header {

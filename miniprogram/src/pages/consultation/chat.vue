@@ -503,11 +503,14 @@ function goBack() {
 
 .modal-content {
   width: 80%;
+  max-width: 600rpx;
   background: $card;
   border: none;
   border-radius: $radius-2xl;
   padding: 32rpx;
   box-shadow: $shadow-lg;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .modal-title {

@@ -22,11 +22,11 @@
         <text class="empty-text">暂无订单</text>
       </view>
 
-      <view class="order-card" v-for="order in orders" :key="order.id">
+      <view class="order-card" v-for="order in filteredOrders()" :key="order.id">
         <view class="card-header">
           <text class="order-no">{{ order.orderNo }}</text>
-          <text class="order-status" :class="getStatusClass(order.orderStatus)">
-            {{ getStatusLabel(order.orderStatus) }}
+          <text class="order-status" :class="getStatusClass(order.orderStatus, order.orderNo)">
+            {{ getStatusLabel(order.orderStatus, order.orderNo) }}
           </text>
         </view>
 
@@ -45,17 +45,11 @@
             <view class="action-btn outline" v-if="order.orderStatus === 'PENDING_PAYMENT'" @tap="cancelOrder(order)">
               取消订单
             </view>
-            <view class="action-btn outline" v-if="order.orderStatus === 'PAID'" @tap="cancelOrder(order)">
-              取消订单
-            </view>
             <view class="action-btn outline" v-if="order.orderStatus === 'DELIVERED'" @tap="confirmReceipt(order)">
               确认收货
             </view>
-            <view class="action-btn outline" v-if="['PAID','SHIPPED','DELIVERED'].includes(order.orderStatus)" @tap="applyRefund(order)">
+            <view class="action-btn outline" v-if="canRefund(order)" @tap="applyRefund(order)">
               申请退款
-            </view>
-            <view class="action-btn outline" v-if="order.orderStatus === 'COMPLETED'" @tap="applyRefund(order)">
-              售后申请
             </view>
             <view class="action-btn primary" v-if="order.orderStatus === 'SHIPPED'" @tap="viewLogistics(order)">
               查看物流
@@ -115,11 +109,12 @@ const tabs = [
   { key: 'SHIPPED', label: '已发货' },
   { key: 'DELIVERED', label: '待收货' },
   { key: 'COMPLETED', label: '已完成' },
-  { key: 'CANCELLED', label: '已取消' }
+  { key: 'refund', label: '退款/售后' }
 ]
 
 const currentTab = ref('')
 const orders = ref<any[]>([])
+const refundMap = ref<Record<string, any>>({})
 const loading = ref(false)
 const page = ref(0)
 const hasMore = ref(true)
@@ -130,26 +125,48 @@ const refundTargetOrder = ref<any>(null)
 
 function switchTab(key: string) {
   currentTab.value = key
+  if (key === 'refund') return
   orders.value = []
   page.value = 0
   hasMore.value = true
   loadOrders()
 }
 
+function filteredOrders() {
+  if (currentTab.value === 'refund') {
+    return orders.value.filter(o => {
+      const r = refundMap.value[o.orderNo]
+      return r && ['PENDING', 'APPROVED', 'PROCESSING'].includes(r.status)
+    })
+  }
+  return orders.value
+}
+
 async function loadOrders() {
   if (loading.value || !hasMore.value) return
   loading.value = true
   try {
-    const res: any = await productApi.getMyOrders({ status: currentTab.value, page: page.value, size: 10 })
+    const isReset = page.value === 0
+    const [res, refundRes] = await Promise.all([
+      productApi.getMyOrders({ status: currentTab.value === 'refund' ? '' : currentTab.value, page: page.value, size: 10 }),
+      isReset ? refundApi.getMyRefunds({ page: 0, size: 100 }) : Promise.resolve(null)
+    ])
     const data = res.data || {}
     const list = data.content || data.list || data || []
-    if (page.value === 0) {
+    if (isReset) {
       orders.value = list
     } else {
       orders.value.push(...list)
     }
     hasMore.value = list.length >= 10
     page.value++
+
+    if (refundRes && refundRes.code === 200) {
+      const refunds = refundRes.data?.content || refundRes.data || []
+      const map: Record<string, any> = {}
+      refunds.forEach((r: any) => { if (r.orderType === 'PRODUCT') map[r.orderNo] = r })
+      refundMap.value = map
+    }
   } catch (e) {
     console.error('Load orders error:', e)
   } finally {
@@ -215,6 +232,10 @@ async function submitRefund() {
     })
     showRefundModal.value = false
     uni.showToast({ title: '退款申请已提交', icon: 'success' })
+    orders.value = []
+    page.value = 0
+    hasMore.value = true
+    loadOrders()
   } catch (e: any) {
     uni.showToast({ title: e?.message || '申请失败', icon: 'none' })
   }
@@ -240,7 +261,15 @@ function buyAgain(order: any) {
   }
 }
 
-function getStatusLabel(status: string) {
+function getStatusLabel(status: string, orderNo?: string) {
+  if (orderNo) {
+    const r = refundMap.value[orderNo]
+    if (r) {
+      const rMap: Record<string, string> = { PENDING: '退款申请中', APPROVED: '退款审批通过', PROCESSING: '退款处理中', COMPLETED: '已退款', REJECTED: '退款被拒绝' }
+      if (['PENDING', 'APPROVED', 'PROCESSING'].includes(r.status)) return rMap[r.status] || '退款中'
+      if (r.status === 'COMPLETED') return '已退款'
+    }
+  }
   const map: Record<string, string> = {
     PENDING_PAYMENT: '待付款',
     PAID: '待发货',
@@ -253,12 +282,24 @@ function getStatusLabel(status: string) {
   return map[status] || status
 }
 
-function getStatusClass(status: string) {
+function getStatusClass(status: string, orderNo?: string) {
+  if (orderNo) {
+    const r = refundMap.value[orderNo]
+    if (r && ['PENDING', 'APPROVED', 'PROCESSING'].includes(r.status)) return 'status-refunding'
+    if (r && r.status === 'COMPLETED') return 'status-cancelled'
+  }
   if (status === 'COMPLETED') return 'status-done'
   if (status === 'CANCELLED') return 'status-cancelled'
   if (status === 'PAID' || status === 'SHIPPED' || status === 'DELIVERED') return 'status-active'
   if (status === 'PENDING_PAYMENT') return 'status-pending'
   return ''
+}
+
+function canRefund(order: any): boolean {
+  if (!['PAID', 'SHIPPED', 'DELIVERED'].includes(order.orderStatus)) return false
+  const r = refundMap.value[order.orderNo]
+  if (r && ['PENDING', 'APPROVED', 'PROCESSING'].includes(r.status)) return false
+  return true
 }
 
 function formatPrice(v: any) {
@@ -374,6 +415,7 @@ onShow(() => {
 .status-active { color: $accent; }
 .status-done { color: #94a3b8; }
 .status-cancelled { color: #ef4444; }
+.status-refunding { color: #e67e22; }
 
 .card-product {
   display: flex;
@@ -484,6 +526,8 @@ onShow(() => {
   right: 0;
   background: white;
   border-radius: 24rpx 24rpx 0 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .modal-header {

@@ -707,6 +707,8 @@ async function loadProduct(id: number) {
   display: flex;
   flex-direction: column;
   box-shadow: $shadow-lg;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .modal-header {
