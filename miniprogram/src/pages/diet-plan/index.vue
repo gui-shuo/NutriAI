@@ -336,7 +336,7 @@
           <textarea
             v-model="modifySuggestion"
             class="modify-textarea"
-            placeholder="请描述您希望的修改，例如：&#10;- 把第3天午餐换成素食&#10;- 减少主食比例&#10;- 去掉海鲜食材&#10;- 早餐增加水果"
+            placeholder="请描述修改意见，如：换成素食、减少主食、去掉海鲜、早餐增加水果等"
             :maxlength="500"
           />
         </view>
