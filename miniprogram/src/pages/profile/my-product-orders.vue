@@ -45,14 +45,23 @@
             <view class="action-btn outline" v-if="order.orderStatus === 'PENDING_PAYMENT'" @tap="cancelOrder(order)">
               取消订单
             </view>
+            <view class="action-btn outline" v-if="order.orderStatus === 'PAID'" @tap="cancelOrder(order)">
+              取消订单
+            </view>
             <view class="action-btn outline" v-if="order.orderStatus === 'DELIVERED'" @tap="confirmReceipt(order)">
               确认收货
             </view>
-            <view class="action-btn outline" v-if="['DELIVERED','COMPLETED'].includes(order.orderStatus)" @tap="applyRefund(order)">
+            <view class="action-btn outline" v-if="['PAID','SHIPPED','DELIVERED'].includes(order.orderStatus)" @tap="applyRefund(order)">
               申请退款
+            </view>
+            <view class="action-btn outline" v-if="order.orderStatus === 'COMPLETED'" @tap="applyRefund(order)">
+              售后申请
             </view>
             <view class="action-btn primary" v-if="order.orderStatus === 'SHIPPED'" @tap="viewLogistics(order)">
               查看物流
+            </view>
+            <view class="action-btn outline" v-if="['COMPLETED'].includes(order.orderStatus)" @tap="buyAgain(order)">
+              再次购买
             </view>
           </view>
         </view>
@@ -95,7 +104,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
+import { onShow } from '@dcloudio/uni-app'
 import { productApi, refundApi } from '@/services/api'
 
 const tabs = [
@@ -222,6 +232,14 @@ function viewLogistics(order: any) {
   }
 }
 
+function buyAgain(order: any) {
+  if (order.productId) {
+    uni.navigateTo({ url: `/pages/product-shop/detail?id=${order.productId}` })
+  } else {
+    uni.switchTab({ url: '/pages/product-shop/index' })
+  }
+}
+
 function getStatusLabel(status: string) {
   const map: Record<string, string> = {
     PENDING_PAYMENT: '待付款',
@@ -252,7 +270,12 @@ function formatDate(dt: string) {
   return dt.substring(0, 16).replace('T', ' ')
 }
 
-onMounted(loadOrders)
+onShow(() => {
+  orders.value = []
+  page.value = 0
+  hasMore.value = true
+  loadOrders()
+})
 </script>
 
 <style lang="scss" scoped>
@@ -261,6 +284,9 @@ onMounted(loadOrders)
   background: $background;
   display: flex;
   flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .status-tabs {
@@ -299,6 +325,9 @@ onMounted(loadOrders)
   flex: 1;
   padding: 16rpx 20rpx;
   height: calc(100vh - 90rpx);
+  box-sizing: border-box;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 .loading-hint, .empty-state {
@@ -319,6 +348,9 @@ onMounted(loadOrders)
   padding: 24rpx;
   margin-bottom: 20rpx;
   border: 1rpx solid $border;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .card-header {

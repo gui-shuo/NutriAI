@@ -71,7 +71,7 @@
         <view class="order-actions flex">
           <button v-if="order.orderStatus === 'PENDING_PAYMENT'" class="btn-small btn-pay" @tap="payMealOrder(order.orderNo)">立即支付</button>
           <button v-if="order.orderStatus === 'PENDING_PAYMENT'" class="btn-small btn-cancel" @tap="cancelMealOrder(order.orderNo)">取消订单</button>
-          <button v-if="['PAID','PREPARING','READY'].includes(order.orderStatus)" class="btn-small btn-cancel" @tap="applyRefund(order.orderNo)">申请退款</button>
+          <button v-if="['PAID','PREPARING','READY'].includes(order.orderStatus)" class="btn-small btn-cancel" @tap="openRefundModal(order)">申请退款</button>
           <button v-if="['PICKED_UP','DELIVERED','COMPLETED'].includes(order.orderStatus)" class="btn-small btn-confirm" @tap="buyAgain(order)">再次购买</button>
         </view>
       </view>
@@ -80,13 +80,34 @@
     <view v-if="!loading && noMore && filteredOrders.length" class="no-more">
       <text class="text-sm text-secondary">没有更多了</text>
     </view>
+
+    <!-- Refund Modal -->
+    <view class="refund-modal" v-if="showRefundModal">
+      <view class="modal-mask" @tap="showRefundModal = false"></view>
+      <view class="modal-body">
+        <view class="modal-header">
+          <text class="modal-title">申请退款</text>
+          <text class="modal-close" @tap="showRefundModal = false">✕</text>
+        </view>
+        <view class="modal-content">
+          <view class="form-item">
+            <text class="form-label">退款原因</text>
+            <textarea class="form-textarea" v-model="refundReason" placeholder="请描述退款原因" :maxlength="200" @tap.stop />
+          </view>
+        </view>
+        <view class="modal-footer">
+          <view class="modal-btn cancel" @tap="showRefundModal = false">取消</view>
+          <view class="modal-btn confirm" @tap="submitRefund">提交申请</view>
+        </view>
+      </view>
+    </view>
   </view>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { onShow, onLoad, onReachBottom } from '@dcloudio/uni-app'
-import { mealApi } from '@/services/api'
+import { mealApi, refundApi } from '@/services/api'
 import { checkLogin, formatTime } from '@/utils/common'
 
 const activeTab = ref('all')
@@ -94,6 +115,9 @@ const orders = ref<any[]>([])
 const loading = ref(false)
 const page = ref(1)
 const noMore = ref(false)
+const showRefundModal = ref(false)
+const refundReason = ref('')
+const refundTargetOrder = ref<any>(null)
 
 const mealTabs = [
   { label: '全部', value: 'all' },
@@ -190,17 +214,33 @@ async function cancelMealOrder(orderNo: string) {
 }
 
 async function applyRefund(orderNo: string) {
-  uni.showModal({
-    title: '申请退款', content: '确定申请退款？退款将在1-3个工作日内处理',
-    success: async (r) => {
-      if (!r.confirm) return
-      try {
-        await mealApi.cancelOrder(orderNo)
-        uni.showToast({ title: '退款申请已提交', icon: 'success' })
-        loadOrders(true)
-      } catch { uni.showToast({ title: '申请失败', icon: 'none' }) }
-    }
-  })
+  // kept for compatibility but not called directly
+}
+
+function openRefundModal(order: any) {
+  refundTargetOrder.value = order
+  refundReason.value = ''
+  showRefundModal.value = true
+}
+
+async function submitRefund() {
+  if (!refundReason.value.trim()) {
+    uni.showToast({ title: '请填写退款原因', icon: 'none' })
+    return
+  }
+  try {
+    await refundApi.apply({
+      orderNo: refundTargetOrder.value.orderNo,
+      orderType: 'MEAL',
+      refundAmount: refundTargetOrder.value.totalAmount || refundTargetOrder.value.totalPrice,
+      reason: refundReason.value
+    })
+    showRefundModal.value = false
+    uni.showToast({ title: '退款申请已提交', icon: 'success' })
+    loadOrders(true)
+  } catch (e: any) {
+    uni.showToast({ title: e?.message || '申请失败', icon: 'none' })
+  }
 }
 
 function buyAgain(order: any) {
@@ -461,4 +501,94 @@ onReachBottom(() => {
 }
 
 .no-more { text-align: center; padding: 30rpx 0; color: $muted-foreground; }
+
+.refund-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+}
+
+.modal-mask {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+}
+
+.modal-body {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 24rpx 24rpx 0 0;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32rpx 32rpx 20rpx;
+  border-bottom: 1rpx solid $border;
+}
+
+.modal-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: $foreground;
+}
+
+.modal-close {
+  font-size: 30rpx;
+  color: $muted-foreground;
+}
+
+.modal-content { padding: 24rpx 32rpx; }
+
+.form-item {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.form-label {
+  font-size: 26rpx;
+  color: $muted-foreground;
+}
+
+.form-textarea {
+  border: 1rpx solid $border;
+  border-radius: 10rpx;
+  padding: 16rpx;
+  font-size: 26rpx;
+  color: $foreground;
+  min-height: 150rpx;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 20rpx;
+  padding: 20rpx 32rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  border-top: 1rpx solid $border;
+}
+
+.modal-btn {
+  flex: 1;
+  text-align: center;
+  padding: 24rpx;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+}
+
+.modal-btn.cancel {
+  background: $background;
+  color: $muted-foreground;
+  border: 1rpx solid $border;
+}
+
+.modal-btn.confirm {
+  background: $accent;
+  color: white;
+  font-weight: 600;
+}
 </style>

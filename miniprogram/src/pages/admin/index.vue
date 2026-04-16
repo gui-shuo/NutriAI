@@ -13,19 +13,19 @@
     <view class="stats-grid">
       <view class="stat-card">
         <text class="stat-num">{{ stats.todayOrders || 0 }}</text>
-        <text class="stat-label">今日订单</text>
+        <text class="stat-label">待处理餐单</text>
       </view>
       <view class="stat-card revenue">
         <text class="stat-num">¥{{ stats.todayRevenue || '0.00' }}</text>
-        <text class="stat-label">今日营收</text>
+        <text class="stat-label">本月营收</text>
       </view>
       <view class="stat-card">
         <text class="stat-num">{{ stats.totalMeals || 0 }}</text>
-        <text class="stat-label">营养餐</text>
+        <text class="stat-label">餐单总数</text>
       </view>
       <view class="stat-card">
         <text class="stat-num">{{ stats.totalProducts || 0 }}</text>
-        <text class="stat-label">商品</text>
+        <text class="stat-label">产品订单</text>
       </view>
     </view>
 

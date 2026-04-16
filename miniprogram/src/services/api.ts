@@ -162,7 +162,23 @@ export const mealApi = {
 // ============ Admin APIs ============
 export const adminApi = {
   // Dashboard
-  getDashboard: () => request({ url: '/admin/meal-orders/stats' }),
+  getDashboard: async () => {
+    const [mealRes, productRes] = await Promise.all([
+      request<any>({ url: '/admin/meal-orders/stats', showError: false }),
+      request<any>({ url: '/admin/product-orders/stats', showError: false })
+    ])
+    const m = (mealRes.code === 200 && mealRes.data) ? mealRes.data : {}
+    const p = (productRes.code === 200 && productRes.data) ? productRes.data : {}
+    return {
+      code: 200,
+      data: {
+        todayOrders: (m.preparing || 0) + (m.ready || 0) + (m.pendingPayment || 0),
+        todayRevenue: p.monthRevenue || '0.00',
+        totalMeals: m.total || 0,
+        totalProducts: p.totalOrders || 0
+      }
+    }
+  },
   // Meal management
   getMeals: (params?: any) => request({ url: '/admin/meals', data: params }),
   createMeal: (data: any) => request({ url: '/admin/meals', method: 'POST', data }),
