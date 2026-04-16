@@ -810,7 +810,7 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
 
 <style lang="scss" scoped>
 .container {
-  padding: 20rpx 30rpx;
+  padding: 20rpx 32rpx;
   padding-bottom: 60rpx;
   min-height: 100vh;
   background: $background;
@@ -819,18 +819,19 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
 /* Date Selector */
 .date-selector {
   padding: 16rpx 20rpx;
+  background: #fff;
+  border-radius: 24rpx;
+  box-shadow: $shadow-sm;
 }
 .date-arrow {
   width: 64rpx;
   height: 64rpx;
   border-radius: $radius-full;
   background: $muted;
-  border: 1rpx solid $border;
   transition: all 0.2s;
 }
 .date-arrow:active {
-  background: rgba(16, 185, 129, 0.08);
-  border-color: $accent;
+  background: #ECFDF5;
 }
 .arrow-icon {
   font-size: 40rpx;
@@ -844,15 +845,13 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
   font-size: 32rpx;
   font-weight: 700;
   color: $foreground;
-  font-family: 'Calistoga', Georgia, 'PingFang SC', serif;
 }
 .today-badge {
   font-size: 20rpx;
-  color: $accent;
-  background: rgba(16, 185, 129, 0.08);
+  color: #059669;
+  background: #ECFDF5;
   padding: 4rpx 12rpx;
   border-radius: $radius-full;
-  font-family: 'JetBrains Mono', monospace;
 }
 .date-picker-hint {
   font-size: 28rpx;
@@ -861,12 +860,11 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
 
 /* Summary Card */
 .summary-card {
-  padding: 24rpx;
-  background: $gradient-accent;
-  border: none;
-  box-shadow: $shadow-accent;
-  border-radius: $radius-2xl;
-  color: #fff;
+  padding: 28rpx;
+  background: #fff;
+  box-shadow: $shadow-sm;
+  border-radius: 24rpx;
+  color: $foreground;
 }
 .summary-header {
   margin-bottom: 20rpx;
@@ -874,19 +872,21 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
 .summary-title {
   font-size: 30rpx;
   font-weight: 700;
-  color: #fff;
-  font-family: 'Calistoga', Georgia, 'PingFang SC', serif;
+  color: $foreground;
 }
 .summary-cal {
   font-size: 24rpx;
-  color: rgba(255, 255, 255, 0.85);
-  font-weight: 500;
+  color: $accent;
+  font-weight: 600;
 }
 
 /* Macro ring charts */
 .macro-rings {
   margin-bottom: 24rpx;
   padding: 16rpx 0;
+  background: $gradient-accent;
+  border-radius: $radius-lg;
+  padding: 20rpx 0;
 }
 .ring-item {
   display: flex;
@@ -912,7 +912,6 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
   font-size: 20rpx;
   font-weight: 700;
   color: #fff;
-  font-family: 'JetBrains Mono', monospace;
 }
 .ring-label {
   font-size: 20rpx;
@@ -922,7 +921,6 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
 .ring-value {
   font-size: 18rpx;
   color: rgba(255, 255, 255, 0.65);
-  font-family: 'JetBrains Mono', monospace;
 }
 
 /* Progress bars */
@@ -934,30 +932,29 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
 }
 .p-label {
   font-size: 24rpx;
-  color: #fff;
+  color: $foreground;
 }
 .p-value {
   font-size: 22rpx;
-  color: rgba(255, 255, 255, 0.75);
+  color: $muted-foreground;
 }
 .progress-bar {
   height: 12rpx;
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  border-radius: $radius-full;
+  background: $muted;
+  border-radius: 99px;
   margin-top: 8rpx;
   overflow: hidden;
 }
 .progress-fill {
   height: 100%;
-  border-radius: $radius-full;
+  border-radius: 99px;
   transition: width 0.3s ease;
   min-width: 4rpx;
 }
-.calories-fill { background: #fff; }
-.protein-fill { background: rgba(255, 255, 255, 0.85); }
-.fat-fill { background: rgba(255, 255, 255, 0.7); }
-.carbs-fill { background: rgba(255, 255, 255, 0.55); }
+.calories-fill { background: $gradient-accent; }
+.protein-fill { background: #10B981; }
+.fat-fill { background: #F59E0B; }
+.carbs-fill { background: #6366F1; }
 
 /* Filter Tabs */
 .filter-tabs-scroll {
@@ -974,24 +971,21 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
   gap: 8rpx;
   padding: 12rpx 24rpx;
   border-radius: $radius-full;
-  background: $card;
-  border: 1rpx solid $border;
+  background: #fff;
+  box-shadow: $shadow-sm;
   font-size: 24rpx;
   color: $muted-foreground;
   white-space: nowrap;
   transition: all 0.2s;
-  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 .filter-tab.active {
-  background: $accent;
+  background: $gradient-accent;
   color: #fff;
-  border-color: $accent;
   box-shadow: $shadow-accent;
 }
 .tab-count {
   font-size: 20rpx;
-  font-family: 'JetBrains Mono', monospace;
-  background: rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.06);
   padding: 2rpx 10rpx;
   border-radius: $radius-full;
   min-width: 32rpx;
@@ -1004,11 +998,14 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
 
 /* Meal Section */
 .meal-section {
-  padding: 20rpx 24rpx;
+  padding: 24rpx;
+  background: #fff;
+  border-radius: 24rpx;
+  box-shadow: $shadow-sm;
 }
 .meal-header {
   padding-bottom: 16rpx;
-  border-bottom: 1rpx solid $border;
+  margin-bottom: 8rpx;
 }
 .meal-icon {
   font-size: 36rpx;
@@ -1017,15 +1014,13 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
   font-size: 30rpx;
   font-weight: 700;
   color: $foreground;
-  font-family: 'Calistoga', Georgia, 'PingFang SC', serif;
 }
 .meal-count-badge {
   font-size: 20rpx;
-  color: $accent;
-  background: rgba(16, 185, 129, 0.08);
+  color: #059669;
+  background: #ECFDF5;
   padding: 2rpx 12rpx;
   border-radius: $radius-full;
-  font-family: 'JetBrains Mono', monospace;
 }
 .meal-cal {
   font-size: 24rpx;
@@ -1034,12 +1029,13 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
   width: 56rpx;
   height: 56rpx;
   border-radius: $radius-full;
-  background: rgba(16, 185, 129, 0.08);
+  background: $gradient-accent;
+  box-shadow: $shadow-accent;
   border: none;
 }
 .add-icon {
   font-size: 36rpx;
-  color: $accent;
+  color: #fff;
   font-weight: bold;
 }
 
@@ -1070,8 +1066,10 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
   align-items: center;
   justify-content: center;
   height: 72rpx;
-  padding: 0 40rpx;
-  border-radius: $radius-full;
+  padding: 0 48rpx;
+  border-radius: 48rpx;
+  background: $gradient-accent;
+  box-shadow: $shadow-accent;
 }
 
 /* Food List */
@@ -1081,8 +1079,7 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
 }
 .food-item-content {
   padding: 20rpx 0;
-  border-bottom: 1rpx solid $border;
-  background: $card;
+  background: #fff;
   position: relative;
   z-index: 1;
   transition: transform 0.15s ease;
@@ -1106,9 +1103,8 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
 }
 .food-cal {
   font-size: 26rpx;
-  color: $accent;
+  color: #EF4444;
   font-weight: 600;
-  font-family: 'JetBrains Mono', monospace;
 }
 .food-macros-hint {
   font-size: 20rpx;
@@ -1144,25 +1140,25 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
 .dialog-content {
   width: 100%;
   max-width: 750rpx;
-  background: $card;
-  border-radius: $radius-2xl $radius-2xl 0 0;
+  background: #fff;
+  border-radius: 24rpx 24rpx 0 0;
   max-height: 85vh;
   overflow-y: auto;
   padding-bottom: env(safe-area-inset-bottom);
   box-sizing: border-box;
+  box-shadow: $shadow-lg;
 }
 .dialog-header {
   padding: 28rpx 30rpx;
-  border-bottom: 1rpx solid $border;
   position: sticky;
   top: 0;
-  background: $card;
+  background: #fff;
   z-index: 10;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.03);
 }
 .dialog-title {
   font-size: 32rpx;
   font-weight: 700;
-  font-family: 'Calistoga', Georgia, 'PingFang SC', serif;
   color: $foreground;
 }
 .dialog-close {
@@ -1178,11 +1174,14 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
 }
 .dialog-footer {
   padding: 16rpx 30rpx 20rpx;
-  border-top: 1rpx solid $border;
+  box-shadow: 0 -2rpx 8rpx rgba(0, 0, 0, 0.03);
 }
 .save-btn {
   height: 84rpx;
   line-height: 84rpx;
+  border-radius: 48rpx;
+  background: $gradient-accent;
+  box-shadow: $shadow-accent;
 }
 
 /* Detail Dialog */
@@ -1200,24 +1199,21 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
   font-size: 36rpx;
   font-weight: 700;
   color: $foreground;
-  font-family: 'Calistoga', Georgia, 'PingFang SC', serif;
   display: block;
   margin-bottom: 8rpx;
 }
 .detail-meal-badge {
   display: inline-block;
   padding: 4rpx 16rpx;
-  background: rgba(16, 185, 129, 0.08);
-  border: 1rpx solid rgba(16, 185, 129, 0.2);
+  background: #ECFDF5;
   border-radius: $radius-full;
   font-size: 22rpx;
-  color: $accent;
+  color: #059669;
 }
 .detail-cal {
   font-size: 36rpx;
   font-weight: 700;
-  color: $accent;
-  font-family: 'JetBrains Mono', monospace;
+  color: #EF4444;
   white-space: nowrap;
 }
 .detail-section {
@@ -1230,8 +1226,6 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
   color: $foreground;
   margin-bottom: 16rpx;
   padding-bottom: 8rpx;
-  border-bottom: 1rpx solid $border;
-  font-family: 'Calistoga', Georgia, 'PingFang SC', serif;
 }
 .detail-grid {
   display: grid;
@@ -1254,7 +1248,6 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
   font-size: 28rpx;
   font-weight: 600;
   color: $foreground;
-  font-family: 'JetBrains Mono', monospace;
 }
 .detail-item-value.highlight {
   color: $accent;
@@ -1285,17 +1278,16 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
 .detail-bar-percent {
   font-size: 22rpx;
   color: $muted-foreground;
-  font-family: 'JetBrains Mono', monospace;
 }
 .detail-bar-track {
   height: 14rpx;
   background: $muted;
-  border-radius: $radius-full;
+  border-radius: 99px;
   overflow: hidden;
 }
 .detail-bar-fill {
   height: 100%;
-  border-radius: $radius-full;
+  border-radius: 99px;
   transition: width 0.3s ease;
 }
 .detail-footer {
@@ -1310,23 +1302,20 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
 }
 .meal-type-option {
   padding: 12rpx 20rpx;
-  border: 1rpx solid $border;
   border-radius: $radius-full;
   font-size: 26rpx;
   color: $muted-foreground;
+  background: $muted;
   transition: all 0.2s;
-  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 .meal-type-option.selected {
-  border-color: $accent;
-  color: $accent;
-  background: rgba(16, 185, 129, 0.06);
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  color: #fff;
+  background: $gradient-accent;
+  box-shadow: $shadow-accent;
 }
 
 .nutrition-input {
   background: $muted;
-  border: 1rpx solid $border;
   border-radius: $radius-lg;
   padding: 12rpx 16rpx;
 }
@@ -1339,18 +1328,17 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
 .nutrition-input input {
   height: 40rpx;
   font-size: 26rpx;
-  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 .btn-outline {
   height: 80rpx;
   line-height: 80rpx;
-  border: 1rpx solid $border;
   border-radius: $radius-lg;
-  background: $card;
+  background: #fff;
   color: $foreground;
   font-size: 28rpx;
   text-align: center;
+  box-shadow: $shadow-sm;
 }
 .btn-outline:active {
   background: $muted;
@@ -1364,7 +1352,7 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
   flex-direction: column;
   padding: 24rpx;
   border: 2rpx dashed $border;
-  border-radius: 12rpx;
+  border-radius: $radius-lg;
   background: rgba($accent, 0.03);
   gap: 8rpx;
 }
@@ -1383,7 +1371,7 @@ watch(() => [stats.value.totalCalories, stats.value.totalProtein, stats.value.to
 .photo-preview-img {
   width: 120rpx;
   height: 120rpx;
-  border-radius: 12rpx;
+  border-radius: $radius-lg;
   object-fit: cover;
 }
 .photo-actions {

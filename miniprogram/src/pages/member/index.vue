@@ -865,16 +865,16 @@ onShow(() => {
   min-height: 100vh;
   background: $background;
   padding-bottom: 30rpx;
-  font-family: 'Inter', sans-serif;
 }
 
 /* ============ VIP Banner ============ */
 .vip-banner {
-  padding: 40rpx 30rpx;
+  padding: 40rpx 32rpx;
   color: #fff;
 
   &.vip-active {
-    background: linear-gradient(135deg, $accent, #0d9668);
+    background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+    color: $foreground;
     padding-bottom: 30rpx;
   }
 
@@ -883,7 +883,7 @@ onShow(() => {
   }
 
   &.vip-loading {
-    background: $muted;
+    background: #fff;
     color: $foreground;
   }
 }
@@ -922,23 +922,21 @@ onShow(() => {
 .vip-plan-name {
   font-size: 34rpx;
   font-weight: 700;
-  font-family: 'Calistoga', cursive;
 }
 
 .vip-tag-badge {
-  background: rgba(255, 255, 255, 0.2);
-  color: #fff;
+  background: rgba(0, 0, 0, 0.1);
+  color: inherit;
   font-size: 20rpx;
   font-weight: 700;
   padding: 4rpx 14rpx;
   border-radius: $radius-full;
   letter-spacing: 2rpx;
-  font-family: 'JetBrains Mono', monospace;
 }
 
 .vip-username {
   font-size: 26rpx;
-  opacity: 0.85;
+  opacity: 0.75;
   margin-top: 4rpx;
   display: block;
 }
@@ -958,18 +956,16 @@ onShow(() => {
   .quota-value {
     font-size: 36rpx;
     font-weight: 700;
-    font-family: 'JetBrains Mono', monospace;
   }
 }
 
 .vip-detail-row {
   display: flex;
   justify-content: space-between;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.06);
   border-radius: $radius-lg;
   padding: 20rpx 24rpx;
   margin-bottom: 20rpx;
-  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .vip-detail-item {
@@ -980,17 +976,16 @@ onShow(() => {
 
 .vip-detail-label {
   font-size: 22rpx;
-  opacity: 0.75;
+  opacity: 0.65;
   margin-bottom: 6rpx;
 }
 
 .vip-detail-val {
   font-size: 28rpx;
   font-weight: 600;
-  font-family: 'JetBrains Mono', monospace;
 
   &.gold {
-    color: #FCD34D;
+    color: #B45309;
   }
 }
 
@@ -1000,32 +995,31 @@ onShow(() => {
 
 .level-progress-text {
   font-size: 22rpx;
-  opacity: 0.8;
+  opacity: 0.7;
   margin-bottom: 8rpx;
   display: block;
 }
 
 .progress-bar-bg {
   height: 12rpx;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: $radius-full;
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 99px;
   overflow: hidden;
 }
 
 .progress-bar-fill {
   height: 100%;
-  background: #fff;
-  border-radius: $radius-full;
+  background: $gradient-accent;
+  border-radius: 99px;
   transition: width 0.5s;
 }
 
 /* ============ Card Layout ============ */
 .card {
-  background: $card;
-  border-radius: $radius-xl;
-  margin: 20rpx 24rpx;
+  background: #fff;
+  border-radius: 24rpx;
+  margin: 24rpx 32rpx;
   padding: 30rpx;
-  border: 1rpx solid $border;
   box-shadow: $shadow-sm;
 }
 
@@ -1040,7 +1034,6 @@ onShow(() => {
   font-size: 30rpx;
   font-weight: 700;
   color: $foreground;
-  font-family: 'Calistoga', cursive;
 }
 
 .card-header-sub {
@@ -1065,10 +1058,10 @@ onShow(() => {
 
   .card {
     flex: 1;
-    margin: 20rpx 12rpx;
+    margin: 24rpx 12rpx;
 
-    &:first-child { margin-left: 24rpx; }
-    &:last-child { margin-right: 24rpx; }
+    &:first-child { margin-left: 32rpx; }
+    &:last-child { margin-right: 32rpx; }
   }
 }
 
@@ -1077,10 +1070,10 @@ onShow(() => {
     flex-direction: column;
 
     .card {
-      margin: 20rpx 24rpx;
+      margin: 24rpx 32rpx;
 
-      &:first-child { margin-left: 24rpx; }
-      &:last-child { margin-right: 24rpx; }
+      &:first-child { margin-left: 32rpx; }
+      &:last-child { margin-right: 32rpx; }
     }
   }
 }
@@ -1091,7 +1084,6 @@ onShow(() => {
   align-items: center;
   justify-content: space-around;
   padding: 12rpx 0 16rpx;
-  border-bottom: 1rpx solid $border;
   margin-bottom: 16rpx;
 }
 
@@ -1105,8 +1097,7 @@ onShow(() => {
 .stat-num {
   font-size: 32rpx;
   font-weight: 700;
-  color: #EF4444;
-  font-family: 'JetBrains Mono', monospace;
+  color: $accent;
 }
 
 .stat-label {
@@ -1123,7 +1114,7 @@ onShow(() => {
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 4rpx;
+  gap: 6rpx;
   margin-bottom: 16rpx;
 }
 
@@ -1144,18 +1135,16 @@ onShow(() => {
   justify-content: center;
   border-radius: $radius-sm;
   background: $muted;
-  border: 1rpx solid $border;
   transition: all 0.2s;
 
   &.empty {
     background: transparent;
-    border-color: transparent;
   }
 
   &.signed {
     background: $accent;
     color: #fff;
-    border-color: #0d9668;
+    box-shadow: 0 2rpx 8rpx rgba(16, 185, 129, 0.3);
 
     .cal-day-num { color: #fff; }
     .cal-check {
@@ -1165,12 +1154,11 @@ onShow(() => {
   }
 
   &.today {
-    border: 2rpx solid #EF4444;
-    color: #EF4444;
-    background: $muted;
+    background: #ECFDF5;
+    color: $accent;
 
     .cal-day-num {
-      color: #EF4444;
+      color: $accent;
       font-weight: 700;
     }
   }
@@ -1198,8 +1186,8 @@ onShow(() => {
   line-height: 72rpx;
   font-size: 26rpx;
   font-weight: 600;
-  border-radius: $radius-xl;
-  background: $accent;
+  border-radius: 48rpx;
+  background: $gradient-accent;
   color: #fff;
   border: none;
   box-shadow: $shadow-accent;
@@ -1244,9 +1232,8 @@ onShow(() => {
   align-items: center;
   gap: 12rpx;
   padding: 16rpx;
-  background: $muted;
+  background: #ECFDF5;
   border-radius: $radius-lg;
-  border: 1rpx solid $accent;
 }
 
 .invite-code-text {
@@ -1255,7 +1242,6 @@ onShow(() => {
   font-weight: 700;
   color: $accent;
   letter-spacing: 3rpx;
-  font-family: 'JetBrains Mono', monospace;
 }
 
 .invite-link-display {
@@ -1265,7 +1251,6 @@ onShow(() => {
   padding: 12rpx 16rpx;
   background: $muted;
   border-radius: $radius-lg;
-  border: 1rpx solid $border;
 }
 
 .invite-link-text {
@@ -1289,14 +1274,15 @@ onShow(() => {
 }
 
 .btn-accent {
-  background: $accent;
+  background: $gradient-accent;
   color: #fff;
+  box-shadow: $shadow-accent;
 }
 
 .btn-outline {
-  background: $card;
+  background: #fff;
   color: $accent;
-  border: 1rpx solid $border;
+  box-shadow: $shadow-sm;
 }
 
 .invite-stats {
@@ -1312,7 +1298,6 @@ onShow(() => {
   gap: 12rpx;
   padding: 16rpx;
   background: $muted;
-  border: 1rpx solid $border;
   border-radius: $radius-lg;
 }
 
@@ -1339,8 +1324,7 @@ onShow(() => {
 .invite-stat-val {
   font-size: 30rpx;
   font-weight: 700;
-  color: $foreground;
-  font-family: 'JetBrains Mono', monospace;
+  color: $accent;
 }
 
 .invite-stat-lbl {
@@ -1418,8 +1402,8 @@ onShow(() => {
   flex-shrink: 0;
 
   &.rewarded {
-    background: rgba(16, 185, 129, 0.1);
-    color: $accent;
+    background: #ECFDF5;
+    color: #059669;
   }
 
   &.pending {
@@ -1444,7 +1428,7 @@ onShow(() => {
   .skeleton-card {
     flex: 1;
     background: $muted;
-    border-radius: $radius-xl;
+    border-radius: 24rpx;
     padding: 24rpx;
     animation: pulse 1.5s ease-in-out infinite;
   }
@@ -1471,23 +1455,22 @@ onShow(() => {
 
 .plan-card {
   min-width: 0;
-  border: 1rpx solid $border;
-  border-radius: $radius-xl;
+  border-radius: 24rpx;
   padding: 24rpx 16rpx;
   text-align: center;
   position: relative;
   transition: all 0.2s;
-  background: $card;
+  background: #fff;
+  box-shadow: $shadow-sm;
 
   &.selected {
-    border-color: $accent;
-    background: rgba(16, 185, 129, 0.04);
+    background: #ECFDF5;
     box-shadow: $shadow-accent;
   }
 
   &.recommended {
-    border-color: #F59E0B;
-    border-width: 3rpx;
+    box-shadow: 0 4rpx 20rpx rgba(16, 185, 129, 0.2);
+    border-left: 6rpx solid $accent;
   }
 }
 
@@ -1511,7 +1494,6 @@ onShow(() => {
   font-weight: 700;
   color: $foreground;
   margin-bottom: 4rpx;
-  font-family: 'Calistoga', cursive;
 }
 
 .plan-duration {
@@ -1531,8 +1513,7 @@ onShow(() => {
 .plan-price-current {
   font-size: 44rpx;
   font-weight: 700;
-  color: $accent;
-  font-family: 'JetBrains Mono', monospace;
+  color: #EF4444;
 }
 
 .plan-discount-label {
@@ -1559,7 +1540,6 @@ onShow(() => {
 .plan-features-preview {
   margin-top: 12rpx;
   padding-top: 12rpx;
-  border-top: 1rpx solid $border;
   text-align: left;
 }
 
@@ -1604,20 +1584,20 @@ onShow(() => {
 .pay-type-options {
   display: flex;
   gap: 0;
-  border: 1rpx solid $border;
-  border-radius: $radius-md;
+  border-radius: $radius-full;
   overflow: hidden;
+  box-shadow: $shadow-sm;
 }
 
 .pay-type-option {
   font-size: 24rpx;
   padding: 10rpx 24rpx;
-  background: $card;
+  background: #fff;
   color: $muted-foreground;
   transition: all 0.2s;
 
   &.active {
-    background: $accent;
+    background: $gradient-accent;
     color: #fff;
   }
 }
@@ -1628,8 +1608,8 @@ onShow(() => {
   line-height: 84rpx;
   font-size: 30rpx;
   font-weight: 600;
-  border-radius: $radius-xl;
-  background: $accent;
+  border-radius: 48rpx;
+  background: $gradient-accent;
   color: #fff;
   border: none;
   box-shadow: $shadow-accent;
@@ -1663,8 +1643,8 @@ onShow(() => {
 }
 
 .modal-content {
-  background: $card;
-  border-radius: $radius-xl;
+  background: #fff;
+  border-radius: 24rpx;
   width: 100%;
   max-width: 620rpx;
   max-height: 80vh;
@@ -1677,14 +1657,12 @@ onShow(() => {
   justify-content: space-between;
   align-items: center;
   padding: 28rpx 30rpx;
-  border-bottom: 1rpx solid $border;
 }
 
 .modal-title {
   font-size: 30rpx;
   font-weight: 700;
   color: $foreground;
-  font-family: 'Calistoga', cursive;
 }
 
 .modal-close {
@@ -1707,7 +1685,7 @@ onShow(() => {
 
 .order-info-item {
   background: $muted;
-  border-radius: $radius-md;
+  border-radius: $radius-lg;
   padding: 16rpx;
 }
 
@@ -1725,8 +1703,8 @@ onShow(() => {
   display: block;
   word-break: break-all;
 
-  &.price { color: $accent; }
-  &.mono { font-family: 'JetBrains Mono', monospace; font-size: 22rpx; }
+  &.price { color: #EF4444; }
+  &.mono { font-size: 22rpx; }
 }
 
 .pay-countdown {
@@ -1740,7 +1718,6 @@ onShow(() => {
   font-size: 36rpx;
   font-weight: 700;
   color: #F59E0B;
-  font-family: 'JetBrains Mono', monospace;
 }
 
 .pay-expired {
@@ -1751,9 +1728,8 @@ onShow(() => {
 }
 
 .pay-simulate-hint {
-  background: rgba(16, 185, 129, 0.06);
-  border: 1rpx solid rgba(16, 185, 129, 0.2);
-  border-radius: $radius-md;
+  background: #ECFDF5;
+  border-radius: $radius-lg;
   padding: 16rpx;
   font-size: 22rpx;
   color: $muted-foreground;
@@ -1770,10 +1746,10 @@ onShow(() => {
   flex: 1;
   height: 80rpx;
   line-height: 80rpx;
-  background: $accent;
+  background: $gradient-accent;
   color: #fff;
   border: none;
-  border-radius: $radius-xl;
+  border-radius: 48rpx;
   font-size: 28rpx;
   font-weight: 600;
   box-shadow: $shadow-accent;
@@ -1791,8 +1767,7 @@ onShow(() => {
   line-height: 80rpx;
   background: $muted;
   color: $muted-foreground;
-  border: 1rpx solid $border;
-  border-radius: $radius-xl;
+  border-radius: 48rpx;
   font-size: 28rpx;
   padding: 0 40rpx;
 }
@@ -1816,15 +1791,15 @@ onShow(() => {
   padding: 16rpx 0;
   font-size: 26rpx;
   color: $foreground;
-  border-bottom: 1rpx solid $border;
 
-  &:last-child { border-bottom: none; }
+  &:not(:last-child) {
+    border-bottom: 1rpx solid $border;
+  }
 }
 
 .benefits-quota-box {
   background: $muted;
-  border: 1rpx solid $border;
-  border-radius: $radius-md;
+  border-radius: $radius-lg;
   padding: 20rpx;
   display: flex;
   flex-direction: column;
@@ -1842,7 +1817,6 @@ onShow(() => {
 .growth-chart {
   margin-bottom: 24rpx;
   padding-bottom: 16rpx;
-  border-bottom: 1rpx solid $border;
 }
 
 .chart-bars {
@@ -1865,13 +1839,12 @@ onShow(() => {
   font-size: 20rpx;
   color: $accent;
   font-weight: 600;
-  font-family: 'JetBrains Mono', monospace;
 }
 
 .chart-bar {
   width: 40rpx;
   min-height: 8rpx;
-  background: $accent;
+  background: $gradient-accent;
   border-radius: $radius-sm $radius-sm 0 0;
   transition: height 0.3s;
 
@@ -1896,9 +1869,10 @@ onShow(() => {
   align-items: center;
   justify-content: space-between;
   padding: 16rpx 0;
-  border-bottom: 1rpx solid $border;
 
-  &:last-child { border-bottom: none; }
+  &:not(:last-child) {
+    border-bottom: 1rpx solid $border;
+  }
 }
 
 .growth-item-left {
@@ -1921,7 +1895,6 @@ onShow(() => {
 .growth-points {
   font-size: 32rpx;
   font-weight: 700;
-  font-family: 'JetBrains Mono', monospace;
   flex-shrink: 0;
   margin-left: 16rpx;
 
@@ -1936,7 +1909,6 @@ onShow(() => {
   color: $accent;
 }
 
-/* ============ Benefits Comparison ============ */
 /* ============ Order History ============ */
 .order-list {
   margin-top: 8rpx;
@@ -1944,9 +1916,10 @@ onShow(() => {
 
 .order-item {
   padding: 20rpx 0;
-  border-bottom: 1rpx solid $border;
 
-  &:last-child { border-bottom: none; }
+  &:not(:last-child) {
+    border-bottom: 1rpx solid $border;
+  }
 }
 
 .order-item-top {
@@ -1968,7 +1941,7 @@ onShow(() => {
   padding: 4rpx 14rpx;
   border-radius: $radius-full;
 
-  &.status-paid { background: rgba(16, 185, 129, 0.1); color: $accent; }
+  &.status-paid { background: #ECFDF5; color: #059669; }
   &.status-pending { background: rgba(245, 158, 11, 0.1); color: #F59E0B; }
   &.status-expired { background: $muted; color: $muted-foreground; }
   &.status-failed { background: rgba(239, 68, 68, 0.1); color: #EF4444; }
@@ -1997,7 +1970,7 @@ onShow(() => {
   border: none;
   font-size: 24rpx;
   padding: 8rpx 24rpx;
-  border-radius: 8rpx;
+  border-radius: $radius-full;
   line-height: 1.6;
   &[disabled] {
     opacity: 0.6;

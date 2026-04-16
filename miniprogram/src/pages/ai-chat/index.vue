@@ -930,8 +930,8 @@ onUnmounted(() => {
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 100;
-  background: $gradient-accent;
-  box-shadow: $shadow-md;
+  background: #fff;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
 }
 .nav-bar-inner {
   height: 88rpx;
@@ -959,14 +959,13 @@ onUnmounted(() => {
 }
 .icon-back {
   font-size: 48rpx;
-  color: #fff;
+  color: $foreground;
   font-weight: bold;
 }
 .nav-title {
   font-size: 32rpx;
   font-weight: 700;
-  color: #fff;
-  font-family: 'Calistoga', Georgia, 'PingFang SC', serif;
+  color: $accent;
 }
 .nav-icon-btn {
   width: 56rpx;
@@ -983,7 +982,7 @@ onUnmounted(() => {
   height: 14rpx;
   border-radius: 50%;
   margin-left: 10rpx;
-  &.dot-ok { background: #fff; box-shadow: 0 0 6px rgba(255,255,255,0.8); }
+  &.dot-ok { background: $accent; box-shadow: 0 0 8rpx rgba(16, 185, 129, 0.5); }
   &.dot-connecting { background: #FCD34D; animation: pulse-dot 1.5s infinite; }
   &.dot-off { background: #FCA5A5; }
 }
@@ -995,17 +994,18 @@ onUnmounted(() => {
 /* ─── Disclaimer ─── */
 .disclaimer-bar {
   position: fixed;
-  left: 0; right: 0;
+  left: 32rpx; right: 32rpx;
   z-index: 90;
-  background: rgba(16, 185, 129, 0.06);
+  background: #ECFDF5;
   color: $foreground;
   font-size: 22rpx;
   text-align: center;
-  padding: 8rpx 48rpx 8rpx 16rpx;
+  padding: 10rpx 48rpx 10rpx 16rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-bottom: 1rpx solid $border;
+  border-radius: $radius-full;
+  box-shadow: $shadow-sm;
 }
 .disclaimer-bar .dismiss {
   position: absolute;
@@ -1017,25 +1017,26 @@ onUnmounted(() => {
 /* ─── Connection Status Bar ─── */
 .conn-bar {
   position: fixed;
-  left: 0; right: 0;
+  left: 32rpx; right: 32rpx;
   z-index: 89;
-  background: rgba(239, 68, 68, 0.06);
+  background: rgba(239, 68, 68, 0.08);
   color: #EF4444;
   font-size: 22rpx;
-  padding: 6rpx 24rpx;
+  padding: 8rpx 24rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 16rpx;
-  border-bottom: 1rpx solid $border;
+  border-radius: $radius-full;
+  box-shadow: $shadow-sm;
 }
 .conn-bar.connecting {
-  background: rgba(245, 158, 11, 0.06);
+  background: rgba(245, 158, 11, 0.08);
   color: #F59E0B;
 }
 .conn-bar.conn-ok {
-  background: rgba(16, 185, 129, 0.06);
-  color: #10B981;
+  background: #ECFDF5;
+  color: $accent;
 }
 .conn-text { font-size: 22rpx; }
 .conn-retry {
@@ -1051,6 +1052,10 @@ onUnmounted(() => {
   flex-direction: column;
   align-items: center;
   padding: 80rpx 40rpx;
+  margin: 32rpx;
+  background: #fff;
+  border-radius: 24rpx;
+  box-shadow: $shadow-sm;
   animation: fadeInUp 0.4s ease-out;
 }
 .welcome-icon { font-size: 80rpx; margin-bottom: 20rpx; }
@@ -1059,7 +1064,6 @@ onUnmounted(() => {
   font-weight: 700;
   color: $foreground;
   margin-bottom: 12rpx;
-  font-family: 'Calistoga', Georgia, 'PingFang SC', serif;
 }
 .welcome-desc {
   font-size: 26rpx;
@@ -1077,7 +1081,7 @@ onUnmounted(() => {
   position: fixed;
   left: 0; right: 0;
   overflow-y: auto;
-  padding: 20rpx 24rpx;
+  padding: 20rpx 32rpx;
   background: $background;
 }
 .message-wrapper { margin-bottom: 24rpx; }
@@ -1101,12 +1105,11 @@ onUnmounted(() => {
   font-size: 34rpx;
   flex-shrink: 0;
   overflow: hidden;
-  border: 1rpx solid $border;
+  box-shadow: $shadow-sm;
 }
 .avatar-ai {
-  background: $card;
+  background: #fff;
   margin-right: 14rpx;
-  box-shadow: $shadow-sm;
 }
 .avatar-user {
   margin-left: 14rpx;
@@ -1122,19 +1125,17 @@ onUnmounted(() => {
 /* ─── Chat bubbles ─── */
 .bubble {
   padding: 20rpx 28rpx;
-  border: 1rpx solid $border;
-  border-radius: $radius-xl;
+  border-radius: 24rpx;
   word-break: break-word;
 }
 .bubble-ai {
-  background: $card;
+  background: #fff;
   border-top-left-radius: $radius-sm;
   box-shadow: $shadow-sm;
 }
 .bubble-user {
   max-width: 72%;
-  background: $accent;
-  border-color: $accent;
+  background: $gradient-accent;
   border-top-right-radius: $radius-sm;
   box-shadow: $shadow-accent;
 }
@@ -1143,7 +1144,6 @@ onUnmounted(() => {
   font-size: 30rpx;
   line-height: 1.6;
   color: $foreground;
-  font-family: 'Inter', 'PingFang SC', sans-serif;
 }
 
 /* ─── Markdown content ─── */
@@ -1226,10 +1226,10 @@ onUnmounted(() => {
   position: fixed;
   bottom: var(--window-bottom, 0);
   left: 0; right: 0;
-  background: $card;
-  padding: 12rpx 24rpx;
-  padding-bottom: calc(12rpx + env(safe-area-inset-bottom));
-  border-top: 1rpx solid $border;
+  background: #fff;
+  padding: 16rpx 32rpx;
+  padding-bottom: calc(16rpx + env(safe-area-inset-bottom));
+  box-shadow: 0 -2rpx 12rpx rgba(0, 0, 0, 0.04);
   z-index: 100;
 }
 .input-row {
@@ -1239,19 +1239,17 @@ onUnmounted(() => {
 }
 .chat-input {
   flex: 1;
-  height: 72rpx;
+  height: 76rpx;
   background: $muted;
-  border: 1rpx solid $border;
   border-radius: $radius-full;
   padding: 0 28rpx;
   font-size: 28rpx;
   color: $foreground;
-  font-family: 'Inter', 'PingFang SC', sans-serif;
-  transition: border-color 0.2s;
+  transition: background 0.2s;
 }
 .send-btn {
   width: 120rpx;
-  height: 72rpx;
+  height: 76rpx;
   border-radius: $radius-full;
   background: $muted;
   border: none;
@@ -1272,23 +1270,22 @@ onUnmounted(() => {
   &:active { opacity: 0.9; transform: translateY(1px); }
 }
 
-/* ─── Popup (shared) ─── */
+/* ─── Popup (shared — bottom sheet style) ─── */
 .popup-mask {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
   z-index: 200;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(15, 23, 42, 0.5);
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
   animation: fadeIn 0.2s;
 }
 .popup-panel {
-  width: 88%;
-  max-width: 680rpx;
+  width: 100%;
   max-height: 70vh;
-  background: $card;
-  border-radius: $radius-xl;
+  background: #fff;
+  border-radius: 24rpx 24rpx 0 0;
   box-shadow: $shadow-lg;
   display: flex;
   flex-direction: column;
@@ -1299,8 +1296,7 @@ onUnmounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24rpx 28rpx;
-  border-bottom: 1rpx solid $border;
+  padding: 28rpx 32rpx;
 }
 .popup-title {
   font-size: 30rpx;
@@ -1315,11 +1311,11 @@ onUnmounted(() => {
 .popup-body {
   flex: 1;
   overflow-y: auto;
-  padding: 20rpx 28rpx;
+  padding: 20rpx 32rpx;
 }
 .popup-footer {
-  padding: 16rpx 28rpx;
-  border-top: 1rpx solid $border;
+  padding: 16rpx 32rpx;
+  padding-bottom: calc(16rpx + env(safe-area-inset-bottom));
 }
 .popup-btn {
   display: flex;
@@ -1379,10 +1375,13 @@ onUnmounted(() => {
   max-height: 60vh;
 }
 .history-item {
-  padding: 16rpx 0;
-  border-bottom: 1rpx solid $border;
+  padding: 20rpx 0;
   position: relative;
-  &:active { background: rgba(16, 185, 129, 0.04); }
+  margin-bottom: 12rpx;
+  background: $muted;
+  border-radius: $radius-lg;
+  padding: 20rpx;
+  &:active { background: rgba(16, 185, 129, 0.06); }
 }
 .history-top {
   display: flex;
@@ -1416,8 +1415,8 @@ onUnmounted(() => {
 }
 .history-del {
   position: absolute;
-  right: 0;
-  top: 16rpx;
+  right: 20rpx;
+  top: 20rpx;
   text {
     font-size: 22rpx;
     color: #EF4444;
@@ -1428,8 +1427,10 @@ onUnmounted(() => {
 
 /* ─── Favorites list ─── */
 .favorite-item {
-  padding: 16rpx 0;
-  border-bottom: 1rpx solid $border;
+  padding: 20rpx;
+  margin-bottom: 12rpx;
+  background: $muted;
+  border-radius: $radius-lg;
 }
 .fav-content {
   font-size: 28rpx;
