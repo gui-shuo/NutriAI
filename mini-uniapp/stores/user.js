@@ -11,6 +11,7 @@ export const useUserStore = defineStore('user', () => {
   const refreshTokenStr = ref(uni.getStorageSync('refreshToken') || '')
   const userInfo = ref(JSON.parse(uni.getStorageSync('userInfo') || 'null'))
   const permissions = ref(null)
+  const merchantInfo = ref(JSON.parse(uni.getStorageSync('merchantInfo') || 'null'))
 
   // Getters
   const isLoggedIn = computed(() => !!token.value && !!userInfo.value)
@@ -22,6 +23,10 @@ export const useUserStore = defineStore('user', () => {
     return `https://cos.itshuo.me/${avatar}`
   })
   const userRole = computed(() => userInfo.value?.role || 'USER')
+  const isMerchant = computed(() => {
+    const role = userInfo.value?.role || ''
+    return role.split(',').some(r => r.trim() === 'MERCHANT')
+  })
   const isVip = computed(() => permissions.value?.isVip || false)
   const memberLevel = computed(() => permissions.value?.memberLevel || 'NORMAL')
 
@@ -39,6 +44,19 @@ export const useUserStore = defineStore('user', () => {
     const res = await authApi.wxLogin({ code })
     if (res) {
       setAuth(res)
+      await fetchProfile()
+    }
+    return res
+  }
+
+  async function merchantLogin(loginData) {
+    const res = await authApi.merchantLogin(loginData)
+    if (res) {
+      setAuth(res)
+      if (res.merchantInfo) {
+        merchantInfo.value = res.merchantInfo
+        uni.setStorageSync('merchantInfo', JSON.stringify(res.merchantInfo))
+      }
       await fetchProfile()
     }
     return res
@@ -83,9 +101,11 @@ export const useUserStore = defineStore('user', () => {
     refreshTokenStr.value = ''
     userInfo.value = null
     permissions.value = null
+    merchantInfo.value = null
     uni.removeStorageSync('accessToken')
     uni.removeStorageSync('refreshToken')
     uni.removeStorageSync('userInfo')
+    uni.removeStorageSync('merchantInfo')
     // 尝试通知后端
     authApi.logout().catch(() => {})
   }
@@ -109,14 +129,17 @@ export const useUserStore = defineStore('user', () => {
     token,
     userInfo,
     permissions,
+    merchantInfo,
     isLoggedIn,
     userName,
     userAvatar,
     userRole,
+    isMerchant,
     isVip,
     memberLevel,
     login,
     wxLogin,
+    merchantLogin,
     setAuth,
     fetchProfile,
     fetchPermissions,

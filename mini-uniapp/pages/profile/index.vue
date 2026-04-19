@@ -1,7 +1,7 @@
 <script setup>
 /**
  * 我的 - 个人中心首页
- * Design: Digital Greenhouse
+ * Design: Digital Greenhouse with uView components
  */
 import { ref, computed } from 'vue'
 import { useUserStore } from '../../stores/user'
@@ -12,22 +12,23 @@ const userStore = useUserStore()
 
 const isLoggedIn = computed(() => userStore.isLoggedIn)
 
-// 菜单分组
+// 菜单分组 - 统一入口，无重复
 const menuGroups = ref([
   {
     title: '我的订单',
     items: [
-      { icon: '📋', label: '全部订单', url: '/pages/profile/orders', badge: '' },
-      { icon: '🎫', label: '我的优惠券', url: '/pages/profile/coupons', badge: '' },
+      { icon: 'list', label: '全部订单', url: '/pages/profile/orders' },
+      { icon: 'coupon', label: '我的优惠券', url: '/pages/profile/coupons' },
     ]
   },
   {
     title: '服务',
     items: [
-      { icon: '📍', label: '收货地址', url: '/pages/profile/address' },
-      { icon: '🔔', label: '消息通知', url: '/pages/profile/notifications' },
-      { icon: '💬', label: '意见反馈', url: '/pages/profile/feedback' },
-      { icon: '⚙️', label: '设置', url: '/pages/profile/settings' },
+      { icon: 'chat', label: '商家消息', url: '/pages/profile/merchant-chat' },
+      { icon: 'map', label: '收货地址', url: '/pages/profile/address' },
+      { icon: 'bell', label: '消息通知', url: '/pages/profile/notifications' },
+      { icon: 'edit-pen', label: '意见反馈', url: '/pages/profile/feedback' },
+      { icon: 'setting', label: '设置', url: '/pages/profile/settings' },
     ]
   }
 ])
@@ -55,7 +56,7 @@ function goToPage(url) {
       </template>
       <template #right>
         <view class="nav-settings" @tap="goToPage('/pages/profile/settings')">
-          <text style="font-size: 40rpx;">⚙️</text>
+          <u-icon name="setting" size="24" color="#1a1c1a" />
         </view>
       </template>
     </NavBar>
@@ -63,19 +64,14 @@ function goToPage(url) {
     <scroll-view scroll-y class="content" :enhanced="true" :show-scrollbar="false">
       <!-- 用户信息卡片 -->
       <view class="user-card">
-        <!-- 装饰背景 -->
         <view class="user-card__bg" />
 
         <view v-if="isLoggedIn" class="user-card__info" @tap="goToEdit">
-          <image
-            class="user-card__avatar"
-            :src="userStore.userAvatar"
-            mode="aspectFill"
-          />
+          <u-avatar :src="userStore.userAvatar" size="60" shape="circle" />
           <view class="user-card__text">
             <text class="user-card__name">{{ userStore.userName }}</text>
             <view v-if="userStore.isVip" class="user-card__vip">
-              <text class="user-card__vip-icon">👑</text>
+              <u-icon name="crown-fill" size="14" color="#8b6914" />
               <text class="user-card__vip-text">VIP会员</text>
             </view>
             <text class="user-card__edit">编辑资料 ›</text>
@@ -83,9 +79,7 @@ function goToPage(url) {
         </view>
 
         <view v-else class="user-card__info" @tap="goToLogin">
-          <view class="user-card__avatar user-card__avatar--default">
-            <text style="font-size: 64rpx;">👤</text>
-          </view>
+          <u-avatar icon="account" size="60" shape="circle" bgColor="#f0f0f0" />
           <view class="user-card__text">
             <text class="user-card__name">点击登录</text>
             <text class="user-card__desc">登录享受更多服务</text>
@@ -93,27 +87,7 @@ function goToPage(url) {
         </view>
       </view>
 
-      <!-- 快捷入口 -->
-      <view class="quick-actions">
-        <view class="quick-action" @tap="goToPage('/pages/profile/orders')">
-          <text class="quick-action__icon">📦</text>
-          <text class="quick-action__label">我的订单</text>
-        </view>
-        <view class="quick-action" @tap="goToPage('/pages/profile/coupons')">
-          <text class="quick-action__icon">🎫</text>
-          <text class="quick-action__label">优惠券</text>
-        </view>
-        <view class="quick-action" @tap="goToPage('/pages/profile/address')">
-          <text class="quick-action__icon">📍</text>
-          <text class="quick-action__label">地址</text>
-        </view>
-        <view class="quick-action" @tap="goToPage('/pages/profile/notifications')">
-          <text class="quick-action__icon">🔔</text>
-          <text class="quick-action__label">消息</text>
-        </view>
-      </view>
-
-      <!-- 菜单分组 -->
+      <!-- 菜单分组 (已去重，不再有重复的快捷入口) -->
       <view
         v-for="(group, gIdx) in menuGroups"
         :key="gIdx"
@@ -127,9 +101,9 @@ function goToPage(url) {
             class="menu-item"
             @tap="goToPage(item.url)"
           >
-            <text class="menu-item__icon">{{ item.icon }}</text>
+            <u-icon :name="item.icon" size="22" color="#0a6e2c" />
             <text class="menu-item__label">{{ item.label }}</text>
-            <text class="menu-item__arrow">›</text>
+            <u-icon name="arrow-right" size="16" color="#ccc" />
           </view>
         </view>
       </view>
@@ -144,7 +118,9 @@ function goToPage(url) {
 
 .page {
   min-height: 100vh;
-  background: $surface;
+  background: #ffffff;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 .content {
@@ -152,7 +128,7 @@ function goToPage(url) {
 }
 
 .nav-title {
-  font-size: $font-xl;
+  font-size: 36rpx;
   font-weight: 800;
   color: $on-surface;
 }
@@ -169,9 +145,9 @@ function goToPage(url) {
 .user-card {
   position: relative;
   margin: 16rpx 24rpx;
-  border-radius: $radius-2xl;
+  border-radius: 16px;
   overflow: hidden;
-  background: $surface-container-lowest;
+  background: #ffffff;
   box-shadow: $shadow-md;
 
   &__bg {
@@ -180,7 +156,7 @@ function goToPage(url) {
     right: -60rpx;
     width: 300rpx;
     height: 300rpx;
-    border-radius: $radius-full;
+    border-radius: 50%;
     background: rgba($primary, 0.08);
   }
 
@@ -193,27 +169,13 @@ function goToPage(url) {
     z-index: 1;
   }
 
-  &__avatar {
-    width: 120rpx;
-    height: 120rpx;
-    border-radius: $radius-full;
-    flex-shrink: 0;
-
-    &--default {
-      background: $surface-container-low;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-  }
-
   &__text {
     flex: 1;
   }
 
   &__name {
     display: block;
-    font-size: $font-xl;
+    font-size: 36rpx;
     font-weight: 700;
     color: $on-surface;
     margin-bottom: 6rpx;
@@ -221,7 +183,7 @@ function goToPage(url) {
 
   &__desc {
     display: block;
-    font-size: $font-sm;
+    font-size: 24rpx;
     color: $on-surface-variant;
   }
 
@@ -231,12 +193,8 @@ function goToPage(url) {
     gap: 6rpx;
     background: linear-gradient(135deg, #f5e6cc, #e8d5b0);
     padding: 4rpx 14rpx;
-    border-radius: $radius-full;
+    border-radius: 50px;
     margin-bottom: 6rpx;
-
-    &-icon {
-      font-size: 24rpx;
-    }
 
     &-text {
       font-size: 22rpx;
@@ -246,36 +204,8 @@ function goToPage(url) {
   }
 
   &__edit {
-    font-size: $font-sm;
+    font-size: 24rpx;
     color: $primary;
-  }
-}
-
-// 快捷入口
-.quick-actions {
-  display: flex;
-  justify-content: space-around;
-  padding: 24rpx;
-  margin: 0 24rpx 24rpx;
-  background: $surface-container-lowest;
-  border-radius: $radius-xl;
-  box-shadow: $shadow-sm;
-}
-
-.quick-action {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8rpx;
-
-  &__icon {
-    font-size: 48rpx;
-  }
-
-  &__label {
-    font-size: $font-xs;
-    color: $on-surface;
-    font-weight: 500;
   }
 }
 
@@ -285,7 +215,7 @@ function goToPage(url) {
 
   &__title {
     display: block;
-    font-size: $font-sm;
+    font-size: 24rpx;
     font-weight: 600;
     color: $on-surface-variant;
     margin-bottom: 12rpx;
@@ -293,8 +223,8 @@ function goToPage(url) {
   }
 
   &__card {
-    background: $surface-container-lowest;
-    border-radius: $radius-xl;
+    background: #ffffff;
+    border-radius: 16px;
     overflow: hidden;
     box-shadow: $shadow-sm;
   }
@@ -307,24 +237,13 @@ function goToPage(url) {
   gap: 20rpx;
 
   & + & {
-    border-top: 1rpx solid $surface-container;
-  }
-
-  &__icon {
-    font-size: 36rpx;
-    flex-shrink: 0;
+    border-top: 1rpx solid rgba(0, 0, 0, 0.04);
   }
 
   &__label {
     flex: 1;
-    font-size: $font-base;
+    font-size: 28rpx;
     color: $on-surface;
-  }
-
-  &__arrow {
-    font-size: $font-xl;
-    color: $on-surface-variant;
-    opacity: 0.5;
   }
 }
 </style>

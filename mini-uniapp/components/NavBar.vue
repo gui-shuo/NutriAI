@@ -1,7 +1,7 @@
 <script setup>
 /**
- * 自定义导航栏 - 适配状态栏高度
- * Digital Greenhouse 设计: 玻璃态 + 无边框
+ * 自定义导航栏 - 基于 uview-plus u-icon
+ * 保持原有 slot 接口，使用 u-icon 替换文字图标
  */
 import { ref, onMounted } from 'vue'
 
@@ -9,7 +9,7 @@ const props = defineProps({
   title: { type: String, default: '' },
   showBack: { type: Boolean, default: false },
   transparent: { type: Boolean, default: false },
-  bgColor: { type: String, default: '' },
+  bgColor: { type: String, default: '#ffffff' },
 })
 
 const statusBarHeight = ref(20)
@@ -34,7 +34,7 @@ function goBack() {
 <template>
   <view class="navbar-wrapper">
     <!-- 占位 -->
-    <view :style="{ height: statusBarHeight + navBarHeight + 'px' }"></view>
+    <view :style="{ height: statusBarHeight + navBarHeight + 'px' }" />
     <!-- 实际导航栏 -->
     <view
       class="navbar"
@@ -42,9 +42,7 @@ function goBack() {
       :style="{
         paddingTop: statusBarHeight + 'px',
         height: statusBarHeight + navBarHeight + 'px',
-        backgroundColor: bgColor || (transparent ? 'transparent' : '#ffffff'),
-        backdropFilter: 'none',
-        webkitBackdropFilter: 'none',
+        backgroundColor: transparent ? 'transparent' : bgColor,
       }"
     >
       <view class="navbar__content" :style="{ height: navBarHeight + 'px' }">
@@ -52,7 +50,7 @@ function goBack() {
         <view class="navbar__left" @tap="showBack && goBack()">
           <slot name="left">
             <view v-if="showBack" class="navbar__back">
-              <text class="navbar__back-icon">‹</text>
+              <u-icon name="arrow-left" size="20" color="#1a1c1a" />
             </view>
           </slot>
         </view>
@@ -64,7 +62,7 @@ function goBack() {
         </view>
         <!-- 右侧 -->
         <view class="navbar__right">
-          <slot name="right"></slot>
+          <slot name="right" />
         </view>
       </view>
     </view>
@@ -80,9 +78,11 @@ function goBack() {
   left: 0;
   right: 0;
   z-index: 100;
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.04);
 
   &--transparent {
     background: transparent !important;
+    border-bottom: none;
   }
 
   &__content {
@@ -108,14 +108,8 @@ function goBack() {
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: $radius-full;
-
-    &-icon {
-      font-size: 48rpx;
-      color: $on-surface;
-      font-weight: 300;
-      line-height: 1;
-    }
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.8);
   }
 
   &__center {
@@ -126,7 +120,7 @@ function goBack() {
   }
 
   &__title {
-    font-size: $font-lg;
+    font-size: 32rpx;
     font-weight: 700;
     color: $on-surface;
     letter-spacing: -0.02em;

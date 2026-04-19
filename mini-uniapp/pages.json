@@ -34,6 +34,13 @@
 			}
 		},
 		{
+			"path": "pages/meal/store-select",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "选择门店"
+			}
+		},
+		{
 			"path": "pages/shop/index",
 			"style": {
 				"navigationStyle": "custom",
@@ -109,9 +116,57 @@
 			}
 		},
 		{
+			"path": "pages/profile/merchant-chat",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "商家消息"
+			}
+		},
+		{
 			"path": "pages/auth/login",
 			"style": {
 				"navigationBarTitleText": "登录"
+			}
+		},
+		{
+			"path": "pages/auth/role-select",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "选择身份"
+			}
+		},
+		{
+			"path": "pages/merchant/orders",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "订单管理"
+			}
+		},
+		{
+			"path": "pages/merchant/messages",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "消息"
+			}
+		},
+		{
+			"path": "pages/merchant/store",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "店铺设置"
+			}
+		},
+		{
+			"path": "pages/merchant/profile",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "商家中心"
+			}
+		},
+		{
+			"path": "pages/merchant/order-detail",
+			"style": {
+				"navigationBarTitleText": "订单详情"
 			}
 		}
 	],
@@ -125,7 +180,7 @@
 	},
 	"tabBar": {
 		"color": "#707a6c",
-		"selectedColor": "#0d631b",
+		"selectedColor": "#0a6e2c",
 		"backgroundColor": "#ffffff",
 		"borderStyle": "white",
 		"list": [

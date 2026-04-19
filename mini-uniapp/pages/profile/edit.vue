@@ -78,7 +78,7 @@ async function save() {
     <scroll-view scroll-y class="content" :enhanced="true" :show-scrollbar="false">
       <!-- 头像 -->
       <view class="avatar-section" @tap="chooseAvatar">
-        <image class="avatar-img" :src="userStore.userAvatar" mode="aspectFill" />
+        <u-avatar :src="userStore.userAvatar" size="80" shape="circle" />
         <text class="avatar-hint">点击更换头像</text>
       </view>
 
@@ -116,9 +116,15 @@ async function save() {
       </view>
 
       <!-- 保存按钮 -->
-      <view class="save-btn" :class="{ 'save-btn--disabled': submitting }" @tap="save">
-        <text>{{ submitting ? '保存中...' : '保存修改' }}</text>
-      </view>
+      <u-button
+        :text="submitting ? '保存中...' : '保存修改'"
+        type="primary"
+        shape="circle"
+        color="#0a6e2c"
+        :loading="submitting"
+        :disabled="submitting"
+        @click="save"
+      />
 
       <view style="height: 60rpx;" />
     </scroll-view>
@@ -128,7 +134,7 @@ async function save() {
 <style lang="scss" scoped>
 @import '../../styles/design-system.scss';
 
-.page { min-height: 100vh; background: $surface; }
+.page { min-height: 100vh; background: #ffffff; overflow-x: hidden; width: 100%; }
 .content { padding: 24rpx; height: calc(100vh - 100px); }
 
 .avatar-section {

@@ -36,6 +36,9 @@ public class CosConfig {
     @Value("${tencent.cos.bucket:nutriai-assets}")
     private String bucket;
 
+    @Value("${tencent.cos.url:}")
+    private String cosUrl;
+
     @Value("${tencent.cos.custom-domain:}")
     private String customDomain;
 
@@ -79,24 +82,51 @@ public class CosConfig {
     }
 
     /**
-     * 获取COS访问域名
+     * 获取 COS 默认访问域名
      */
-    public String getCosBaseUrl() {
+    public String getDefaultCosBaseUrl() {
         return "https://" + bucket + ".cos." + region + ".myqcloud.com";
     }
 
     /**
-     * 获取COS下载域名（优先使用DB配置的自定义域名）
+     * 获取 COS 访问域名（优先使用 COS_URL，便于腾讯云内网智能解析）
+     */
+    public String getCosBaseUrl() {
+        String domain = dynamicConfig != null
+                ? dynamicConfig.getString("cos.url", "tencent.cos.url", cosUrl)
+                : cosUrl;
+        if (domain != null && !domain.isBlank()) {
+            return normalizeUrl(domain);
+        }
+        return getDefaultCosBaseUrl();
+    }
+
+    /**
+     * 获取 COS 下载域名（生产环境优先统一走 COS_URL，兼容历史自定义域名）
      */
     public String getDownloadBaseUrl() {
-        String domain = dynamicConfig != null
+        String primaryDomain = dynamicConfig != null
+                ? dynamicConfig.getString("cos.url", "tencent.cos.url", cosUrl)
+                : cosUrl;
+        if (primaryDomain != null && !primaryDomain.isBlank()) {
+            return normalizeUrl(primaryDomain);
+        }
+
+        String legacyDownloadDomain = dynamicConfig != null
                 ? dynamicConfig.getString("cos.custom_domain", "tencent.cos.custom-domain", customDomain)
                 : customDomain;
-        if (domain != null && !domain.isBlank()) {
-            String d = domain.trim();
-            if (!d.startsWith("http")) d = "https://" + d;
-            return d;
+        if (legacyDownloadDomain != null && !legacyDownloadDomain.isBlank()) {
+            return normalizeUrl(legacyDownloadDomain);
         }
-        return getCosBaseUrl();
+
+        return getDefaultCosBaseUrl();
+    }
+
+    private String normalizeUrl(String domain) {
+        String normalized = domain.trim();
+        if (!normalized.startsWith("http://") && !normalized.startsWith("https://")) {
+            normalized = "https://" + normalized;
+        }
+        return normalized.endsWith("/") ? normalized.substring(0, normalized.length() - 1) : normalized;
     }
 }

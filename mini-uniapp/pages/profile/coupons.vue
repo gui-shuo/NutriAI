@@ -48,24 +48,21 @@ onMounted(() => fetchCoupons())
   <view class="page">
     <NavBar showBack title="我的优惠券" />
 
-    <view class="tabs">
-      <view
-        v-for="(tab, idx) in tabs"
-        :key="idx"
-        class="tab"
-        :class="{ 'tab--active': activeTab === idx }"
-        @tap="switchTab(idx)"
-      >
-        <text>{{ tab }}</text>
-      </view>
-    </view>
+    <u-tabs
+      :list="tabs.map(t => ({ name: t }))"
+      :current="activeTab"
+      lineColor="#0a6e2c"
+      :activeStyle="{color: '#0a6e2c', fontWeight: '600'}"
+      :inactiveStyle="{color: '#666'}"
+      @click="(item) => switchTab(tabs.indexOf(item.name))"
+    />
 
     <scroll-view scroll-y class="content" :enhanced="true" :show-scrollbar="false">
-      <view v-if="loading" class="state-tip"><text>加载中...</text></view>
-      <view v-else-if="coupons.length === 0" class="state-tip">
-        <text class="state-tip__icon">🎫</text>
-        <text>暂无优惠券</text>
+      <view v-if="loading" class="state-tip">
+        <u-loading-icon mode="circle" size="28" color="#0a6e2c" />
+        <text style="margin-top: 16rpx;">加载中...</text>
       </view>
+      <u-empty v-else-if="coupons.length === 0" text="暂无优惠券" icon="coupon" mode="coupon" marginTop="80" />
 
       <view v-for="coupon in coupons" :key="coupon.id" class="coupon-card">
         <view class="coupon-card__left">
@@ -88,7 +85,7 @@ onMounted(() => fetchCoupons())
 <style lang="scss" scoped>
 @import '../../styles/design-system.scss';
 
-.page { min-height: 100vh; background: $surface; }
+.page { min-height: 100vh; background: #ffffff; overflow-x: hidden; width: 100%; }
 
 .tabs {
   display: flex;

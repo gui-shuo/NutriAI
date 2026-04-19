@@ -13,12 +13,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
+
 /**
- * 文件上传服务 - 腾讯云COS对象存储（未配置时回退到本地存储）
+ * 文件上传服务 - 腾讯云 COS 对象存储
  */
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -86,8 +90,9 @@ public class OssService {
     }
 
     /**
-     * 上传APK安装包到COS（通过自定义域名提供下载，绕过默认域名APK限制）
+     * 上传 APK 安装包到 COS（统一返回 COS_URL，依赖腾讯云智能 DNS）
      */
+
     public String uploadApk(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             throw new BusinessException("文件不能为空");
@@ -184,16 +189,19 @@ public class OssService {
      * 从URL中提取COS对象key（支持默认域名和自定义域名）
      */
     private String extractCosKey(String fileUrl) {
-        String cosBaseUrl = cosConfig.getCosBaseUrl();
-        String downloadBaseUrl = cosConfig.getDownloadBaseUrl();
-        if (fileUrl.startsWith(cosBaseUrl + "/")) {
-            return fileUrl.substring(cosBaseUrl.length() + 1);
-        }
-        if (!downloadBaseUrl.equals(cosBaseUrl) && fileUrl.startsWith(downloadBaseUrl + "/")) {
-            return fileUrl.substring(downloadBaseUrl.length() + 1);
+        Set<String> baseUrls = new LinkedHashSet<>(Arrays.asList(
+                cosConfig.getCosBaseUrl(),
+                cosConfig.getDownloadBaseUrl(),
+                cosConfig.getDefaultCosBaseUrl()
+        ));
+        for (String baseUrl : baseUrls) {
+            if (baseUrl != null && !baseUrl.isBlank() && fileUrl.startsWith(baseUrl + "/")) {
+                return fileUrl.substring(baseUrl.length() + 1);
+            }
         }
         return null;
     }
+
 
     /**
      * 流式下载文件（支持本地文件、COS默认域名URL和自定义域名URL）

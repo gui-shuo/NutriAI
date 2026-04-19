@@ -288,6 +288,26 @@ public class AuthService {
                 .userInfo(LoginResponse.UserInfo.fromUser(user))
                 .build();
     }
+
+    /**
+     * 商家登录（复用普通登录逻辑，额外确保用户有MERCHANT角色）
+     */
+    @Transactional
+    public LoginResponse merchantLogin(LoginRequest request, String ipAddress) {
+        LoginResponse response = login(request, ipAddress);
+
+        // 检查用户是否拥有MERCHANT角色
+        String role = response.getUserInfo().getRole();
+        boolean hasMerchantRole = role != null &&
+                java.util.Arrays.stream(role.split(","))
+                        .anyMatch(r -> "MERCHANT".equalsIgnoreCase(r.trim()));
+
+        if (!hasMerchantRole) {
+            throw new BusinessException(403, "该账号不是商家账号，请使用商家账号登录");
+        }
+
+        return response;
+    }
     
     /**
      * 退出登录

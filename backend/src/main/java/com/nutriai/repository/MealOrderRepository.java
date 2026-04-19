@@ -30,4 +30,16 @@ public interface MealOrderRepository extends JpaRepository<MealOrder, Long> {
     long countByOrderStatus(@Param("status") String status);
 
     Optional<MealOrder> findByPickupCode(String pickupCode);
+
+    // Merchant queries
+    Page<MealOrder> findByMerchantIdOrderByCreatedAtDesc(Long merchantId, Pageable pageable);
+
+    Page<MealOrder> findByMerchantIdAndOrderStatusOrderByCreatedAtDesc(Long merchantId, String orderStatus, Pageable pageable);
+
+    @Query("SELECT COUNT(o) FROM MealOrder o WHERE o.merchantId = :merchantId AND o.orderStatus = :status")
+    long countByMerchantIdAndOrderStatus(@Param("merchantId") Long merchantId, @Param("status") String status);
+
+    Optional<MealOrder> findByOrderNoAndMerchantId(String orderNo, Long merchantId);
+
+    Optional<MealOrder> findByPickupCodeAndMerchantId(String pickupCode, Long merchantId);
 }

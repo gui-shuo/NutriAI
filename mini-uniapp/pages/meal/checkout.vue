@@ -2,7 +2,7 @@
 /**
  * 营养餐下单/结算页
  */
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import NavBar from '../../components/NavBar.vue'
 import { mealApi } from '../../services/api'
 import { useUserStore } from '../../stores/user'
@@ -17,7 +17,9 @@ const pickupTime = ref('')
 const remark = ref('')
 const loading = ref(false)
 const submitting = ref(false)
-const currentStore = ref({ name: 'NutriAI 旗舰店' })
+
+// 门店选择
+const selectedStore = ref(null)
 
 const totalPrice = computed(() => {
   if (!meal.value) return 0
@@ -38,7 +40,18 @@ onMounted(() => {
   const page = pages[pages.length - 1]
   mealId.value = page.options?.id || ''
   fetchDetail()
+
+  // 监听门店选择事件
+  uni.$on('store-selected', onStoreSelected)
 })
+
+onUnmounted(() => {
+  uni.$off('store-selected', onStoreSelected)
+})
+
+function onStoreSelected(store) {
+  selectedStore.value = store
+}
 
 async function fetchDetail() {
   loading.value = true
@@ -59,17 +72,20 @@ async function fetchDetail() {
   }
 }
 
-function changeQty(delta) {
-  const next = quantity.value + delta
-  if (next >= 1 && next <= 99) quantity.value = next
-}
-
 function selectTime(t) {
   pickupTime.value = t
 }
 
+function goSelectStore() {
+  uni.navigateTo({ url: '/pages/meal/store-select' })
+}
+
 async function submitOrder() {
   if (!checkLogin()) return
+  if (!selectedStore.value) {
+    uni.showToast({ title: '请选择取餐门店', icon: 'none' })
+    return
+  }
   if (!pickupTime.value) {
     uni.showToast({ title: '请选择取餐时间', icon: 'none' })
     return
@@ -80,7 +96,9 @@ async function submitOrder() {
       items: [{ mealItemId: Number(mealId.value), quantity: quantity.value }],
       fulfillmentType: 'PICKUP',
       pickupTime: pickupTime.value,
-      pickupLocation: currentStore.value?.name || 'NutriAI 旗舰店',
+      pickupLocation: selectedStore.value.address || selectedStore.value.name,
+      merchantId: selectedStore.value.id,
+      merchantName: selectedStore.value.name,
       remark: remark.value,
     })
     uni.showToast({ title: '下单成功', icon: 'success' })
@@ -102,10 +120,13 @@ async function submitOrder() {
     <scroll-view scroll-y class="content" :enhanced="true" :show-scrollbar="false">
       <!-- 餐品信息 -->
       <view v-if="meal" class="meal-info">
-        <image
-          class="meal-info__image"
+        <u-image
           :src="cosUrl(meal.image) || '/static/images/meal-placeholder.png'"
+          width="180rpx"
+          height="180rpx"
           mode="aspectFill"
+          radius="12"
+          :lazy-load="true"
         />
         <view class="meal-info__text">
           <text class="meal-info__name">{{ meal.name }}</text>
@@ -114,33 +135,44 @@ async function submitOrder() {
         </view>
       </view>
 
+      <!-- 门店选择 -->
+      <view class="section store-section" @tap="goSelectStore">
+        <view class="store-section__left">
+          <u-icon name="home" size="20" color="#0a6e2c" />
+          <view class="store-section__info">
+            <text class="store-section__label">取餐门店</text>
+            <text v-if="selectedStore" class="store-section__name">{{ selectedStore.name }}</text>
+            <text v-if="selectedStore" class="store-section__addr">{{ selectedStore.address }}</text>
+            <text v-else class="store-section__placeholder">点击选择取餐门店</text>
+          </view>
+        </view>
+        <view class="store-section__right">
+          <text v-if="selectedStore && selectedStore.distanceText" class="store-section__dist">{{ selectedStore.distanceText }}</text>
+          <u-icon name="arrow-right" size="16" color="#ccc" />
+        </view>
+      </view>
+
       <!-- 数量 -->
       <view class="section">
         <text class="section__title">数量</text>
-        <view class="qty-control">
-          <view class="qty-btn" @tap="changeQty(-1)">
-            <text>−</text>
-          </view>
-          <text class="qty-value">{{ quantity }}</text>
-          <view class="qty-btn" @tap="changeQty(1)">
-            <text>+</text>
-          </view>
-        </view>
+        <u-number-box v-model="quantity" :min="1" :max="99" buttonSize="30" bgColor="#f5f5f5" />
       </view>
 
       <!-- 取餐时间 -->
       <view class="section">
         <text class="section__title">取餐时间</text>
         <view class="time-slots">
-          <view
+          <u-tag
             v-for="(t, idx) in timeSlots"
             :key="idx"
-            class="time-slot"
-            :class="{ 'time-slot--active': pickupTime === t }"
-            @tap="selectTime(t)"
-          >
-            <text class="time-slot__text">{{ t }}</text>
-          </view>
+            :text="t"
+            :plain="pickupTime !== t"
+            :color="pickupTime === t ? '#ffffff' : '#333'"
+            :bgColor="pickupTime === t ? '#0a6e2c' : '#f5f5f5'"
+            :borderColor="pickupTime === t ? '#0a6e2c' : '#e0e0e0'"
+            size="medium"
+            @click="selectTime(t)"
+          />
         </view>
       </view>
 
@@ -165,13 +197,16 @@ async function submitOrder() {
         <text class="order-bar__label">合计</text>
         <text class="order-bar__price">¥{{ formatPrice(totalPrice) }}</text>
       </view>
-      <view
-        class="order-bar__btn"
-        :class="{ 'order-bar__btn--disabled': submitting }"
-        @tap="submitOrder"
-      >
-        <text>{{ submitting ? '提交中...' : '立即下单' }}</text>
-      </view>
+      <u-button
+        :text="submitting ? '提交中...' : '立即下单'"
+        type="primary"
+        shape="circle"
+        color="#0a6e2c"
+        :loading="submitting"
+        :disabled="submitting"
+        @click="submitOrder"
+        :customStyle="{padding: '20rpx 48rpx'}"
+      />
     </view>
   </view>
 </template>
@@ -181,7 +216,9 @@ async function submitOrder() {
 
 .page {
   min-height: 100vh;
-  background: $surface;
+  background: #ffffff;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 .content {
@@ -245,6 +282,68 @@ async function submitOrder() {
     font-weight: 600;
     color: $on-surface;
     margin-bottom: 16rpx;
+  }
+}
+
+// 门店选择
+.store-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &__left {
+    display: flex;
+    align-items: flex-start;
+    gap: 16rpx;
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__label {
+    display: block;
+    font-size: 24rpx;
+    color: #999;
+    margin-bottom: 6rpx;
+  }
+
+  &__name {
+    display: block;
+    font-size: 28rpx;
+    font-weight: 600;
+    color: $on-surface;
+    margin-bottom: 4rpx;
+  }
+
+  &__addr {
+    display: block;
+    font-size: 24rpx;
+    color: #888;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__placeholder {
+    font-size: 28rpx;
+    color: #bbb;
+  }
+
+  &__right {
+    display: flex;
+    align-items: center;
+    gap: 8rpx;
+    flex-shrink: 0;
+  }
+
+  &__dist {
+    font-size: 24rpx;
+    color: $primary;
+    font-weight: 600;
   }
 }
 

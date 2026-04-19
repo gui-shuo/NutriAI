@@ -107,8 +107,17 @@ public class MealController {
         String receiverAddress = getStringField(body, "receiverAddress", "address", "");
         String remark = getStringField(body, "remark", "notes", "");
 
+        // 门店信息
+        Long merchantId = null;
+        Object merchantIdObj = body.get("merchantId");
+        if (merchantIdObj != null) {
+            merchantId = Long.valueOf(merchantIdObj.toString());
+        }
+        String merchantName = getStringField(body, "merchantName", null, null);
+
         return ApiResponse.success(mealService.createOrder(userId, items, fulfillmentType,
-                pickupTime, pickupLocation, receiverName, receiverPhone, receiverAddress, remark));
+                pickupTime, pickupLocation, receiverName, receiverPhone, receiverAddress, remark,
+                merchantId, merchantName));
     }
 
     /**

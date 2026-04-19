@@ -88,7 +88,9 @@ public class SystemConfigInitializer implements ApplicationRunner {
         add(list, "cos.secret_key",      env("COS_SECRET_KEY", ""),                       "string", "腾讯云COS SecretKey",      "存储",   false);
         add(list, "cos.region",          env("COS_REGION", "ap-beijing"),                 "string", "COS存储区域",              "存储",   false);
         add(list, "cos.bucket",          env("COS_BUCKET", ""),                           "string", "COS存储桶名称",            "存储",   false);
+        add(list, "cos.url",             env("COS_URL", ""),                              "string", "COS访问地址",              "存储",   false);
         add(list, "cos.custom_domain",   env("COS_CUSTOM_DOMAIN", ""),                    "string", "COS自定义加速域名",        "存储",   false);
+
 
         // ─── 百度AI识别 ───
         add(list, "baidu.app_id",        env("BAIDU_AI_APP_ID", ""),                      "string", "百度AI应用ID",             "食物识别", false);
@@ -151,8 +153,9 @@ public class SystemConfigInitializer implements ApplicationRunner {
         add(list, "diet.daily_calorie_max",        "3000",                                "number", "每日最高热量(kcal)",       "饮食计划", true);
 
         // ─── 数据库 ───
-        add(list, "db.host",             env("DB_HOST", ""),                              "string", "数据库主机",               "数据库", false);
-        add(list, "db.port",             env("DB_PORT", "3306"),                          "number", "数据库端口",               "数据库", false);
+        add(list, "db.host",             env("DB_HOST_NEI", env("DB_HOST", "")),         "string", "数据库主机（生产请填内网IP）", "数据库", false);
+        add(list, "db.port",             env("DB_PORT_NEI", env("DB_PORT", "3306")),     "number", "数据库端口（生产请填内网端口）", "数据库", false);
+
         add(list, "db.name",             env("DB_NAME", "nutriai"),                       "string", "数据库名称",               "数据库", false);
         add(list, "db.username",         env("DB_USERNAME", ""),                          "string", "数据库用户名",             "数据库", false);
         add(list, "db.password",         env("DB_PASSWORD", ""),                          "string", "数据库密码",               "数据库", false);

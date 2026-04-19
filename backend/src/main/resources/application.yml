@@ -114,7 +114,9 @@ tencent:
     secret-key: ${COS_SECRET_KEY:}
     region: ${COS_REGION:ap-beijing}
     bucket: ${COS_BUCKET:nutriai-assets}
+    url: ${COS_URL:}
     custom-domain: ${COS_CUSTOM_DOMAIN:}
+
   # 腾讯云即时通信IM配置
   im:
     sdk-app-id: ${SDKAppID:0}

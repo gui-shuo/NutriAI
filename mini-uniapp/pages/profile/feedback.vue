@@ -46,15 +46,18 @@ async function submit() {
       <view class="section">
         <text class="section__title">反馈类型</text>
         <view class="type-tags">
-          <view
+          <u-tag
             v-for="(t, idx) in types"
             :key="idx"
-            class="type-tag"
-            :class="{ 'type-tag--active': selectedType === idx }"
-            @tap="selectedType = idx"
-          >
-            <text>{{ t }}</text>
-          </view>
+            :text="t"
+            :plain="selectedType !== idx"
+            :color="selectedType === idx ? '#ffffff' : '#333'"
+            :bgColor="selectedType === idx ? '#0a6e2c' : '#f5f5f5'"
+            :borderColor="selectedType === idx ? '#0a6e2c' : '#e0e0e0'"
+            size="medium"
+            shape="circle"
+            @click="selectedType = idx"
+          />
         </view>
       </view>
 
@@ -77,9 +80,16 @@ async function submit() {
       </view>
 
       <!-- 提交按钮 -->
-      <view class="submit-btn" :class="{ 'submit-btn--disabled': submitting }" @tap="submit">
-        <text>{{ submitting ? '提交中...' : '提交反馈' }}</text>
-      </view>
+      <u-button
+        :text="submitting ? '提交中...' : '提交反馈'"
+        type="primary"
+        shape="circle"
+        color="#0a6e2c"
+        :loading="submitting"
+        :disabled="submitting"
+        @click="submit"
+        :customStyle="{marginTop: '16rpx'}"
+      />
     </scroll-view>
   </view>
 </template>
@@ -87,7 +97,7 @@ async function submit() {
 <style lang="scss" scoped>
 @import '../../styles/design-system.scss';
 
-.page { min-height: 100vh; background: $surface; }
+.page { min-height: 100vh; background: #ffffff; overflow-x: hidden; width: 100%; }
 .content { padding: 24rpx; height: calc(100vh - 100px); }
 
 .section {

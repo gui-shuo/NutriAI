@@ -95,7 +95,10 @@ public class SecurityConfig {
                                 "/meal-plans/by-tag",  // 按标签搜索（公开）
                                 "/meal-plans/recommendations",  // 推荐（公开）
                                 "/meal-plans/*/ratings",  // 评价列表（公开）
-                                "/meal-plans/*"  // 营养餐详情（公开）
+                                "/meal-plans/*",  // 营养餐详情（公开）
+                                "/merchants/nearby",  // 附近门店（公开）
+                                "/merchants/active",  // 营业门店列表（公开）
+                                "/merchants/*"  // 门店详情（公开）
                         ).permitAll()
                         
                         // 其他所有请求都需要认证

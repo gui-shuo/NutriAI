@@ -65,7 +65,8 @@ function onSwiperChange(e) {
     <NavBar showBack transparent />
 
     <view v-if="loading" class="loading">
-      <text>加载中...</text>
+      <u-loading-icon mode="circle" size="28" color="#0a6e2c" />
+      <text style="margin-top: 16rpx; color: #666;">加载中...</text>
     </view>
 
     <view v-else-if="product" class="detail">
@@ -80,17 +81,20 @@ function onSwiperChange(e) {
           @change="onSwiperChange"
         >
           <swiper-item v-if="!product.images || product.images.length === 0">
-            <image
-              class="gallery__image"
+            <u-image
               src="/static/images/product-placeholder.png"
+              width="100%"
+              height="680rpx"
               mode="aspectFill"
             />
           </swiper-item>
           <swiper-item v-for="(img, idx) in product.images" :key="idx">
-            <image
-              class="gallery__image"
+            <u-image
               :src="cosUrl(img)"
+              width="100%"
+              height="680rpx"
               mode="aspectFill"
+              :lazy-load="true"
             />
           </swiper-item>
         </swiper>
@@ -114,7 +118,7 @@ function onSwiperChange(e) {
             </text>
           </view>
           <view v-if="product.tag" class="product-tag">
-            <text class="product-tag__text">{{ product.tag }}</text>
+            <u-tag :text="product.tag" size="mini" color="#0a6e2c" bgColor="#e8f5e9" borderColor="#e8f5e9" />
           </view>
         </view>
 
@@ -135,17 +139,13 @@ function onSwiperChange(e) {
       <view class="action-bar safe-bottom">
         <view class="action-bar__left">
           <view class="action-bar__icon-btn" @tap="() => uni.navigateTo({ url: '/pages/shop/cart' })">
-            <text style="font-size: 40rpx;">🛒</text>
+            <u-icon name="shopping-cart" size="24" color="#333" />
             <text class="action-bar__icon-label">购物车</text>
           </view>
         </view>
         <view class="action-bar__buttons">
-          <view class="action-bar__btn action-bar__btn--cart" @tap="addToCart">
-            <text>加入购物车</text>
-          </view>
-          <view class="action-bar__btn action-bar__btn--buy" @tap="buyNow">
-            <text>立即购买</text>
-          </view>
+          <u-button text="加入购物车" shape="circle" size="normal" color="#e8f5e9" :customStyle="{color: '#0a6e2c', fontWeight: '600'}" @click="addToCart" />
+          <u-button text="立即购买" type="primary" shape="circle" size="normal" color="#0a6e2c" @click="buyNow" />
         </view>
       </view>
     </view>
@@ -157,14 +157,19 @@ function onSwiperChange(e) {
 
 .page {
   min-height: 100vh;
-  background: $surface;
+  background: #ffffff;
   padding-bottom: 160rpx;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 .loading {
   padding: 200rpx 0;
   text-align: center;
   color: $on-surface-variant;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 // 图片轮播

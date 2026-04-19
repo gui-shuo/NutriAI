@@ -43,11 +43,11 @@ onMounted(() => fetchNotifications())
     <NavBar showBack title="消息通知" />
 
     <scroll-view scroll-y class="content" :enhanced="true" :show-scrollbar="false">
-      <view v-if="loading" class="state-tip"><text>加载中...</text></view>
-      <view v-else-if="notifications.length === 0" class="state-tip">
-        <text class="state-tip__icon">🔔</text>
-        <text>暂无消息</text>
+      <view v-if="loading" class="state-tip">
+        <u-loading-icon mode="circle" size="28" color="#0a6e2c" />
+        <text style="margin-top: 16rpx;">加载中...</text>
       </view>
+      <u-empty v-else-if="notifications.length === 0" text="暂无消息" icon="bell" mode="message" marginTop="80" />
 
       <view v-for="item in notifications" :key="item.id" class="notif-card">
         <view class="notif-card__header">
@@ -66,7 +66,7 @@ onMounted(() => fetchNotifications())
 <style lang="scss" scoped>
 @import '../../styles/design-system.scss';
 
-.page { min-height: 100vh; background: $surface; }
+.page { min-height: 100vh; background: #ffffff; overflow-x: hidden; width: 100%; }
 .content { padding: 24rpx; height: calc(100vh - 100px); }
 
 .state-tip {

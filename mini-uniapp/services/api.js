@@ -7,6 +7,7 @@ import { get, post, put, del, uploadFile } from '../utils/request'
 // ==================== 认证 ====================
 export const authApi = {
   login: (data) => post('/auth/login', data),
+  merchantLogin: (data) => post('/auth/merchant-login', data),
   wxLogin: (data) => post('/auth/wx-login', data),
   register: (data) => post('/auth/register', data),
   refresh: (data) => post('/auth/refresh', data),
@@ -120,6 +121,18 @@ export const publicApi = {
   healthCheck: () => get('/health'),
 }
 
+// ==================== 门店/商家 ====================
+export const merchantApi = {
+  /** 获取附近门店（按距离排序） */
+  getNearby: (latitude, longitude, limit = 10) =>
+    get('/merchants/nearby', { latitude, longitude, limit }),
+  /** 获取所有营业中门店 */
+  getActive: () => get('/merchants/active'),
+  /** 获取门店详情（可选带距离） */
+  getDetail: (id, latitude, longitude) =>
+    get(`/merchants/${id}`, latitude ? { latitude, longitude } : {}),
+}
+
 // ==================== 食物 ====================
 export const foodApi = {
   search: (params) => get('/food/search', params),
@@ -135,4 +148,36 @@ export const foodRecordApi = {
   delete: (id) => del(`/food/records/${id}`),
   getStats: (params) => get('/food/stats', params),
   uploadPhoto: (filePath) => uploadFile({ url: '/food/photo', filePath }),
+}
+
+// ==================== 商家端 ====================
+export const merchantOrderApi = {
+  getOrders: (params) => get('/merchant/orders', params),
+  getDetail: (orderNo) => get(`/merchant/orders/${orderNo}`),
+  acceptOrder: (orderNo) => post(`/merchant/orders/${orderNo}/accept`),
+  markReady: (orderNo) => post(`/merchant/orders/${orderNo}/ready`),
+  verifyPickup: (pickupCode) => post('/merchant/orders/verify-pickup', { pickupCode }),
+  getStats: () => get('/merchant/orders/stats'),
+}
+
+export const merchantStoreApi = {
+  getMyStore: () => get('/merchant/store'),
+  updateStore: (data) => put('/merchant/store', data),
+  updateBusinessStatus: (status) => put('/merchant/store/business-status', { status }),
+}
+
+export const merchantMessageApi = {
+  getConversations: () => get('/merchant/messages/conversations'),
+  getHistory: (params) => get('/merchant/messages/history', params),
+  send: (data) => post('/merchant/messages/send', data),
+  markRead: (data) => post('/merchant/messages/read', data),
+  getUnreadCount: () => get('/merchant/messages/unread-count'),
+}
+
+export const userMessageApi = {
+  getConversations: () => get('/user/messages/conversations'),
+  getHistory: (params) => get('/user/messages/history', params),
+  send: (data) => post('/user/messages/send', data),
+  markRead: (data) => post('/user/messages/read', data),
+  getUnreadCount: () => get('/user/messages/unread-count'),
 }

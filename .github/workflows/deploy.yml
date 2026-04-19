@@ -1,235 +1,192 @@
-name: Deploy to Production
+name: Deploy to Tencent Cloud
 
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - 'v*'
 
 permissions:
   contents: read
 
 concurrency:
-  group: deploy-${{ github.ref }}
-  cancel-in-progress: true
+  group: deploy-production
+  cancel-in-progress: false
+
+env:
+  TCR_REGISTRY: ccr.ccs.tencentyun.com
+  DEPLOY_DIR: /www/wwwroot/nutriai
+  COMPOSE_FILE: docker-compose.prod.yml
 
 jobs:
   deploy:
-    name: 构建推送镜像并部署到云服务器
+    name: 构建时间戳镜像并部署到腾讯云
     runs-on: ubuntu-latest
 
     steps:
-      # ==================== 1. 代码检出 ====================
-      - name: 📥 Checkout代码
+      - name: Checkout 代码
         uses: actions/checkout@v5
 
-      # ==================== 2. 生成镜像标签 ====================
-      - name: 🏷️ 生成镜像标签
+      - name: 生成时间戳镜像标签
         run: |
-          echo "==> 当前构建信息:"
-          echo "    Commit SHA: ${GITHUB_SHA}"
-          echo "    Ref: ${GITHUB_REF}"
-          echo "    最新提交: $(git log --oneline -1)"
-          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-            echo "IMAGE_TAG=${GITHUB_REF_NAME}" >> "$GITHUB_ENV"
-          else
-            echo "IMAGE_TAG=${GITHUB_SHA::7}" >> "$GITHUB_ENV"
+          echo "IMAGE_TAG=$(TZ=Asia/Shanghai date +'%Y%m%d%H%M%S')" >> "$GITHUB_ENV"
+          echo "最新提交: $(git log --oneline -1)"
+
+      - name: 校验镜像标签策略
+        run: |
+          if [ -z "${IMAGE_TAG}" ] || [ "${IMAGE_TAG}" = "latest" ]; then
+            echo "ERROR: 镜像标签必须为时间戳，禁止使用 latest" >&2
+            exit 1
           fi
 
-      # ==================== 3. 设置Docker Buildx ====================
-      - name: 🔧 设置Docker Buildx
-        uses: docker/setup-buildx-action@v4
+      - name: 设置 Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      # ==================== 4. 登录腾讯云 CCR ====================
-      - name: 🔐 登录腾讯云容器镜像服务
-        uses: docker/login-action@v4
+      - name: 登录腾讯云 TCR
+        uses: docker/login-action@v3
         with:
-          registry: hkccr.ccs.tencentyun.com
+          registry: ${{ env.TCR_REGISTRY }}
           username: ${{ secrets.TCR_USERNAME }}
           password: ${{ secrets.TCR_PASSWORD }}
 
-      # ==================== 5. 构建并推送后端镜像 ====================
-      - name: 🐳 构建并推送后端镜像
+      - name: 构建并推送后端镜像
         uses: docker/build-push-action@v6
         with:
           context: ./backend
           push: true
           platforms: linux/amd64
-          no-cache: true
-          tags: |
-            hkccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}/nutriai-backend:${{ env.IMAGE_TAG }}
-            hkccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}/nutriai-backend:latest
+          provenance: false
+          sbom: false
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,mode=max,scope=backend
+          tags: ${{ env.TCR_REGISTRY }}/${{ secrets.TCR_NAMESPACE }}/nutriai-backend:${{ env.IMAGE_TAG }}
 
-      # ==================== 6. 构建并推送前端镜像 ====================
-      - name: 🐳 构建并推送前端镜像
+      - name: 构建并推送前端镜像
         uses: docker/build-push-action@v6
         with:
           context: ./frontend
           push: true
           platforms: linux/amd64
-          no-cache: true
-          tags: |
-            hkccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}/nutriai-frontend:${{ env.IMAGE_TAG }}
-            hkccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}/nutriai-frontend:latest
+          provenance: false
+          sbom: false
+          cache-from: type=gha,scope=frontend
+          cache-to: type=gha,mode=max,scope=frontend
+          tags: ${{ env.TCR_REGISTRY }}/${{ secrets.TCR_NAMESPACE }}/nutriai-frontend:${{ env.IMAGE_TAG }}
 
-      # ==================== 7. 上传docker-compose到服务器 ====================
-      - name: 📤 上传docker-compose到服务器
+      - name: 上传生产 Compose 配置到腾讯云服务器
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          source: "docker-compose.prod.yml"
-          target: "/www/wwwroot/nutriai"
+          source: docker-compose.prod.yml
+          target: ${{ env.DEPLOY_DIR }}
           overwrite: true
 
-      # ==================== 8. SSH部署到服务器 ====================
-      - name: 🚀 拉取镜像并启动容器
-        uses: appleboy/ssh-action@v1.0.3
+      - name: 拉取最新镜像并重启腾讯云容器
+        uses: appleboy/ssh-action@v1.2.0
         env:
           IMAGE_TAG: ${{ env.IMAGE_TAG }}
+          TCR_REGISTRY: ${{ env.TCR_REGISTRY }}
+          TCR_NAMESPACE: ${{ secrets.TCR_NAMESPACE }}
           TCR_USERNAME: ${{ secrets.TCR_USERNAME }}
           TCR_PASSWORD: ${{ secrets.TCR_PASSWORD }}
-          TCR_NAMESPACE: ${{ secrets.TCR_NAMESPACE }}
+          DEPLOY_DIR: ${{ env.DEPLOY_DIR }}
+          COMPOSE_FILE: ${{ env.COMPOSE_FILE }}
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          envs: IMAGE_TAG,TCR_USERNAME,TCR_PASSWORD,TCR_NAMESPACE
-          script_stop: false
-          command_timeout: 60m
+          envs: IMAGE_TAG,TCR_REGISTRY,TCR_NAMESPACE,TCR_USERNAME,TCR_PASSWORD,DEPLOY_DIR,COMPOSE_FILE
+          script_stop: true
+          command_timeout: 90m
           script: |
-            echo "============================================"
-            echo "开始部署 NutriAI 项目"
-            echo "部署时间: $(date '+%Y-%m-%d %H:%M:%S')"
-            echo "镜像标签: ${IMAGE_TAG}"
-            echo "============================================"
+            set -e
 
-            cd /www/wwwroot/nutriai
+            require_env() {
+              local key="$1"
+              local current_value
+              current_value="$(grep -E "^${key}=" .env 2>/dev/null | tail -n 1 | cut -d= -f2-)"
+              if [ -z "$current_value" ]; then
+                echo "ERROR: 服务器 .env 缺少 ${key} 配置" >&2
+                exit 1
+              fi
+            }
+
+            upsert_env() {
+              local key="$1"
+              local value="$2"
+              if grep -q "^${key}=" .env 2>/dev/null; then
+                sed -i "s|^${key}=.*|${key}=${value}|" .env
+              else
+                printf '%s=%s\n' "$key" "$value" >> .env
+              fi
+            }
+
+            retry_pull() {
+              local image="$1"
+              local attempt=1
+              while [ "$attempt" -le 3 ]; do
+                echo "拉取镜像 ${image}，第 ${attempt} 次尝试..."
+                if docker pull "$image"; then
+                  return 0
+                fi
+                attempt=$((attempt + 1))
+                sleep 10
+              done
+              return 1
+            }
+
+            if [ -z "$IMAGE_TAG" ] || [ "$IMAGE_TAG" = "latest" ]; then
+              echo "ERROR: 镜像标签必须为时间戳，禁止使用 latest" >&2
+              exit 1
+            fi
+
+            mkdir -p "$DEPLOY_DIR"
+            cd "$DEPLOY_DIR"
 
             if [ ! -f .env ]; then
-              echo "ERROR: .env 文件不存在" && exit 1
+              echo "ERROR: 服务器缺少 .env 文件，请先准备运行时配置" >&2
+              exit 1
             fi
 
-            sed -i "s|^TCR_NAMESPACE=.*|TCR_NAMESPACE=${TCR_NAMESPACE}|" .env
+            require_env DB_HOST_NEI
+            require_env DB_PORT_NEI
+            require_env COS_URL
+
+            upsert_env IMAGE_TAG "$IMAGE_TAG"
+            upsert_env TCR_REGISTRY "$TCR_REGISTRY"
+            upsert_env TCR_NAMESPACE "$TCR_NAMESPACE"
             chmod 600 .env
-            echo "==> .env 已更新"
 
-            # 登录腾讯云 CCR
-            echo "==> 登录腾讯云 CCR..."
-            echo "${TCR_PASSWORD}" | docker login hkccr.ccs.tencentyun.com -u "${TCR_USERNAME}" --password-stdin
-            if [ $? -ne 0 ]; then
-              echo "ERROR: 登录 CCR 失败" && exit 1
+            echo "$TCR_PASSWORD" | docker login "$TCR_REGISTRY" -u "$TCR_USERNAME" --password-stdin
+
+            COMPOSE_CMD="docker compose"
+            if ! docker compose version >/dev/null 2>&1; then
+              COMPOSE_CMD="docker-compose"
             fi
 
-            # 检测 docker compose 命令
-            COMPOSE_CMD=""
-            docker compose version >/dev/null 2>&1 && COMPOSE_CMD="docker compose"
-            if [ -z "$COMPOSE_CMD" ]; then
-              docker-compose version >/dev/null 2>&1 && COMPOSE_CMD="docker-compose"
-            fi
-            if [ -z "$COMPOSE_CMD" ]; then
-              echo "==> 安装 docker-compose-plugin..."
-              apt-get update -y -qq && apt-get install -y -qq docker-compose-plugin
-              COMPOSE_CMD="docker compose"
-            fi
-            echo "==> 使用: $COMPOSE_CMD"
+            BACKEND_IMAGE="${TCR_REGISTRY}/${TCR_NAMESPACE}/nutriai-backend:${IMAGE_TAG}"
+            FRONTEND_IMAGE="${TCR_REGISTRY}/${TCR_NAMESPACE}/nutriai-frontend:${IMAGE_TAG}"
 
-            # ⚠️ 安全：记录 Inspo-Verse 容器状态（部署前）
-            echo "==> [安全检查] 部署前 Inspo-Verse 容器状态："
-            docker ps --filter "name=inspo" --format "  {{.Names}}  {{.Status}}  {{.Ports}}" || true
-            echo ""
+            retry_pull "$BACKEND_IMAGE"
+            retry_pull "$FRONTEND_IMAGE"
 
-            # 停止正在运行的旧容器
-            # ✅ 使用 -p nutriai 精确限定项目范围，不会影响 Inspo-Verse
-            echo "==> 停止 nutriai 旧容器..."
-            $COMPOSE_CMD -p nutriai -f docker-compose.prod.yml down 2>/dev/null || true
+            $COMPOSE_CMD -p nutriai -f "$COMPOSE_FILE" down --remove-orphans || true
+            docker container prune -f >/dev/null 2>&1 || true
+            $COMPOSE_CMD -p nutriai -f "$COMPOSE_FILE" up -d --force-recreate
+            $COMPOSE_CMD -p nutriai -f "$COMPOSE_FILE" ps
 
-            # 清理 nutriai 旧镜像（仅删除 nutriai 镜像，不使用 docker image prune）
-            echo "==> 清理 nutriai 旧镜像..."
-            docker rmi "hkccr.ccs.tencentyun.com/${TCR_NAMESPACE}/nutriai-backend:latest" 2>/dev/null || true
-            docker rmi "hkccr.ccs.tencentyun.com/${TCR_NAMESPACE}/nutriai-frontend:latest" 2>/dev/null || true
+            docker image ls "${TCR_REGISTRY}/${TCR_NAMESPACE}/nutriai-backend" --format '{{.Repository}}:{{.Tag}}' | grep -v ":${IMAGE_TAG}$" | xargs -r docker rmi -f || true
+            docker image ls "${TCR_REGISTRY}/${TCR_NAMESPACE}/nutriai-frontend" --format '{{.Repository}}:{{.Tag}}' | grep -v ":${IMAGE_TAG}$" | xargs -r docker rmi -f || true
+            docker image prune -f >/dev/null 2>&1 || true
+            docker logout "$TCR_REGISTRY" || true
 
-            # 拉取后端镜像（重试3次）
-            echo "==> 拉取后端镜像..."
-            BACKEND_IMG="hkccr.ccs.tencentyun.com/${TCR_NAMESPACE}/nutriai-backend:latest"
-            PULL_OK=false
-            ATTEMPT=0
-            while [ "$ATTEMPT" -lt 3 ]; do
-              ATTEMPT=$((ATTEMPT + 1))
-              echo "    第 ${ATTEMPT} 次尝试..."
-              docker pull "$BACKEND_IMG" && PULL_OK=true && break
-              echo "    失败，等待10秒..." && sleep 10
-            done
-            if [ "$PULL_OK" != "true" ]; then
-              echo "ERROR: 后端镜像拉取失败" && exit 1
-            fi
-
-            # 拉取前端镜像（重试3次）
-            echo "==> 拉取前端镜像..."
-            FRONTEND_IMG="hkccr.ccs.tencentyun.com/${TCR_NAMESPACE}/nutriai-frontend:latest"
-            PULL_OK=false
-            ATTEMPT=0
-            while [ "$ATTEMPT" -lt 3 ]; do
-              ATTEMPT=$((ATTEMPT + 1))
-              echo "    第 ${ATTEMPT} 次尝试..."
-              docker pull "$FRONTEND_IMG" && PULL_OK=true && break
-              echo "    失败，等待10秒..." && sleep 10
-            done
-            if [ "$PULL_OK" != "true" ]; then
-              echo "ERROR: 前端镜像拉取失败" && exit 1
-            fi
-
-            echo "==> 镜像拉取完成"
-
-            # 启动 nutriai 容器
-            # ✅ 使用 -p nutriai 精确限定，不使用 --remove-orphans 避免误删其他容器
-            echo "==> 启动 nutriai 容器..."
-            $COMPOSE_CMD -p nutriai -f docker-compose.prod.yml up -d --force-recreate
-            if [ $? -ne 0 ]; then
-              echo "ERROR: 容器启动失败" && exit 1
-            fi
-
-            echo ""
-            echo "==> nutriai 容器状态:"
-            $COMPOSE_CMD -p nutriai -f docker-compose.prod.yml ps
-
-            # ⚠️ 安全：验证 Inspo-Verse 容器未受影响（部署后）
-            echo ""
-            echo "==> [安全检查] 部署后 Inspo-Verse 容器状态："
-            docker ps --filter "name=inspo" --format "  {{.Names}}  {{.Status}}  {{.Ports}}" || true
-
-            docker logout hkccr.ccs.tencentyun.com 2>/dev/null || true
-
-            echo ""
-            echo "============================================"
-            echo "部署完成！前端: 3000, 后端: 8080"
-            echo "============================================"
-
-      # ==================== 9. 清理旧镜像 ====================
-      - name: 🧹 清理服务器上的旧Docker镜像
-        uses: appleboy/ssh-action@v1.0.3
-        if: success()
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          script: |
-            docker image prune -f
-            echo "Docker磁盘使用:"
-            docker system df
-            echo "清理完成"
-
-      # ==================== 10. 部署结果摘要 ====================
-      - name: 📈 部署结果摘要
+      - name: 输出部署摘要
         if: always()
         run: |
-          if [ "${{ job.status }}" == "success" ]; then
-            echo "## ✅ 部署成功" >> "$GITHUB_STEP_SUMMARY"
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "## ✅ 腾讯云部署成功" >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "## ❌ 部署失败" >> "$GITHUB_STEP_SUMMARY"
+            echo "## ❌ 腾讯云部署失败" >> "$GITHUB_STEP_SUMMARY"
           fi
           echo "- 镜像标签: ${{ env.IMAGE_TAG }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- 镜像仓库: hkccr.ccs.tencentyun.com/${{ secrets.TCR_NAMESPACE }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- 镜像仓库: ${{ env.TCR_REGISTRY }}/${{ secrets.TCR_NAMESPACE }}" >> "$GITHUB_STEP_SUMMARY"
           echo "- 服务器: ${{ secrets.SERVER_HOST }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- 部署时间: $(date '+%Y-%m-%d %H:%M:%S')" >> "$GITHUB_STEP_SUMMARY"

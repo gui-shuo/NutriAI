@@ -12,12 +12,12 @@ import { formatPrice, cosUrl, checkLogin } from '../../utils/common'
 const cartStore = useCartStore()
 
 const defaultCategories = [
-  { id: 'all', name: '全部', icon: '🔥' },
-  { id: 'supplement', name: '营养补剂', icon: '💊' },
-  { id: 'organic', name: '有机食材', icon: '🌱' },
-  { id: 'protein', name: '蛋白粉', icon: '💪' },
-  { id: 'snack', name: '健康零食', icon: '🥜' },
-  { id: 'drink', name: '健康饮品', icon: '🥤' },
+  { id: 'all', name: '全部', icon: 'star-fill' },
+  { id: 'supplement', name: '营养补剂', icon: 'coupon' },
+  { id: 'organic', name: '有机食材', icon: 'leaf-fill' },
+  { id: 'protein', name: '蛋白粉', icon: 'integral' },
+  { id: 'snack', name: '健康零食', icon: 'gift' },
+  { id: 'drink', name: '健康饮品', icon: 'red-packet' },
 ]
 const categories = ref(defaultCategories)
 
@@ -72,18 +72,18 @@ const categoryNameMap = {
 }
 
 const categoryIconMap = {
-  SUPPLEMENT: '💊',
-  ORGANIC: '🌱',
-  PROTEIN: '💪',
-  SNACK: '🥜',
-  DRINK: '🥤',
-  HEALTH_FOOD: '🥗',
-  EQUIPMENT: '🏋️',
-  VITAMIN: '💛',
-  MINERAL: '🪨',
-  HERBAL: '🌿',
-  SUPERFOOD: '⭐',
-  FIBER: '🌾',
+  SUPPLEMENT: 'coupon',
+  ORGANIC: 'leaf-fill',
+  PROTEIN: 'integral',
+  SNACK: 'gift',
+  DRINK: 'red-packet',
+  HEALTH_FOOD: 'star-fill',
+  EQUIPMENT: 'grid-fill',
+  VITAMIN: 'heart-fill',
+  MINERAL: 'checkbox-mark',
+  HERBAL: 'leaf-fill',
+  SUPERFOOD: 'star-fill',
+  FIBER: 'reload',
 }
 
 async function fetchCategories() {
@@ -91,11 +91,11 @@ async function fetchCategories() {
     const res = await productApi.getCategories()
     if (Array.isArray(res) && res.length > 0) {
       categories.value = [
-        { id: 'all', name: '全部', icon: '🔥' },
+        { id: 'all', name: '全部', icon: 'star-fill' },
         ...res.map(c => ({
           id: c,
           name: categoryNameMap[c] || c,
-          icon: categoryIconMap[c] || '🍽️',
+          icon: categoryIconMap[c] || 'grid-fill',
         }))
       ]
     }
@@ -150,7 +150,7 @@ onMounted(() => {
       </template>
       <template #right>
         <view class="nav-cart" @tap="goToCart">
-          <text class="nav-cart__icon">🛒</text>
+          <u-icon name="shopping-cart" size="24" color="#1a1c1a" />
         </view>
       </template>
     </NavBar>
@@ -158,7 +158,7 @@ onMounted(() => {
     <scroll-view scroll-y class="content" :enhanced="true" :show-scrollbar="false">
       <!-- 搜索入口 -->
       <view class="search-entry" @tap="goToSearch">
-        <text class="search-entry__icon">🔍</text>
+        <u-icon name="search" size="18" color="#999" />
         <text class="search-entry__placeholder">搜索有机食材、营养补剂...</text>
       </view>
 
@@ -171,7 +171,7 @@ onMounted(() => {
           :class="{ 'cat-chip--active': activeCategory === cat.id }"
           @tap="selectCategory(cat.id)"
         >
-          <text class="cat-chip__icon">{{ cat.icon }}</text>
+          <u-icon :name="cat.icon" size="16" :color="activeCategory === cat.id ? '#0a6e2c' : '#666'" />
           <text class="cat-chip__name">{{ cat.name }}</text>
         </view>
       </scroll-view>
@@ -182,7 +182,8 @@ onMounted(() => {
       </view>
 
       <view v-if="loading" class="state-tip">
-        <text>加载中...</text>
+        <u-loading-icon mode="circle" size="28" color="#0a6e2c" />
+        <text style="margin-top: 16rpx;">加载中...</text>
       </view>
 
       <view class="product-grid">
@@ -193,10 +194,12 @@ onMounted(() => {
           @tap="goToDetail(product.id)"
         >
           <view class="product-card__image-wrap">
-            <image
-              class="product-card__image"
+            <u-image
               :src="cosUrl(product.image) || '/static/images/product-placeholder.png'"
+              width="100%"
+              height="340rpx"
               mode="aspectFill"
+              :lazy-load="true"
             />
             <view v-if="product.tag" class="product-card__tag">
               <text class="product-card__tag-text">{{ product.tag }}</text>
@@ -212,7 +215,7 @@ onMounted(() => {
                 </text>
               </view>
               <view class="product-card__add" @tap.stop="addToCart(product)">
-                <text class="product-card__add-icon">+</text>
+                <u-icon name="plus" size="18" color="#ffffff" />
               </view>
             </view>
             <text v-if="product.sales" class="product-card__sales">
@@ -233,6 +236,8 @@ onMounted(() => {
 .page {
   min-height: 100vh;
   background: #ffffff;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 .content {

@@ -75,22 +75,23 @@ function buyNow() {
     <NavBar showBack transparent />
 
     <view v-if="loading" class="loading">
-      <text>加载中...</text>
+      <u-loading-icon mode="circle" size="28" color="#0a6e2c" />
+      <text style="margin-top: 16rpx; color: #666;">加载中...</text>
     </view>
 
     <view v-else-if="meal" class="detail">
       <!-- 英雄图片 -->
       <view class="hero">
-        <image
-          class="hero__image"
+        <u-image
           :src="cosUrl(meal.image) || '/static/images/meal-placeholder.png'"
+          width="100%"
+          height="560rpx"
           mode="aspectFill"
+          :lazy-load="true"
         />
         <view class="hero__overlay" />
         <view class="hero__content">
-          <view v-if="meal.tag" class="hero__badge">
-            <text class="hero__badge-text">{{ meal.tag }}</text>
-          </view>
+          <u-tag v-if="meal.tag" :text="meal.tag" size="mini" color="#ffffff" bgColor="#0a6e2c" borderColor="#0a6e2c" />
           <text class="hero__title">{{ meal.name }}</text>
         </view>
       </view>
@@ -159,7 +160,7 @@ function buyNow() {
               :key="idx"
               class="ingredient-chip"
             >
-              <text class="ingredient-chip__icon">{{ item.icon }}</text>
+              <u-icon name="checkbox-mark" size="24" color="#0a6e2c" />
               <text class="ingredient-chip__name">{{ item.name }}</text>
             </view>
           </scroll-view>
@@ -175,12 +176,8 @@ function buyNow() {
           </text>
         </view>
         <view class="action-bar__buttons">
-          <view class="action-bar__btn action-bar__btn--cart" @tap="addToCart">
-            <text>加入购物车</text>
-          </view>
-          <view class="action-bar__btn action-bar__btn--buy" @tap="buyNow">
-            <text>立即下单</text>
-          </view>
+          <u-button text="加入购物车" shape="circle" size="normal" color="#e8f5e9" :customStyle="{color: '#0a6e2c', fontWeight: '600'}" @click="addToCart" />
+          <u-button text="立即下单" type="primary" shape="circle" size="normal" color="#0a6e2c" @click="buyNow" />
         </view>
       </view>
     </view>
@@ -192,26 +189,26 @@ function buyNow() {
 
 .page {
   min-height: 100vh;
-  background: $surface;
+  background: #ffffff;
   padding-bottom: 140rpx;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 .loading {
   padding: 200rpx 0;
   text-align: center;
   color: $on-surface-variant;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 // 英雄区域
 .hero {
   position: relative;
   width: 100%;
-  height: 560rpx;
-
-  &__image {
-    width: 100%;
-    height: 100%;
-  }
+  overflow: hidden;
 
   &__overlay {
     position: absolute;

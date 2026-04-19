@@ -2,12 +2,22 @@
 /**
  * 登录页
  * 同步网页前端登录功能：邮箱+密码登录，注册需邮箱验证码
+ * 支持 role 参数区分用户/商家登录
  */
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { onLoad } from '@dcloudio/uni-app'
 import { useUserStore } from '../../stores/user'
 import { authApi } from '../../services/api'
 
 const userStore = useUserStore()
+
+const loginRole = ref('user') // user | merchant
+
+onLoad((options) => {
+  if (options?.role === 'merchant') {
+    loginRole.value = 'merchant'
+  }
+})
 
 const mode = ref('login') // login | register
 const form = ref({
@@ -83,17 +93,27 @@ async function handleLogin() {
   }
   loading.value = true
   try {
-    await userStore.login({
+    const loginData = {
       username: form.value.email,
       password: form.value.password,
       captcha: form.value.captcha || undefined,
       captchaKey: form.value.captchaKey || undefined,
       rememberMe: form.value.rememberMe,
-    })
+    }
+
+    if (loginRole.value === 'merchant') {
+      await userStore.merchantLogin(loginData)
+      uni.showToast({ title: '商家登录成功', icon: 'success' })
+      setTimeout(() => {
+        uni.redirectTo({ url: '/pages/merchant/orders' })
+      }, 1000)
+    } else {
+      await userStore.login(loginData)
+      uni.showToast({ title: '登录成功', icon: 'success' })
+      setTimeout(() => uni.navigateBack(), 1000)
+    }
     loginFailCount.value = 0
     showCaptcha.value = false
-    uni.showToast({ title: '登录成功', icon: 'success' })
-    setTimeout(() => uni.navigateBack(), 1000)
   } catch (e) {
     loginFailCount.value++
     // 失败3次后显示验证码
@@ -186,10 +206,10 @@ function switchMode() {
       <view class="header__decor-1" />
       <view class="header__decor-2" />
       <view class="header__content">
-        <text class="header__brand">🌿</text>
+        <u-icon name="leaf-fill" size="40" color="#0a6e2c" />
         <text class="header__title">NutriAI</text>
         <text class="header__subtitle">
-          {{ mode === 'login' ? '欢迎回来' : '创建账户' }}
+          {{ loginRole === 'merchant' ? '商家端' : (mode === 'login' ? '欢迎回来' : '创建账户') }}
         </text>
       </view>
     </view>
@@ -199,7 +219,7 @@ function switchMode() {
       <view class="form-card">
         <!-- 邮箱 -->
         <view class="input-group">
-          <text class="input-group__icon">📧</text>
+          <u-icon name="email" size="20" color="#999" />
           <input
             class="input-group__field"
             v-model="form.email"
@@ -210,7 +230,7 @@ function switchMode() {
 
         <!-- 注册模式：用户名（选填） -->
         <view v-if="mode === 'register'" class="input-group">
-          <text class="input-group__icon">👤</text>
+          <u-icon name="account" size="20" color="#999" />
           <input
             class="input-group__field"
             v-model="form.username"
@@ -222,24 +242,21 @@ function switchMode() {
 
         <!-- 密码 -->
         <view class="input-group">
-          <text class="input-group__icon">🔒</text>
+          <u-icon name="lock" size="20" color="#999" />
           <input
             class="input-group__field"
             v-model="form.password"
             placeholder="请输入密码"
             :password="!showPassword"
           />
-          <text
-            class="input-group__toggle"
-            @tap="showPassword = !showPassword"
-          >
-            {{ showPassword ? '🙈' : '👁️' }}
-          </text>
+          <view @tap="showPassword = !showPassword" style="padding: 4rpx 8rpx;">
+            <u-icon :name="showPassword ? 'eye-off' : 'eye'" size="20" color="#999" />
+          </view>
         </view>
 
         <!-- 注册模式：确认密码 -->
         <view v-if="mode === 'register'" class="input-group">
-          <text class="input-group__icon">🔒</text>
+          <u-icon name="lock" size="20" color="#999" />
           <input
             class="input-group__field"
             v-model="form.confirmPassword"
@@ -250,7 +267,7 @@ function switchMode() {
 
         <!-- 注册模式：邮箱验证码 -->
         <view v-if="mode === 'register'" class="input-group">
-          <text class="input-group__icon">✉️</text>
+          <u-icon name="email-fill" size="20" color="#999" />
           <input
             class="input-group__field"
             v-model="form.emailCode"
@@ -271,7 +288,7 @@ function switchMode() {
 
         <!-- 验证码（登录失败3次后显示） -->
         <view v-if="showCaptcha" class="input-group">
-          <text class="input-group__icon">🔐</text>
+          <u-icon name="shield" size="20" color="#999" />
           <input
             class="input-group__field"
             v-model="form.captcha"
@@ -291,24 +308,29 @@ function switchMode() {
         <!-- 登录模式：记住我 -->
         <view v-if="mode === 'login'" class="remember-row">
           <view class="remember-check" @tap="form.rememberMe = !form.rememberMe">
-            <view class="remember-check__box" :class="{ 'remember-check__box--active': form.rememberMe }">
-              <text v-if="form.rememberMe" class="remember-check__icon">✓</text>
-            </view>
+            <u-icon
+              :name="form.rememberMe ? 'checkbox-mark' : 'checkbox-mark'"
+              :color="form.rememberMe ? '#0a6e2c' : '#ccc'"
+              size="20"
+            />
             <text class="remember-check__label">记住我（7天免登录）</text>
           </view>
         </view>
 
         <!-- 主按钮 -->
-        <view
-          class="primary-btn"
-          :class="{ 'primary-btn--loading': loading }"
-          @tap="mode === 'login' ? handleLogin() : handleRegister()"
-        >
-          <text>{{ loading ? '处理中...' : (mode === 'login' ? '登录' : '注册') }}</text>
-        </view>
+        <u-button
+          :text="loading ? '处理中...' : (mode === 'login' ? '登录' : '注册')"
+          type="primary"
+          shape="circle"
+          color="#0a6e2c"
+          :loading="loading"
+          :disabled="loading"
+          @click="mode === 'login' ? handleLogin() : handleRegister()"
+          :customStyle="{marginTop: '8rpx'}"
+        />
 
-        <!-- 切换登录/注册 -->
-        <view class="switch-mode" @tap="switchMode">
+        <!-- 切换登录/注册 (商家端不显示注册) -->
+        <view v-if="loginRole !== 'merchant'" class="switch-mode" @tap="switchMode">
           <text class="switch-mode__text">
             {{ mode === 'login' ? '没有账号？立即注册' : '已有账号？去登录' }}
           </text>
@@ -324,10 +346,14 @@ function switchMode() {
 
       <!-- 微信快捷登录 -->
       <!-- #ifdef MP-WEIXIN -->
-      <view class="wx-btn" @tap="wxLogin">
-        <text class="wx-btn__icon">💬</text>
-        <text class="wx-btn__text">微信快捷登录</text>
-      </view>
+      <u-button
+        text="微信快捷登录"
+        icon="weixin-fill"
+        shape="circle"
+        color="#07c160"
+        @click="wxLogin"
+        :customStyle="{fontWeight: '600'}"
+      />
       <!-- #endif -->
     </view>
 
@@ -346,6 +372,8 @@ function switchMode() {
   background: #ffffff;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 // 顶部装饰区

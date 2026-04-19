@@ -4,6 +4,7 @@
   "private": true,
   "description": "NutriAI 小程序端",
   "dependencies": {
-    "pinia": "^2.1.7"
+    "pinia": "^2.1.7",
+    "uview-plus": "^3.7.36"
   }
 }

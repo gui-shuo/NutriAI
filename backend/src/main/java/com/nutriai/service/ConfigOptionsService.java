@@ -129,14 +129,21 @@ public class ConfigOptionsService {
         options.add(number("diet.daily_calorie_max", "每日最高热量(kcal)", "饮食计划每日最高热量", "饮食计划", "3000"));
 
         // ─── 数据库 ───
-        options.add(text("db.host", "数据库主机", "MySQL数据库主机地址", "数据库", ""));
-        options.add(number("db.port", "数据库端口", "MySQL数据库端口", "数据库", "3306"));
+        options.add(text("db.host", "数据库主机", "MySQL 数据库主机地址（生产环境请填写腾讯云内网 IP）", "数据库", ""));
+        options.add(number("db.port", "数据库端口", "MySQL 数据库端口（生产环境请填写内网端口）", "数据库", "3306"));
+
         options.add(text("db.name", "数据库名称", "MySQL数据库名称", "数据库", "nutriai"));
         options.add(text("db.username", "数据库用户名", "MySQL连接用户名", "数据库", ""));
         options.add(select("db.password", "数据库密码", "MySQL连接密码", "数据库", ""));
 
+        // ─── 存储 ───
+        options.add(text("cos.url", "COS访问地址", "COS 访问域名（生产环境必填，统一走腾讯云智能 DNS）", "存储", ""));
+        options.add(text("cos.custom_domain", "COS自定义域名", "历史兼容用下载域名，未配置时统一回退到 COS_URL", "存储", ""));
+
+
         // ─── Redis ───
         options.add(select("redis.password", "Redis密码", "Redis连接密码", "Redis", ""));
+
 
         return options;
     }

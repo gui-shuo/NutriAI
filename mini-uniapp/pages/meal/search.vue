@@ -64,19 +64,18 @@ function clearKeyword() {
 
     <!-- 搜索框 -->
     <view class="search-bar">
-      <view class="search-input">
-        <text class="search-input__icon">🔍</text>
-        <input
-          class="search-input__field"
-          :value="keyword"
-          placeholder="搜索餐品名称..."
-          confirm-type="search"
-          @input="onInput"
-          @confirm="doSearch"
-          focus
-        />
-        <text v-if="keyword" class="search-input__clear" @tap="clearKeyword">✕</text>
-      </view>
+      <u-search
+        v-model="keyword"
+        placeholder="搜索餐品名称..."
+        :showAction="false"
+        bgColor="#f5f5f5"
+        borderColor="transparent"
+        height="72rpx"
+        shape="round"
+        @change="doSearch"
+        @search="doSearch"
+        @clear="clearKeyword"
+      />
     </view>
 
     <scroll-view scroll-y class="content" :enhanced="true" :show-scrollbar="false">
@@ -84,25 +83,34 @@ function clearKeyword() {
       <view v-if="!searched" class="hot-section">
         <text class="hot-section__title">热门搜索</text>
         <view class="hot-tags">
-          <view
+          <u-tag
             v-for="(kw, idx) in hotKeywords"
             :key="idx"
-            class="hot-tag"
-            @tap="selectHot(kw)"
-          >
-            <text class="hot-tag__text">{{ kw }}</text>
-          </view>
+            :text="kw"
+            plain
+            color="#333"
+            borderColor="#e0e0e0"
+            bgColor="#f5f5f5"
+            size="medium"
+            shape="circle"
+            @click="selectHot(kw)"
+          />
         </view>
       </view>
 
       <!-- 搜索结果 -->
       <view v-if="loading" class="state-tip">
-        <text>搜索中...</text>
+        <u-loading-icon mode="circle" size="28" color="#0a6e2c" />
+        <text style="margin-top: 16rpx;">搜索中...</text>
       </view>
 
-      <view v-else-if="searched && results.length === 0" class="state-tip">
-        <text>未找到相关餐品</text>
-      </view>
+      <u-empty
+        v-else-if="searched && results.length === 0"
+        text="未找到相关餐品"
+        icon="search"
+        mode="search"
+        marginTop="60"
+      />
 
       <view
         v-for="item in results"
@@ -110,10 +118,13 @@ function clearKeyword() {
         class="result-card"
         @tap="goToDetail(item.id)"
       >
-        <image
-          class="result-card__image"
+        <u-image
           :src="cosUrl(item.image) || '/static/images/meal-placeholder.png'"
+          width="140rpx"
+          height="140rpx"
           mode="aspectFill"
+          radius="8"
+          :lazy-load="true"
         />
         <view class="result-card__info">
           <text class="result-card__name">{{ item.name }}</text>
@@ -131,7 +142,9 @@ function clearKeyword() {
 
 .page {
   min-height: 100vh;
-  background: $surface;
+  background: #ffffff;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 .content {

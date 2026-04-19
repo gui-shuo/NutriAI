@@ -2,7 +2,9 @@ package com.nutriai.controller;
 
 import com.nutriai.common.ApiResponse;
 import com.nutriai.dto.auth.*;
+import com.nutriai.entity.Merchant;
 import com.nutriai.service.AuthService;
+import com.nutriai.service.MerchantService;
 import com.nutriai.service.OssService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -10,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * 认证控制器
@@ -22,6 +27,7 @@ public class AuthController {
     
     private final AuthService authService;
     private final OssService ossService;
+    private final MerchantService merchantService;
     
     /**
      * 用户注册
@@ -163,6 +169,35 @@ public class AuthController {
     public ApiResponse<String> uploadCertificate(@RequestParam("file") MultipartFile file) {
         String url = ossService.uploadCertificate(file);
         return ApiResponse.success("上传成功", url);
+    }
+
+    /**
+     * 商家登录（复用普通登录，额外校验商家身份并返回商家信息）
+     */
+    @PostMapping("/merchant-login")
+    public ApiResponse<Map<String, Object>> merchantLogin(
+            @Valid @RequestBody LoginRequest request,
+            HttpServletRequest httpRequest) {
+        String ipAddress = getClientIp(httpRequest);
+        LoginResponse loginResponse = authService.merchantLogin(request, ipAddress);
+
+        // 获取商家信息
+        Long userId = loginResponse.getUserInfo().getId();
+        Merchant merchant = merchantService.getMerchantByOwnerId(userId);
+
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("accessToken", loginResponse.getAccessToken());
+        result.put("refreshToken", loginResponse.getRefreshToken());
+        result.put("tokenType", loginResponse.getTokenType());
+        result.put("expiresIn", loginResponse.getExpiresIn());
+        result.put("userInfo", loginResponse.getUserInfo());
+        result.put("merchantInfo", Map.of(
+                "id", merchant.getId(),
+                "name", merchant.getName(),
+                "status", merchant.getStatus() != null ? merchant.getStatus() : "ACTIVE"
+        ));
+
+        return ApiResponse.success("商家登录成功", result);
     }
 
     /**

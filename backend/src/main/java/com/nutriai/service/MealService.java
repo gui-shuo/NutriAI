@@ -77,7 +77,8 @@ public class MealService {
     public MealOrder createOrder(Long userId, List<Map<String, Object>> items,
                                   String fulfillmentType, String pickupTime, String pickupLocation,
                                   String receiverName, String receiverPhone,
-                                  String receiverAddress, String remark) {
+                                  String receiverAddress, String remark,
+                                  Long merchantId, String merchantName) {
         if (items == null || items.isEmpty()) {
             throw new BusinessException("订单商品不能为空");
         }
@@ -125,6 +126,8 @@ public class MealService {
         MealOrder order = MealOrder.builder()
                 .orderNo(orderNo)
                 .userId(userId)
+                .merchantId(merchantId)
+                .merchantName(merchantName)
                 .items(orderItems)
                 .totalQuantity(totalQuantity)
                 .totalAmount(totalAmount)
@@ -342,5 +345,74 @@ public class MealService {
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
         String random = UUID.randomUUID().toString().replace("-", "").substring(0, 6).toUpperCase();
         return prefix + timestamp + random;
+    }
+
+    // ==================== 商家端方法 ====================
+
+    /**
+     * 获取商家的订单列表
+     */
+    public Page<MealOrder> getMerchantOrders(Long merchantId, String status, int page, int size) {
+        if (status != null && !status.isBlank() && !"ALL".equals(status)) {
+            return mealOrderRepository.findByMerchantIdAndOrderStatusOrderByCreatedAtDesc(
+                    merchantId, status, PageRequest.of(page, size));
+        }
+        return mealOrderRepository.findByMerchantIdOrderByCreatedAtDesc(merchantId, PageRequest.of(page, size));
+    }
+
+    /**
+     * 获取商家订单详情
+     */
+    public MealOrder getMerchantOrderDetail(Long merchantId, String orderNo) {
+        return mealOrderRepository.findByOrderNoAndMerchantId(orderNo, merchantId)
+                .orElseThrow(() -> new BusinessException("订单不存在"));
+    }
+
+    /**
+     * 商家更新订单状态
+     */
+    @Transactional
+    public MealOrder merchantUpdateOrderStatus(Long merchantId, String orderNo, String newStatus) {
+        MealOrder order = mealOrderRepository.findByOrderNoAndMerchantId(orderNo, merchantId)
+                .orElseThrow(() -> new BusinessException("订单不存在"));
+        return updateOrderStatus(order.getOrderNo(), newStatus);
+    }
+
+    /**
+     * 商家核验取餐码
+     */
+    @Transactional
+    public MealOrder merchantVerifyPickup(Long merchantId, String pickupCode) {
+        MealOrder order = mealOrderRepository.findByPickupCodeAndMerchantId(pickupCode, merchantId)
+                .orElseThrow(() -> new BusinessException("取餐码无效或不属于本店"));
+
+        if (!"READY".equals(order.getOrderStatus()) && !"PREPARING".equals(order.getOrderStatus())) {
+            if ("PICKED_UP".equals(order.getOrderStatus()) || "COMPLETED".equals(order.getOrderStatus())) {
+                throw new BusinessException("此订单已完成取餐");
+            }
+            throw new BusinessException("订单状态不允许核验: " + order.getOrderStatus());
+        }
+
+        order.setOrderStatus("COMPLETED");
+        order.setPickupCodeVerifiedAt(LocalDateTime.now());
+        order.setCompletedAt(LocalDateTime.now());
+        mealOrderRepository.save(order);
+
+        log.info("商家核验取餐码成功, merchantId={}, orderNo={}, pickupCode={}", merchantId, order.getOrderNo(), pickupCode);
+        return order;
+    }
+
+    /**
+     * 获取商家订单统计
+     */
+    public Map<String, Object> getMerchantOrderStats(Long merchantId) {
+        Map<String, Object> stats = new LinkedHashMap<>();
+        stats.put("pendingPayment", mealOrderRepository.countByMerchantIdAndOrderStatus(merchantId, "PENDING_PAYMENT"));
+        stats.put("paid", mealOrderRepository.countByMerchantIdAndOrderStatus(merchantId, "PAID"));
+        stats.put("preparing", mealOrderRepository.countByMerchantIdAndOrderStatus(merchantId, "PREPARING"));
+        stats.put("ready", mealOrderRepository.countByMerchantIdAndOrderStatus(merchantId, "READY"));
+        stats.put("completed", mealOrderRepository.countByMerchantIdAndOrderStatus(merchantId, "COMPLETED"));
+        stats.put("cancelled", mealOrderRepository.countByMerchantIdAndOrderStatus(merchantId, "CANCELLED"));
+        return stats;
     }
 }

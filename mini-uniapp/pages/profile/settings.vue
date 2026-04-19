@@ -46,20 +46,26 @@ function goToAbout() {
     <scroll-view scroll-y class="content" :enhanced="true" :show-scrollbar="false">
       <view class="menu-card">
         <view class="menu-item" @tap="goToAbout">
-          <text class="menu-item__icon">ℹ️</text>
+          <u-icon name="info-circle" size="22" color="#0a6e2c" />
           <text class="menu-item__label">关于我们</text>
-          <text class="menu-item__arrow">›</text>
+          <u-icon name="arrow-right" size="16" color="#ccc" />
         </view>
         <view class="menu-item" @tap="clearCache">
-          <text class="menu-item__icon">🗑️</text>
+          <u-icon name="trash" size="22" color="#0a6e2c" />
           <text class="menu-item__label">清除缓存</text>
-          <text class="menu-item__arrow">›</text>
+          <u-icon name="arrow-right" size="16" color="#ccc" />
         </view>
       </view>
 
-      <view v-if="userStore.isLoggedIn" class="logout-btn" @tap="logout">
-        <text>退出登录</text>
-      </view>
+      <u-button
+        v-if="userStore.isLoggedIn"
+        text="退出登录"
+        shape="circle"
+        plain
+        color="#e53935"
+        :customStyle="{marginTop: '32rpx'}"
+        @click="logout"
+      />
     </scroll-view>
   </view>
 </template>
@@ -67,7 +73,7 @@ function goToAbout() {
 <style lang="scss" scoped>
 @import '../../styles/design-system.scss';
 
-.page { min-height: 100vh; background: $surface; }
+.page { min-height: 100vh; background: #ffffff; overflow-x: hidden; width: 100%; }
 .content { padding: 24rpx; height: calc(100vh - 100px); }
 
 .menu-card {

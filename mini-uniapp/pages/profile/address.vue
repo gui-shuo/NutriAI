@@ -110,11 +110,11 @@ onMounted(() => fetchAddresses())
     <NavBar showBack title="收货地址" />
 
     <scroll-view v-if="!showForm" scroll-y class="content" :enhanced="true" :show-scrollbar="false">
-      <view v-if="loading" class="state-tip"><text>加载中...</text></view>
-      <view v-else-if="addresses.length === 0" class="state-tip">
-        <text class="state-tip__icon">📍</text>
-        <text>暂无收货地址</text>
+      <view v-if="loading" class="state-tip">
+        <u-loading-icon mode="circle" size="28" color="#0a6e2c" />
+        <text style="margin-top: 16rpx;">加载中...</text>
       </view>
+      <u-empty v-else-if="addresses.length === 0" text="暂无收货地址" icon="map" mode="address" marginTop="80" />
 
       <view v-for="addr in addresses" :key="addr.id" class="addr-card">
         <view class="addr-card__main" @tap="openEdit(addr)">
@@ -168,16 +168,16 @@ onMounted(() => fetchAddresses())
       </view>
 
       <view class="btn-group">
-        <view class="btn btn--outline" @tap="showForm = false"><text>取消</text></view>
-        <view class="btn btn--primary" @tap="saveAddress"><text>保存</text></view>
+        <u-button text="取消" shape="circle" color="#f5f5f5" :customStyle="{color: '#333'}" @click="showForm = false" />
+        <u-button text="保存" type="primary" shape="circle" color="#0a6e2c" @click="saveAddress" />
       </view>
 
       <view style="height: 60rpx;" />
     </scroll-view>
 
     <!-- 新增按钮 -->
-    <view v-if="!showForm" class="fab" @tap="openAdd">
-      <text class="fab__text">+ 新增地址</text>
+    <view v-if="!showForm" class="fab">
+      <u-button text="+ 新增地址" type="primary" shape="circle" color="#0a6e2c" @click="openAdd" :customStyle="{boxShadow: '0 8rpx 32rpx rgba(10, 110, 44, 0.3)'}" />
     </view>
   </view>
 </template>
@@ -185,7 +185,7 @@ onMounted(() => fetchAddresses())
 <style lang="scss" scoped>
 @import '../../styles/design-system.scss';
 
-.page { min-height: 100vh; background: $surface; }
+.page { min-height: 100vh; background: #ffffff; overflow-x: hidden; width: 100%; }
 .content { padding: 24rpx; height: calc(100vh - 100px); }
 
 .state-tip {

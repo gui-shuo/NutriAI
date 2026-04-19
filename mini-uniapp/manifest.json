@@ -56,7 +56,12 @@
             "minified" : false
         },
         "usingComponents" : true,
-        "permission" : {}
+        "permission" : {
+            "scope.userLocation" : {
+                "desc" : "获取您的位置信息，用于查找附近门店"
+            }
+        },
+        "requiredPrivateInfos" : ["getLocation"]
     },
     "mp-alipay" : {
         "usingComponents" : true

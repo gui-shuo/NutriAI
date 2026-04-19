@@ -17,21 +17,25 @@
 </script>
 
 <style lang="scss">
+	@import 'uview-plus/index.scss';
 	@import './styles/design-system.scss';
 
 	/* 全局基础样式 */
 	page {
-		background-color: $surface;
+		background-color: #ffffff;
 		color: $on-surface;
 		font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'PingFang SC',
 			'Microsoft YaHei', 'Helvetica Neue', sans-serif;
 		font-size: $font-base;
 		line-height: $leading-normal;
 		box-sizing: border-box;
+		width: 100%;
+		overflow-x: hidden;
 	}
 
-	view, text, image {
+	view, text, image, scroll-view {
 		box-sizing: border-box;
+		max-width: 100%;
 	}
 
 	/* 隐藏滚动条 */

@@ -41,6 +41,14 @@ public class MealOrder {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
+    /** 门店ID（取餐门店） */
+    @Column(name = "merchant_id")
+    private Long merchantId;
+
+    /** 门店名称（冗余存储，避免门店改名影响历史订单） */
+    @Column(name = "merchant_name", length = 200)
+    private String merchantName;
+
     /** 订单商品列表（JSON） */
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "items", columnDefinition = "json")

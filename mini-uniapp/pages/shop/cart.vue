@@ -57,12 +57,16 @@ function checkout() {
     <scroll-view scroll-y class="content" :enhanced="true" :show-scrollbar="false">
       <!-- 空购物车 -->
       <view v-if="cartStore.items.length === 0" class="empty">
-        <text class="empty__icon">🛒</text>
-        <text class="empty__title">购物车空空如也</text>
-        <text class="empty__desc">去商城逛逛，发现健康好物</text>
-        <view class="empty__btn" @tap="() => uni.switchTab({ url: '/pages/shop/index' })">
-          <text>去逛逛</text>
-        </view>
+        <u-empty text="购物车空空如也" icon="cart" mode="car" marginTop="80" />
+        <u-button
+          text="去逛逛"
+          type="primary"
+          shape="circle"
+          color="#0a6e2c"
+          size="normal"
+          :customStyle="{marginTop: '32rpx', width: '240rpx'}"
+          @click="() => uni.switchTab({ url: '/pages/shop/index' })"
+        />
       </view>
 
       <!-- 购物车列表 -->
@@ -83,14 +87,19 @@ function checkout() {
             class="checkbox"
             :class="{ 'checkbox--checked': item.selected }"
             @tap="cartStore.toggleSelect(item.id)"
-          />
+          >
+            <u-icon v-if="item.selected" name="checkmark" size="16" color="#ffffff" />
+          </view>
 
           <!-- 商品图片 -->
-          <image
-            class="cart-item__image"
+          <u-image
             :src="cosUrl(item.image) || '/static/images/product-placeholder.png'"
+            width="160rpx"
+            height="160rpx"
             mode="aspectFill"
-            @tap="goToDetail(item)"
+            radius="12"
+            :lazy-load="true"
+            @click="goToDetail(item)"
           />
 
           <!-- 商品信息 -->
@@ -98,15 +107,7 @@ function checkout() {
             <text class="cart-item__name" @tap="goToDetail(item)">{{ item.name }}</text>
             <view class="cart-item__bottom">
               <text class="cart-item__price">¥{{ formatPrice(item.price) }}</text>
-              <view class="qty-control">
-                <view class="qty-btn" @tap="changeQty(item, -1)">
-                  <text>−</text>
-                </view>
-                <text class="qty-value">{{ item.quantity }}</text>
-                <view class="qty-btn" @tap="changeQty(item, 1)">
-                  <text>+</text>
-                </view>
-              </view>
+              <u-number-box v-model="item.quantity" :min="0" :max="99" buttonSize="26" bgColor="#f5f5f5" @change="(val) => { if (val.value <= 0) { uni.showModal({ title: '提示', content: '确定移除该商品吗？', success: (res) => { if (res.confirm) cartStore.removeItem(item.id) } }) } else { cartStore.updateQuantity(item.id, val.value) } }" />
             </view>
           </view>
         </view>
@@ -121,9 +122,15 @@ function checkout() {
         <text class="checkout-bar__label">合计：</text>
         <text class="checkout-bar__price">¥{{ formatPrice(cartStore.totalPrice) }}</text>
       </view>
-      <view class="checkout-bar__btn" @tap="checkout">
-        <text>结算 ({{ cartStore.selectedItems.length }})</text>
-      </view>
+      <u-button
+        :text="`结算 (${cartStore.selectedItems.length})`"
+        type="primary"
+        shape="circle"
+        color="#0a6e2c"
+        size="normal"
+        :customStyle="{padding: '20rpx 48rpx'}"
+        @click="checkout"
+      />
     </view>
   </view>
 </template>
@@ -133,7 +140,9 @@ function checkout() {
 
 .page {
   min-height: 100vh;
-  background: $surface;
+  background: #ffffff;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 .content {
