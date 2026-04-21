@@ -22,6 +22,12 @@
 - 为兼容 Gitee Go 的根目录 Docker 构建上下文，新增了两份根目录包装 Dockerfile，避免破坏现有 backend/frontend 本地 Dockerfile。
 - Gitee Go 的手动执行不需要额外 YAML 字段；去掉 `triggers` 后，流水线仍可在页面中手动点击执行。
 - Gitee Go 官方示例与帮助文档中的流水线 YAML 存放位置是仓库根目录下的 `.workflow/` 目录；将 YAML 放在仓库根目录可能不会被平台识别为流水线。
+- 本轮按用户给定的 5 篇官方文档重新核对后，确认当前活动文件路径是 `.gitee/pipeline-docker.yml`，需基于现有仓库状态修正 YAML，而不是继续假设 `.workflow` 为唯一生效路径。
+- `basic-config` 文档确认顶层最少包含 `version`、`name`、`displayName`，其中 `name` 只能使用小写字母、数字、中划线、下划线。
+- `trigger` 文档确认只有配置 `triggers` 才会自动触发；手动执行模式可以完全省略 `triggers`。
+- `scheduling` 文档确认 `stages` 的官方写法是 `- stage:` 后，与 `name`、`displayName`、`strategy`、`trigger`、`steps` 同级缩进，不应再把这些字段嵌套到 `stage` 下一级。
+- `parameter` 文档确认用户自定义流水线参数放在 `variables`，运行中动态更新参数使用 `echo 'KEY=VALUE' >> GITEE_PARAMS`，并且 `GITEE_`、`GO_` 前缀是保留字。
+- `advantage-options` 文档确认可以在顶层 `strategy` 中配置 `blocking` 和 `stepTimeout`；对生产部署流水线，开启阻塞构建可以避免多个部署互相覆盖。
 
 ## Research Findings
 - backend/Dockerfile 默认基础镜像仍为 maven:3.9-eclipse-temurin-17 与 eclipse-temurin:17-jre-alpine。

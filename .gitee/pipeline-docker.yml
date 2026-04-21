@@ -2,6 +2,10 @@ version: '1.0'
 name: nutriai-gitee-go-tcr
 displayName: NutriAI-Gitee-Go-TCR-自动部署
 
+strategy:
+  blocking: true
+  stepTimeout: 60
+
 variables:
   TCR_REGISTRY: ccr.ccs.tencentyun.com
   BACKEND_IMAGE_REPO: nutriai-backend
@@ -53,6 +57,7 @@ stages:
         password: ${TCR_PASSWORD}
         tag: ${TCR_NAMESPACE}/${FRONTEND_IMAGE_REPO}:${TIMESTAMP_TAG}
         dockerfile: ./Dockerfile.frontend.gitee
+        dependsOn: build_backend_image
 
   - stage:
     name: deploy

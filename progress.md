@@ -84,6 +84,18 @@
   - task_plan.md (updated)
   - progress.md (updated)
 
+### Phase 12: Official Doc Rewrite
+- **Status:** complete
+- Actions taken:
+  - 重新查阅了用户指定的 Gitee Go 官方文档：基本概念、触发事件、任务编排、参数设置、高级设置。
+  - 按官方文档重写了当前活动文件 `.gitee/pipeline-docker.yml`，保留手动执行模式，修正 stage/step 层级，并补充顶层阻塞构建与任务超时设置。
+  - 保持时间戳 tag、TCR 推送、主机组部署、docker compose 部署与旧镜像清理逻辑不变。
+- Files created/modified:
+  - .gitee/pipeline-docker.yml (updated)
+  - findings.md (updated)
+  - task_plan.md (updated)
+  - progress.md (updated)
+
 ### Phase 1: Requirements & Discovery
 - **Status:** complete
 - **Started:** 2026-04-21
@@ -154,6 +166,7 @@
 | Stale deployment references | grep on deployment path | No active ACR/deploy.sh refs in deployment path | Passed on README/docs/compose/env/pipeline | pass |
 | Manual trigger mode | pipeline-docker without triggers | No auto trigger, manual run still available in UI | Changed to manual-only configuration | pass |
 | Gitee pipeline discovery | `.workflow/pipeline-docker.yml` | Pipeline file matches documented `.workflow` location | Moved workflow YAML into `.workflow` | pass |
+| Official doc rewrite | `.gitee/pipeline-docker.yml` | YAML shape matches official docs and remains valid | Rewritten against official docs | pass |
 
 ## Error Log
 | Timestamp | Error | Attempt | Resolution |
@@ -163,8 +176,8 @@
 ## 5-Question Reboot Check
 | Question | Answer |
 |----------|--------|
-| Where am I? | Phase 11 |
-| Where am I going? | 任务已完成，剩余的是把 `.workflow/pipeline-docker.yml` 推到 Gitee 默认分支后刷新流水线列表 |
-| What's the goal? | 让 Gitee Go 识别到手动触发的流水线，并继续执行时间戳镜像构建、推送和远端部署 |
-| What have I learned? | Gitee Go 识别流水线依赖 `.workflow` 目录约定，根目录 YAML 不一定会进入流水线列表 |
-| What have I done? | 已将工作流迁移到 `.workflow/pipeline-docker.yml`，并同步修正文档与排查说明 |
+| Where am I? | Phase 12 |
+| Where am I going? | 任务已完成，剩余的是把 `.gitee/pipeline-docker.yml` 推到 Gitee 并在页面重新校验 |
+| What's the goal? | 生成一份严格按 Gitee Go 官方文档编写的手动触发部署流水线 |
+| What have I learned? | 当前实际生效的仓库文件是 `.gitee/pipeline-docker.yml`，并且需要按官方的 stage/step 层级与顶层 strategy 写法来组织 |
+| What have I done? | 已按官方文档重写 `.gitee/pipeline-docker.yml`，保留原有部署能力并补上更稳妥的顶层执行策略 |
