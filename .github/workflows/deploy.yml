@@ -83,7 +83,7 @@ jobs:
           echo "COMPOSE_FILE_B64=$(base64 -w 0 docker-compose.prod.yml)" >> "$GITHUB_ENV"
 
       - name: 拉取最新镜像并重启腾讯云容器
-        uses: appleboy/ssh-action@v1.2.0
+        uses: appleboy/ssh-action@v1.2.5
         env:
           IMAGE_TAG: ${{ env.IMAGE_TAG }}
           TCR_REGISTRY: ${{ env.TCR_REGISTRY }}
@@ -97,6 +97,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
+          version: 1.8.4
           envs: IMAGE_TAG,TCR_REGISTRY,TCR_NAMESPACE,TCR_USERNAME,TCR_PASSWORD,DEPLOY_DIR,COMPOSE_FILE,COMPOSE_FILE_B64
           script_stop: true
           command_timeout: 500m
