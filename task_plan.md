@@ -4,7 +4,7 @@
 当前目标是在保留“时间戳镜像 + docker compose 服务器部署”约束的前提下，将自动化链路从 GitHub / 阿里云 ACR 改为 Gitee Go / 腾讯云 TCR。
 
 ## Current Phase
-Phase 10
+Phase 11
 
 ## Phases
 ### Phase 1: Requirements & Discovery
@@ -66,6 +66,12 @@ Phase 10
 - [x] Remove automatic pipeline triggers
 - [x] Rewrite docs for manual execution flow
 - [x] Re-verify deployment path after trigger change
+- **Status:** complete
+
+### Phase 11: Gitee Discovery Fix
+- [x] Confirm Gitee Go expected YAML directory
+- [x] Move pipeline YAML into `.workflow`
+- [x] Refresh docs after file relocation
 - **Status:** complete
 
 ## Key Questions

@@ -69,6 +69,21 @@
   - task_plan.md (updated)
   - progress.md (updated)
 
+### Phase 11: Gitee Discovery Fix
+- **Status:** complete
+- Actions taken:
+  - 复核了 Gitee Go 官方帮助文档，确认流水线 YAML 默认存放在仓库根目录下的 `.workflow/` 目录。
+  - 将工作流文件从仓库根目录迁移到 `.workflow/pipeline-docker.yml`，以匹配 Gitee Go 的识别方式。
+  - 同步修正 README 与部署文档中的工作流路径说明，并补充“未识别到流水线”的排查提示。
+- Files created/modified:
+  - .workflow/pipeline-docker.yml (created)
+  - pipeline-docker.yml (deleted)
+  - README.md (updated)
+  - docs/gitee-go-tcr-deploy.md (updated)
+  - findings.md (updated)
+  - task_plan.md (updated)
+  - progress.md (updated)
+
 ### Phase 1: Requirements & Discovery
 - **Status:** complete
 - **Started:** 2026-04-21
@@ -138,6 +153,7 @@
 | Gitee deployment files | pipeline-docker/Dockerfile wrappers/compose/docs | No diagnostics related to edits | No errors found | pass |
 | Stale deployment references | grep on deployment path | No active ACR/deploy.sh refs in deployment path | Passed on README/docs/compose/env/pipeline | pass |
 | Manual trigger mode | pipeline-docker without triggers | No auto trigger, manual run still available in UI | Changed to manual-only configuration | pass |
+| Gitee pipeline discovery | `.workflow/pipeline-docker.yml` | Pipeline file matches documented `.workflow` location | Moved workflow YAML into `.workflow` | pass |
 
 ## Error Log
 | Timestamp | Error | Attempt | Resolution |
@@ -147,8 +163,8 @@
 ## 5-Question Reboot Check
 | Question | Answer |
 |----------|--------|
-| Where am I? | Phase 10 |
-| Where am I going? | 任务已完成，剩余的是在 Gitee Go 控制台手动执行流水线并观察首跑日志 |
-| What's the goal? | 切换到 Gitee Go 手动触发构建时间戳镜像并推送到腾讯云 TCR，再由工作流远端部署到腾讯云服务器 |
-| What have I learned? | Gitee Go 页面手动执行不依赖额外 YAML 开关，去掉自动触发器即可变为手动模式 |
-| What have I done? | 已将 Gitee Go 工作流从自动 push 触发切换为手动执行，并同步更新了相关文档与计划记录 |
+| Where am I? | Phase 11 |
+| Where am I going? | 任务已完成，剩余的是把 `.workflow/pipeline-docker.yml` 推到 Gitee 默认分支后刷新流水线列表 |
+| What's the goal? | 让 Gitee Go 识别到手动触发的流水线，并继续执行时间戳镜像构建、推送和远端部署 |
+| What have I learned? | Gitee Go 识别流水线依赖 `.workflow` 目录约定，根目录 YAML 不一定会进入流水线列表 |
+| What have I done? | 已将工作流迁移到 `.workflow/pipeline-docker.yml`，并同步修正文档与排查说明 |

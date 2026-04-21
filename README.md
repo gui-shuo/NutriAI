@@ -122,7 +122,8 @@ ai-based-healthy-diet/
 │   │   ├── application-prod.yml  # 生产配置
 │   │   └── db/alldata.sql    # 数据库初始化脚本
 │   └── Dockerfile
-├── pipeline-docker.yml       # Gitee Go 工作流
+├── .workflow/
+│   └── pipeline-docker.yml   # Gitee Go 工作流
 ├── Dockerfile.backend.gitee  # Gitee Go 后端构建包装 Dockerfile
 ├── Dockerfile.frontend.gitee # Gitee Go 前端构建包装 Dockerfile
 ├── docker-compose.yml        # 本地开发环境
@@ -387,9 +388,15 @@ mysql -h <DB_HOST> -P <DB_PORT> -u <DB_USERNAME> -p --ssl-mode=REQUIRED \
 ### 5. 触发构建与部署
 
 1. 将代码推送到 Gitee 仓库。
-2. 打开仓库对应的 Gitee Go 流水线页面，选择 `nutriai-gitee-go-tcr`。
+2. 确认仓库内存在 `.workflow/pipeline-docker.yml`，然后打开对应的 Gitee Go 流水线页面，选择 `nutriai-gitee-go-tcr`。
 3. 点击“执行流水线”，选择需要部署的分支，生产建议选择 `master`。
 4. Gitee Go 会生成新的时间戳镜像标签，完成构建、推送、远端部署和清理。
+
+如果 Gitee Go 列表中没有识别到流水线，先确认两件事：
+1. 该仓库已经在 Gitee 页面开通 Gitee Go。
+2. 默认分支已经包含 `.workflow/pipeline-docker.yml`。
+
+确认后再刷新 Gitee Go 页面；官方示例和帮助文档使用的也是 `.workflow` 目录。
 
 ### 6. 部署流程（自动）
 

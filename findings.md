@@ -21,6 +21,7 @@
 - 最终实现采用 Gitee Go 的官方主机组部署能力，而不是单独 SSH 插件；在目标腾讯云服务器上执行的命令与 SSH 远端执行等价。
 - 为兼容 Gitee Go 的根目录 Docker 构建上下文，新增了两份根目录包装 Dockerfile，避免破坏现有 backend/frontend 本地 Dockerfile。
 - Gitee Go 的手动执行不需要额外 YAML 字段；去掉 `triggers` 后，流水线仍可在页面中手动点击执行。
+- Gitee Go 官方示例与帮助文档中的流水线 YAML 存放位置是仓库根目录下的 `.workflow/` 目录；将 YAML 放在仓库根目录可能不会被平台识别为流水线。
 
 ## Research Findings
 - backend/Dockerfile 默认基础镜像仍为 maven:3.9-eclipse-temurin-17 与 eclipse-temurin:17-jre-alpine。

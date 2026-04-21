@@ -12,7 +12,7 @@
 
 ## 工作流文件
 
-仓库根目录新增了 `pipeline-docker.yml`，用于 Gitee Go 的代码视图流水线配置。
+仓库新增了 `.workflow/pipeline-docker.yml`，用于 Gitee Go 的代码视图流水线配置。
 
 同时新增了两份包装 Dockerfile：
 
@@ -37,7 +37,7 @@
 - `TCR_PASSWORD`
 - `DEPLOY_HOST_GROUP_ID`
 
-仓库内 `pipeline-docker.yml` 已内置以下默认参数：
+仓库内 `.workflow/pipeline-docker.yml` 已内置以下默认参数：
 
 - `TCR_REGISTRY=ccr.ccs.tencentyun.com`
 - `BACKEND_IMAGE_REPO=nutriai-backend`
@@ -94,9 +94,16 @@ IMAGE_TAG=20260101000000
 
 ## 触发方式
 
-当前 `pipeline-docker.yml` 不配置自动触发器，默认采用手动执行模式：
+当前 `.workflow/pipeline-docker.yml` 不配置自动触发器，默认采用手动执行模式：
 
 - 在 Gitee Go 页面点击“执行流水线”
 - 执行时选择目标分支，生产建议选择 `master`
 
 每次手动执行都会重新生成时间戳 tag，并触发完整的构建、推送、部署、清理流程。
+
+如果 Gitee Go 页面显示“未识别到有流水线”，优先检查以下两项：
+
+1. 仓库是否已经开通 Gitee Go。
+2. 默认分支中是否已经提交 `.workflow/pipeline-docker.yml`。
+
+根据 Gitee Go 官方帮助文档，平台创建流水线时会在仓库根目录生成 `.workflow` 文件夹并在其中保存 YAML 描述文件。
