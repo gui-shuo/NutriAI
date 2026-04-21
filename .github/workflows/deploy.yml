@@ -48,6 +48,7 @@ jobs:
           password: ${{ secrets.TCR_PASSWORD }}
 
       - name: 构建并推送后端镜像
+        timeout-minutes: 20
         uses: docker/build-push-action@v6
         with:
           context: ./backend
@@ -63,6 +64,7 @@ jobs:
           tags: ${{ env.TCR_REGISTRY }}/${{ env.TCR_NAMESPACE }}/nutriai-backend:${{ env.IMAGE_TAG }}
 
       - name: 构建并推送前端镜像
+        timeout-minutes: 15
         uses: docker/build-push-action@v6
         with:
           context: ./frontend
