@@ -1,6 +1,6 @@
 version: '1.0'
 name: nutriai-gitee-go-tcr
-displayName: NutriAI Gitee Go TCR 自动部署
+displayName: NutriAI-Gitee-Go-TCR-自动部署
 
 variables:
   TCR_REGISTRY: ccr.ccs.tencentyun.com
