@@ -2,12 +2,15 @@ version: '1.0'
 name: nutriai-gitee-go-tcr
 displayName: NutriAI-Gitee-Go-TCR-自动部署
 triggers:
-  trigger: auto
   push:
     tags:
       precise:
         - manual-deploy
 variables:
+  TCR_REGISTRY: ccr.ccs.tencentyun.com
+  TCR_NAMESPACE: heyitshuo
+  TCR_USERNAME: 100045531605
+  TCR_PASSWORD: sunGUISHUO4311
   BACKEND_IMAGE_REPO: nutriai-backend
   FRONTEND_IMAGE_REPO: nutriai-frontend
   REDIS_IMAGE: swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/library/redis:6.0-alpine
@@ -43,7 +46,7 @@ stages:
         displayName: 构建后端镜像
         type: cert
         certificate: heyitshuo
-        tag: ${BACKEND_IMAGE_REPO}:${TIMESTAMP_TAG}
+        tag: ${TCR_NAMESPACE}/${BACKEND_IMAGE_REPO}:${TIMESTAMP_TAG}
         dockerfile: ./Dockerfile.backend.gitee
         isCache: true
         strategy: {}
@@ -52,7 +55,7 @@ stages:
         displayName: 构建前端镜像
         type: cert
         certificate: heyitshuo
-        tag: ${FRONTEND_IMAGE_REPO}:${TIMESTAMP_TAG}
+        tag: ${TCR_NAMESPACE}/${FRONTEND_IMAGE_REPO}:${TIMESTAMP_TAG}
         dockerfile: ./Dockerfile.frontend.gitee
         isCache: true
         strategy: {}
