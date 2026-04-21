@@ -42,7 +42,7 @@
 - `TCR_REGISTRY=ccr.ccs.tencentyun.com`
 - `BACKEND_IMAGE_REPO=nutriai-backend`
 - `FRONTEND_IMAGE_REPO=nutriai-frontend`
-- `REDIS_IMAGE=registry.cn-hangzhou.aliyuncs.com/acs/redis:6.0-alpine`
+- `REDIS_IMAGE=swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/library/redis:6.0-alpine`
 - `DEPLOY_DIR=/www/wwwroot/nutriai`
 
 ## 目标腾讯云服务器要求
@@ -63,7 +63,7 @@ TCR_REGISTRY=ccr.ccs.tencentyun.com
 TCR_NAMESPACE=your_tcr_namespace
 BACKEND_IMAGE_REPO=nutriai-backend
 FRONTEND_IMAGE_REPO=nutriai-frontend
-REDIS_IMAGE=registry.cn-hangzhou.aliyuncs.com/acs/redis:6.0-alpine
+REDIS_IMAGE=swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/library/redis:6.0-alpine
 IMAGE_TAG=20260101000000
 ```
 

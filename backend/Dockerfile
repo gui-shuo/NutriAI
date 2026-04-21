@@ -1,7 +1,7 @@
 # 多阶段构建
-# 默认使用阿里云公共镜像，必要时可通过 build-arg 覆盖
-ARG MAVEN_BUILDER_IMAGE=registry.cn-hangzhou.aliyuncs.com/acs/maven:3.9-eclipse-temurin-17
-ARG JAVA_RUNTIME_IMAGE=registry.cn-hangzhou.aliyuncs.com/acs/openjdk:17-jre-alpine
+# 默认使用华为云 SWR 同步的 Docker Hub 镜像，必要时可通过 build-arg 覆盖
+ARG MAVEN_BUILDER_IMAGE=swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/library/maven:3-eclipse-temurin-17
+ARG JAVA_RUNTIME_IMAGE=swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/library/eclipse-temurin:17-jre-alpine
 
 # 阶段1：构建
 FROM ${MAVEN_BUILDER_IMAGE} AS builder

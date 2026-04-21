@@ -13,7 +13,7 @@ variables:
   TCR_PASSWORD: sunGUISHUO4311
   BACKEND_IMAGE_REPO: nutriai-backend
   FRONTEND_IMAGE_REPO: nutriai-frontend
-  REDIS_IMAGE: registry.cn-hangzhou.aliyuncs.com/acs/redis:6.0-alpine
+  REDIS_IMAGE: swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/library/redis:6.0-alpine
   DEPLOY_DIR: /www/wwwroot/nutriai
 stages:
   - name: prepare

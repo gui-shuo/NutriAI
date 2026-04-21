@@ -1,8 +1,8 @@
 # Gitee Go 的 build@docker 默认使用仓库根目录作为上下文。
 # 该包装 Dockerfile 保留现有前端镜像构建逻辑，同时兼容根目录上下文。
 
-ARG NODE_BUILDER_IMAGE=registry.cn-hangzhou.aliyuncs.com/acs/node:20-alpine
-ARG NGINX_RUNTIME_IMAGE=registry.cn-hangzhou.aliyuncs.com/acs/nginx:1.25-alpine
+ARG NODE_BUILDER_IMAGE=swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/library/node:20-alpine
+ARG NGINX_RUNTIME_IMAGE=swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/library/nginx:1.25-alpine
 
 FROM ${NODE_BUILDER_IMAGE} AS builder
 

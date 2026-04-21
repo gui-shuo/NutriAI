@@ -316,7 +316,7 @@ TCR_REGISTRY=ccr.ccs.tencentyun.com
 TCR_NAMESPACE=your_tcr_namespace
 BACKEND_IMAGE_REPO=nutriai-backend
 FRONTEND_IMAGE_REPO=nutriai-frontend
-REDIS_IMAGE=registry.cn-hangzhou.aliyuncs.com/acs/redis:6.0-alpine
+REDIS_IMAGE=swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/library/redis:6.0-alpine
 
 # Docker 镜像标签（Gitee Go 部署阶段会自动更新为本次构建的时间戳 tag）
 IMAGE_TAG=20260101000000

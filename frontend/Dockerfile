@@ -1,6 +1,6 @@
-# 默认使用阿里云公共镜像，必要时可通过 build-arg 覆盖
-ARG NODE_BUILDER_IMAGE=registry.cn-hangzhou.aliyuncs.com/acs/node:20-alpine
-ARG NGINX_RUNTIME_IMAGE=registry.cn-hangzhou.aliyuncs.com/acs/nginx:1.25-alpine
+# 默认使用华为云 SWR 同步的 Docker Hub 镜像，必要时可通过 build-arg 覆盖
+ARG NODE_BUILDER_IMAGE=swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/library/node:20-alpine
+ARG NGINX_RUNTIME_IMAGE=swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/library/nginx:1.25-alpine
 
 FROM ${NODE_BUILDER_IMAGE} AS builder
 

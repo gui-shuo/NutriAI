@@ -1,8 +1,8 @@
 # Gitee Go 的 build@docker 默认使用仓库根目录作为上下文。
 # 该包装 Dockerfile 保留现有后端镜像构建逻辑，同时兼容根目录上下文。
 
-ARG MAVEN_BUILDER_IMAGE=registry.cn-hangzhou.aliyuncs.com/acs/maven:3.9-eclipse-temurin-17
-ARG JAVA_RUNTIME_IMAGE=registry.cn-hangzhou.aliyuncs.com/acs/openjdk:17-jre-alpine
+ARG MAVEN_BUILDER_IMAGE=swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/library/maven:3-eclipse-temurin-17
+ARG JAVA_RUNTIME_IMAGE=swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/library/eclipse-temurin:17-jre-alpine
 
 FROM ${MAVEN_BUILDER_IMAGE} AS builder
 

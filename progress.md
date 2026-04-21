@@ -148,6 +148,28 @@
   - task_plan.md (updated)
   - progress.md (updated)
 
+### Phase 17: Base Image Mirror Fix
+- **Status:** complete
+- Actions taken:
+  - 复核用户最新提供的 Gitee Go 构建日志，确认失败点已从 syntax frontend 前移到基础镜像元数据拉取。
+  - 确认 `registry.cn-hangzhou.aliyuncs.com/acs/openjdk:17-jre-alpine` 返回 `insufficient_scope`、`registry.cn-hangzhou.aliyuncs.com/acs/node:20-alpine` 返回 `not found`，说明当前阿里云默认 tag 在 Gitee Go 环境不可用。
+  - 依据公开镜像索引页，将四份 Dockerfile 的默认基础镜像切换到华为云 SWR 同步的 Docker Hub 映射。
+  - 同步把 `.gitee/pipeline-docker.yml`、`docker-compose.prod.yml`、`.env.example` 以及部署文档中的 Redis 默认镜像切换到同一套国内镜像映射，避免部署阶段继续踩同类问题。
+- Files created/modified:
+  - Dockerfile.backend.gitee (updated)
+  - Dockerfile.frontend.gitee (updated)
+  - backend/Dockerfile (updated)
+  - frontend/Dockerfile (updated)
+  - .gitee/pipeline-docker.yml (updated)
+  - .workflow/nutriai-gitee-go-tcr.yml (updated)
+  - docker-compose.prod.yml (updated)
+  - .env.example (updated)
+  - README.md (updated)
+  - docs/gitee-go-tcr-deploy.md (updated)
+  - findings.md (updated)
+  - task_plan.md (updated)
+  - progress.md (updated)
+
 ### Phase 1: Requirements & Discovery
 - **Status:** complete
 - **Started:** 2026-04-21
@@ -223,17 +245,19 @@
 | Deploy artifact name fix | `deployArtifact.name` in exported YAML | Downloaded filename uses only supported characters | Renamed to `nutriai-deploy-bundle` and updated script path | pass |
 | Trigger listener fix | `triggers` in exported YAML | At least one valid listener is configured without enabling normal branch auto-deploy | Switched to `push.tags.precise: manual-deploy` | pass |
 | BuildKit syntax fix | Active Dockerfiles used by Gitee build | No dependency on `docker.io/docker/dockerfile:1.7` remains | Removed syntax line and cache-mount syntax | pass |
+| Base image mirror fix | Active Dockerfiles and runtime defaults | Default images no longer point to failing Aliyun tags | Switched to SWR Docker Hub mirror paths for build and Redis runtime defaults | pass |
 
 ## Error Log
 | Timestamp | Error | Attempt | Resolution |
 |-----------|-------|---------|------------|
+| 2026-04-21 20:14 | Gitee Go build failed resolving `registry.cn-hangzhou.aliyuncs.com/acs/openjdk:17-jre-alpine` and `registry.cn-hangzhou.aliyuncs.com/acs/node:20-alpine` | 1 | Replaced default base images with confirmed SWR Docker Hub mirror paths |
 |           |       | 1       |            |
 
 ## 5-Question Reboot Check
 | Question | Answer |
 |----------|--------|
-| Where am I? | Phase 16 |
-| Where am I going? | 任务已完成，剩余的是将最新 Dockerfile 和 `.gitee/pipeline-docker.yml` 推到 Gitee 后重新执行流水线 |
-| What's the goal? | 让 Gitee Go 镜像构建绕过 Docker Hub frontend 超时，并避免下一步推镜像/部署时因为 TCR 变量缺失再次失败 |
-| What have I learned? | 当前失败并非基础镜像拉取失败，而是 Dockerfile syntax frontend 解析失败；同时导出的流水线文件里已有下一阶段会触发的 TCR 变量缺失问题 |
-| What have I done? | 已移除 syntax frontend 依赖、去掉 cache-mount 语法，并补回导出流水线中缺失的 TCR 变量和命名空间 tag |
+| Where am I? | Phase 17 |
+| Where am I going? | 将最新 Dockerfile 和 `.gitee/pipeline-docker.yml` 推到 Gitee 后重新执行流水线，验证基础镜像拉取已恢复 |
+| What's the goal? | 让 Gitee Go 镜像构建绕过失效的阿里云基础镜像默认值，继续完成镜像构建、推送和远端部署 |
+| What have I learned? | syntax frontend 问题已经解决；当前真实阻塞点是阿里云默认基础镜像 tag 在 Gitee Go 环境不可用，需要改成可验证存在的国内镜像映射 |
+| What have I done? | 已把四份 Dockerfile 的基础镜像默认值切到华为云 SWR 的 Docker Hub 映射，并同步修正 Redis 运行时默认镜像与相关文档 |

@@ -4,7 +4,7 @@
 当前目标是在保留“时间戳镜像 + docker compose 服务器部署”约束的前提下，将自动化链路从 GitHub / 阿里云 ACR 改为 Gitee Go / 腾讯云 TCR。
 
 ## Current Phase
-Phase 16
+Phase 17
 
 ## Phases
 ### Phase 1: Requirements & Discovery
@@ -102,6 +102,12 @@ Phase 16
 - [x] Diagnose image build logs against current Dockerfiles
 - [x] Remove Docker Hub syntax frontend dependency from active Dockerfiles
 - [x] Restore missing TCR variables and namespace tag usage in the exported pipeline
+- **Status:** complete
+
+### Phase 17: Base Image Mirror Fix
+- [x] Confirm the latest build failures are now base-image pull failures rather than syntax frontend failures
+- [x] Replace failing Aliyun default base image tags with reachable domestic mirror images
+- [x] Align Redis runtime defaults and deployment docs with the same mirror strategy
 - **Status:** complete
 
 ## Key Questions
