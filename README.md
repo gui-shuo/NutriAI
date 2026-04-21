@@ -35,7 +35,7 @@
 | 缓存 | Redis | 6.0 |
 | AI 服务 | 通义千问 (DashScope) | qwen-plus |
 | 容器化 | Docker + Docker Compose | - |
-| CI/CD | GitHub Actions | - |
+| CI/CD | 阿里云 ACR 自动构建 + 服务器本地 deploy.sh | - |
 | 反向代理 | Nginx | - |
 
 ### 系统架构
@@ -124,7 +124,6 @@ ai-based-healthy-diet/
 │   └── Dockerfile
 ├── .github/workflows/        # CI/CD 工作流
 │   ├── ci.yml                # 前端+后端构建检查+安全扫描
-│   └── deploy.yml            # 生产部署
 ├── docker-compose.yml        # 本地开发环境
 ├── docker-compose.prod.yml   # 生产环境
 └── .env.example              # 环境变量模板
@@ -279,9 +278,11 @@ ai-based-healthy-diet/
 
 ### 架构概述
 
-- **CI/CD**: GitHub Actions 在 Runner 上构建 Docker 镜像 → SCP 上传 → 服务器 `docker load`
+- **CI/CD**: 阿里云 ACR 个人版绑定 GitHub 仓库后自动构建后端与前端镜像
+- **镜像命名**: 固定仓库名 + 时间戳 Tag，推荐格式为 `YYYYMMDDHHMMSS`
+- **部署方式**: 服务器执行 `./deploy.sh deploy`，脚本会查询后端和前端共同存在的最新时间戳镜像并直接启动容器
 - **数据库**: 腾讯云 MySQL（CynosDB），SSL 加密连接
-- **缓存**: Docker 容器内 Redis
+- **缓存**: Docker 容器内 Redis（生产默认使用阿里云公共镜像）
 - **适用服务器**: 2vCPU / 2GiB（如火山引擎轻量服务器）
 
 ### 1. 服务器初始化（仅首次）
@@ -306,12 +307,21 @@ sudo chmod 600 /www/wwwroot/nutriai/.env
 `.env` 文件内容：
 
 ```ini
-# Docker 镜像标签（由 CI/CD 自动更新）
-IMAGE_TAG=latest
+# 阿里云 ACR
+ACR_REGISTRY=crpi-lds0nj6fmrvtaiga.cn-beijing.personal.cr.aliyuncs.com
+ACR_NAMESPACE=your_acr_namespace
+ACR_USERNAME=your_acr_username
+ACR_PASSWORD=your_acr_password
+BACKEND_IMAGE_REPO=nutriai-backend
+FRONTEND_IMAGE_REPO=nutriai-frontend
+REDIS_IMAGE=registry.cn-hangzhou.aliyuncs.com/acs/redis:6.0-alpine
+
+# Docker 镜像标签（deploy.sh 会自动更新为最新公共时间戳 tag）
+IMAGE_TAG=20260101000000
 
 # 云数据库 (腾讯云 MySQL)
-DB_HOST=bj-cynosdbmysql-grp-xxxxxxxx.sql.tencentcdb.com
-DB_PORT=23593
+DB_HOST_NEI=10.0.0.10
+DB_PORT_NEI=3306
 DB_NAME=nutriai
 DB_USERNAME=your_db_username
 DB_PASSWORD=your_db_password
@@ -323,33 +333,39 @@ REDIS_PASSWORD=your_redis_password
 JWT_SECRET=your_jwt_secret_key_at_least_64_characters_long
 
 # 通义千问 AI
-TONGYI_API_KEY=sk-your_tongyi_api_key
+AI_API_KEY=sk-your_ai_api_key
+AI_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
+AI_MODEL_NAME=qwen3.5-122b-a10b
+AI_DIET_PLAN_MODEL=qwen3.5-flash
+
+# CORS
+CORS_ALLOWED_ORIGINS=https://your-domain.com
+
+# Java 运行参数
+JAVA_OPTS=-Xms256m -Xmx384m -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -Duser.timezone=Asia/Shanghai
+
+# 邮件
+MAIL_HOST=smtp.example.com
+MAIL_PORT=465
+MAIL_USERNAME=your_mail_username
+MAIL_PASSWORD=your_mail_password
+MAIL_NICKNAME=NutriAI健康饮食助手
 
 # 腾讯云 COS 对象存储（可选）
 COS_SECRET_ID=
 COS_SECRET_KEY=
 COS_REGION=ap-beijing
 COS_BUCKET=nutriai-xxxxxxxx
-
-# 百度 AI 图像识别（可选）
-BAIDU_AI_APP_ID=
-BAIDU_AI_API_KEY=
-BAIDU_AI_SECRET_KEY=
 ```
 
-### 3. 配置 GitHub Secrets
+### 3. 配置阿里云 ACR 自动构建
 
-仓库 → Settings → Secrets and variables → Actions，添加以下 5 个 Secret：
+详细字段说明见 `docs/aliyun-acr-build.md`。至少需要创建两个镜像仓库：
 
-| Secret 名称 | 说明 |
-|---|---|
-| `SERVER_HOST` | 服务器公网 IP |
-| `SERVER_USER` | SSH 登录用户（建议 `deployer`） |
-| `SERVER_SSH_KEY` | SSH 私钥内容 |
-| `PROD_API_BASE_URL` | 前端 API 地址，如 `https://diet.example.com/api` |
-| `PROD_WS_BASE_URL` | 前端 WebSocket 地址，如 `wss://diet.example.com/ws` |
+- `<命名空间>/nutriai-backend`
+- `<命名空间>/nutriai-frontend`
 
-> 数据库密码、Redis、JWT、API Key 等敏感信息全部由服务器 `.env` 管理，不经过 GitHub Secrets。
+两个仓库都绑定同一个 GitHub 仓库，但构建上下文分别指向 `backend` 和 `frontend`。生产环境建议两个仓库都使用相同的时间戳 Tag 规则，格式为 `YYYYMMDDHHMMSS`。
 
 ### 4. 初始化云数据库
 
@@ -360,22 +376,24 @@ mysql -h <DB_HOST> -P <DB_PORT> -u <DB_USERNAME> -p --ssl-mode=REQUIRED \
   nutriai < backend/src/main/resources/db/alldata.sql
 ```
 
-### 5. 触发部署
+### 5. 触发构建与部署
 
 ```bash
-# 方式一：推送版本标签
-git tag v1.0.0 && git push origin v1.0.0
+# 推送代码后，阿里云 ACR 自动构建镜像
+git push origin master
 
-# 方式二：GitHub Actions 页面手动触发
-# Actions → Deploy to Volcano Engine → Run workflow
+# 服务器上拉取最新公共时间戳镜像并部署
+ssh deployer@<服务器IP>
+cd /www/wwwroot/nutriai
+./deploy.sh deploy
 ```
 
 ### 6. 部署流程（自动）
 
-1. GitHub Runner 构建 `nutriai-backend:<tag>` 和 `nutriai-frontend:<tag>` 镜像
-2. 打包镜像为 `nutriai-images.tar.gz`，SCP 上传到服务器
-3. 上传 `docker-compose.prod.yml`
-4. 服务器执行 `docker load` + `docker compose up -d`
+1. GitHub 代码推送到仓库后，阿里云 ACR 根据已绑定的构建规则自动构建镜像。
+2. 服务器执行 `./deploy.sh resolve-tag`，查询后端和前端共同存在的最新时间戳 Tag。
+3. `./deploy.sh deploy` 自动写入 `.env` 中的 `IMAGE_TAG` 并执行 `docker compose pull`。
+4. 脚本执行 `docker compose up -d --force-recreate` 直接启动最新镜像对应的容器。
 
 ### 7. 运维命令
 
@@ -383,17 +401,23 @@ git tag v1.0.0 && git push origin v1.0.0
 ssh deployer@<服务器IP>
 cd /www/wwwroot/nutriai
 
+# 查看当前可部署的最新公共时间戳 tag
+./deploy.sh resolve-tag
+
+# 部署最新公共时间戳镜像
+./deploy.sh deploy
+
+# 部署指定时间戳镜像
+./deploy.sh deploy 20260421123045
+
 # 查看服务状态
-sudo docker compose --env-file .env -f docker-compose.prod.yml ps
+./deploy.sh status
 
 # 查看日志
-sudo docker compose --env-file .env -f docker-compose.prod.yml logs -f
+./deploy.sh logs backend
 
-# 重启服务
-sudo docker compose --env-file .env -f docker-compose.prod.yml restart backend
-
-# 查看后端日志
-sudo docker compose --env-file .env -f docker-compose.prod.yml logs -f backend
+# 健康检查
+./deploy.sh healthcheck
 ```
 
 ---
@@ -419,8 +443,9 @@ test: 测试相关        chore: 构建/工具变动
 
 ### CI/CD 流程
 
-- **Push to master / PR**: 触发 `ci.yml`（前端 lint+build、后端编译、PR 安全扫描）
-- **Push tag v\***: 触发 `deploy.yml` 自动部署到生产服务器
+- **Push to GitHub**: 阿里云 ACR 根据代码源绑定与构建规则自动构建镜像
+- **Deploy on server**: 服务器执行 `./deploy.sh deploy` 自动解析最新公共时间戳镜像并启动容器
+- **时间戳标签**: 如果 ACR 个人版控制台无法直接生成时间戳 tag，请改用 Git tag 触发策略或云效流水线
 
 ---
 

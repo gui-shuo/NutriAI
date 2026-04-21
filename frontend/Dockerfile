@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:1.7
 
-# GitHub Actions 构建时默认直接从 Docker 官方镜像拉取基础镜像
-ARG NODE_BUILDER_IMAGE=node:20-alpine
-ARG NGINX_RUNTIME_IMAGE=nginx:1.25-alpine
+# 默认使用阿里云公共镜像，必要时可通过 build-arg 覆盖
+ARG NODE_BUILDER_IMAGE=registry.cn-hangzhou.aliyuncs.com/acs/node:20-alpine
+ARG NGINX_RUNTIME_IMAGE=registry.cn-hangzhou.aliyuncs.com/acs/nginx:1.25-alpine
 
 FROM ${NODE_BUILDER_IMAGE} AS builder
 

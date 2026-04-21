@@ -1,0 +1,44 @@
+# Findings & Decisions
+
+## Requirements
+- 不再使用 GitHub 自动化部署到服务器。
+- 镜像构建改由阿里云容器镜像服务自动从 GitHub 仓库构建。
+- 项目构建需要的基础镜像都切到阿里云公共镜像。
+- 需要明确阿里云构建出的镜像命名方式，尤其是时间戳标签。
+- 需要服务器侧自动化脚本：拉取最新时间戳镜像并直接运行容器。
+
+## Research Findings
+- backend/Dockerfile 默认基础镜像仍为 maven:3.9-eclipse-temurin-17 与 eclipse-temurin:17-jre-alpine。
+- frontend/Dockerfile 默认基础镜像仍为 node:20-alpine 与 nginx:1.25-alpine。
+- docker-compose.prod.yml 仍使用 TCR_REGISTRY/TCR_NAMESPACE 变量命名，默认值仍是旧腾讯云仓库。
+- 旧的 .github/workflows/deploy.yml 已移除，仓库内不再保留 GitHub 远端部署流程。
+- 阿里云 ACR 个人版官方文档确认：源码自动构建支持公开公网基础镜像、同地域同账号私有公网镜像，不支持第三方授权镜像或跨地域私有镜像。
+- 阿里云 ACR 个人版官方文档在构建规则中提供“镜像版本”字段，但公开文档没有说明支持 DATETIME 之类的动态变量模板。
+- 阿里云云效流水线文档明确支持使用 DATETIME 作为镜像标签，但这属于云效流水线能力，不等同于 ACR 个人版源码自动构建能力。
+- 阿里云公开资料可以确认 registry.cn-hangzhou.aliyuncs.com/acs/maven、registry.cn-hangzhou.aliyuncs.com/acs/nginx、registry.cn-hangzhou.aliyuncs.com/acs/node、registry.cn-hangzhou.aliyuncs.com/acs/openjdk 这类公共镜像前缀存在，但具体 tag 兼容性需要保留可覆盖能力。
+
+## Technical Decisions
+| Decision | Rationale |
+|----------|-----------|
+| 服务器自动部署脚本继续基于 docker compose | 项目本身就是多容器，直接 docker run 需要手动管理网络、卷和健康依赖，复杂度高 |
+| 基础镜像默认值改为阿里云公共镜像，并保留 build-arg 覆盖能力 | 阿里云公共镜像是目标默认源，但公开资料对部分 tag 支持不够稳定，保留覆盖能力更稳 |
+| 自动部署脚本按“后端和前端公共时间戳 tag 交集”选择最新版本 | 能避免前后端分别取各自最新 tag 导致版本不一致 |
+| README 与 .env.example 同步切换到 ACR 命名 | 避免运行脚本、compose、文档三处继续混用旧的 TCR 变量 |
+
+## Issues Encountered
+| Issue | Resolution |
+|-------|------------|
+| 阿里云公共镜像的具体 tag 文档不完整 | 采用已确认存在的公共镜像仓库前缀，并把具体镜像名保留为可覆盖默认值 |
+| ACR 个人版是否支持动态时间戳镜像 tag 未见官方说明 | 在交付说明中明确：时间戳 tag 规则需在 ACR 控制台确认；如不能动态生成，则建议改为手动 git tag 触发或使用云效流水线 |
+
+## Resources
+- backend/Dockerfile
+- frontend/Dockerfile
+- docker-compose.prod.yml
+- .github/workflows/deploy.yml
+- https://help.aliyun.com/zh/acr/user-guide/create-a-repository-and-build-images
+- https://help.aliyun.com/zh/yunxiao/use-cases/java-application-build-and-deploy-k8s
+- https://github.com/AliyunContainerService/maven-image
+
+## Visual/Browser Findings
+- 暂无

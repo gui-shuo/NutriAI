@@ -1,10 +1,10 @@
 # 显式指定项目名称，确保所有容器都在 nutriai 项目下
-# 部署到腾讯云轻量服务器，依赖腾讯云 TCR / MySQL / COS
+# 生产环境使用阿里云 ACR 存放应用镜像，Redis 默认走阿里云公共镜像
 name: nutriai
 
 services:
   redis:
-    image: redis:6.0-alpine
+    image: ${REDIS_IMAGE:-registry.cn-hangzhou.aliyuncs.com/acs/redis:6.0-alpine}
     restart: always
     command: redis-server --appendonly yes --requirepass "${REDIS_PASSWORD}" --maxmemory 64mb --maxmemory-policy allkeys-lru
     volumes:
@@ -21,7 +21,7 @@ services:
       - nutriai-network
 
   backend:
-    image: ${TCR_REGISTRY:-ccr.ccs.tencentyun.com}/${TCR_NAMESPACE:-heyitshuo}/nutriai-backend:${IMAGE_TAG}
+    image: ${ACR_REGISTRY:-crpi-lds0nj6fmrvtaiga.cn-beijing.personal.cr.aliyuncs.com}/${ACR_NAMESPACE:-heyitshuo1}/${BACKEND_IMAGE_REPO:-nutriai-backend}:${IMAGE_TAG}
     restart: always
     depends_on:
       redis:
@@ -79,7 +79,7 @@ services:
       - nutriai-network
 
   frontend:
-    image: ${TCR_REGISTRY:-ccr.ccs.tencentyun.com}/${TCR_NAMESPACE:-heyitshuo}/nutriai-frontend:${IMAGE_TAG}
+    image: ${ACR_REGISTRY:-crpi-lds0nj6fmrvtaiga.cn-beijing.personal.cr.aliyuncs.com}/${ACR_NAMESPACE:-heyitshuo1}/${FRONTEND_IMAGE_REPO:-nutriai-frontend}:${IMAGE_TAG}
     restart: always
     depends_on:
       - backend

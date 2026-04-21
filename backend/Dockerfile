@@ -1,9 +1,9 @@
 # syntax=docker/dockerfile:1.7
 
 # 多阶段构建
-# GitHub Actions 构建时默认直接从 Docker 官方镜像拉取基础镜像
-ARG MAVEN_BUILDER_IMAGE=maven:3.9-eclipse-temurin-17
-ARG JAVA_RUNTIME_IMAGE=eclipse-temurin:17-jre-alpine
+# 默认使用阿里云公共镜像，必要时可通过 build-arg 覆盖
+ARG MAVEN_BUILDER_IMAGE=registry.cn-hangzhou.aliyuncs.com/acs/maven:3.9-eclipse-temurin-17
+ARG JAVA_RUNTIME_IMAGE=registry.cn-hangzhou.aliyuncs.com/acs/openjdk:17-jre-alpine
 
 # 阶段1：构建
 FROM ${MAVEN_BUILDER_IMAGE} AS builder
