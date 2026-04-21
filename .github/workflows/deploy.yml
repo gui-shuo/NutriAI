@@ -99,7 +99,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           envs: IMAGE_TAG,TCR_REGISTRY,TCR_NAMESPACE,TCR_USERNAME,TCR_PASSWORD,DEPLOY_DIR,COMPOSE_FILE,COMPOSE_FILE_B64
           script_stop: true
-          command_timeout: 90m
+          command_timeout: 500m
           script: |
             set -e
 
