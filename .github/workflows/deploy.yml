@@ -12,7 +12,7 @@ concurrency:
 
 env:
   TCR_REGISTRY: crpi-lds0nj6fmrvtaiga.cn-beijing.personal.cr.aliyuncs.com
-  TCR_NAMESPACE: heyitshuo
+  TCR_NAMESPACE: heyitshuo1
   TCR_USERNAME: heyitshuo
   DEPLOY_DIR: /www/wwwroot/nutriai
   COMPOSE_FILE: docker-compose.prod.yml
