@@ -1,7 +1,9 @@
+# syntax=docker/dockerfile:1.7
+
 # 多阶段构建
-# 默认使用华为云 SWR 同步的 Docker Hub 镜像，必要时可通过 build-arg 覆盖
-ARG MAVEN_BUILDER_IMAGE=swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/library/maven:3-eclipse-temurin-17
-ARG JAVA_RUNTIME_IMAGE=swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/library/eclipse-temurin:17-jre-alpine
+# GitHub Actions 构建时默认直接从 Docker 官方镜像拉取基础镜像
+ARG MAVEN_BUILDER_IMAGE=maven:3.9-eclipse-temurin-17
+ARG JAVA_RUNTIME_IMAGE=eclipse-temurin:17-jre-alpine
 
 # 阶段1：构建
 FROM ${MAVEN_BUILDER_IMAGE} AS builder
@@ -26,11 +28,13 @@ ENV HTTP_PROXY=${HTTP_PROXY} \
 
 # 复制 pom.xml 并预热依赖缓存
 COPY pom.xml ./
-RUN mvn -B dependency:go-offline
+RUN --mount=type=cache,target=/root/.m2/repository \
+    mvn -B dependency:go-offline
 
 # 复制源代码并构建
 COPY src ./src
-RUN mvn -B clean package -DskipTests
+RUN --mount=type=cache,target=/root/.m2/repository \
+    mvn -B clean package -DskipTests
 
 # 阶段2：运行
 FROM ${JAVA_RUNTIME_IMAGE}

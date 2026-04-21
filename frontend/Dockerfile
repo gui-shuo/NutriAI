@@ -1,6 +1,8 @@
-# 默认使用华为云 SWR 同步的 Docker Hub 镜像，必要时可通过 build-arg 覆盖
-ARG NODE_BUILDER_IMAGE=swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/library/node:20-alpine
-ARG NGINX_RUNTIME_IMAGE=swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/library/nginx:1.25-alpine
+# syntax=docker/dockerfile:1.7
+
+# GitHub Actions 构建时默认直接从 Docker 官方镜像拉取基础镜像
+ARG NODE_BUILDER_IMAGE=node:20-alpine
+ARG NGINX_RUNTIME_IMAGE=nginx:1.25-alpine
 
 FROM ${NODE_BUILDER_IMAGE} AS builder
 
@@ -24,7 +26,8 @@ ENV HTTP_PROXY=${HTTP_PROXY} \
 
 
 COPY package*.json ./
-RUN npm ci --prefer-offline --no-audit
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci --prefer-offline --no-audit
 
 COPY . .
 
@@ -34,7 +37,8 @@ ARG VITE_WS_BASE_URL=
 ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
 ENV VITE_WS_BASE_URL=${VITE_WS_BASE_URL}
 
-RUN npm run build
+RUN --mount=type=cache,target=/root/.npm \
+    npm run build
 
 FROM ${NGINX_RUNTIME_IMAGE}
 

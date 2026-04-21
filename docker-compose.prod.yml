@@ -1,10 +1,10 @@
 # 显式指定项目名称，确保所有容器都在 nutriai 项目下
-# 生产环境应用镜像由 Gitee Go 推送到腾讯云 TCR，Redis 默认走华为云 SWR 同步的 Docker Hub 镜像
+# 部署到腾讯云轻量服务器，依赖腾讯云 TCR / MySQL / COS
 name: nutriai
 
 services:
   redis:
-    image: ${REDIS_IMAGE:-swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/library/redis:6.0-alpine}
+    image: redis:6.0-alpine
     restart: always
     command: redis-server --appendonly yes --requirepass "${REDIS_PASSWORD}" --maxmemory 64mb --maxmemory-policy allkeys-lru
     volumes:
@@ -21,7 +21,7 @@ services:
       - nutriai-network
 
   backend:
-    image: ${TCR_REGISTRY:-ccr.ccs.tencentyun.com}/${TCR_NAMESPACE:-your_tcr_namespace}/${BACKEND_IMAGE_REPO:-nutriai-backend}:${IMAGE_TAG}
+    image: ${TCR_REGISTRY:-ccr.ccs.tencentyun.com}/${TCR_NAMESPACE:-heyitshuo}/nutriai-backend:${IMAGE_TAG}
     restart: always
     depends_on:
       redis:
@@ -79,7 +79,7 @@ services:
       - nutriai-network
 
   frontend:
-    image: ${TCR_REGISTRY:-ccr.ccs.tencentyun.com}/${TCR_NAMESPACE:-your_tcr_namespace}/${FRONTEND_IMAGE_REPO:-nutriai-frontend}:${IMAGE_TAG}
+    image: ${TCR_REGISTRY:-ccr.ccs.tencentyun.com}/${TCR_NAMESPACE:-heyitshuo}/nutriai-frontend:${IMAGE_TAG}
     restart: always
     depends_on:
       - backend
