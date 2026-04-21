@@ -1,0 +1,67 @@
+# syntax=docker/dockerfile:1.7
+
+# Gitee Go 的 build@docker 默认使用仓库根目录作为上下文。
+# 该包装 Dockerfile 保留现有后端镜像构建逻辑，同时兼容根目录上下文。
+
+ARG MAVEN_BUILDER_IMAGE=registry.cn-hangzhou.aliyuncs.com/acs/maven:3.9-eclipse-temurin-17
+ARG JAVA_RUNTIME_IMAGE=registry.cn-hangzhou.aliyuncs.com/acs/openjdk:17-jre-alpine
+
+FROM ${MAVEN_BUILDER_IMAGE} AS builder
+
+WORKDIR /app/backend
+
+ARG HTTP_PROXY=
+ARG HTTPS_PROXY=
+ARG ALL_PROXY=
+ARG NO_PROXY=
+ENV HTTP_PROXY=${HTTP_PROXY} \
+    HTTPS_PROXY=${HTTPS_PROXY} \
+    ALL_PROXY=${ALL_PROXY} \
+    NO_PROXY=${NO_PROXY} \
+    http_proxy=${HTTP_PROXY} \
+    https_proxy=${HTTPS_PROXY} \
+    all_proxy=${ALL_PROXY} \
+    no_proxy=${NO_PROXY} \
+    MAVEN_OPTS="-Dmaven.repo.local=/root/.m2/repository"
+
+COPY backend/pom.xml ./pom.xml
+RUN --mount=type=cache,target=/root/.m2/repository \
+    mvn -B dependency:go-offline
+
+COPY backend/src ./src
+RUN --mount=type=cache,target=/root/.m2/repository \
+    mvn -B clean package -DskipTests
+
+FROM ${JAVA_RUNTIME_IMAGE}
+
+WORKDIR /app
+
+ARG HTTP_PROXY=
+ARG HTTPS_PROXY=
+ARG ALL_PROXY=
+ARG NO_PROXY=
+ENV HTTP_PROXY=${HTTP_PROXY} \
+    HTTPS_PROXY=${HTTPS_PROXY} \
+    ALL_PROXY=${ALL_PROXY} \
+    NO_PROXY=${NO_PROXY} \
+    http_proxy=${HTTP_PROXY} \
+    https_proxy=${HTTPS_PROXY} \
+    all_proxy=${ALL_PROXY} \
+    no_proxy=${NO_PROXY}
+
+RUN apk add --no-cache tzdata font-noto-cjk wget && \
+    cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
+    echo "Asia/Shanghai" > /etc/timezone
+
+COPY --from=builder /app/backend/target/*.jar app.jar
+
+RUN mkdir -p /app/logs
+
+ENV JAVA_OPTS="-Xms512m -Xmx1024m -XX:+UseG1GC -XX:MaxGCPauseMillis=200"
+
+EXPOSE 8080
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:8080/api/health || exit 1
+
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]

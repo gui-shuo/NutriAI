@@ -35,7 +35,7 @@
 | 缓存 | Redis | 6.0 |
 | AI 服务 | 通义千问 (DashScope) | qwen-plus |
 | 容器化 | Docker + Docker Compose | - |
-| CI/CD | 阿里云 ACR 自动构建 + 服务器本地 deploy.sh | - |
+| CI/CD | Gitee Go 工作流 + 腾讯云 TCR + 腾讯云服务器主机组部署 | - |
 | 反向代理 | Nginx | - |
 
 ### 系统架构
@@ -122,8 +122,9 @@ ai-based-healthy-diet/
 │   │   ├── application-prod.yml  # 生产配置
 │   │   └── db/alldata.sql    # 数据库初始化脚本
 │   └── Dockerfile
-├── .github/workflows/        # CI/CD 工作流
-│   ├── ci.yml                # 前端+后端构建检查+安全扫描
+├── pipeline-docker.yml       # Gitee Go 工作流
+├── Dockerfile.backend.gitee  # Gitee Go 后端构建包装 Dockerfile
+├── Dockerfile.frontend.gitee # Gitee Go 前端构建包装 Dockerfile
 ├── docker-compose.yml        # 本地开发环境
 ├── docker-compose.prod.yml   # 生产环境
 └── .env.example              # 环境变量模板
@@ -278,12 +279,12 @@ ai-based-healthy-diet/
 
 ### 架构概述
 
-- **CI/CD**: 阿里云 ACR 个人版绑定 GitHub 仓库后自动构建后端与前端镜像
-- **镜像命名**: 固定仓库名 + 时间戳 Tag，推荐格式为 `YYYYMMDDHHMMSS`
-- **部署方式**: 服务器执行 `./deploy.sh deploy`，脚本会查询后端和前端共同存在的最新时间戳镜像并直接启动容器
+- **CI/CD**: Gitee Go 在代码推送后生成 14 位时间戳 Tag，构建后端与前端镜像并推送到腾讯云 TCR
+- **镜像命名**: 固定仓库名 + 时间戳 Tag，格式为 `YYYYMMDDHHMMSS`
+- **部署方式**: Gitee Go 通过腾讯云服务器上的主机组 Agent 执行远端部署，自动拉取本次时间戳镜像并重建容器
 - **数据库**: 腾讯云 MySQL（CynosDB），SSL 加密连接
 - **缓存**: Docker 容器内 Redis（生产默认使用阿里云公共镜像）
-- **适用服务器**: 2vCPU / 2GiB（如火山引擎轻量服务器）
+- **资源约束**: 容器最大内存、swap 等限制继续由 `docker-compose.prod.yml` 统一控制
 
 ### 1. 服务器初始化（仅首次）
 
@@ -294,6 +295,8 @@ sudo systemctl enable --now docker
 sudo usermod -aG docker deployer
 sudo mkdir -p /www/wwwroot/nutriai
 ```
+
+还需要在该腾讯云服务器上加入 Gitee Go 主机组，供部署阶段远端执行。Gitee Go 官方文档公开的是“主机组 Agent”方案，而不是单独的 SSH 插件；实际效果等价于由工作流远端登录该服务器执行部署命令。
 
 ### 2. 配置服务器环境变量
 
@@ -307,16 +310,14 @@ sudo chmod 600 /www/wwwroot/nutriai/.env
 `.env` 文件内容：
 
 ```ini
-# 阿里云 ACR
-ACR_REGISTRY=crpi-lds0nj6fmrvtaiga.cn-beijing.personal.cr.aliyuncs.com
-ACR_NAMESPACE=your_acr_namespace
-ACR_USERNAME=your_acr_username
-ACR_PASSWORD=your_acr_password
+# 腾讯云 TCR
+TCR_REGISTRY=ccr.ccs.tencentyun.com
+TCR_NAMESPACE=your_tcr_namespace
 BACKEND_IMAGE_REPO=nutriai-backend
 FRONTEND_IMAGE_REPO=nutriai-frontend
 REDIS_IMAGE=registry.cn-hangzhou.aliyuncs.com/acs/redis:6.0-alpine
 
-# Docker 镜像标签（deploy.sh 会自动更新为最新公共时间戳 tag）
+# Docker 镜像标签（Gitee Go 部署阶段会自动更新为本次构建的时间戳 tag）
 IMAGE_TAG=20260101000000
 
 # 云数据库 (腾讯云 MySQL)
@@ -358,14 +359,21 @@ COS_REGION=ap-beijing
 COS_BUCKET=nutriai-xxxxxxxx
 ```
 
-### 3. 配置阿里云 ACR 自动构建
+### 3. 配置 Gitee Go 与腾讯云 TCR
 
-详细字段说明见 `docs/aliyun-acr-build.md`。至少需要创建两个镜像仓库：
+详细字段说明见 `docs/gitee-go-tcr-deploy.md`。至少需要创建两个腾讯云 TCR 镜像仓库：
 
 - `<命名空间>/nutriai-backend`
 - `<命名空间>/nutriai-frontend`
 
-两个仓库都绑定同一个 GitHub 仓库，但构建上下文分别指向 `backend` 和 `frontend`。生产环境建议两个仓库都使用相同的时间戳 Tag 规则，格式为 `YYYYMMDDHHMMSS`。
+Gitee Go 工作流依赖以下全局参数或流水线参数：
+
+- `TCR_NAMESPACE`
+- `TCR_USERNAME`
+- `TCR_PASSWORD`
+- `DEPLOY_HOST_GROUP_ID`
+
+其中镜像 Tag 由工作流自动生成，格式固定为 `YYYYMMDDHHMMSS`。
 
 ### 4. 初始化云数据库
 
@@ -378,22 +386,19 @@ mysql -h <DB_HOST> -P <DB_PORT> -u <DB_USERNAME> -p --ssl-mode=REQUIRED \
 
 ### 5. 触发构建与部署
 
-```bash
-# 推送代码后，阿里云 ACR 自动构建镜像
-git push origin master
-
-# 服务器上拉取最新公共时间戳镜像并部署
-ssh deployer@<服务器IP>
-cd /www/wwwroot/nutriai
-./deploy.sh deploy
-```
+1. 将代码推送到 Gitee 仓库。
+2. 打开仓库对应的 Gitee Go 流水线页面，选择 `nutriai-gitee-go-tcr`。
+3. 点击“执行流水线”，选择需要部署的分支，生产建议选择 `master`。
+4. Gitee Go 会生成新的时间戳镜像标签，完成构建、推送、远端部署和清理。
 
 ### 6. 部署流程（自动）
 
-1. GitHub 代码推送到仓库后，阿里云 ACR 根据已绑定的构建规则自动构建镜像。
-2. 服务器执行 `./deploy.sh resolve-tag`，查询后端和前端共同存在的最新时间戳 Tag。
-3. `./deploy.sh deploy` 自动写入 `.env` 中的 `IMAGE_TAG` 并执行 `docker compose pull`。
-4. 脚本执行 `docker compose up -d --force-recreate` 直接启动最新镜像对应的容器。
+1. 在 Gitee Go 页面手动执行流水线后，系统生成当前运行对应的 14 位时间戳 Tag。
+2. 工作流使用两份 Gitee 专用包装 Dockerfile 构建后端/前端镜像并推送到腾讯云 TCR。
+3. 工作流把最新的 `docker-compose.prod.yml` 下发到腾讯云服务器。
+4. 远端部署步骤登录 TCR，更新 `.env` 中的 `IMAGE_TAG` 与镜像仓库变量。
+5. 远端部署步骤执行 `docker compose pull` 与 `docker compose up -d --force-recreate --remove-orphans`。
+6. 远端部署步骤清理旧的停止容器、旧的时间戳镜像以及悬空镜像。
 
 ### 7. 运维命令
 
@@ -401,23 +406,14 @@ cd /www/wwwroot/nutriai
 ssh deployer@<服务器IP>
 cd /www/wwwroot/nutriai
 
-# 查看当前可部署的最新公共时间戳 tag
-./deploy.sh resolve-tag
+# 查看容器状态
+docker compose --env-file .env -f docker-compose.prod.yml ps
 
-# 部署最新公共时间戳镜像
-./deploy.sh deploy
+# 查看后端日志
+docker compose --env-file .env -f docker-compose.prod.yml logs -f backend
 
-# 部署指定时间戳镜像
-./deploy.sh deploy 20260421123045
-
-# 查看服务状态
-./deploy.sh status
-
-# 查看日志
-./deploy.sh logs backend
-
-# 健康检查
-./deploy.sh healthcheck
+# 查看前端日志
+docker compose --env-file .env -f docker-compose.prod.yml logs -f frontend
 ```
 
 ---
@@ -443,9 +439,10 @@ test: 测试相关        chore: 构建/工具变动
 
 ### CI/CD 流程
 
-- **Push to GitHub**: 阿里云 ACR 根据代码源绑定与构建规则自动构建镜像
-- **Deploy on server**: 服务器执行 `./deploy.sh deploy` 自动解析最新公共时间戳镜像并启动容器
-- **时间戳标签**: 如果 ACR 个人版控制台无法直接生成时间戳 tag，请改用 Git tag 触发策略或云效流水线
+- **Manual Run in Gitee Go**: 在流水线页面手动点击执行，并选择目标分支
+- **Push to TCR**: 工作流将本次时间戳镜像推送到 `ccr.ccs.tencentyun.com/<namespace>/nutriai-backend` 与 `nutriai-frontend`
+- **Deploy on Tencent CVM**: Gitee Go 主机组部署步骤在目标服务器执行 `docker compose pull/up`，按 compose 中的内存上限重建容器
+- **Cleanup**: 工作流自动清理 `nutriai` 项目的旧停止容器、旧时间戳镜像和悬空镜像
 
 ---
 

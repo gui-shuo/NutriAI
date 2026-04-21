@@ -7,6 +7,21 @@
 - 需要明确阿里云构建出的镜像命名方式，尤其是时间戳标签。
 - 需要服务器侧自动化脚本：拉取最新时间戳镜像并直接运行容器。
 
+## Follow-up Requirements
+- 自动化流程改为 Gitee Go 工作流，不再依赖 GitHub Actions / GitHub 仓库工作流。
+- 镜像存储位置改为腾讯云 TCR。
+- 其他约束保持不变：继续使用时间戳 tag、继续使用 docker compose 服务器部署，但不再依赖手工 deploy.sh。
+
+## Follow-up Findings
+- 当前仓库已经没有 GitHub deploy workflow，但 README、docker-compose.prod.yml、.env.example 和 docs 在切换前仍全面使用 ACR 语义。
+- Gitee Go 官方文档确认 YAML 顶层字段为 version / name / displayName / triggers / variables / stages。
+- Gitee Go 官方文档确认可用 deploy@agent 与 shell@agent 主机组插件执行远端脚本。
+- Gitee Go 的 build@docker 插件文档未暴露独立 build context 配置，和当前 backend/frontend 子目录 Docker 构建方式存在适配风险。
+- 腾讯云 TCR 文档确认个人版登录地址为 ccr.ccs.tencentyun.com，仓库命名格式为 ccr.ccs.tencentyun.com/<namespace>/<repo>:<tag>。
+- 最终实现采用 Gitee Go 的官方主机组部署能力，而不是单独 SSH 插件；在目标腾讯云服务器上执行的命令与 SSH 远端执行等价。
+- 为兼容 Gitee Go 的根目录 Docker 构建上下文，新增了两份根目录包装 Dockerfile，避免破坏现有 backend/frontend 本地 Dockerfile。
+- Gitee Go 的手动执行不需要额外 YAML 字段；去掉 `triggers` 后，流水线仍可在页面中手动点击执行。
+
 ## Research Findings
 - backend/Dockerfile 默认基础镜像仍为 maven:3.9-eclipse-temurin-17 与 eclipse-temurin:17-jre-alpine。
 - frontend/Dockerfile 默认基础镜像仍为 node:20-alpine 与 nginx:1.25-alpine。

@@ -2,6 +2,73 @@
 
 ## Session: 2026-04-21
 
+### Phase 6: Gitee Go Discovery
+- **Status:** complete
+- Actions taken:
+  - 读取了 planning-with-files 技能文档并恢复 task_plan.md / findings.md / progress.md 上下文。
+  - 检查当前仓库已不存在 .github/workflows 与 .gitee 工作流文件，说明需要从零补 Gitee Go 工作流。
+  - 查阅了 Gitee Go 官方帮助文档，确认顶层 YAML 结构、触发器、变量与阶段/任务模型。
+  - 查阅了 Gitee Go 官方插件文档，确认 deploy@agent、shell@agent、build@docker 的能力边界。
+  - 查阅了腾讯云 TCR 官方文档，确认登录域名 ccr.ccs.tencentyun.com 与仓库命名格式。
+- Files created/modified:
+  - task_plan.md (updated)
+  - findings.md (updated)
+  - progress.md (updated)
+
+### Phase 7: Gitee Go Implementation
+- **Status:** complete
+- Actions taken:
+  - 新增了 `pipeline-docker.yml`，将时间戳生成、镜像构建推送、远端部署、旧镜像清理全部并入 Gitee Go。
+  - 新增 `Dockerfile.backend.gitee` 与 `Dockerfile.frontend.gitee`，适配 Gitee Go 根目录 Docker 构建上下文。
+  - 将生产 compose 与 `.env.example` 中的镜像仓库语义从 ACR 切回 TCR。
+  - 删除了不再作为主路径的 `deploy.sh`。
+- Files created/modified:
+  - pipeline-docker.yml (created)
+  - Dockerfile.backend.gitee (created)
+  - Dockerfile.frontend.gitee (created)
+  - docker-compose.prod.yml (updated)
+  - .env.example (updated)
+  - deploy.sh (deleted)
+
+### Phase 8: Docs Refresh
+- **Status:** complete
+- Actions taken:
+  - 重写 README 的生产部署章节，改为 Gitee Go + 腾讯云 TCR + 腾讯云服务器主机组部署。
+  - 删除阿里云 ACR 专用文档并替换为 Gitee Go / TCR 说明文档。
+  - 文档中补充了 Gitee Go 全局参数、主机组、容器资源约束与远端清理策略。
+- Files created/modified:
+  - README.md (updated)
+  - docs/gitee-go-tcr-deploy.md (created)
+  - docs/aliyun-acr-build.md (deleted)
+
+### Phase 9: Verification
+- **Status:** complete
+- Actions taken:
+  - 对新增的 Gitee Go 工作流、包装 Dockerfile、compose、README、文档和计划文件运行了 Problems 检查，未发现语法诊断问题。
+  - 全仓库扫描了主部署链路中的 ACR / GitHub / deploy.sh 残留，确认业务部署路径已切换到 Gitee Go + TCR。
+  - 将远端清理逻辑从全局 `docker container prune` 收紧为仅清理 `nutriai` compose 项目的旧停止容器，避免误伤同机其他项目。
+- Files created/modified:
+  - pipeline-docker.yml (updated)
+  - README.md (updated)
+  - docs/gitee-go-tcr-deploy.md (updated)
+  - findings.md (updated)
+  - task_plan.md (updated)
+  - progress.md (updated)
+
+### Phase 10: Manual Trigger Adjustment
+- **Status:** complete
+- Actions taken:
+  - 去掉了 `pipeline-docker.yml` 中的自动 `push` 触发配置，改为仅在 Gitee Go 页面手动执行。
+  - 重写 README 与 Gitee/TCR 部署文档中的触发说明，改为“手动执行流水线并选择分支”。
+  - 记录了 Gitee Go 手动执行模式的结论：无需额外 YAML 字段，只需不配置 `triggers`。
+- Files created/modified:
+  - pipeline-docker.yml (updated)
+  - README.md (updated)
+  - docs/gitee-go-tcr-deploy.md (updated)
+  - findings.md (updated)
+  - task_plan.md (updated)
+  - progress.md (updated)
+
 ### Phase 1: Requirements & Discovery
 - **Status:** complete
 - **Started:** 2026-04-21
@@ -68,7 +135,9 @@
 |------|-------|----------|--------|--------|
 | Planning files created | task_plan/findings/progress | Files exist in project root | Files created successfully | pass |
 | Config diagnostics | get_errors on edited files | No diagnostics related to edits | No errors found | pass |
-| Shell syntax | bash -n deploy.sh | Script parses under bash | 当前环境无 bash，可执行性待服务器验证 | pending |
+| Gitee deployment files | pipeline-docker/Dockerfile wrappers/compose/docs | No diagnostics related to edits | No errors found | pass |
+| Stale deployment references | grep on deployment path | No active ACR/deploy.sh refs in deployment path | Passed on README/docs/compose/env/pipeline | pass |
+| Manual trigger mode | pipeline-docker without triggers | No auto trigger, manual run still available in UI | Changed to manual-only configuration | pass |
 
 ## Error Log
 | Timestamp | Error | Attempt | Resolution |
@@ -78,8 +147,8 @@
 ## 5-Question Reboot Check
 | Question | Answer |
 |----------|--------|
-| Where am I? | Phase 5 |
-| Where am I going? | 任务已完成，后续只需要在阿里云控制台按文档补齐构建规则并在服务器执行脚本 |
-| What's the goal? | 切换到阿里云自动构建与服务器侧自动拉取最新时间戳镜像运行 |
-| What have I learned? | ACR 个人版时间戳 tag 能否动态生成取决于控制台能力，仓库侧只能约定格式并在脚本里消费 |
-| What have I done? | 已完成 Dockerfile、compose、文档和 deploy.sh 的阿里云迁移，并删除旧 GitHub 部署 workflow |
+| Where am I? | Phase 10 |
+| Where am I going? | 任务已完成，剩余的是在 Gitee Go 控制台手动执行流水线并观察首跑日志 |
+| What's the goal? | 切换到 Gitee Go 手动触发构建时间戳镜像并推送到腾讯云 TCR，再由工作流远端部署到腾讯云服务器 |
+| What have I learned? | Gitee Go 页面手动执行不依赖额外 YAML 开关，去掉自动触发器即可变为手动模式 |
+| What have I done? | 已将 Gitee Go 工作流从自动 push 触发切换为手动执行，并同步更新了相关文档与计划记录 |
