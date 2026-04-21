@@ -34,7 +34,7 @@ RUN --mount=type=cache,target=/root/.m2/repository \
 # 复制源代码并构建
 COPY src ./src
 RUN --mount=type=cache,target=/root/.m2/repository \
-    mvn -B clean package -DskipTests -Pprod
+    mvn -B clean package -DskipTests
 
 # 阶段2：运行
 FROM ${JAVA_RUNTIME_IMAGE}

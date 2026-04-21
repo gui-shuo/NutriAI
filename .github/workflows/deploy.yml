@@ -55,7 +55,7 @@ jobs:
           provenance: false
           sbom: false
           cache-from: type=gha,scope=backend
-          cache-to: type=gha,mode=max,scope=backend
+          cache-to: type=gha,mode=min,scope=backend
           build-args: |
             MAVEN_BUILDER_IMAGE=maven:3.9-eclipse-temurin-17
             JAVA_RUNTIME_IMAGE=eclipse-temurin:17-jre-alpine
@@ -70,7 +70,7 @@ jobs:
           provenance: false
           sbom: false
           cache-from: type=gha,scope=frontend
-          cache-to: type=gha,mode=max,scope=frontend
+          cache-to: type=gha,mode=min,scope=frontend
           build-args: |
             NODE_BUILDER_IMAGE=node:20-alpine
             NGINX_RUNTIME_IMAGE=nginx:1.25-alpine
