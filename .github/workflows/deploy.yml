@@ -56,6 +56,9 @@ jobs:
           sbom: false
           cache-from: type=gha,scope=backend
           cache-to: type=gha,mode=max,scope=backend
+          build-args: |
+            MAVEN_BUILDER_IMAGE=maven:3.9-eclipse-temurin-17
+            JAVA_RUNTIME_IMAGE=eclipse-temurin:17-jre-alpine
           tags: ${{ env.TCR_REGISTRY }}/${{ secrets.TCR_NAMESPACE }}/nutriai-backend:${{ env.IMAGE_TAG }}
 
       - name: 构建并推送前端镜像
@@ -68,6 +71,9 @@ jobs:
           sbom: false
           cache-from: type=gha,scope=frontend
           cache-to: type=gha,mode=max,scope=frontend
+          build-args: |
+            NODE_BUILDER_IMAGE=node:20-alpine
+            NGINX_RUNTIME_IMAGE=nginx:1.25-alpine
           tags: ${{ env.TCR_REGISTRY }}/${{ secrets.TCR_NAMESPACE }}/nutriai-frontend:${{ env.IMAGE_TAG }}
 
       - name: 上传生产 Compose 配置到腾讯云服务器

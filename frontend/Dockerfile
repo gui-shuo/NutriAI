@@ -1,7 +1,8 @@
 # syntax=docker/dockerfile:1.7
 
-ARG NODE_BUILDER_IMAGE=ccr.ccs.tencentyun.com/heyitshuo/base-node:20-alpine
-ARG NGINX_RUNTIME_IMAGE=ccr.ccs.tencentyun.com/heyitshuo/base-nginx:1.25-alpine
+# GitHub Actions 构建时默认直接从 Docker 官方镜像拉取基础镜像
+ARG NODE_BUILDER_IMAGE=node:20-alpine
+ARG NGINX_RUNTIME_IMAGE=nginx:1.25-alpine
 
 FROM ${NODE_BUILDER_IMAGE} AS builder
 
@@ -11,7 +12,7 @@ ARG HTTP_PROXY=
 ARG HTTPS_PROXY=
 ARG ALL_PROXY=
 ARG NO_PROXY=
-ARG NPM_REGISTRY=https://registry.npmmirror.com
+ARG NPM_REGISTRY=https://registry.npmjs.org
 ENV HTTP_PROXY=${HTTP_PROXY} \
     HTTPS_PROXY=${HTTPS_PROXY} \
     ALL_PROXY=${ALL_PROXY} \
