@@ -1,5 +1,3 @@
-# syntax=docker/dockerfile:1.7
-
 # 默认使用阿里云公共镜像，必要时可通过 build-arg 覆盖
 ARG NODE_BUILDER_IMAGE=registry.cn-hangzhou.aliyuncs.com/acs/node:20-alpine
 ARG NGINX_RUNTIME_IMAGE=registry.cn-hangzhou.aliyuncs.com/acs/nginx:1.25-alpine
@@ -26,8 +24,7 @@ ENV HTTP_PROXY=${HTTP_PROXY} \
 
 
 COPY package*.json ./
-RUN --mount=type=cache,target=/root/.npm \
-    npm ci --prefer-offline --no-audit
+RUN npm ci --prefer-offline --no-audit
 
 COPY . .
 
@@ -37,8 +34,7 @@ ARG VITE_WS_BASE_URL=
 ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
 ENV VITE_WS_BASE_URL=${VITE_WS_BASE_URL}
 
-RUN --mount=type=cache,target=/root/.npm \
-    npm run build
+RUN npm run build
 
 FROM ${NGINX_RUNTIME_IMAGE}
 

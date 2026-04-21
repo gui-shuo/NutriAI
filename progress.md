@@ -132,6 +132,22 @@
   - task_plan.md (updated)
   - progress.md (updated)
 
+### Phase 16: BuildKit Frontend Fix
+- **Status:** complete
+- Actions taken:
+  - 对照最新构建日志确认失败发生在 buildkit 解析 `# syntax=docker/dockerfile:1.7` 阶段，而不是发生在 TCR 推送阶段。
+  - 去掉了 Gitee 专用包装 Dockerfile 以及原始 backend/frontend Dockerfile 里的 syntax 指令和 `RUN --mount=type=cache` 写法，避免继续访问 Docker Hub frontend 镜像。
+  - 在最新导出的 `.gitee/pipeline-docker.yml` 中补回 TCR 相关变量，并把构建镜像 tag 改回包含命名空间的形式，避免下一个失败点落在推镜像和部署登录上。
+- Files created/modified:
+  - Dockerfile.backend.gitee (updated)
+  - Dockerfile.frontend.gitee (updated)
+  - backend/Dockerfile (updated)
+  - frontend/Dockerfile (updated)
+  - .gitee/pipeline-docker.yml (updated)
+  - findings.md (updated)
+  - task_plan.md (updated)
+  - progress.md (updated)
+
 ### Phase 1: Requirements & Discovery
 - **Status:** complete
 - **Started:** 2026-04-21
@@ -206,6 +222,7 @@
 | Docker task rewrite | `build_backend_image` / `build_frontend_image` | Referenced vars are declared and docker fields are closer to official plugin examples | Updated repository/tag split and added placeholders | pass |
 | Deploy artifact name fix | `deployArtifact.name` in exported YAML | Downloaded filename uses only supported characters | Renamed to `nutriai-deploy-bundle` and updated script path | pass |
 | Trigger listener fix | `triggers` in exported YAML | At least one valid listener is configured without enabling normal branch auto-deploy | Switched to `push.tags.precise: manual-deploy` | pass |
+| BuildKit syntax fix | Active Dockerfiles used by Gitee build | No dependency on `docker.io/docker/dockerfile:1.7` remains | Removed syntax line and cache-mount syntax | pass |
 
 ## Error Log
 | Timestamp | Error | Attempt | Resolution |
@@ -215,8 +232,8 @@
 ## 5-Question Reboot Check
 | Question | Answer |
 |----------|--------|
-| Where am I? | Phase 15 |
-| Where am I going? | 任务已完成，剩余的是把最新 `.gitee/pipeline-docker.yml` 推到 Gitee 并在图形视图中重新确认认证方式 |
-| What's the goal? | 在满足 Gitee Go 事件监听校验的同时，尽量保留手动执行为主的部署方式 |
-| What have I learned? | Gitee Go 当前界面要求至少配置一个监听器，因此需要用一个极窄的合法监听规则来替代伪 `manual` 写法 |
-| What have I done? | 已将触发器改成只监听精确 Tag `manual-deploy`，避免普通分支 push 自动部署 |
+| Where am I? | Phase 16 |
+| Where am I going? | 任务已完成，剩余的是将最新 Dockerfile 和 `.gitee/pipeline-docker.yml` 推到 Gitee 后重新执行流水线 |
+| What's the goal? | 让 Gitee Go 镜像构建绕过 Docker Hub frontend 超时，并避免下一步推镜像/部署时因为 TCR 变量缺失再次失败 |
+| What have I learned? | 当前失败并非基础镜像拉取失败，而是 Dockerfile syntax frontend 解析失败；同时导出的流水线文件里已有下一阶段会触发的 TCR 变量缺失问题 |
+| What have I done? | 已移除 syntax frontend 依赖、去掉 cache-mount 语法，并补回导出流水线中缺失的 TCR 变量和命名空间 tag |

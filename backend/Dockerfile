@@ -1,5 +1,3 @@
-# syntax=docker/dockerfile:1.7
-
 # 多阶段构建
 # 默认使用阿里云公共镜像，必要时可通过 build-arg 覆盖
 ARG MAVEN_BUILDER_IMAGE=registry.cn-hangzhou.aliyuncs.com/acs/maven:3.9-eclipse-temurin-17
@@ -28,13 +26,11 @@ ENV HTTP_PROXY=${HTTP_PROXY} \
 
 # 复制 pom.xml 并预热依赖缓存
 COPY pom.xml ./
-RUN --mount=type=cache,target=/root/.m2/repository \
-    mvn -B dependency:go-offline
+RUN mvn -B dependency:go-offline
 
 # 复制源代码并构建
 COPY src ./src
-RUN --mount=type=cache,target=/root/.m2/repository \
-    mvn -B clean package -DskipTests
+RUN mvn -B clean package -DskipTests
 
 # 阶段2：运行
 FROM ${JAVA_RUNTIME_IMAGE}

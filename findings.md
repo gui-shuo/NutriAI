@@ -35,6 +35,9 @@
 - 对于 `deploy@agent`，官方文档明确 `deployArtifact[].name` 是下载到主机后的部署包名，默认 `output`。因此它不能继续使用 `nutriai-deploy-bundle.tar.gz` 这类带点号的文件名，需改为纯数字/字母/中划线/下划线形式，并同步修改脚本中的目标文件路径。
 - “仓库的认证方式没有配置” 这一项在官方 `build@docker` 文档里没有对应公开 YAML 字段说明；用户导出的 YAML 中出现了 `type: account`，因此更稳妥的处理方式是保留导出结构，通过 Gitee Go 图形视图重新选择一次仓库认证方式，而不是继续猜测代码字段。
 - Gitee Go 当前还要求至少配置一个事件监听，因此不能继续使用 `triggers: trigger: manual` 这种非官方写法。为了兼顾“必须有监听器”和“尽量不要普通 push 自动部署”，活动流水线改为只监听精确 Tag `manual-deploy`。
+- 本次构建失败的直接根因来自 Dockerfile 第一行 `# syntax=docker/dockerfile:1.7`。Gitee Go 的 buildkit 在解析这行时会访问 `docker.io/docker/dockerfile:1.7`，而当前网络到 Docker Hub 超时，导致还没开始拉基础镜像就直接失败。
+- 两份 Gitee 专用包装 Dockerfile 和原始 backend/frontend Dockerfile 都使用了 `RUN --mount=type=cache`，这会继续依赖 syntax frontend，因此一起改为普通 `RUN` 更稳，代价只是构建缓存优化消失。
+- 用户最新导出的 `.gitee/pipeline-docker.yml` 丢失了 `TCR_REGISTRY`、`TCR_NAMESPACE`、`TCR_USERNAME`、`TCR_PASSWORD` 四个变量，但部署脚本仍然依赖它们；此外镜像构建 tag 不含命名空间，后续推送到 TCR 大概率也会失败，因此需要一并补回。
 
 ## Research Findings
 - backend/Dockerfile 默认基础镜像仍为 maven:3.9-eclipse-temurin-17 与 eclipse-temurin:17-jre-alpine。
