@@ -28,6 +28,13 @@
 - `scheduling` 文档确认 `stages` 的官方写法是 `- stage:` 后，与 `name`、`displayName`、`strategy`、`trigger`、`steps` 同级缩进，不应再把这些字段嵌套到 `stage` 下一级。
 - `parameter` 文档确认用户自定义流水线参数放在 `variables`，运行中动态更新参数使用 `echo 'KEY=VALUE' >> GITEE_PARAMS`，并且 `GITEE_`、`GO_` 前缀是保留字。
 - `advantage-options` 文档确认可以在顶层 `strategy` 中配置 `blocking` 和 `stepTimeout`；对生产部署流水线，开启阻塞构建可以避免多个部署互相覆盖。
+- `image-build-and-deployment` 插件文档确认 `build@docker` 的核心字段只有 `repository`、`username`、`password`、`tag`、`dockerfile`、`artifacts`、`isCache`，其中 `tag` 的官方例子是 `镜像名:版本` 形式。
+- 当前 `build_backend_image` / `build_frontend_image` 任务最可疑的配置点有两个：一是 YAML 中引用了 `TCR_NAMESPACE`、`TCR_USERNAME`、`TCR_PASSWORD`、`DEPLOY_HOST_GROUP_ID` 却没有在活动流水线文件里声明；二是把 `namespace/repo:tag` 全塞进 `tag` 字段，和官方示例的 `image:tag` 形态不一致。
+- 为降低 Gitee Go 代码视图的参数校验失败概率，活动流水线改为：在 `variables` 中显式声明这些参数占位值，并把 `repository` 调整为 `${TCR_REGISTRY}/${TCR_NAMESPACE}`、`tag` 调整为 `${BACKEND_IMAGE_REPO}:${TIMESTAMP_TAG}` / `${FRONTEND_IMAGE_REPO}:${TIMESTAMP_TAG}`。
+- 用户最新从 Gitee Go 页面复制出的 YAML 说明：该仓库当前生效的是 `.gitee/pipeline-docker.yml`，而且图形视图保存后会改写结构，例如 `stages` 变成直接对象数组、`script` 变成字符串数组、`hostGroupID` 变成对象。
+- 对于 `deploy@agent`，官方文档明确 `deployArtifact[].name` 是下载到主机后的部署包名，默认 `output`。因此它不能继续使用 `nutriai-deploy-bundle.tar.gz` 这类带点号的文件名，需改为纯数字/字母/中划线/下划线形式，并同步修改脚本中的目标文件路径。
+- “仓库的认证方式没有配置” 这一项在官方 `build@docker` 文档里没有对应公开 YAML 字段说明；用户导出的 YAML 中出现了 `type: account`，因此更稳妥的处理方式是保留导出结构，通过 Gitee Go 图形视图重新选择一次仓库认证方式，而不是继续猜测代码字段。
+- Gitee Go 当前还要求至少配置一个事件监听，因此不能继续使用 `triggers: trigger: manual` 这种非官方写法。为了兼顾“必须有监听器”和“尽量不要普通 push 自动部署”，活动流水线改为只监听精确 Tag `manual-deploy`。
 
 ## Research Findings
 - backend/Dockerfile 默认基础镜像仍为 maven:3.9-eclipse-temurin-17 与 eclipse-temurin:17-jre-alpine。

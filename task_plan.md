@@ -4,7 +4,7 @@
 当前目标是在保留“时间戳镜像 + docker compose 服务器部署”约束的前提下，将自动化链路从 GitHub / 阿里云 ACR 改为 Gitee Go / 腾讯云 TCR。
 
 ## Current Phase
-Phase 12
+Phase 15
 
 ## Phases
 ### Phase 1: Requirements & Discovery
@@ -78,6 +78,24 @@ Phase 12
 - [x] Re-read official Gitee Go pipeline docs
 - [x] Rewrite active `.gitee/pipeline-docker.yml` against documented syntax
 - [x] Re-verify the rewritten pipeline file
+- **Status:** complete
+
+### Phase 13: Docker Task Fix
+- [x] Diagnose the `build_backend_image` task against official plugin docs
+- [x] Adjust Docker plugin fields and referenced variables for safer validation
+- [x] Prepare detailed manual configuration fallback steps
+- **Status:** complete
+
+### Phase 14: Exported YAML Fixes
+- [x] Inspect the YAML copied directly from Gitee Go
+- [x] Fix the invalid deploy artifact download filename
+- [x] Document the remaining auth-mode issue as a UI-side configuration step
+- **Status:** complete
+
+### Phase 15: Trigger Listener Fix
+- [x] Replace invalid manual trigger syntax
+- [x] Keep listener narrow to avoid normal branch auto-deploys
+- [x] Re-verify the exported YAML after trigger update
 - **Status:** complete
 
 ## Key Questions

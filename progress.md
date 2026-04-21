@@ -96,6 +96,42 @@
   - task_plan.md (updated)
   - progress.md (updated)
 
+### Phase 13: Docker Task Fix
+- **Status:** complete
+- Actions taken:
+  - 继续查阅 Gitee Go 官方插件文档，重点核对 `build@docker` 的字段定义与示例值形态。
+  - 修正活动流水线里 Docker 构建任务的参数声明与镜像字段拆分方式，降低“构建后端镜像任务配置有误”的概率。
+  - 整理了可在 Gitee Go 图形视图中逐项填写的手动配置步骤，作为无法通过代码视图时的兜底方案。
+- Files created/modified:
+  - .gitee/pipeline-docker.yml (updated)
+  - findings.md (updated)
+  - task_plan.md (updated)
+  - progress.md (updated)
+
+### Phase 14: Exported YAML Fixes
+- **Status:** complete
+- Actions taken:
+  - 对比了用户从 Gitee Go 图形视图复制出的 YAML 与官方插件文档，确认当前主机部署报错来自 `deployArtifact.name` 的命名限制。
+  - 将非法的 `nutriai-deploy-bundle.tar.gz` 改为合法的下载文件名，并同步修改部署脚本中的 `BUNDLE_FILE`。
+  - 保留了导出 YAML 里的 `type: account` 结构，并把“仓库的认证方式没有配置”归类为需要在 Gitee Go 图形视图中重新选择的 UI 配置项。
+- Files created/modified:
+  - .gitee/pipeline-docker.yml (updated)
+  - findings.md (updated)
+  - task_plan.md (updated)
+  - progress.md (updated)
+
+### Phase 15: Trigger Listener Fix
+- **Status:** complete
+- Actions taken:
+  - 将无效的 `triggers.trigger: manual` 改为 Gitee Go 官方支持的 `push.tags.precise` 监听。
+  - 监听器选择了非常窄的精确 Tag `manual-deploy`，避免普通分支 push 自动触发部署。
+  - 保留了手动执行的主路径，同时满足 Gitee Go “事件监听必须设置一个”的界面约束。
+- Files created/modified:
+  - .gitee/pipeline-docker.yml (updated)
+  - findings.md (updated)
+  - task_plan.md (updated)
+  - progress.md (updated)
+
 ### Phase 1: Requirements & Discovery
 - **Status:** complete
 - **Started:** 2026-04-21
@@ -167,6 +203,9 @@
 | Manual trigger mode | pipeline-docker without triggers | No auto trigger, manual run still available in UI | Changed to manual-only configuration | pass |
 | Gitee pipeline discovery | `.workflow/pipeline-docker.yml` | Pipeline file matches documented `.workflow` location | Moved workflow YAML into `.workflow` | pass |
 | Official doc rewrite | `.gitee/pipeline-docker.yml` | YAML shape matches official docs and remains valid | Rewritten against official docs | pass |
+| Docker task rewrite | `build_backend_image` / `build_frontend_image` | Referenced vars are declared and docker fields are closer to official plugin examples | Updated repository/tag split and added placeholders | pass |
+| Deploy artifact name fix | `deployArtifact.name` in exported YAML | Downloaded filename uses only supported characters | Renamed to `nutriai-deploy-bundle` and updated script path | pass |
+| Trigger listener fix | `triggers` in exported YAML | At least one valid listener is configured without enabling normal branch auto-deploy | Switched to `push.tags.precise: manual-deploy` | pass |
 
 ## Error Log
 | Timestamp | Error | Attempt | Resolution |
@@ -176,8 +215,8 @@
 ## 5-Question Reboot Check
 | Question | Answer |
 |----------|--------|
-| Where am I? | Phase 12 |
-| Where am I going? | 任务已完成，剩余的是把 `.gitee/pipeline-docker.yml` 推到 Gitee 并在页面重新校验 |
-| What's the goal? | 生成一份严格按 Gitee Go 官方文档编写的手动触发部署流水线 |
-| What have I learned? | 当前实际生效的仓库文件是 `.gitee/pipeline-docker.yml`，并且需要按官方的 stage/step 层级与顶层 strategy 写法来组织 |
-| What have I done? | 已按官方文档重写 `.gitee/pipeline-docker.yml`，保留原有部署能力并补上更稳妥的顶层执行策略 |
+| Where am I? | Phase 15 |
+| Where am I going? | 任务已完成，剩余的是把最新 `.gitee/pipeline-docker.yml` 推到 Gitee 并在图形视图中重新确认认证方式 |
+| What's the goal? | 在满足 Gitee Go 事件监听校验的同时，尽量保留手动执行为主的部署方式 |
+| What have I learned? | Gitee Go 当前界面要求至少配置一个监听器，因此需要用一个极窄的合法监听规则来替代伪 `manual` 写法 |
+| What have I done? | 已将触发器改成只监听精确 Tag `manual-deploy`，避免普通分支 push 自动部署 |
